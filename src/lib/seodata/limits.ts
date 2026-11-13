@@ -29,10 +29,30 @@ export interface SeoDataLimits {
 
 type TierKey = Entitlements['tier'] | 'essentiel_local';
 
+/**
+ * Liens entrants (DataForSEO Backlinks) : engagement fixe de 100 $/mois. Réservés à Accompagné et Agence pour être
+ * rentables par construction (un seul abonné Accompagné à 99 €/mois couvre ≈ 92 € d'engagement ; voir
+ * docs/v5/progress/ROI-DONNEES.md). Interrupteur plateforme : SEODATA_BACKLINKS_ENABLED=1 (défaut coupé), à n'activer
+ * qu'après avoir souscrit l'engagement chez DataForSEO.
+ */
+export const BACKLINKS_TIERS: readonly Entitlements['tier'][] = ['accompagne', 'agence'];
+export const BACKLINKS_FIXED_USD_DEFAULT = 100;
+
+export function backlinksPlatformEnabled(env: Record<string, string | undefined> = process.env): boolean {
+  const v = (env.SEODATA_BACKLINKS_ENABLED ?? '').trim().toLowerCase();
+  return v === '1' || v === 'true' || v === 'on' || v === 'yes';
+}
+
+/** Engagement mensuel DataForSEO Backlinks, en dollars (SEODATA_BACKLINKS_FIXED_USD, défaut 100). */
+export function backlinksFixedUsd(env: Record<string, string | undefined> = process.env): number {
+  const n = Number(env.SEODATA_BACKLINKS_FIXED_USD);
+  return Number.isFinite(n) && n >= 0 && n < 100_000 ? n : BACKLINKS_FIXED_USD_DEFAULT;
+}
+
 export const SEODATA_LIMITS: Record<TierKey, SeoDataLimits> = {
   decouverte: { keywords: 0, devices: ['mobile'], depth: 10, aiOverview: false, backlinks: false, labs: false, inspectionsPerDay: 20, monthlyBudgetEur: 0 },
   essentiel_local: { keywords: 20, devices: ['mobile'], depth: 20, aiOverview: true, backlinks: false, labs: true, inspectionsPerDay: 50, monthlyBudgetEur: 1 },
-  essentiel: { keywords: 100, devices: ['desktop'], depth: 20, aiOverview: true, backlinks: true, labs: true, inspectionsPerDay: 100, monthlyBudgetEur: 3 },
+  essentiel: { keywords: 100, devices: ['desktop'], depth: 20, aiOverview: true, backlinks: false, labs: true, inspectionsPerDay: 100, monthlyBudgetEur: 3 },
   accompagne: { keywords: 300, devices: ['mobile', 'desktop'], depth: 20, aiOverview: true, backlinks: true, labs: true, inspectionsPerDay: 100, monthlyBudgetEur: 10 },
   agence: { keywords: 2000, devices: ['desktop'], depth: 20, aiOverview: true, backlinks: true, labs: true, inspectionsPerDay: 200, monthlyBudgetEur: 40 },
   // Démo : données de démonstration, aucun appel payant.

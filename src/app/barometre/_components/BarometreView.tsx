@@ -2,6 +2,7 @@
  * Rendu des baromètres (sans en-tête ni pied de page : testable seul). Données = éditions RÉELLES ; une édition
  * simulée n'arrive ici qu'en aperçu local et porte alors un bandeau « Démonstration ».
  */
+import { barometreUtm } from '@/lib/roi/core';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { PROVIDER_LABELS } from '@/lib/engine/types';
@@ -241,7 +242,7 @@ export function BarometreView({ edition: e, demo, history, url, contactEmail }: 
 
       <div className="mt-12 rounded-2xl p-6 sm:p-8" style={{ background: 'var(--primary-bg)' }}>
         <p className="mb-3 text-lg font-semibold">Et votre entreprise, que répondent les IA à son sujet ?</p>
-        <Link href="/audit" className="inline-flex items-center justify-center rounded-lg px-5 py-3 font-semibold text-white" style={{ background: 'var(--primary)' }}>
+        <Link href={`/audit?${barometreUtm(e.slug)}`} className="inline-flex items-center justify-center rounded-lg px-5 py-3 font-semibold text-white" style={{ background: 'var(--primary)' }}>
           Testez votre entreprise gratuitement
         </Link>
         <p className="mt-3 text-sm" style={muted}>Une mesure datée, avec sa marge d&apos;erreur. Aucune promesse de position.</p>

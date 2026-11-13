@@ -1,3 +1,4 @@
+import { recordAttribution, sanitizeAttribution } from '@/lib/roi/attribution';
 import { NextResponse, after } from 'next/server';
 import { z } from 'zod';
 import { runAudit, type AuditInput, type AuditResult } from '@/lib/engine';
@@ -287,6 +288,8 @@ export async function POST(req: Request) {
 
   try {
     await saveAudit(result, { trigger: 'free' });
+    // Origine de la visite (ROI des baromètres, /admin/roi) : validée, sans cookie, jamais bloquante.
+    await recordAttribution('audit', result.id, sanitizeAttribution((json as { attribution?: unknown } | null)?.attribution));
   } catch (e) {
     console.error('[api/audit] sauvegarde impossible', e);
     return NextResponse.json(

@@ -11,7 +11,7 @@ import { DEMO_SPECS, DemoBacklinks, DemoKeywords, DemoPerf, DemoSearchConsole, D
 import { getBingConnection } from './bing';
 import { getConnection, gscEnabled } from './google-oauth';
 import { SeoDataError, hostOf } from './http';
-import { eurPerUsd, limitsFor, type SeoDataLimits } from './limits';
+import { backlinksPlatformEnabled, eurPerUsd, limitsFor, type SeoDataLimits } from './limits';
 import { GooglePerfProvider, perfConfigured, type PerfProvider } from './perf';
 import { searchConsoleFor } from './searchconsole';
 import type { BacklinksProvider, KeywordLocation, KeywordsProvider, ProviderKind, ProviderStatus, SearchConsoleProvider, SerpProvider } from './types';
@@ -59,6 +59,10 @@ export function meterFor(ctx: SeoDataContext): Meter {
 
 const off = (kind: ProviderKind, reason: string): ProviderStatus => ({ kind, state: 'off', provider: null, reason });
 
+/** Raisons affichées quand les liens entrants sont coupés (l'écran /app/seo/liens les distingue). */
+export const BACKLINKS_NOT_INCLUDED = 'Liens entrants inclus dans les offres Accompagné et Agence.';
+export const BACKLINKS_PLATFORM_OFF = 'Liens entrants pas encore activés sur Repéré : ils le seront pour votre offre dès l’ouverture du service.';
+
 export interface ProviderSet {
   statuses: ProviderStatus[];
   searchConsole: SearchConsoleProvider | null;
@@ -105,16 +109,19 @@ export async function providersFor(ctx: SeoDataContext, now: Date = new Date()):
   if (!dataForSeoConfigured()) {
     for (const k of ['keywords', 'serp', 'backlinks'] as const) statuses.push(off(k, 'Fournisseur de données (DataForSEO) non configuré : aucun volume ni position n’est affiché.'));
   } else if (ctx.limits.monthlyBudgetEur <= 0) {
-    for (const k of ['keywords', 'serp', 'backlinks'] as const) statuses.push(off(k, 'Non inclus dans votre offre (positions, volumes et liens à partir d’Essentiel).'));
+    for (const k of ['keywords', 'serp'] as const) statuses.push(off(k, 'Non inclus dans votre offre (positions et volumes à partir d’Essentiel).'));
+    statuses.push(off('backlinks', BACKLINKS_NOT_INCLUDED));
   } else {
     const client = new DataForSeoClient(meterFor(ctx));
     keywords = new DataForSeoKeywords(client, eurPerUsd());
     serp = new DataForSeoSerp(client);
     statuses.push({ kind: 'keywords', state: 'live', provider: 'dataforseo' }, { kind: 'serp', state: 'live', provider: 'dataforseo' });
-    if (ctx.limits.backlinks) {
+    if (!ctx.limits.backlinks) statuses.push(off('backlinks', BACKLINKS_NOT_INCLUDED));
+    else if (!backlinksPlatformEnabled()) statuses.push(off('backlinks', BACKLINKS_PLATFORM_OFF));
+    else {
       backlinks = new DataForSeoBacklinks(client);
       statuses.push({ kind: 'backlinks', state: 'live', provider: 'dataforseo' });
-    } else statuses.push(off('backlinks', 'Liens entrants non inclus dans votre offre.'));
+    }
   }
   const bing = await getBingConnection(ctx.businessId).catch(() => null);
   statuses.push(bing ? { kind: 'bing', state: 'live', provider: 'bing-webmaster' } : off('bing', 'Ajoutez votre clé API Bing Webmaster Tools pour importer vos données Bing.'));

@@ -26,6 +26,7 @@ import {
 } from '@/lib/analysis';
 import { emailHash } from '@/lib/analysis/store';
 import { sendAnalysisReportEmail } from '@/lib/email';
+import { recordAttribution, sanitizeAttribution } from '@/lib/roi/attribution';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -116,6 +117,8 @@ export async function POST(req: Request): Promise<Response> {
   }
   const body = parsed.data;
   if (body.hp) return json({ error: 'Requête invalide.' }, 400);
+  // Origine de la visite (ROI des baromètres, /admin/roi) : validée, gardée avec l'analyse, jamais bloquante.
+  const attribution = sanitizeAttribution((raw as { attribution?: unknown } | null)?.attribution);
 
   let domain: string;
   try {
@@ -139,6 +142,7 @@ export async function POST(req: Request): Promise<Response> {
     const hit = await cachedAnalysis(domain).catch(() => null);
     if (hit) {
       const tok = await issueToken(hit.analysis.id, body.email);
+      await recordAttribution('analysis', hit.analysis.id, attribution);
       return stream(async function* () {
         yield { type: 'cached', id: hit.analysis.id, at: hit.analysis.createdAt };
         yield { type: 'result', seq: 1, t: 0, analysis: hit.analysis } satisfies AnalysisEvent;
@@ -172,6 +176,7 @@ export async function POST(req: Request): Promise<Response> {
     if (result) {
       try {
         const saved = await saveAnalysis(result, { domain, email: body.email });
+        await recordAttribution('analysis', result.id, attribution);
         const mailed = await mailReport(body.email, result, saved.url);
         yield { type: 'saved', id: result.id, url: saved.url, token: saved.token, ...(mailed === 'sent' ? { emailed: true } : {}) };
       } catch (err) {

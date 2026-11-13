@@ -96,6 +96,57 @@ function buildCatalog(): BarometreDef[] {
 /** Catalogue V1 : 50 baromètres (40 locaux = 8 métiers × 5 villes, 5 PME, 5 e-commerce). */
 export const CATALOG: BarometreDef[] = buildCatalog();
 
+/* ------------------------------------------------------------------ */
+/* Lancement progressif (ROI-DONNEES, 13 nov. 2026)                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Ordre de lancement : les 10 baromètres à plus fort potentiel d'abord (justification : docs/v5/progress/ROI-DONNEES.md).
+ * Paris, Lyon, Marseille = les trois plus grands bassins ; dépannage urgent (plombier, serrurier, électricien) = questions
+ * les plus posées aux IA et sujet repris par la presse locale ; agences immobilières et coiffeurs = beaucoup
+ * d'entreprises indépendantes, cible directe de l'offre Essentiel à 29 €/mois. Hypothèse raisonnée, à confirmer par les
+ * visites et inscriptions mesurées dans /admin/roi (aucun volume de recherche inventé).
+ */
+export const LAUNCH_ORDER: readonly string[] = [
+  'plombiers-paris',
+  'serruriers-paris',
+  'electriciens-paris',
+  'agences-immobilieres-paris',
+  'coiffeurs-paris',
+  'plombiers-lyon',
+  'serruriers-lyon',
+  'agences-immobilieres-lyon',
+  'plombiers-marseille',
+  'serruriers-marseille',
+];
+
+/** Nombre de baromètres mesurés par mois par défaut (lancement progressif). */
+export const DEFAULT_MAX_BAROMETRES = 10;
+
+/** BAROMETRE_MAX (1 à la taille du catalogue), défaut 10. */
+export function barometreMax(env: Record<string, string | undefined> = process.env, catalog: BarometreDef[] = CATALOG): number {
+  const n = Math.floor(Number(env.BAROMETRE_MAX));
+  const all = catalog.filter((d) => d.active !== false).length;
+  if (!Number.isFinite(n) || n < 1) return Math.min(DEFAULT_MAX_BAROMETRES, all);
+  return Math.min(n, all);
+}
+
+/**
+ * Baromètres mesurés chaque mois : l'ordre de lancement puis le reste du catalogue par priorité, coupé à BAROMETRE_MAX.
+ * Les priorités sont renumérotées (1 = premier mesuré) pour que le plan budgétaire suive cet ordre.
+ */
+export function launchCatalog(env: Record<string, string | undefined> = process.env, catalog: BarometreDef[] = CATALOG): BarometreDef[] {
+  const rank = (d: BarometreDef) => {
+    const i = LAUNCH_ORDER.indexOf(d.slug);
+    return i >= 0 ? i : LAUNCH_ORDER.length + (d.priority ?? 999);
+  };
+  return catalog
+    .filter((d) => d.active !== false)
+    .sort((a, b) => rank(a) - rank(b))
+    .slice(0, barometreMax(env, catalog))
+    .map((d, i) => ({ ...d, priority: i + 1 }));
+}
+
 export function getDef(slug: string, catalog: BarometreDef[] = CATALOG): BarometreDef | undefined {
   return catalog.find((d) => d.slug === slug);
 }

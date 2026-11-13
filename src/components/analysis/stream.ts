@@ -4,6 +4,8 @@
  */
 import type { AnalysisEvent, Detection, FullAnalysis, ModuleId, ModuleStatus } from '@/lib/analysis/types';
 import type { Severity } from '@/lib/crawl/types';
+import type { Attribution } from '@/lib/roi/core';
+import { currentAttribution } from '@/lib/roi/landing';
 
 /** Lignes supplémentaires émises par la route (hors runFullAnalysis). */
 export type RouteLine =
@@ -128,6 +130,8 @@ export interface StartBody {
   email?: string;
   fresh?: boolean;
   hp?: string;
+  /** origine de la visite (première page / UTM, sans cookie : src/lib/roi/landing.ts) ; ajoutée si absente */
+  attribution?: Attribution | null;
 }
 
 export type StartFailure = { ok: false; status: number; error: string; fields?: Record<string, string>; retryAfterS?: number };
@@ -144,7 +148,7 @@ export async function startAnalysis(
   const f = opts.fetchImpl ?? fetch;
   let res: Response;
   try {
-    res = await f('/api/v5/analysis', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: opts.signal });
+    res = await f('/api/v5/analysis', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body.attribution !== undefined ? body : { ...body, attribution: currentAttribution() ?? undefined }), signal: opts.signal });
   } catch {
     if (opts.signal?.aborted) return { ok: false, status: 0, error: 'Analyse annulée.' };
     return { ok: false, status: 0, error: 'Connexion impossible. Vérifiez votre réseau, puis relancez l’analyse.' };

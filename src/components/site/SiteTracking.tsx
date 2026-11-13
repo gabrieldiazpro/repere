@@ -1,5 +1,6 @@
 import Script from "next/script";
 import { HOUSE_BUSINESS_ID } from "@/lib/seo/site";
+import { LandingCapture } from "./LandingCapture";
 
 /**
  * Dogfooding : notre propre script de mesure du trafic IA (public/t.js), comme chez nos clients.
@@ -10,5 +11,11 @@ import { HOUSE_BUSINESS_ID } from "@/lib/seo/site";
  * une balise <script> brute y était bloquée, ex. /connexion et /inscription).
  */
 export function SiteTracking() {
-  return <Script id="repere-t" src="/t.js" strategy="afterInteractive" data-site={HOUSE_BUSINESS_ID} />;
+  return (
+    <>
+      <Script id="repere-t" src="/t.js" strategy="afterInteractive" data-site={HOUSE_BUSINESS_ID} />
+      {/* Origine de l'arrivée gardée en mémoire de l'onglet (attribution des inscriptions, sans cookie). */}
+      <LandingCapture />
+    </>
+  );
 }

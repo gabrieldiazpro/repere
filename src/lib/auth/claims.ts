@@ -26,6 +26,7 @@ import { randomToken, sha256, signValue, verifyValue } from './cookies';
 import { enqueueOnboardingAudit } from './onboarding';
 import type { Session } from './session';
 import { normEmail } from './users';
+import { recordSignupAttribution, sanitizeAttribution, type Attribution } from '@/lib/roi/attribution';
 
 const DAY = 86_400;
 
@@ -58,6 +59,8 @@ export interface SignupClaim {
   ref?: string;
   /** suite demandée après l'inscription (`carte` : publier la carte de score de l'audit d'origine) */
   suite?: 'carte';
+  /** origine de la visite (première page / UTM, sans cookie ; ROI des baromètres) */
+  src?: Attribution;
   n: string;
   exp: number;
 }
@@ -70,7 +73,7 @@ export function purchaseClaimToken(businessId: string, email: string, ttlDays = 
 
 const ANALYSIS_ID_RE = /^an_[A-Za-z0-9_-]{1,77}$/;
 
-export function signupClaimToken(input: { email: string; name: string; segment: Segment; website?: string; trade?: string; city?: string; audit?: string; analysis?: string; ref?: string; suite?: 'carte' }): string {
+export function signupClaimToken(input: { email: string; name: string; segment: Segment; website?: string; trade?: string; city?: string; audit?: string; analysis?: string; ref?: string; suite?: 'carte'; src?: Attribution | null }): string {
   return signValue({
     k: 'signup',
     e: normEmail(input.email),
@@ -83,6 +86,7 @@ export function signupClaimToken(input: { email: string; name: string; segment: 
     analysis: input.analysis && ANALYSIS_ID_RE.test(input.analysis) ? input.analysis : undefined,
     ref: input.ref && /^[A-Za-z0-9_-]{1,20}$/.test(input.ref) ? input.ref : undefined,
     suite: input.suite === 'carte' ? 'carte' : undefined,
+    src: sanitizeAttribution(input.src) ?? undefined,
     n: randomToken(12),
     exp: Math.floor(Date.now() / 1000) + 7 * DAY,
   } satisfies SignupClaim);
@@ -296,6 +300,8 @@ export async function applyLoginEffects(session: Session, params: { claim?: stri
         if (existing) select = existing;
         else {
           const b = await createOwnedBusiness(session, claim);
+          // Origine de l'inscription (analyse ou audit d'origine, sinon première page / UTM) : ROI des baromètres.
+          await recordSignupAttribution(b.id, { analysis: claim.analysis, audit: claim.audit, attribution: claim.src ?? null });
           ids.push(b.id);
           select = b.id;
           next = await afterSignup(session, b.id, claim);

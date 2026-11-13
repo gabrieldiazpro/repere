@@ -5,6 +5,7 @@ import { breadcrumbListLd, graph, webPageLd } from '@/lib/seo/jsonld';
 import { listPublished } from '@/lib/barometre/public';
 import type { EditionSummary } from '@/lib/barometre/types';
 import { BarometreIndexView } from './_components/BarometreView';
+import { VisitBeacon } from './_components/VisitBeacon';
 
 /** L'index se recalcule au plus une fois par heure (nouvelles éditions publiées). */
 export const revalidate = 3600;
@@ -46,6 +47,7 @@ export default async function BarometreIndexPage() {
       )}
       <Crumbs items={[{ name: 'Accueil', href: '/' }, { name: 'Baromètres' }]} />
       <BarometreIndexView items={list} />
+      <VisitBeacon />
     </PageShell>
   );
 }

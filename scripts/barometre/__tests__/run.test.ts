@@ -20,7 +20,13 @@ describe('scripts/barometre/run.ts', () => {
   it('--plan : coût estimé, aucun appel', async () => {
     const out: string[] = [];
     expect(await main(['--plan', '--budget', '150'], (s) => out.push(s))).toBe(0);
-    expect(out[0]).toMatch(/50 baromètres, 7200 appels, 9\d,\d\d € estimés/);
+    // Lancement progressif : 10 baromètres par défaut (BAROMETRE_MAX), coût du catalogue complet rappelé.
+    expect(out[0]).toMatch(/10 baromètres, 1440 appels, 19,\d\d € estimés \(lancement progressif : BAROMETRE_MAX=10, catalogue complet 50 ≈ 9\d,\d\d €\)/);
+    expect(out.some((l) => l.includes('plombiers-paris'))).toBe(true);
+    vi.stubEnv('BAROMETRE_MAX', '50');
+    const all: string[] = [];
+    expect(await main(['--plan', '--budget', '150'], (s) => all.push(s))).toBe(0);
+    expect(all[0]).toMatch(/50 baromètres, 7200 appels, 9\d,\d\d € estimés/);
     expect(await listDocs(COLL.raw)).toHaveLength(0);
   });
 

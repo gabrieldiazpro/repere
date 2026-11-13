@@ -61,6 +61,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
           {open > 0 ? <a href="#messages" className="ui-btn" data-variant="primary">Traiter les messages</a> : null}
           <a href={exportHref} className="ui-btn" data-variant={open > 0 ? 'ghost' : undefined}>Exporter en CSV</a>
+          <a href="/admin/roi" className="ui-btn" data-variant="ghost">ROI des données payantes</a>
         </div>
       </div>
       <dl className="ui-cascade mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">

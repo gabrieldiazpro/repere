@@ -5,6 +5,7 @@ import { pageMeta } from '@/lib/seo/meta';
 import { abs, CONTACT_EMAIL } from '@/lib/seo/site';
 import { barometrePath, getPageData, type PageData } from '@/lib/barometre/public';
 import { BarometreView } from '../_components/BarometreView';
+import { VisitBeacon } from '../_components/VisitBeacon';
 import { barometreDescription, barometrePageLd } from '../_components/ld';
 
 /** Une page de baromètre se recalcule au plus une fois par heure (nouvelle édition, retrait). */
@@ -42,6 +43,7 @@ export default async function BarometrePage({ params }: Props) {
   return (
     <PageShell>
       {!data.demo && <JsonLd data={barometrePageLd(e)} />}
+      {!data.demo && <VisitBeacon />}
       <Crumbs items={[{ name: 'Accueil', href: '/' }, { name: 'Baromètres', href: '/barometre' }, { name: e.def.title }]} />
       <BarometreView edition={e} demo={data.demo} history={data.history} url={abs(barometrePath(e.slug))} contactEmail={CONTACT_EMAIL} />
     </PageShell>

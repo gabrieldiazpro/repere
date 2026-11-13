@@ -51,13 +51,17 @@ mois (1 tâche) ; Labs 1 fois par mois ; liens 1 fois par mois.
 |---|---|---|---|---|---|---|---|---|
 | Découverte | 0 (Search Console + PageSpeed gratuits seulement) | — | 0 | 0 | 0 | 0 | **0 €** | 0 € |
 | Essentiel Local | 20 | mobile | 0,16 $ | 0,06 $ | 0,05 $ | — | **≈ 0,25 €** | 1 € |
-| Essentiel PME / E-com | 100 | bureau | 0,78 $ | 0,06 $ | 0,15 $ | 0,10 $ | **≈ 1,00 €** | 3 € |
+| Essentiel PME / E-com | 100 | bureau | 0,78 $ | 0,06 $ | 0,15 $ | — | **≈ 0,90 €** | 3 € |
 | Accompagné (tous parcours) | 300 | mobile + bureau | 4,70 $ | 0,06 $ | 0,15 $ | 0,10 $ | **≈ 4,60 €** | 10 € |
 | Agence (par marque, 20 marques) | 100 / marque | bureau | 15,7 $ | 1,2 $ | 3 $ | 2 $ | **≈ 20 €** (≈ 1 €/marque) | 40 € |
 | Démo | — | — | 0 (données de démonstration) | | | | 0 € | 0 € |
 
 Coût fixe de la plateforme : 0 € tant que les liens entrants sont coupés (dépôt 50 $ unique) ; **100 $/mois** dès qu'on
-active Backlinks (crédit consommé par toutes les API, donc absorbé à partir d'environ 100 clients Essentiel PME).
+active Backlinks (crédit consommé par toutes les API).
+
+**Décision ROI-DONNEES (13 nov. 2026)** : liens entrants réservés à **Accompagné et Agence** (rentables par construction :
+1 abonné Accompagné à 99 €/mois couvre l'engagement ≈ 92 €), interrupteur plateforme `SEODATA_BACKLINKS_ENABLED=1`
+(coupé par défaut), ROI mesuré dans `/admin/roi`.
 Le plafond par compte (`SEODATA_LIMITS` dans src/lib/seodata/limits.ts, à reporter dans entitlements) bloque tout appel
 payant au-delà et l'écrit dans le journal des coûts (`seodata.costs`, un document par compte et par mois).
 

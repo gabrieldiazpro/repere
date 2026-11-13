@@ -142,6 +142,9 @@ export const EnvSchema = z.object({
   DATAFORSEO_LOGIN: str(),
   DATAFORSEO_PASSWORD: str(),
   SEODATA_EUR_PER_USD: num(0.92),
+  // ROI-DONNEES : liens entrants (engagement DataForSEO Backlinks) réservés à Accompagné et Agence ; coupé par défaut
+  SEODATA_BACKLINKS_ENABLED: flag(),
+  SEODATA_BACKLINKS_FIXED_USD: num(100),
   // PUBLICATION : fiche Google (accès API à obtenir) et fichiers de thème Shopify (exemption Shopify)
   PUBLISH_GBP_ENABLED: flag(),
   SHOPIFY_THEME_WRITE: flag(),
@@ -152,6 +155,13 @@ export const EnvSchema = z.object({
   BAROMETRE_BUDGET_EUR: num(120),
   BAROMETRE_PROVIDERS: str(),
   BAROMETRE_DEMO_PREVIEW: flag(),
+  /** lancement progressif : baromètres mesurés par mois (défaut 10) */
+  BAROMETRE_MAX: num(10),
+  // ROI des données payantes (/admin/roi) : dates de démarrage (AAAA-MM-JJ) si l'on ne veut pas la date relevée
+  ROI_BAROMETRE_START: str(),
+  ROI_BACKLINKS_START: str(),
+  /** plafond mensuel du relevé des liens des pages baromètre (DataForSEO), en euros (défaut 2) */
+  ROI_LINKS_CAP_EUR: num(2),
 
   // Réglages numériques existants
   AUDIT_RATE_LIMIT_PER_DAY: num(5),
@@ -271,6 +281,7 @@ export function validateEnv(source: Source = process.env): EnvReport {
   if (Boolean(v('DATAFORSEO_LOGIN')(source)) !== Boolean(v('DATAFORSEO_PASSWORD')(source))) warnings.push('DATAFORSEO_LOGIN et DATAFORSEO_PASSWORD vont ensemble : positions et volumes « non configurés ».');
   if (Boolean(v('GOOGLE_CLIENT_ID')(source)) !== Boolean(v('GOOGLE_CLIENT_SECRET')(source))) warnings.push('GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET vont ensemble : connexion Google (Search Console, GA4) désactivée.');
   if (isOn(source.SHOPIFY_THEME_WRITE) && !v('SHOPIFY_CLIENT_ID')(source)) warnings.push('SHOPIFY_THEME_WRITE=1 sans application Shopify (SHOPIFY_CLIENT_ID) : sans effet hors jeton d’app saisi par le client.');
+  if (isOn(source.SEODATA_BACKLINKS_ENABLED) && !(v('DATAFORSEO_LOGIN')(source) && v('DATAFORSEO_PASSWORD')(source))) warnings.push('SEODATA_BACKLINKS_ENABLED=1 sans DATAFORSEO_LOGIN / DATAFORSEO_PASSWORD : aucun lien entrant relevé.');
   if (isOn(source.BAROMETRE_ENABLED) && ai.length === 0) warnings.push('BAROMETRE_ENABLED=1 sans clé IA : aucune mesure réelle possible, aucun baromètre publié.');
   if (production && isOn(source.BAROMETRE_DEMO_PREVIEW)) warnings.push('BAROMETRE_DEMO_PREVIEW=1 en production : ignoré (aperçu local seulement).');
   if (v('SUPABASE_URL')(source) && v('NEXT_PUBLIC_SUPABASE_URL')(source) && v('SUPABASE_URL')(source) !== v('NEXT_PUBLIC_SUPABASE_URL')(source)) {

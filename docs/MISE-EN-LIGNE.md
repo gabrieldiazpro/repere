@@ -375,9 +375,12 @@ Sans terminal : recollez `supabase/TOUT-EN-UN.sql` dans l'éditeur SQL de Supaba
 1. https://app.dataforseo.com/register, puis dépôt minimal (50 $ à la date de vérification).
 2. https://app.dataforseo.com/api-access : copiez l'**identifiant API** dans `DATAFORSEO_LOGIN` et le **mot de passe
    API** (différent de celui du compte) dans `DATAFORSEO_PASSWORD`.
-3. Coût estimé : 0 à 5 € par client et par mois, plafonné par offre (`seoData` dans `src/lib/entitlements.ts`) ; les
-   liens entrants demandent un abonnement DataForSEO de 100 $/mois (à décider). `SEODATA_EUR_PER_USD` (défaut 0,92)
-   sert à convertir les coûts en euros.
+3. Coût estimé : 0 à 5 € par client et par mois, plafonné par offre (`seoData` dans `src/lib/entitlements.ts`).
+   `SEODATA_EUR_PER_USD` (défaut 0,92) sert à convertir les coûts en euros.
+4. **Liens entrants (facultatif, 100 $/mois ≈ 92 €)** : réservés aux offres **Accompagné et Agence** (les autres offres
+   voient « Inclus dans les offres Accompagné et Agence », sans aucun chiffre). Rentable dès **1 abonné Accompagné**
+   (99 €/mois ≥ 92 €). Pour activer : souscrire l'engagement Backlinks chez DataForSEO, puis `SEODATA_BACKLINKS_ENABLED=1`
+   (et `SEODATA_BACKLINKS_FIXED_USD` si le montant n'est pas 100). Sans cette variable, aucun appel « liens » n'est fait.
 
 **e) Agent de publication**
 - **Shopify** : l'autorisation demande désormais aussi `write_products`, `write_content`,
@@ -405,9 +408,37 @@ Sans terminal : recollez `supabase/TOUT-EN-UN.sql` dans l'éditeur SQL de Supaba
 **g) Réanalyses et baromètres**
 - Les réanalyses des espaces (60 pages en Découverte, 500 en Essentiel, 2 000 en Accompagné) partent du cron quotidien
   (`/api/cron/monthly`). Pour explorer réellement 2 000 pages, mettez `JOBS_TIMEOUT_MS=280000`.
-- `BAROMETRE_ENABLED=1` lance la passe mensuelle des baromètres (≈ 96,50 €/mois d'IA pour 50 baromètres, plafonnée
-  par `BAROMETRE_BUDGET_EUR`, défaut 120). À n'activer qu'après décision. Sans cela : rien n'est mesuré ni publié.
+- `BAROMETRE_ENABLED=1` lance la passe mensuelle des baromètres (le 2 du mois ou après), plafonnée par
+  `BAROMETRE_BUDGET_EUR` (défaut 120). Sans cela : rien n'est mesuré ni publié. **Lancement progressif** :
+  `BAROMETRE_MAX` baromètres par mois (défaut **10**, les plus prometteurs d'abord : plombiers, serruriers, électriciens,
+  agences immobilières et coiffeurs à Paris ; plombiers, serruriers, agences immobilières à Lyon ; plombiers, serruriers
+  à Marseille). Coût estimé (4 IA, 144 réponses par baromètre ≈ 1,93 €) :
+
+  | BAROMETRE_MAX | Coût estimé / mois | Rentable dès |
+  |---|---|---|
+  | 10 (défaut) | ≈ 19,30 € | 1 abonné Essentiel local (29 €) attribué aux baromètres |
+  | 20 | ≈ 38,60 € | 2 Essentiel local, ou 1 Essentiel e-commerce (79 €) |
+  | 50 (catalogue complet) | ≈ 96,50 € | 4 Essentiel local, ou 1 Accompagné (99 €) |
+
+  Vérifier le plan sans aucun appel : `npx vite-node --config vitest.config.ts scripts/barometre/run.ts --plan`.
 - Nouveau cron déclaré dans `vercel.json` : `/api/v5/seodata/cron` (quotidien).
+
+**h) Où lire le retour sur investissement : `/admin/roi`** (réservé admin, lien depuis `/admin`)
+- Par source payante : coût du mois **mesuré** (registre des baromètres `barometre.budget` ; registres DataForSEO
+  `seodata.costs` convertis avec `SEODATA_EUR_PER_USD`, plus l'engagement Backlinks quand il est activé — compté comme
+  ce qu'il ajoute à la facture : max(engagement, autres appels + liens) − autres appels), revenu, ratio revenu / coût.
+- Baromètres : visites des pages `/barometre/**` par source et site d'origine ; analyses 60 s, audits gratuits,
+  inscriptions et abonnements payants dont la première page vue (ou les UTM des liens du baromètre) vient d'un
+  baromètre ; revenu mensuel récurrent attribué ; liens entrants gagnés par les pages (si les liens sont activés, relevé
+  mensuel plafonné par `ROI_LINKS_CAP_EUR`, défaut 2 €).
+- Liens entrants : abonnés Accompagné et Agence (qui ont l'onglet), MRR de ces offres, usage réel de l'onglet Liens.
+- **Règle d'arrêt affichée** : « si le ratio reste < 1 après 3 mois, couper », avec la date de démarrage (premier mois
+  de dépense relevé, ou `ROI_BAROMETRE_START` / `ROI_BACKLINKS_START` au format AAAA-MM-JJ). Couper = retirer
+  `BAROMETRE_ENABLED` ou `SEODATA_BACKLINKS_ENABLED` (et résilier l'engagement DataForSEO).
+- Attribution sans cookie (conforme à l'article 11 de la politique de confidentialité) : première page gardée en
+  mémoire de l'onglet, UTM sur les liens des baromètres, origine enregistrée côté serveur avec l'analyse, l'audit ou
+  l'espace créé ; « Ne pas me suivre » respecté. Le relevé mensuel est enregistré par le cron quotidien et à chaque
+  ouverture de la page. Sans données : état vide, aucun chiffre estimé.
 
 **Vérifier** : `node scripts/ops/secrets.mjs --liste` montre la rubrique « Données SEO » ; `node scripts/ops/check-env.mjs --prod`
 ne signale aucune incohérence (identifiant sans mot de passe, etc.).

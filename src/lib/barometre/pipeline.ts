@@ -13,7 +13,7 @@ import { createRealProvider, getExtractor } from '../engine/providers';
 import type { EngineProvider, Extractor } from '../engine/providers/http';
 import type { ProviderId } from '../engine/types';
 import { aggregateEdition } from './aggregate';
-import { CATALOG, engineInput, getDef, providersFor, questionsFor, runsFor } from './catalog';
+import { CATALOG, engineInput, getDef, launchCatalog, providersFor, questionsFor, runsFor } from './catalog';
 import { monthlyBudget, planWithinBudget, round2 } from './cost';
 import { extractCompanies } from './extract';
 import { createSimulatedProvider } from './simulate';
@@ -185,7 +185,8 @@ export interface MonthlyOptions extends RunOptions {
 export async function runMonthly(opts: MonthlyOptions = {}) {
   const period = opts.period ?? currentPeriod();
   const catalog = opts.catalog ?? CATALOG;
-  const defs = opts.slugs?.length ? opts.slugs.map((s) => getDef(s, catalog)).filter((d): d is BarometreDef => !!d) : catalog;
+  // Sans liste explicite : lancement progressif (BAROMETRE_MAX baromètres, défaut 10) ; un catalogue passé en option est pris tel quel.
+  const defs = opts.slugs?.length ? opts.slugs.map((s) => getDef(s, catalog)).filter((d): d is BarometreDef => !!d) : opts.catalog ? catalog : launchCatalog();
   const budget = opts.budget ?? (await loadBudget(period, opts.budgetEur ?? monthlyBudget(), !!opts.demo));
   const plan = opts.demo ? { selected: defs.map((d) => ({ slug: d.slug })), skipped: [] as { slug: string }[] } : planWithinBudget(defs, budget.remaining());
   const results: RunResult[] = [];

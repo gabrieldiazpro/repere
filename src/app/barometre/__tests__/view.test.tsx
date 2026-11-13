@@ -51,7 +51,7 @@ describe('pages /barometre', () => {
     expect(html).toContain('Les sources que les IA citent le plus');
     expect(html).toContain('/barometre/plombiers-lyon/donnees.csv?periode=2026-11');
     expect(html).toContain('linkedin.com/sharing');
-    expect(html).toContain('href="/audit"');
+    expect(html).toContain('href="/audit?utm_source=repere&amp;utm_medium=barometre&amp;utm_campaign=plombiers-lyon"');
     expect(html).toContain('Demande de retrait ou de rectification');
     expect(html).toContain('mailto:contact@example.test');
     expect(html).toContain(DISCLAIMER);

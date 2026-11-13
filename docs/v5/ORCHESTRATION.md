@@ -61,3 +61,4 @@ Attente fondateur : SIREN / adresse / forme de Mycelo, TVA ; connexions Supabase
 ## Vague C : RACCORDS-FINAUX (lancé 13 nov.)
 - RACCORDS-FINAUX : terminé (journal docs/v5/progress/RACCORDS-FINAUX.md). tsc / vitest (122 fichiers, 1 671 tests) / eslint (0 erreur)
   verts ; build de production vert ; serveur de production démo sur 4200 (relance : scratchpad/start-4200.sh).
+- Vague C terminée ; vidéos réenregistrées (avec /app/seo et /app/agent) ; poussé sur GitHub main 13 nov.

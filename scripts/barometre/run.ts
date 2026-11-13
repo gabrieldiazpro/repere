@@ -5,7 +5,7 @@
  *
  * Options :
  *   --plan                 affiche le plan et le coût estimé, sans aucun appel
- *   --slug a,b             seulement ces baromètres (sinon tout le catalogue, par priorité)
+ *   --slug a,b             seulement ces baromètres (sinon le lancement progressif : BAROMETRE_MAX, défaut 10)
  *   --period AAAA-MM       mois mesuré (défaut : mois courant UTC) ; relancer reprend là où la collecte s'est arrêtée
  *   --budget 150           budget du mois en euros (défaut : BAROMETRE_BUDGET_EUR, sinon 120)
  *   --concurrency 4        appels simultanés par baromètre (1 à 8)
@@ -16,7 +16,7 @@
  * MISTRAL_API_KEY en option) et, en production, SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (table `documents`).
  * Sans clé, le script refuse la mesure réelle (il ne retombe jamais sur le simulé).
  */
-import { CATALOG, validateCatalog } from '../../src/lib/barometre/catalog';
+import { CATALOG, launchCatalog, validateCatalog } from '../../src/lib/barometre/catalog';
 import { estimateMonthly, monthlyBudget, planWithinBudget } from '../../src/lib/barometre/cost';
 import { runMonthly } from '../../src/lib/barometre/pipeline';
 import { addWithdrawal, currentPeriod, loadBudget } from '../../src/lib/barometre/storage';
@@ -70,13 +70,13 @@ export async function main(argv: string[], out: (s: string) => void = (s) => con
     out(`Retrait enregistré : « ${w.name} » (${w.slugs.length ? w.slugs.join(', ') : 'tous les baromètres'}).`);
     return 0;
   }
-  const defs = args.slugs.length ? CATALOG.filter((d) => args.slugs.includes(d.slug)) : CATALOG;
+  const defs = args.slugs.length ? CATALOG.filter((d) => args.slugs.includes(d.slug)) : launchCatalog();
   const limit = args.budgetEur ?? monthlyBudget();
   if (args.plan) {
     const ledger = await loadBudget(args.period, limit);
     const all = estimateMonthly(defs);
     const plan = planWithinBudget(defs, ledger.remaining());
-    out(`Plan ${args.period} : ${all.count} baromètres, ${all.calls} appels, ${eur(all.costEur)} estimés.`);
+    out(`Plan ${args.period} : ${all.count} baromètres, ${all.calls} appels, ${eur(all.costEur)} estimés${args.slugs.length ? '' : ` (lancement progressif : BAROMETRE_MAX=${defs.length}, catalogue complet ${CATALOG.length} ≈ ${eur(estimateMonthly(CATALOG).costEur)})`}.`);
     out(`Budget ${eur(limit)}, déjà dépensé ${eur(ledger.spentEur)} : ${plan.selected.length} retenus, ${plan.skipped.length} reportés.`);
     for (const s of plan.selected) out(`  ${s.slug} : ${s.questions} questions × ${s.providers.length} IA × ${s.runs} passages = ${s.calls} appels, ${eur(s.costEur)}`);
     if (plan.skipped.length) out(`  Reportés (budget) : ${plan.skipped.map((s) => s.slug).join(', ')}`);

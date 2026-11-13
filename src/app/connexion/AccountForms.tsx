@@ -7,6 +7,7 @@
  */
 import { useState } from 'react';
 import { buttonClasses } from '@/components/ui/Button';
+import { currentAttribution } from '@/lib/roi/landing';
 
 type Segment = 'local' | 'pme' | 'ecommerce';
 
@@ -202,6 +203,8 @@ export function SignupForm({ defaultSegment, prefill = {} }: { defaultSegment?: 
       ...(prefill.analysis ? { analysis: prefill.analysis } : {}),
       ref: prefill.ref,
       suite: prefill.suite,
+      // Origine de la visite (première page / UTM, gardée en mémoire de l'onglet, sans cookie).
+      attribution: currentAttribution() ?? undefined,
     });
     if (!r.ok) {
       setState('idle');

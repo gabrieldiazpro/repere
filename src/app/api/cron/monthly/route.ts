@@ -2,7 +2,8 @@
  * Cron quotidien des ré-audits (nom historique « monthly ») : n'exécute plus d'audit en ligne.
  * Il ENFILE une tâche `audit.scheduled` (balayage sans effet de bord, rejouable) qui sélectionne les commerces dont la fréquence
  * de l'offre est échue (mensuelle, hebdomadaire…) et enfile un `audit.run` par commerce (dédoublonné par période).
- * V5 : enfile aussi `analysis.scheduled` (réanalyses dues) et, si BAROMETRE_ENABLED=1, `barometre.run` (une fois par mois).
+ * V5 : enfile aussi `analysis.scheduled` (réanalyses dues) et, si BAROMETRE_ENABLED=1, `barometre.run` (une fois par mois) ;
+ * relève le tableau de ROI des données payantes (src/lib/roi/report.ts).
  * Puis il fait tourner le worker avec le budget restant (utile sur Vercel Hobby, où le worker n'a qu'un cron par jour).
  */
 import { NextResponse } from 'next/server';
@@ -30,6 +31,14 @@ export async function GET(req: Request) {
       }
     } catch (e) {
       captureError(e, { event: 'cron.monthly_v5_enqueue_failed' });
+    }
+    // ROI des données payantes : relevé du mois (coûts et revenus mesurés) pour la règle d'arrêt à 3 mois (/admin/roi).
+    // Lecture seule côté fournisseurs : aucun appel payant ici (les liens des pages baromètre se relèvent depuis /admin/roi).
+    try {
+      const { buildRoiReport } = await import('@/lib/roi/report');
+      await buildRoiReport({ refreshLinks: false });
+    } catch (e) {
+      captureError(e, { event: 'cron.roi_snapshot_failed' });
     }
     const worker = await runWorker();
     // Compte rendu par commerce (sans base, la file mémoire a déjà tout exécuté pendant `enqueue`).

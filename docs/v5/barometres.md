@@ -109,6 +109,12 @@ vérifie que la table recopie les fournisseurs).
 | 4 IA × 12 questions × 3 passages | 144 | ≈ 1,93 € | **≈ 96,50 €** (7 200 appels) |
 | + Mistral (5 IA) | 180 | ≈ 3,03 € | ≈ 151,50 € |
 
+**Lancement progressif (ROI-DONNEES, 13 nov. 2026)** : `BAROMETRE_MAX` baromètres par mois, défaut **10** (≈ 19,30 €/mois),
+dans l'ordre `LAUNCH_ORDER` de catalog.ts (plombiers, serruriers, électriciens, agences immobilières, coiffeurs × Paris ;
+plombiers, serruriers, agences immobilières × Lyon ; plombiers, serruriers × Marseille), puis le reste du catalogue par
+priorité. Rentable dès 1 abonné Essentiel local attribué. Retour mesuré dans `/admin/roi` (visites, inscriptions,
+abonnements, MRR attribués, règle d'arrêt à 3 mois). `--slug` reste possible pour n'importe quel baromètre du catalogue.
+
 Budget mensuel : `BAROMETRE_BUDGET_EUR` (défaut 120 €). Le plan retient les baromètres par priorité tant que leur
 estimation tient dans le budget restant ; pendant la collecte, chaque appel réserve son coût avant d'être lancé, la
 collecte s'arrête avant tout dépassement et reprend le mois suivant ou après hausse du budget.
@@ -122,7 +128,7 @@ npx vite-node --config vitest.config.ts scripts/barometre/run.ts --demo --slug p
 BAROMETRE_DEMO_PREVIEW=1 (développement local) → /barometre/plombiers-lyon affiche la simulation avec bandeau
 ```
 
-Variables : `BAROMETRE_BUDGET_EUR`, `BAROMETRE_PROVIDERS`, `BAROMETRE_DEMO_PREVIEW` (+ clés des IA et Supabase existantes).
+Variables : `BAROMETRE_ENABLED`, `BAROMETRE_MAX`, `BAROMETRE_BUDGET_EUR`, `BAROMETRE_PROVIDERS`, `BAROMETRE_DEMO_PREVIEW` (+ clés des IA et Supabase existantes).
 
 Décisions ouvertes (fondateur) : licence du jeu de données (CC BY 4.0 conseillée, absente tant que non décidée) ;
 liste des villes et catégories de la V2 ; fréquence d'éventuels baromètres trimestriels plus profonds (20 questions).

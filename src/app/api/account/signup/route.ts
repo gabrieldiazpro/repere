@@ -5,6 +5,7 @@
  */
 import { toResponse } from '@/lib/auth';
 import { analysisSignupDefaults, signupClaimToken } from '@/lib/auth/claims';
+import { sanitizeAttribution } from '@/lib/roi/attribution';
 import { authMode } from '@/lib/auth/config';
 import { assertSameOrigin, json, limit, readJson, str } from '@/lib/auth/http';
 import { startBrowserLogin } from '@/lib/auth/magic';
@@ -53,6 +54,8 @@ export async function POST(req: Request) {
       analysis,
       ref: str(body.ref, 20) || undefined,
       suite: body.suite === 'carte' ? 'carte' : undefined,
+      // Origine de la visite (première page / UTM, sans cookie) : validée dans le jeton, gardée à la création de l'espace.
+      src: sanitizeAttribution(body.attribution),
     });
     const r = await startBrowserLogin(email, { next: '/app', claim });
     if (!r.ok) {

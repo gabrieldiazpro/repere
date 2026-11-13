@@ -9,6 +9,7 @@ import { loadSeoSuite } from '@/components/app/seo/data';
 import { fmtInt, linkStats, pathOf, type PageRow } from '@/components/app/seo/model';
 import { BarChart, SeoNav, Source } from '@/components/app/seo/parts';
 import { backlinksView } from '@/lib/seodata/service';
+import { recordTabView } from '@/lib/roi/usage';
 
 export const metadata = { title: 'Liens' };
 export const maxDuration = 60;
@@ -17,8 +18,12 @@ const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'aoû
 
 export default async function LiensPage() {
   const s = await loadSeoSuite();
+  // Liens entrants réservés à Accompagné et Agence (engagement fixe DataForSEO : rentable par construction).
+  const included = s.demo || Boolean(s.ctx?.limits.backlinks);
   let bl: Awaited<ReturnType<typeof backlinksView>> | null = null;
-  if (s.ctx && s.p) bl = await backlinksView(s.ctx, s.p).catch(() => null);
+  if (included && s.ctx && s.p) bl = await backlinksView(s.ctx, s.p).catch(() => null);
+  // Usage réel de l'onglet (tableau de ROI, /admin/roi) : compté côté serveur, comptes démo ignorés.
+  if (!s.demo) await recordTabView(s.ctx?.businessId ?? s.ws.business.id, 'liens');
   const b = bl && bl.available ? bl : null;
   const st = s.latest ? linkStats(s.latest.pages) : null;
   const last12 = b ? b.newLost.slice(-12) : [];
@@ -97,6 +102,23 @@ export default async function LiensPage() {
             </div>
             <Source provider={b.source.provider} demo={b.source.demo} at={b.at} note="Mis à jour une fois par mois" />
           </div>
+        ) : !included ? (
+          <Surface title="Liens entrants" id="l-offer" className="mb-4">
+            <p className="ui-small">
+              <b>Inclus dans les offres Accompagné et Agence.</b> Les sites qui pointent vers le vôtre, les domaines gagnés et perdus chaque mois et
+              les textes de ces liens viennent d’un index du web entier, payant : Repéré les relève pour les offres Accompagné et Agence, et n’affiche
+              ici aucun chiffre plutôt qu’une estimation.
+            </p>
+            <p className="ui-small mt-2">
+              Dès maintenant, gratuitement : Search Console liste vos principaux liens (rapport « Liens »), et la page{' '}
+              <Link className="rp-link" href="/app/sources">Sources et citations</Link> montre les sites que les IA citent dans votre domaine.
+            </p>
+            <p className="mt-3">
+              <Link className="ui-btn" data-size="sm" href={`/tarifs?segment=${s.ctx?.segment ?? 'local'}`}>
+                Voir l’offre Accompagné
+              </Link>
+            </p>
+          </Surface>
         ) : (
           <Surface title="Liens entrants" id="l-off" className="mb-4">
             <p className="ui-small">

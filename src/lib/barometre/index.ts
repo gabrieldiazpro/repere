@@ -1,6 +1,6 @@
 /** Baromètres publics « Qui les IA recommandent » (V5). Voir docs/v5/barometres.md. */
 export * from './types';
-export { CATALOG, getDef, questionsFor, providersFor, runsFor, validateCatalog, defaultProviders, engineInput, slugify } from './catalog';
+export { CATALOG, LAUNCH_ORDER, DEFAULT_MAX_BAROMETRES, barometreMax, launchCatalog, getDef, questionsFor, providersFor, runsFor, validateCatalog, defaultProviders, engineInput, slugify } from './catalog';
 export { COST_PER_CALL_EUR, EXTRACT_COST_EUR, estimateCost, estimateMonthly, monthlyBudget, planWithinBudget } from './cost';
 export { mergeNames, nameContext, nameKey, cleanName, isVerifiable, looksLikePersonName, withdrawalKey } from './names';
 export { aggregateEdition, aggregateSources, MIN_COMPLETION, BOOTSTRAP_B } from './aggregate';

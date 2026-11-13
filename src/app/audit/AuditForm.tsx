@@ -10,6 +10,7 @@ import { buildAuditQueries } from '@/lib/engine/queries-v2';
 import type { AuditInput } from '@/lib/engine/types';
 import type { AuditInputV2 } from '@/lib/engine/types-v2';
 import { prefillFromSite } from './actions';
+import { currentAttribution } from '@/lib/roi/landing';
 import { nameFromDomain, shouldProposeName, stripPrivateParams, type SitePrefill } from './prefill';
 
 export type Segment = 'local' | 'pme' | 'ecommerce';
@@ -559,6 +560,7 @@ export function AuditForm({ prefill }: { prefill: AuditPrefill }) {
           : seg === 'pme'
             ? { category: v.category.trim(), ...(v.offering.trim() ? { offering: v.offering.trim() } : {}), market: v.market.trim() || 'France' }
             : { productCategories: cats, ...(v.offering.trim() ? { offering: v.offering.trim() } : {}), market: 'France' };
+      const attribution = currentAttribution();
       const body = {
         segment: seg,
         businessName: v.businessName.trim(),
@@ -569,6 +571,8 @@ export function AuditForm({ prefill }: { prefill: AuditPrefill }) {
         // consent = case obligatoire (traitement de l'audit) ; marketingConsent = case facultative (conseils par e-mail).
         consent: v.consent,
         marketingConsent: v.email.trim() ? v.marketingConsent : false,
+        // Origine de la visite (première page / UTM, gardée en mémoire de l'onglet, sans cookie).
+        ...(attribution ? { attribution } : {}),
       };
       let res: Response;
       try {
