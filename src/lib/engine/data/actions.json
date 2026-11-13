@@ -1,0 +1,586 @@
+[
+  {
+    "id": "A01",
+    "title": "Revendiquer et valider la fiche Google Business Profile",
+    "why": "Sans fiche Google validée, vous n'existez ni dans les cartes Google ni dans Gemini, et les IA qui s'appuient sur Google ont peu de données fiables sur vous.",
+    "how": [
+      "Chercher le nom du commerce sur Google Maps ; s'il existe déjà une fiche, cliquer sur « Revendiquer cette fiche ».",
+      "Sinon créer la fiche sur business.google.com avec le nom exact de l'enseigne (sans mots-clés ajoutés).",
+      "Choisir la validation proposée (courrier, téléphone, vidéo) et la terminer.",
+      "Noter l'URL de la fiche pour les actions suivantes."
+    ],
+    "effort": "S",
+    "impact": 3,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.gbp_claimed != true"
+  },
+  {
+    "id": "A02",
+    "title": "Compléter à 100 % la fiche Google (catégories, services, horaires, description)",
+    "why": "Une fiche précise permet aux IA de savoir quoi vous recommander et pour quelle demande.",
+    "how": [
+      "Choisir la catégorie principale la plus précise (ex. « Plombier ») et 2 à 4 catégories secondaires réelles.",
+      "Remplir la liste des services/produits avec une courte description chacun.",
+      "Indiquer la zone de service (arrondissements/communes) et les horaires, y compris urgences et jours fériés.",
+      "Rédiger une description de 600 à 750 caractères : métier, quartier, spécialités, années d'expérience, sans slogans creux.",
+      "Ajouter au moins 10 photos réelles (équipe, véhicule, chantiers, façade)."
+    ],
+    "effort": "S",
+    "impact": 3,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.gbp_claimed == true and score < 60"
+  },
+  {
+    "id": "A03",
+    "title": "Lancer une campagne d'avis Google (lien court + QR code)",
+    "why": "Le nombre d'avis Google est le signal le plus corrélé à la présence dans les réponses des IA.",
+    "how": [
+      "Générer le lien direct d'avis depuis la fiche Google (« Demander des avis »).",
+      "Préparer un SMS/WhatsApp type et un QR code imprimé (facture, carte de visite, comptoir).",
+      "Demander l'avis à chaque client (pas seulement aux satisfaits) dans les 24 h suivant l'intervention.",
+      "Viser +10 avis dans les 30 jours puis 4 à 6 par mois ; ne jamais acheter ni inciter par cadeau (interdit par Google).",
+      "Suivre le compteur chaque semaine."
+    ],
+    "effort": "M",
+    "impact": 3,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.google_reviews < 30 or score < 40"
+  },
+  {
+    "id": "A04",
+    "title": "Inviter tous les clients à raconter leur expérience (sans contenu imposé)",
+    "why": "Des avis récents et spontanés décrivent naturellement le service rendu ; Google interdit de demander un contenu précis ou de solliciter seulement les clients satisfaits.",
+    "how": [
+      "Envoyer la même demande à tous les clients d'une période, satisfaits ou non, sans filtre préalable.",
+      "Formulation neutre : « Vous pouvez partager votre expérience, qu'elle ait été bonne ou moins bonne. » Aucune question orientée (service, quartier, mots-clés), aucun modèle, aucune note suggérée.",
+      "Aucune contrepartie (remise, cadeau, concours) en échange d'un avis.",
+      "Mettre en avant les services peu mentionnés sur la fiche Google et le site, pas dans les avis."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.google_reviews >= 10 and score < 50"
+  },
+  {
+    "id": "A05",
+    "title": "Répondre à tous les avis, positifs comme négatifs",
+    "why": "Cela montre une entreprise active et ajoute du texte pertinent à la fiche.",
+    "how": [
+      "Répondre sous 48 h, en citant le service et le quartier de façon naturelle.",
+      "Répondre aux avis négatifs avec calme, proposer de régler hors ligne.",
+      "Bloquer 15 minutes par semaine dans l'agenda."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.google_reviews > 0 and declared.reply_rate < 0.7"
+  },
+  {
+    "id": "A06",
+    "title": "Publier des photos et des actualités sur la fiche Google chaque mois",
+    "why": "Une fiche vivante est mieux classée et rassure les clients comme les algorithmes.",
+    "how": [
+      "Ajouter 3 à 5 photos de chantiers/plats/réalisations par mois.",
+      "Publier une actualité mensuelle (offre, saison, nouveau service).",
+      "Mettre à jour les horaires exceptionnels dès qu'ils changent."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.gbp_claimed == true and score < 70"
+  },
+  {
+    "id": "A07",
+    "title": "Créer ou revendiquer la fiche Bing Places (import depuis Google)",
+    "why": "ChatGPT s'est appuyé sur Bing pour la recherche web ; une fiche Bing correcte coûte 15 minutes.",
+    "how": [
+      "Aller sur bingplaces.com et choisir « Importer depuis Google Business Profile ».",
+      "Vérifier que nom, adresse, téléphone, horaires et catégories sont identiques à Google.",
+      "Valider la fiche (code par courrier/téléphone/e-mail) et ajouter le site web.",
+      "Soumettre le site à Bing Webmaster Tools et activer IndexNow si le CMS le permet (à confier à la personne qui gère votre site)."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.bing_claimed != true or sub.chatgpt < 25"
+  },
+  {
+    "id": "A08",
+    "title": "Créer la fiche Apple Business Connect",
+    "why": "Apple Plans alimente Siri et l'écosystème iPhone, où vos clients cherchent aussi.",
+    "how": [
+      "Aller sur businessconnect.apple.com, revendiquer l'établissement.",
+      "Reprendre exactement les mêmes nom, adresse, téléphone et horaires.",
+      "Ajouter logo, photos et lien du site."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "score < 50"
+  },
+  {
+    "id": "A09",
+    "title": "Compléter la fiche PagesJaunes (et Solocal)",
+    "why": "PagesJaunes reste l'annuaire généraliste le plus consulté en France et alimente d'autres annuaires.",
+    "how": [
+      "Revendiquer la fiche sur pagesjaunes.fr (« Mettre à jour ma fiche »).",
+      "Choisir la rubrique la plus précise, ajouter horaires, zone, photos, site, description.",
+      "Ignorer les offres payantes dans un premier temps : la fiche gratuite suffit."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.pagesjaunes != true"
+  },
+  {
+    "id": "A10",
+    "title": "S'inscrire sur les annuaires prioritaires de son métier",
+    "why": "Les IA citent des annuaires métier quand elles recommandent un professionnel précis.",
+    "how": [
+      "Ouvrir la liste de sa famille de métiers (section « Annuaires prioritaires »).",
+      "S'inscrire d'abord sur les 3 premiers, puis les suivants selon le temps.",
+      "Utiliser une fiche type (nom, adresse, tél, description, catégories, photos) copiée-collée.",
+      "Ajouter le lien vers le profil sur le site et les réseaux."
+    ],
+    "effort": "M",
+    "impact": 3,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "always"
+  },
+  {
+    "id": "A11",
+    "title": "Créer ou nettoyer la page Facebook de l'entreprise",
+    "why": "Dans une étude américaine de Whitespark (9 villes), Facebook est la source d'avis la plus présente dans les résultats Bing Places. Peu de données existent pour la France.",
+    "how": [
+      "Créer la page « Entreprise locale » avec le nom exact, l'adresse, le téléphone et le site.",
+      "Activer les recommandations/avis et demander à 5 clients de s'exprimer.",
+      "Publier une fois par semaine (réalisation, avis, offre)."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.facebook_page != true"
+  },
+  {
+    "id": "A12",
+    "title": "Créer ou compléter sa fiche Yelp",
+    "why": "Yelp est cité par les IA et Google AI Mode dans beaucoup de catégories locales.",
+    "how": [
+      "Revendiquer la fiche sur biz.yelp.com.",
+      "Compléter catégories, horaires, photos, services.",
+      "Inviter les clients à laisser un avis (sans les inciter)."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "restauration",
+      "beaute",
+      "btp",
+      "sante_bienetre"
+    ],
+    "trigger": "trade_family in ['restauration','beaute','btp','sante_bienetre'] and score < 60"
+  },
+  {
+    "id": "A13",
+    "title": "Optimiser TripAdvisor et TheFork",
+    "why": "Pour un restaurant, TripAdvisor est une source majeure citée par les IA.",
+    "how": [
+      "Revendiquer la fiche TripAdvisor (gratuit) et TheFork si réservation en ligne.",
+      "Mettre à jour menu, photos, horaires et lien de réservation.",
+      "Répondre aux avis et demander des avis après chaque service."
+    ],
+    "effort": "M",
+    "impact": 3,
+    "trades": [
+      "restauration"
+    ],
+    "trigger": "trade_family == 'restauration'"
+  },
+  {
+    "id": "A14",
+    "title": "Auditer et harmoniser nom, adresse, téléphone partout",
+    "why": "Des coordonnées différentes d'un site à l'autre font douter les IA de qui vous êtes vraiment.",
+    "how": [
+      "Écrire la version de référence : nom exact, adresse, code postal, téléphone, URL.",
+      "Lister toutes les présences (Google, Bing, PagesJaunes, Facebook, annuaires, site, Instagram).",
+      "Corriger chaque écart (« 11ème » vs « 11e », « SARL Martin » vs « Martin Plomberie », ancien numéro).",
+      "Supprimer ou fusionner les doublons de fiches."
+    ],
+    "effort": "M",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.nap_consistent != true or score < 40"
+  },
+  {
+    "id": "A15",
+    "title": "Ajouter le balisage schema.org LocalBusiness (JSON-LD) au site",
+    "why": "C'est la fiche d'identité lisible par les machines : nom, adresse, horaires, métier, zone (à confier à la personne qui gère votre site).",
+    "how": [
+      "Choisir le type précis (Plumber, Electrician, Restaurant, Dentist, LegalService…) sinon LocalBusiness.",
+      "Renseigner name, address, telephone, openingHours, areaServed, url, sameAs (liens vers profils), priceRange.",
+      "Insérer le JSON-LD dans l'accueil ; l'adresse doit correspondre à celle de Google.",
+      "Tester avec le test des résultats enrichis de Google."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "site.has_website == true and site.has_localbusiness_schema != true"
+  },
+  {
+    "id": "A16",
+    "title": "Créer une page FAQ répondant aux questions de vos clients",
+    "why": "Les IA répondent à des questions ; une page qui y répond directement peut être reprise.",
+    "how": [
+      "Lister 8 à 12 questions entendues au téléphone (prix, délais, urgence, zone, garanties).",
+      "Répondre en 2 à 4 phrases claires, avec chiffres honnêtes (fourchettes de prix).",
+      "Publier en texte visible sur le site (pas dans un PDF ni une image).",
+      "Facultatif : balisage FAQPage (à confier à la personne qui gère votre site) ; sans effet prouvé."
+    ],
+    "effort": "M",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "site.has_website == true and site.has_faq != true"
+  },
+  {
+    "id": "A17",
+    "title": "Une page dédiée par prestation principale",
+    "why": "Une page par service permet de répondre précisément à « dépannage chauffe-eau » ou « coach sportif senior ».",
+    "how": [
+      "Lister 3 à 6 prestations qui rapportent le plus.",
+      "Pour chacune : ce qui est fait, pour qui, prix indicatif, délais, zone, photo, appel à l'action.",
+      "Ajouter 2 avis clients liés à cette prestation."
+    ],
+    "effort": "M",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "site.has_website == true and site.has_service_pages != true"
+  },
+  {
+    "id": "A18",
+    "title": "Pages « quartier / arrondissement » réellement utiles",
+    "why": "Si vous voulez être cité pour « plombier Paris 11e », une page qui parle concrètement du 11e aide.",
+    "how": [
+      "Créer au plus 3 à 5 pages, uniquement pour des zones réellement desservies.",
+      "Chaque page contient du contenu unique : exemples de rues, types de bâtiments, interventions récentes, avis locaux.",
+      "Ne pas dupliquer le même texte en changeant le nom du quartier (risque de pénalité Google)."
+    ],
+    "effort": "M",
+    "impact": 2,
+    "trades": [
+      "btp",
+      "beaute",
+      "sante_bienetre",
+      "immobilier",
+      "juridique_compta"
+    ],
+    "trigger": "site.has_website == true and site.has_district_pages != true and (sub.gemini < 40 or score < 40)"
+  },
+  {
+    "id": "A19",
+    "title": "Page « À propos » avec preuves de confiance",
+    "why": "Les IA recommandent plus volontiers un professionnel dont l'existence et les qualifications sont vérifiables.",
+    "how": [
+      "Présenter le dirigeant et l'équipe avec photos, parcours, année de création.",
+      "Afficher SIRET, assurances (décennale, RC pro), diplômes, labels.",
+      "Relier à tous les profils officiels (sameAs, liens)."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "site.has_website == true and site.has_about != true"
+  },
+  {
+    "id": "A20",
+    "title": "Vérifier que les robots IA peuvent lire le site",
+    "why": "Si le site bloque les robots ou cache le texte dans du JavaScript, les IA ne le voient pas (vérification à confier à la personne qui gère votre site).",
+    "how": [
+      "Ouvrir monsite.fr/robots.txt et vérifier qu'aucune règle ne bloque OAI-SearchBot, PerplexityBot, Googlebot, bingbot.",
+      "Vérifier que le texte principal est présent dans le code source de la page (clic droit, afficher le code source).",
+      "Corriger les protections anti-bot de l'hébergeur qui renvoient des erreurs aux robots."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "site.has_website == true and site.blocks_ai_bots == true"
+  },
+  {
+    "id": "A21",
+    "title": "Créer un site vitrine minimal (1 à 5 pages)",
+    "why": "Le site du commerce est la source la plus citée par les IA ; sans site, vous ne contrôlez rien.",
+    "how": [
+      "Choisir un outil simple (Google Sites, Wix, WordPress) ou un site d'une page.",
+      "Contenu minimum : accueil (métier, zone, téléphone), services, avis, contact, mentions légales.",
+      "Raccorder un nom de domaine propre et le renseigner sur toutes les fiches."
+    ],
+    "effort": "L",
+    "impact": 3,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "site.has_website == false"
+  },
+  {
+    "id": "A22",
+    "title": "Remettre le site à jour et signaler les changements (IndexNow)",
+    "why": "Les IA favorisent le contenu récent ; un site abandonné depuis des années est moins repris.",
+    "how": [
+      "Mettre à jour prix, horaires, photos et textes obsolètes.",
+      "Ajouter une réalisation ou une actualité par mois.",
+      "Activer IndexNow (plugin) pour prévenir Bing des mises à jour."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "site.has_website == true and site.last_update_days > 365"
+  },
+  {
+    "id": "A23",
+    "title": "Obtenir des mentions dans la presse et les blogs locaux",
+    "why": "Quand un concurrent est cité souvent, c'est souvent parce que d'autres sites parlent de lui.",
+    "how": [
+      "Lister 10 médias locaux (mairie du 11e, journaux de quartier, blogs, associations de commerçants).",
+      "Proposer un sujet concret : réalisation, conseils de saison, événement, création.",
+      "Demander un lien vers votre site et une mention complète nom/adresse.",
+      "Parrainer un événement ou une association locale contre une mention."
+    ],
+    "effort": "L",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "competitors_top_mentions > 3 or sub.perplexity < 20"
+  },
+  {
+    "id": "A24",
+    "title": "Entrer dans les classements et listes « meilleurs … de [ville] »",
+    "why": "Les IA reprennent souvent les listes de type « les 10 meilleurs plombiers de Paris ».",
+    "how": [
+      "Chercher dans Google les listes « meilleur [métier] [ville] » où figurent vos concurrents.",
+      "Contacter les auteurs avec preuves (avis, années, certifications) pour demander l'ajout.",
+      "Participer aux labels et palmarès locaux (prix, concours, Meilleurs artisans)."
+    ],
+    "effort": "M",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "competitors_top_mentions > 3"
+  },
+  {
+    "id": "A25",
+    "title": "Être présent et utile sur Reddit et les forums locaux",
+    "why": "Selon une étude Semrush de 2025, Reddit figure parmi les sites les plus cités par ChatGPT et Perplexity, avec de fortes variations d'un mois à l'autre.",
+    "how": [
+      "Créer un compte au nom de l'entreprise, indiquer clairement son affiliation.",
+      "Répondre sincèrement aux questions dans les forums concernés (r/Paris, r/vosfinances, forums de copropriété, Facebook locaux).",
+      "Ne jamais faire de publicité masquée : les modérateurs bannissent vite et les IA lisent le contexte.",
+      "Encourager les clients satisfaits à en parler spontanément."
+    ],
+    "effort": "M",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "sub.perplexity < 20 and competitors_top_mentions > 3"
+  },
+  {
+    "id": "A26",
+    "title": "Collecter des avis sur une plateforme tierce de confiance",
+    "why": "Diversifier les sources d'avis rassure les IA qui croisent plusieurs plateformes.",
+    "how": [
+      "Choisir 1 plateforme selon le métier (Trustpilot, Avis Vérifiés, Houzz, Doctolib, TheFork).",
+      "Envoyer le lien d'avis par e-mail/SMS après chaque prestation.",
+      "Afficher la note moyenne sur le site (sans balisage trompeur)."
+    ],
+    "effort": "M",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "declared.third_party_reviews != true and declared.google_reviews >= 10"
+  },
+  {
+    "id": "A27",
+    "title": "S'inscrire sur les plateformes de mise en relation du BTP",
+    "why": "Ces plateformes sont des sources que les IA citent pour les travaux et la rénovation.",
+    "how": [
+      "Créer le profil sur Houzz, Travaux.com, Habitissimo, Starofservice (selon spécialité).",
+      "Joindre photos de chantiers, certifications et avis.",
+      "Rester vigilant aux commissions : un profil gratuit suffit pour la visibilité."
+    ],
+    "effort": "M",
+    "impact": 2,
+    "trades": [
+      "btp"
+    ],
+    "trigger": "trade_family == 'btp' and score < 50"
+  },
+  {
+    "id": "A28",
+    "title": "Afficher les qualifications et labels du métier",
+    "why": "Une qualification officielle est un signal de fiabilité vérifiable.",
+    "how": [
+      "Lister Qualibat, RGE, Artisan de France, ordres professionnels selon le métier.",
+      "Les afficher sur le site, la fiche Google et les annuaires.",
+      "Demander l'inscription à l'annuaire officiel du label."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "btp",
+      "sante_bienetre",
+      "immobilier",
+      "juridique_compta"
+    ],
+    "trigger": "trade_family in ['btp','sante_bienetre','immobilier','juridique_compta'] and score < 60"
+  },
+  {
+    "id": "A29",
+    "title": "Fixer une description officielle unique de l'activité",
+    "why": "Si chaque profil décrit l'entreprise différemment, les IA ne savent pas dans quelle case vous ranger.",
+    "how": [
+      "Écrire une phrase de référence : « Martin Plomberie, plombier-chauffagiste à Paris 11e, dépannage et rénovation depuis 2008 ».",
+      "La coller dans toutes les fiches (Google, Bing, annuaires, réseaux) et en tête du site.",
+      "Utiliser les mêmes mots pour le métier partout."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "score < 50"
+  },
+  {
+    "id": "A30",
+    "title": "Ajouter un fichier llms.txt (optionnel)",
+    "why": "Il n'est pas prouvé que les IA le lisent : à faire en dernier, jamais à la place des autres actions.",
+    "how": [
+      "Créer /llms.txt à la racine avec le nom, le métier, la zone et les liens des pages clés.",
+      "Ne pas y consacrer plus de 30 minutes.",
+      "Ne pas le présenter au client comme un levier de visibilité."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "site.has_website == true and site.has_llms_txt != true and score >= 60"
+  },
+  {
+    "id": "A31",
+    "title": "Publier des vidéos courtes sur YouTube",
+    "why": "YouTube est une source très citée par les IA de Google et par Perplexity.",
+    "how": [
+      "Filmer 3 à 5 vidéos de 1 à 2 minutes : un geste, un conseil, une présentation de l'équipe.",
+      "Titre avec métier et ville, description avec adresse et site.",
+      "Intégrer les vidéos sur les pages services et les liens depuis la fiche Google."
+    ],
+    "effort": "M",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "score < 50 and site.has_website == true"
+  },
+  {
+    "id": "A32",
+    "title": "Cibler les requêtes avec « près de moi », « urgence » et le quartier",
+    "why": "Les IA répondent différemment selon la formulation ; il faut couvrir les mots que les clients utilisent.",
+    "how": [
+      "Lister 10 phrases clients (« plombier urgence Paris 11e », « fuite week-end »).",
+      "Vérifier qu'elles apparaissent dans les titres, descriptions et FAQ.",
+      "Mesurer avec l'audit mensuel sur ces mêmes requêtes."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "mention_rate < 0.2"
+  },
+  {
+    "id": "A33",
+    "title": "Compléter Doctolib, Maiia ou la plateforme de réservation du secteur",
+    "why": "Pour la santé et le bien-être, les IA citent les plateformes de rendez-vous.",
+    "how": [
+      "Créer ou compléter le profil (spécialités, tarifs, adresse, photos).",
+      "Activer la prise de rendez-vous et inviter les patients à laisser un avis.",
+      "Vérifier l'accord avec les règles de votre ordre professionnel sur les avis et la publicité."
+    ],
+    "effort": "M",
+    "impact": 2,
+    "trades": [
+      "sante_bienetre"
+    ],
+    "trigger": "trade_family == 'sante_bienetre'"
+  },
+  {
+    "id": "A34",
+    "title": "Relancer l'audit et suivre l'évolution tous les 30 jours",
+    "why": "Sans mesure, on ne sait pas quelles actions fonctionnent ; les réponses des IA varient d'un jour à l'autre.",
+    "how": [
+      "Refaire l'audit 30 jours après chaque lot d'actions.",
+      "Comparer score, taux de mention, rang moyen et concurrents cités.",
+      "Ajuster : renforcer ce qui a bougé, abandonner ce qui ne donne rien."
+    ],
+    "effort": "S",
+    "impact": 2,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "always"
+  },
+  {
+    "id": "A35",
+    "title": "Éviter les erreurs qui coûtent cher",
+    "why": "Certaines pratiques courantes provoquent des suspensions de fiche ou des pénalités.",
+    "how": [
+      "Ne pas ajouter de mots-clés au nom de l'entreprise sur Google.",
+      "Ne pas acheter d'avis ni utiliser de faux avis.",
+      "Ne pas créer de fiches multiples ou d'adresses fictives.",
+      "Ne pas masquer du texte pour les robots."
+    ],
+    "effort": "S",
+    "impact": 1,
+    "trades": [
+      "tous"
+    ],
+    "trigger": "score < 30"
+  }
+]

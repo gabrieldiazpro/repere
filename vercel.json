@@ -1,0 +1,29 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/monthly",
+      "schedule": "17 8 * * *"
+    },
+    {
+      "path": "/api/cron/weekly?slot=ete",
+      "schedule": "30 5 * * 1"
+    },
+    {
+      "path": "/api/cron/weekly?slot=hiver",
+      "schedule": "30 6 * * 1"
+    },
+    {
+      "path": "/api/cron/worker",
+      "schedule": "47 13 * * *"
+    },
+    {
+      "path": "/api/local/reminders",
+      "schedule": "23 7 * * *"
+    },
+    {
+      "path": "/api/v5/seodata/cron",
+      "schedule": "41 4 * * *"
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+[
+  {
+    "feature": "Audit de fiche produit pour les IA (score par fiche)",
+    "competitors": ["GEOde", "Scurix Product Enrichment AI", "Shopify Agentic Storefronts (qualité des fiches)", "Lengow (validation de flux)"],
+    "what": "Liste de produits triée par score 0-100 : balisage Product/Offer/AggregateRating/Review valide ou non, attributs manquants (GTIN, marque, matière, usage), contenu de réponse (FAQ), accès des bots IA.",
+    "userValue": "Transforme « on est mal cités » en corrections fiche par fiche, reliées à la citation réelle du produit.",
+    "howBuilt": "Sans intégration : crawl de l'URL produit publique (HTML rendu + JSON-LD) contrôlé contre les champs requis Google/OpenAI. Shopify : GraphQL Admin products/variants/metafields (read_products). WooCommerce : GET /wc/v3/products.",
+    "effort": "M",
+    "segments": ["e-commerce"],
+    "priority": 5,
+    "source": "https://apps.shopify.com/geode ; https://apps.shopify.com/scurix-product-attributes-ai ; https://www.shopify.com/fr/agentic-storefronts ; https://www.lengow.com/fr/aller-plus-loin/comment-faire-apparaitre-vos-produits-dans-les-resultats-ia-et-le-commerce-agentique/"
+  },
+  {
+    "feature": "Suivi des requêtes produit : marques et produits cités, avec classement",
+    "competitors": ["Peec AI Shopping Analytics", "Profound Shopping (Enterprise)", "FoundInAI (SKU, 49 $)"],
+    "what": "Par requête : marques et produits cités, rang, part de voix face aux concurrents. Par produit : visibilité, taux de première place, position.",
+    "userValue": "Mesure le cœur du sujet : la marque ET le SKU sont-ils recommandés, et par quel concurrent remplacés.",
+    "howBuilt": "Moteur d'audit V2 sur panel de 20 requêtes types FR, extraction des produits cités (nom, prix, URL), appariement au catalogue via domaine Shopify, /products.json public, CSV ou crawl. Écart avec les carrousels de l'interface grand public à afficher (non vérifié).",
+    "effort": "L",
+    "segments": ["e-commerce"],
+    "priority": 5,
+    "source": "https://peec.ai/blog/ai-shopping-analytics ; https://docs.tryprofound.com/shopping/about ; https://apps.shopify.com/foundinai"
+  },
+  {
+    "feature": "Analyse des revendeurs et marketplaces cités à la place de la marque",
+    "competitors": ["Profound Shopping (couche marchand)", "Peec AI Shopping Analytics (où l'IA envoie l'acheteur)"],
+    "what": "Pour chaque requête : part des citations vers le site de la marque, Amazon, Sephora, Cdiscount, médias, forums ; liste des revendeurs qui prennent la recommandation.",
+    "userValue": "Décide des actions : renforcer la fiche chez le revendeur, pousser le site direct, viser les sources citées.",
+    "howBuilt": "Sans intégration. Réutiliser le classement de 436 domaines V2 et classer chaque URL citée en marque / revendeur / marketplace / média / forum.",
+    "effort": "M",
+    "segments": ["e-commerce"],
+    "priority": 5,
+    "source": "https://docs.tryprofound.com/shopping/about ; https://peec.ai/blog/ai-shopping-analytics"
+  },
+  {
+    "feature": "Comparatif prix et avis cités vs fiche",
+    "competitors": ["Peec AI Shopping Analytics (prix cité vs prix catalogue, attributs comparés)", "Profound Shopping (prix des tuiles)", "Lengow NetRivals (prix concurrents, hors mesure IA)"],
+    "what": "Par produit : prix et note cités par l'IA face au prix et aux avis de la fiche et du concurrent cité ; alerte en cas d'écart.",
+    "userValue": "Repère un prix périmé repris par l'IA ou un déficit d'avis face au concurrent cité.",
+    "howBuilt": "Extraction prix, note, nombre d'avis dans les réponses ; comparaison avec variants.price (Shopify), le prix lu sur la fiche (crawl) ou le champ price de WooCommerce.",
+    "effort": "M",
+    "segments": ["e-commerce"],
+    "priority": 4,
+    "source": "https://peec.ai/blog/ai-shopping-analytics ; https://docs.tryprofound.com/shopping/about"
+  },
+  {
+    "feature": "Attribution du chiffre d'affaires venu des IA",
+    "competitors": ["Triple Whale (Anteater)", "FoundInAI (GA4)", "Shopify Analytics Cibles (filtre referrer)", "Polar Analytics (non mentionné sur la fiche)"],
+    "what": "Sessions, commandes et CA dont le referrer est chatgpt.com, perplexity.ai, gemini.google.com, copilot.microsoft.com, par page d'atterrissage ; avant/après correction ; mention de la sous-estimation (apps mobiles sans referrer).",
+    "userValue": "La preuve qui justifie l'abonnement ; aucune app Shopify vérifiée ne la fournit de façon fiable hors GA4 et Triple Whale (cher).",
+    "howBuilt": "Shopify : orders (customerJourneySummary, referrer et UTM de la première visite) agrégé par source IA, agrégats seulement. Sans intégration : script t.js sans cookie existant et connecteur GA4. WooCommerce : attribution d'origine des commandes (non vérifié).",
+    "effort": "M",
+    "segments": ["e-commerce"],
+    "priority": 5,
+    "source": "https://www.pulse.bot/ecommerce/news/triple-whale-acquires-anteater-to-track-ai-search-visibility-22bc77a5-488e-444b-a462-48e702fd5f62/ ; https://apps.shopify.com/foundinai ; https://atomz.beehiiv.com/p/how-to-track-ai-traffic-inside-shopify-without-a-third-party-tool ; https://apps.shopify.com/polar-analytics"
+  },
+  {
+    "feature": "Génération de FAQ produit et de guides d'achat",
+    "competitors": ["GEOde (FAQ + schema FAQ)", "Judge.me (Q&R dans le JSON-LD)", "Shopify Knowledge Base"],
+    "what": "5 questions-réponses par best-seller à valider, avec balisage FAQPage ; guides « Comment choisir » et « X vs Y » en brouillon.",
+    "userValue": "Répond aux requêtes conversationnelles longues ; contenu citable, publié après validation.",
+    "howBuilt": "Étendre la tâche V2 « page FAQ /p/[slug] » aux produits. Shopify : metaobjects ou pageCreate/articles. WooCommerce : wc/v3 ou plugin JSON-LD. Réponses fondées sur la fiche de vérité ; aucun faux avis.",
+    "effort": "M",
+    "segments": ["e-commerce"],
+    "priority": 4,
+    "source": "https://apps.shopify.com/geode ; https://judge.me/help/en/articles/15860924-making-reviews-visible-to-ai-shopping-assistants ; https://www.shopify.com/fr/agentic-storefronts"
+  },
+  {
+    "feature": "Vérification du flux produit",
+    "competitors": ["Lengow (validation et sandbox)", "Channable (audit de flux)", "Feedonomics ACE (entreprise)", "Shopify Agentic Storefronts"],
+    "what": "Erreurs et avertissements : champs obligatoires manquants (id, titre, description, image, prix, disponibilité, marque, catégorie), GTIN, prix invalides, URL cassées, retours.",
+    "userValue": "Savoir si le flux est prêt pour Google, OpenAI et Shopify sans acheter un outil de flux.",
+    "howBuilt": "Ne pas reconstruire un outil de flux. Lire le flux public ou /products.json (sans intégration), Shopify GraphQL, WooCommerce wc/v3 ; contrôle par règles. Préciser que OpenAI n'a pas ouvert de critères d'éligibilité en France : on vérifie la préparation, pas l'inscription.",
+    "effort": "M",
+    "segments": ["e-commerce"],
+    "priority": 4,
+    "source": "https://www.lengow.com/fr/aller-plus-loin/chatgpt-shopping-eligibilite-calendrier-et-comment-preparer-votre-flux ; https://www.channable.com/blog/agentic-commerce ; https://www.nasdaq.com/press-release/feedonomics-unlocks-agentic-discovery-agentic-catalog-exports-2026-04-27"
+  },
+  {
+    "feature": "Enrichissement des attributs avec diff avant/après et retour arrière",
+    "competitors": ["Scurix Product Enrichment AI", "GEOde", "Lengow NetAmplify"],
+    "what": "Attributs structurés, titre et description conversationnels proposés par fiche ou par lot, avec aperçu, validation humaine et historique.",
+    "userValue": "Corrige les causes sans réécrire à la main, en gardant le contrôle.",
+    "howBuilt": "Shopify : productUpdate et metafieldsSet (write_products). WooCommerce : PUT /wc/v3/products/{id}. Validation obligatoire avant écriture.",
+    "effort": "M",
+    "segments": ["e-commerce"],
+    "priority": 4,
+    "source": "https://apps.shopify.com/scurix-product-attributes-ai ; https://apps.shopify.com/geode ; https://www.lengow.com/fr/aller-plus-loin/comment-faire-apparaitre-vos-produits-dans-les-resultats-ia-et-le-commerce-agentique/"
+  },
+  {
+    "feature": "Actions classées par impact (requête perdue vers correction de fiche)",
+    "competitors": ["Peec AI Shopping Actions (annoncé, non lancé)"],
+    "what": "Pour chaque requête perdue : la correction de fiche attendue, classée par impact estimé, avec bouton de validation et d'écriture.",
+    "userValue": "Relie mesure et exécution : la boucle que les outils de mesure ne bouclent pas encore.",
+    "howBuilt": "Jonction du score de fiche, des écarts de comparaison et de l'enrichissement validé. Fonctionne en lecture sans intégration ; écriture via Shopify ou WooCommerce.",
+    "effort": "M",
+    "segments": ["e-commerce"],
+    "priority": 4,
+    "source": "https://peec.ai/blog/ai-shopping-analytics"
+  },
+  {
+    "feature": "Contrôle du balisage d'avis et de leur lisibilité par les IA",
+    "competitors": ["Judge.me", "Yotpo", "Trustpilot (AI Visibility Metrics)"],
+    "what": "Diagnostic : avis rendus sans JavaScript, JSON-LD AggregateRating/Review, Q&R, volume et récence, selon l'éditeur d'avis détecté.",
+    "userValue": "Détecte l'erreur fréquente d'un widget d'avis invisible pour les crawlers.",
+    "howBuilt": "Crawl pur de l'URL produit (HTML source et JSON-LD) ; détection de l'éditeur par scripts. Aucune génération d'avis.",
+    "effort": "S",
+    "segments": ["e-commerce"],
+    "priority": 3,
+    "source": "https://judge.me/help/en/articles/15860924-making-reviews-visible-to-ai-shopping-assistants ; https://www.yotpo.com/platform/reviews/llm-discoverability.md ; https://www.pulse.bot/marketing/news/trustpilot-launches-new-features-to-help-brands-get-found-and-chosen-in-the-age-of-ai-9e3797e3-9f5b-4457-999d-e8678a2e8b0e/"
+  },
+  {
+    "feature": "Alertes de score et rapport PDF visibilité + revenu",
+    "competitors": ["GEOde (alerte de baisse de score)", "FoundInAI (rapport PDF)", "Peec AI (produits qui gagnent ou perdent)"],
+    "what": "Alerte quand le score d'une fiche baisse ou qu'un produit sort des réponses ; rapport exportable combinant part de voix et CA IA.",
+    "userValue": "Rituel hebdomadaire et document à montrer à une direction ou un client.",
+    "howBuilt": "Réutiliser le digest du lundi, les alertes et les rapports V2.",
+    "effort": "S",
+    "segments": ["e-commerce"],
+    "priority": 3,
+    "source": "https://apps.shopify.com/geode ; https://apps.shopify.com/foundinai ; https://peec.ai/blog/ai-shopping-analytics"
+  },
+  {
+    "feature": "Panel de requêtes généré à partir du catalogue",
+    "competitors": ["Peec AI (prompts générés par IA, annoncé)", "Peec AI (prompts de catégorie et de produit)"],
+    "what": "10 à 30 requêtes françaises générées depuis catégories et best-sellers, avec variantes « [marque] avis », « alternative à ».",
+    "userValue": "Onboarding en 10 minutes sans rédiger de requêtes.",
+    "howBuilt": "Lecture du catalogue (/products.json, sitemap, Shopify, WooCommerce) plus gabarits de requêtes du doc V2 §7.",
+    "effort": "S",
+    "segments": ["e-commerce"],
+    "priority": 3,
+    "source": "https://docs.peec.ai/setting-up-shopping-prompts ; https://peec.ai/blog/ai-shopping-analytics"
+  },
+  {
+    "feature": "llms.txt, llms-full.txt et agents.md (hygiène)",
+    "competitors": ["LLM Rank", "FoundInAI", "AI Visibility & LLMs for GEO", "GEOde"],
+    "what": "Fichiers générés et tenus à jour, présentés comme hygiène et non comme levier.",
+    "userValue": "Coche une case attendue par les marchands, sans surpromesse (effet non démontré).",
+    "howBuilt": "Proxy d'app Shopify ou page hébergée ; fichier statique pour WooCommerce.",
+    "effort": "S",
+    "segments": ["e-commerce"],
+    "priority": 2,
+    "source": "https://apps.shopify.com/llm-rank ; https://apps.shopify.com/foundinai ; https://apps.shopify.com/geo-ai-visibility-llms-txt"
+  }
+]

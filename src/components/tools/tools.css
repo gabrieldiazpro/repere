@@ -1,0 +1,206 @@
+/*
+ * Outils gratuits (/outils/**) : styles et animations locaux, préfixés rt-.
+ * Importé par src/app/outils/layout.tsx. Indépendant du système d'animation global (agent MOTION).
+ * Toutes les animations s'arrêtent sous prefers-reduced-motion.
+ */
+
+/* ---------- Console d'outil : cadre de visée (signature du logo) ---------- */
+.rt-scope {
+  position: relative;
+  border-radius: 1.25rem;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(213, 217, 228, 0.9), 0 24px 48px -32px rgba(30, 26, 92, 0.35);
+}
+.rt-scope > .rt-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 0 solid var(--color-primary, #3730a3);
+  pointer-events: none;
+}
+.rt-scope > .rt-corner[data-c="tl"] { top: -7px; left: -7px; border-width: 3px 0 0 3px; border-top-left-radius: 9px; }
+.rt-scope > .rt-corner[data-c="tr"] { top: -7px; right: -7px; border-width: 3px 3px 0 0; border-top-right-radius: 9px; }
+.rt-scope > .rt-corner[data-c="bl"] { bottom: -7px; left: -7px; border-width: 0 0 3px 3px; border-bottom-left-radius: 9px; }
+.rt-scope > .rt-corner[data-c="br"] { bottom: -7px; right: -7px; border-width: 0 3px 3px 0; border-bottom-right-radius: 9px; }
+.rt-scope[data-busy="true"] > .rt-corner { animation: rt-lock 1.1s ease-in-out infinite alternate; }
+
+@keyframes rt-lock {
+  from { transform: translate(0, 0); }
+  to { transform: translate(var(--rt-dx, 0), var(--rt-dy, 0)); }
+}
+.rt-scope > .rt-corner[data-c="tl"] { --rt-dx: 5px; --rt-dy: 5px; }
+.rt-scope > .rt-corner[data-c="tr"] { --rt-dx: -5px; --rt-dy: 5px; }
+.rt-scope > .rt-corner[data-c="bl"] { --rt-dx: 5px; --rt-dy: -5px; }
+.rt-scope > .rt-corner[data-c="br"] { --rt-dx: -5px; --rt-dy: -5px; }
+
+/* ---------- Champs ---------- */
+.rt-field {
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-line, #d5d9e4);
+  background: #fff;
+  padding: 0.6rem 0.9rem;
+  font-size: 1rem;
+  color: var(--color-ink, #1b1f2e);
+  box-shadow: inset 0 1px 2px rgba(27, 31, 46, 0.05);
+}
+.rt-field::placeholder { color: rgba(90, 98, 117, 0.8); }
+.rt-field:focus { border-color: var(--color-primary, #3730a3); outline: none; }
+.rt-field:focus-visible { outline: 3px solid var(--color-primary, #3730a3); outline-offset: 1px; }
+.rt-field[aria-invalid="true"] { border-color: var(--color-danger, #b91c1c); }
+textarea.rt-field { min-height: 9rem; line-height: 1.5; resize: vertical; }
+.rt-mono, textarea.rt-field.rt-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+/* ---------- Bloc de code copiable ---------- */
+.rt-code {
+  margin: 0;
+  max-height: 26rem;
+  overflow: auto;
+  border-radius: 0.75rem;
+  background: #1e1a5c;
+  color: #ecebfa;
+  padding: 1rem 1.1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 2;
+}
+
+/* ---------- Entrées en cascade ---------- */
+.rt-cascade > * {
+  animation: rt-rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+@keyframes rt-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.rt-fade { animation: rt-fadein 320ms ease-out both; }
+@keyframes rt-fadein { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- Jauge ---------- */
+.rt-gauge-arc { animation: rt-fill 1100ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes rt-fill { from { stroke-dashoffset: 100; } }
+
+/* ---------- Barres de comparaison ---------- */
+.rt-bar { transform-origin: left center; animation: rt-grow 800ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes rt-grow { from { transform: scaleX(0); } }
+
+/* ---------- Chargement : balayage ---------- */
+.rt-sweep {
+  position: relative;
+  overflow: hidden;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-primary-bg, #ecebfa);
+}
+.rt-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  border-radius: inherit;
+  background: var(--color-primary, #3730a3);
+  animation: rt-sweep 1.3s ease-in-out infinite;
+}
+@keyframes rt-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+
+/* ---------- Dépliables ---------- */
+.rt-details > summary { list-style: none; }
+.rt-details > summary::-webkit-details-marker { display: none; }
+.rt-details .rt-chevron { transition: transform 200ms ease; }
+.rt-details[open] .rt-chevron { transform: rotate(180deg); }
+.rt-details[open] > .rt-details-body { animation: rt-fadein 220ms ease-out both; }
+
+/* ---------- Surlignage des extraits citables ---------- */
+.rt-mark {
+  background: linear-gradient(transparent 55%, #fde7be 55%);
+  color: inherit;
+  padding: 0 0.1em;
+  border-radius: 2px;
+}
+
+
+/* ---------- V4 : étapes de chargement qui s'allument ---------- */
+.rt-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rt-steps li { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: var(--color-muted); transition: color 250ms ease, opacity 250ms ease; }
+.rt-steps li[data-state="pending"] { opacity: 0.5; }
+.rt-steps li[data-state="active"] { color: var(--color-ink); font-weight: 600; }
+.rt-steps li[data-state="done"] { color: var(--color-success-ink, #166534); }
+.rt-step-dot { width: 20px; height: 20px; border-radius: 999px; display: grid; place-items: center; border: 2px solid var(--color-line); flex: none; transition: background-color 250ms, border-color 250ms; }
+.rt-steps li[data-state="active"] .rt-step-dot { border-color: var(--color-primary); animation: rt-glow 1.4s ease-in-out infinite; }
+.rt-steps li[data-state="done"] .rt-step-dot { background: var(--color-success); border-color: var(--color-success); color: #fff; }
+@keyframes rt-glow { 0%, 100% { box-shadow: 0 0 0 0 var(--color-primary-bg, #ecebfa); } 50% { box-shadow: 0 0 0 5px var(--color-primary-bg, #ecebfa); } }
+.rt-tick { stroke-dasharray: 16; stroke-dashoffset: 16; animation: rt-draw 300ms ease-out forwards; }
+@keyframes rt-draw { to { stroke-dashoffset: 0; } }
+
+/* ---------- V4 : parcours de l'étape suivante (ce test → audit → espace) ---------- */
+.rt-path { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 6px; align-items: center; font-size: 0.9rem; }
+.rt-path li { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.25); color: rgba(255, 255, 255, 0.75); }
+.rt-path li[data-state="done"] { color: #fff; }
+.rt-path li[data-state="done"]::after { content: "✓"; font-weight: 800; color: #86efac; order: -1; }
+.rt-path li[data-state="next"] { background: #fff; color: var(--color-primary-deep, #2e2891); font-weight: 700; border-color: #fff; }
+
+/* ---------- Mouvement réduit ----------
+   Règle V4 : « Réduire les animations » coupe le MOUVEMENT (glissements, balayages, verrouillage du viseur),
+   pas les fondus, la jauge qui se remplit ni les barres qui se tracent (sans déplacement). */
+@media (prefers-reduced-motion: reduce) {
+  .rt-cascade > * { animation-name: rt-fadein; }
+  .rt-scope[data-busy="true"] > .rt-corner { animation: rt-blink 1.1s ease-in-out infinite alternate; }
+  .rt-sweep::after { animation: rt-blink 1.4s ease-in-out infinite alternate; transform: none; left: 0; width: 100%; }
+  .rt-details .rt-chevron { transition: none; }
+}
+@keyframes rt-blink { from { opacity: 1; } to { opacity: .35; } }
+
+/* ---------- Affichette A5 imprimable (lien d'avis) ---------- */
+.rt-poster {
+  width: 100%;
+  max-width: 21rem;
+  aspect-ratio: 148 / 210;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 1.5rem 1.25rem 1.1rem;
+  text-align: center;
+  color: #1b1f2e;
+  box-shadow: 0 0 0 1px #d5d9e4, 0 18px 40px -28px rgba(27, 31, 46, 0.45);
+}
+.rt-poster-qr svg { display: block; width: 100%; height: auto; }
+
+/* Impression : seule l'affichette sort, au format A5. Limité aux pages qui la contiennent. */
+@media print {
+  @page { size: A5 portrait; margin: 0; }
+  body:has(.rt-poster[data-print="true"]) * { visibility: hidden; }
+  body:has(.rt-poster[data-print="true"]) .rt-poster[data-print="true"],
+  body:has(.rt-poster[data-print="true"]) .rt-poster[data-print="true"] * { visibility: visible; }
+  body:has(.rt-poster[data-print="true"]) .rt-poster[data-print="true"] {
+    position: fixed;
+    inset: 0;
+    width: 148mm;
+    height: 210mm;
+    max-width: none;
+    aspect-ratio: auto;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 16mm 12mm 10mm;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body:has(.rt-poster[data-print="true"]) .rt-poster-title { font-size: 26pt !important; }
+  body:has(.rt-poster[data-print="true"]) .rt-poster-qr { width: 92mm !important; }
+}

@@ -1,0 +1,672 @@
+{
+  "_note": "Les champs ia_les_plus_utilisees sont des hypotheses de depart (ordre de priorite d'audit), a remplacer par les mesures reelles des audits. Aucun volume de recherche n'est inclus. Classement des villes : 15 plus grandes villes hors Paris, a verifier avec le dernier recensement INSEE.",
+  "trades": [
+    {
+      "slug": "plombier",
+      "nom": "Plombier",
+      "nom_pluriel": "Plombiers",
+      "requetes_types": [
+        "meilleur plombier {ville}",
+        "plombier urgence fuite d'eau {ville}",
+        "plombier pas cher et fiable {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "electricien",
+      "nom": "Électricien",
+      "nom_pluriel": "Électriciens",
+      "requetes_types": [
+        "électricien {ville} mise aux normes",
+        "dépannage électrique urgent {ville}",
+        "meilleur électricien {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "serrurier",
+      "nom": "Serrurier",
+      "nom_pluriel": "Serruriers",
+      "requetes_types": [
+        "serrurier {ville} porte claquée",
+        "serrurier agréé assurance {ville}",
+        "serrurier honnête {ville} tarifs"
+      ],
+      "ia_les_plus_utilisees": [
+        "gemini",
+        "chatgpt",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "chauffagiste",
+      "nom": "Chauffagiste",
+      "nom_pluriel": "Chauffagistes",
+      "requetes_types": [
+        "chauffagiste {ville} entretien chaudière",
+        "installation pompe à chaleur {ville}",
+        "dépannage chaudière {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "couvreur",
+      "nom": "Couvreur",
+      "nom_pluriel": "Couvreurs",
+      "requetes_types": [
+        "couvreur {ville} réparation toiture",
+        "couvreur zingueur {ville} devis",
+        "meilleur couvreur {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "gemini",
+        "chatgpt",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "peintre-en-batiment",
+      "nom": "Peintre en bâtiment",
+      "nom_pluriel": "Peintres en bâtiment",
+      "requetes_types": [
+        "peintre en bâtiment {ville} devis",
+        "peintre appartement {ville}",
+        "meilleur peintre décorateur {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "menuisier",
+      "nom": "Menuisier",
+      "nom_pluriel": "Menuisiers",
+      "requetes_types": [
+        "menuisier {ville} sur mesure",
+        "menuisier pose fenêtres {ville}",
+        "agencement placard sur mesure {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "restaurant",
+      "nom": "Restaurant",
+      "nom_pluriel": "Restaurants",
+      "requetes_types": [
+        "bon restaurant {ville}",
+        "meilleur restaurant italien {ville}",
+        "restaurant pour un dîner romantique {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "perplexity",
+        "gemini"
+      ]
+    },
+    {
+      "slug": "coiffeur",
+      "nom": "Coiffeur",
+      "nom_pluriel": "Coiffeurs",
+      "requetes_types": [
+        "meilleur coiffeur {ville}",
+        "coiffeur coloration blond {ville}",
+        "coiffeur barbier {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "institut-de-beaute",
+      "nom": "Institut de beauté",
+      "nom_pluriel": "Instituts de beauté",
+      "requetes_types": [
+        "institut de beauté {ville}",
+        "soin du visage {ville}",
+        "épilation laser {ville} avis"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "dentiste",
+      "nom": "Dentiste",
+      "nom_pluriel": "Dentistes",
+      "requetes_types": [
+        "dentiste {ville} urgence",
+        "dentiste {ville} implant",
+        "bon dentiste {ville} nouveau patient"
+      ],
+      "ia_les_plus_utilisees": [
+        "gemini",
+        "chatgpt",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "osteopathe",
+      "nom": "Ostéopathe",
+      "nom_pluriel": "Ostéopathes",
+      "requetes_types": [
+        "ostéopathe {ville}",
+        "ostéopathe mal de dos {ville}",
+        "ostéopathe pour bébé {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "kinesitherapeute",
+      "nom": "Kinésithérapeute",
+      "nom_pluriel": "Kinésithérapeutes",
+      "requetes_types": [
+        "kinésithérapeute {ville}",
+        "kiné rééducation genou {ville}",
+        "kiné à domicile {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "gemini",
+        "chatgpt",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "avocat",
+      "nom": "Avocat",
+      "nom_pluriel": "Avocats",
+      "requetes_types": [
+        "avocat {ville} droit du travail",
+        "avocat divorce {ville}",
+        "avocat droit immobilier {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "perplexity",
+        "gemini"
+      ]
+    },
+    {
+      "slug": "expert-comptable",
+      "nom": "Expert-comptable",
+      "nom_pluriel": "Experts-comptables",
+      "requetes_types": [
+        "expert-comptable {ville} auto-entrepreneur",
+        "expert-comptable en ligne ou local {ville}",
+        "expert-comptable création société {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "perplexity",
+        "gemini"
+      ]
+    },
+    {
+      "slug": "agence-immobiliere",
+      "nom": "Agence immobilière",
+      "nom_pluriel": "Agences immobilières",
+      "requetes_types": [
+        "agence immobilière {ville}",
+        "estimer mon appartement {ville}",
+        "meilleure agence immobilière pour vendre {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "garage-automobile",
+      "nom": "Garage automobile",
+      "nom_pluriel": "Garages automobiles",
+      "requetes_types": [
+        "garage {ville} révision voiture",
+        "garage de confiance {ville}",
+        "contrôle technique et garage {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "gemini",
+        "chatgpt",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "fleuriste",
+      "nom": "Fleuriste",
+      "nom_pluriel": "Fleuristes",
+      "requetes_types": [
+        "fleuriste {ville}",
+        "livraison bouquet {ville} le jour même",
+        "fleuriste mariage {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "gemini",
+        "perplexity"
+      ]
+    },
+    {
+      "slug": "photographe",
+      "nom": "Photographe",
+      "nom_pluriel": "Photographes",
+      "requetes_types": [
+        "photographe mariage {ville}",
+        "photographe portrait professionnel {ville}",
+        "photographe famille {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "chatgpt",
+        "perplexity",
+        "gemini"
+      ]
+    },
+    {
+      "slug": "auto-ecole",
+      "nom": "Auto-école",
+      "nom_pluriel": "Auto-écoles",
+      "requetes_types": [
+        "auto-école {ville}",
+        "permis accéléré {ville}",
+        "auto-école pas chère bon taux de réussite {ville}"
+      ],
+      "ia_les_plus_utilisees": [
+        "gemini",
+        "chatgpt",
+        "perplexity"
+      ]
+    }
+  ],
+  "cities": [
+    {
+      "slug": "paris-1er",
+      "nom": "Paris 1er",
+      "type": "arrondissement",
+      "code_postal": "75001",
+      "parent": "paris",
+      "quartiers": [
+        "Louvre",
+        "Tuileries",
+        "Les Halles",
+        "Palais-Royal"
+      ]
+    },
+    {
+      "slug": "paris-2e",
+      "nom": "Paris 2e",
+      "type": "arrondissement",
+      "code_postal": "75002",
+      "parent": "paris",
+      "quartiers": [
+        "Sentier",
+        "Bourse",
+        "Montorgueil",
+        "Vivienne"
+      ]
+    },
+    {
+      "slug": "paris-3e",
+      "nom": "Paris 3e",
+      "type": "arrondissement",
+      "code_postal": "75003",
+      "parent": "paris",
+      "quartiers": [
+        "Haut-Marais",
+        "Arts-et-Métiers",
+        "Temple",
+        "Enfants-Rouges"
+      ]
+    },
+    {
+      "slug": "paris-4e",
+      "nom": "Paris 4e",
+      "type": "arrondissement",
+      "code_postal": "75004",
+      "parent": "paris",
+      "quartiers": [
+        "Le Marais",
+        "Île Saint-Louis",
+        "Notre-Dame",
+        "Hôtel-de-Ville"
+      ]
+    },
+    {
+      "slug": "paris-5e",
+      "nom": "Paris 5e",
+      "type": "arrondissement",
+      "code_postal": "75005",
+      "parent": "paris",
+      "quartiers": [
+        "Quartier Latin",
+        "Jardin des Plantes",
+        "Mouffetard",
+        "Val-de-Grâce"
+      ]
+    },
+    {
+      "slug": "paris-6e",
+      "nom": "Paris 6e",
+      "type": "arrondissement",
+      "code_postal": "75006",
+      "parent": "paris",
+      "quartiers": [
+        "Saint-Germain-des-Prés",
+        "Odéon",
+        "Luxembourg",
+        "Notre-Dame-des-Champs"
+      ]
+    },
+    {
+      "slug": "paris-7e",
+      "nom": "Paris 7e",
+      "type": "arrondissement",
+      "code_postal": "75007",
+      "parent": "paris",
+      "quartiers": [
+        "Invalides",
+        "Tour Eiffel",
+        "Saint-Thomas-d'Aquin",
+        "Gros-Caillou"
+      ]
+    },
+    {
+      "slug": "paris-8e",
+      "nom": "Paris 8e",
+      "type": "arrondissement",
+      "code_postal": "75008",
+      "parent": "paris",
+      "quartiers": [
+        "Madeleine",
+        "Champs-Élysées",
+        "Europe",
+        "Saint-Lazare"
+      ]
+    },
+    {
+      "slug": "paris-9e",
+      "nom": "Paris 9e",
+      "type": "arrondissement",
+      "code_postal": "75009",
+      "parent": "paris",
+      "quartiers": [
+        "Opéra",
+        "Pigalle",
+        "Saint-Georges",
+        "Grands Boulevards"
+      ]
+    },
+    {
+      "slug": "paris-10e",
+      "nom": "Paris 10e",
+      "type": "arrondissement",
+      "code_postal": "75010",
+      "parent": "paris",
+      "quartiers": [
+        "Canal Saint-Martin",
+        "Gare du Nord",
+        "Gare de l'Est",
+        "Château d'Eau"
+      ]
+    },
+    {
+      "slug": "paris-11e",
+      "nom": "Paris 11e",
+      "type": "arrondissement",
+      "code_postal": "75011",
+      "parent": "paris",
+      "quartiers": [
+        "Bastille",
+        "Oberkampf",
+        "Voltaire",
+        "Charonne"
+      ]
+    },
+    {
+      "slug": "paris-12e",
+      "nom": "Paris 12e",
+      "type": "arrondissement",
+      "code_postal": "75012",
+      "parent": "paris",
+      "quartiers": [
+        "Bercy",
+        "Gare de Lyon",
+        "Daumesnil",
+        "Nation"
+      ]
+    },
+    {
+      "slug": "paris-13e",
+      "nom": "Paris 13e",
+      "type": "arrondissement",
+      "code_postal": "75013",
+      "parent": "paris",
+      "quartiers": [
+        "Butte-aux-Cailles",
+        "Place d'Italie",
+        "Olympiades",
+        "Bibliothèque"
+      ]
+    },
+    {
+      "slug": "paris-14e",
+      "nom": "Paris 14e",
+      "type": "arrondissement",
+      "code_postal": "75014",
+      "parent": "paris",
+      "quartiers": [
+        "Montparnasse",
+        "Alésia",
+        "Pernety",
+        "Montsouris"
+      ]
+    },
+    {
+      "slug": "paris-15e",
+      "nom": "Paris 15e",
+      "type": "arrondissement",
+      "code_postal": "75015",
+      "parent": "paris",
+      "quartiers": [
+        "Vaugirard",
+        "Convention",
+        "Beaugrenelle",
+        "Commerce"
+      ]
+    },
+    {
+      "slug": "paris-16e",
+      "nom": "Paris 16e",
+      "type": "arrondissement",
+      "code_postal": "75016",
+      "parent": "paris",
+      "quartiers": [
+        "Passy",
+        "Auteuil",
+        "Trocadéro",
+        "La Muette"
+      ]
+    },
+    {
+      "slug": "paris-17e",
+      "nom": "Paris 17e",
+      "type": "arrondissement",
+      "code_postal": "75017",
+      "parent": "paris",
+      "quartiers": [
+        "Batignolles",
+        "Ternes",
+        "Épinettes",
+        "Monceau"
+      ]
+    },
+    {
+      "slug": "paris-18e",
+      "nom": "Paris 18e",
+      "type": "arrondissement",
+      "code_postal": "75018",
+      "parent": "paris",
+      "quartiers": [
+        "Montmartre",
+        "Barbès",
+        "La Chapelle",
+        "Goutte d'Or"
+      ]
+    },
+    {
+      "slug": "paris-19e",
+      "nom": "Paris 19e",
+      "type": "arrondissement",
+      "code_postal": "75019",
+      "parent": "paris",
+      "quartiers": [
+        "Buttes-Chaumont",
+        "La Villette",
+        "Jaurès",
+        "Bassin de la Villette"
+      ]
+    },
+    {
+      "slug": "paris-20e",
+      "nom": "Paris 20e",
+      "type": "arrondissement",
+      "code_postal": "75020",
+      "parent": "paris",
+      "quartiers": [
+        "Belleville",
+        "Ménilmontant",
+        "Père-Lachaise",
+        "Gambetta"
+      ]
+    },
+    {
+      "slug": "marseille",
+      "nom": "Marseille",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "lyon",
+      "nom": "Lyon",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "toulouse",
+      "nom": "Toulouse",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "nice",
+      "nom": "Nice",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "nantes",
+      "nom": "Nantes",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "montpellier",
+      "nom": "Montpellier",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "strasbourg",
+      "nom": "Strasbourg",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "bordeaux",
+      "nom": "Bordeaux",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "lille",
+      "nom": "Lille",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "rennes",
+      "nom": "Rennes",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "reims",
+      "nom": "Reims",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "saint-etienne",
+      "nom": "Saint-Étienne",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "toulon",
+      "nom": "Toulon",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "le-havre",
+      "nom": "Le Havre",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    },
+    {
+      "slug": "grenoble",
+      "nom": "Grenoble",
+      "type": "ville",
+      "parent": null,
+      "quartiers": []
+    }
+  ]
+}

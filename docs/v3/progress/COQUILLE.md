@@ -1,0 +1,19 @@
+# COQUILLE — journal
+## Contrats pour MESURE / ACTION / METIERS (stables)
+- **data-visite** (posez l'attribut sur l'élément à montrer ; liste : src/components/app/shell/visite.ts `CIBLES`) : `questions` (/app/questions, liste des questions suivies) · `reponses` (/app/reponses, 1re réponse d'IA) · `concurrents` (/app/concurrents, tableau thème × IA) — MESURE ; `actions` (/app/actions, liste) · `trafic` (/app/trafic, bloc visites/ventes IA) · `copilote` (/app/copilote, zone de saisie) — ACTION ; `local` (/app/local, score fiche Google) · `produits` (/app/produits, tableau produits) — METIERS. Absent → infobulle centrée, la visite continue.
+- **Verrou** : `import { Verrou, VerrouBouton } from '@/components/app/shell/Verrou'` ; `<Verrou ent={getEntitlements(business)} feature="exports" titre="Exports CSV" [apercu] [compact]>{contenu}</Verrou>` (rend le contenu si inclus, sinon cadre « offre X » + lien /tarifs ; `apercu` = contenu flouté inerte derrière) ; `<VerrouBouton ent feature label>{bouton}</VerrouBouton>`. Features : execution, exports, shareLinks, whiteLabel, integrations, weekly, daily, claude, mistral, team. Logique pure : `verrou(ent, feature)`, `quota(used,max)` dans shell/verrou.ts. Sans hook : OK en composant serveur ou client.
+- **Mode sombre** (app.css) : n'utilisez que `--bg --surface --surface-2 --surface-me --ink --muted --line --line-strong --hair --primary --primary-bg --on-primary --accent --success/-bg/-ink/-line --warning/… --danger/… --code-bg --code-ink --overlay --shadow`. Jamais `bg-white`/`#fff` : `bg-[var(--surface)]`. Thème : `data-theme` sur `.rp-app` (system|light|dark, cookie `rp_theme`).
+- **Menu** (src/components/app/nav.ts) : routes prévues /app/questions, /app/reponses, /app/sources (+/app/citations), /app/concurrents, /app/ia, /app/verite, /app/actions (+/app/taches), /app/pages, /app/technique, /app/trafic, /app/rapports, /app/copilote ; METIERS : /app/local, /app/local/carte, /app/local/annuaires, /app/local/avis ; /app/produits, /app/produits/revendeurs, /app/produits/ventes. Palette : liens /app/questions?q=<id>, /app/concurrents?nom=<nom>, /app/actions?t=<id>, /app/copilote?context=… Annonces : `toast({text})` de shell/client.ts.
+## Fait (mission livrée ; tsc projet : 0 erreur ; vitest src/components/app : 82/82, dont 23 coquille)
+- icônes (+23), Verrou, data-visite, tokens sombres (+ compat bg-white), bascule système/clair/sombre (cookie rp_theme, sans flash)
+- nav V3 (groupes, parcours Local/E-commerce, 4 onglets + Plus, raccourcis g+lettre), sélecteur de commerce (/api/account/businesses) et de compte démo
+- palette Cmd+K / « / » / « ? » (pages, questions, concurrents, tâches, mesurer, exporter, thème, visite), annonces aria-live
+- cloche + /app/notifications (lu/non lu, démo gardée sur l'appareil) ; visite guidée 8 étapes (/app?visite=1&segment=…)
+- Lundi : marge d'erreur, « Expliquer ce changement » (explainChange), Bien démarrer, annotations ; /app/bienvenue (site → questions suggérées → mesure suivie /api/jobs) ; Plus
+- Réglages : compte, équipe (/api/team), offre/quotas/portail, alertes, rapports planifiés, intégrations (script, WordPress, GA4, Shopify, Slack/webhook + test), partage/marque blanche, badge/carte/classement/parrainage, données RGPD
+## Non fait
+- Onboarding « qui vous ressemble » (concurrents suivis) et « où vous prévenir » : pas d'API de concurrents suivis ; renvoi vers Réglages.
+## À faire par d'autres
+- MESURE/ACTION/METIERS : poser les data-visite ci-dessus ; lire ?q= (questions), ?nom= (concurrents), ?t= (actions), ancre /app/trafic#ga4 ; METIERS : connexion Shopify sur /app/produits/ventes.
+- Charts.tsx (partagé) : SERIES_COLORS/ENGINE_COLOR (#3730A3…) peu lisibles en sombre → var(--primary) etc. PageHeader.tsx : ajouter `<SearchButton/>` (shell/CommandPalette) dans l'en-tête mobile.
+- PAGES-SITE (facultatif) : /tarifs lit ?fonction= pour mettre en avant l'offre requise.

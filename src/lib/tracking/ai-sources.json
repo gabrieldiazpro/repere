@@ -1,0 +1,190 @@
+{
+  "version": "2026-11-09",
+  "notes": [
+    "Source de verite des regles de detection. Le serveur (/api/t, middleware, plugin WP) classe; le snippet ne fait qu'un pre-filtre.",
+    "confidence: high = documente par l'editeur ou observe de facon concordante; medium = observe, variable selon appli/navigateur; low = non verifie, a valider sur donnees reelles.",
+    "verified: 'doc' = documentation officielle lue le 2026-11-09; 'secondary' = sources tierces; 'memory' = connaissance non reverifiee, a controler avant mise en prod."
+  ],
+  "referrers": [
+    {
+      "engine": "chatgpt", "label": "ChatGPT", "operator": "OpenAI",
+      "hosts": ["chatgpt.com", "chat.openai.com"],
+      "utm_source": ["chatgpt.com"],
+      "confidence": "high", "verified": "secondary",
+      "notes": "OpenAI ajoute utm_source=chatgpt.com (sans utm_medium) aux liens des reponses de recherche. Dans GA4 cela donne 'chatgpt.com / (not set)', parfois Unassigned. Le referrer HTTP est souvent absent (appli mobile, noreferrer): fiable = utm_source en priorite. Un bug mi-octobre 2026 a retire tag et referrer des liens du texte de reponse pendant ~1 semaine."
+    },
+    {
+      "engine": "perplexity", "label": "Perplexity", "operator": "Perplexity AI",
+      "hosts": ["perplexity.ai", "www.perplexity.ai"],
+      "utm_source": ["perplexity", "perplexity.ai"],
+      "confidence": "medium", "verified": "memory",
+      "notes": "Referrer generalement transmis sur le web; appli mobile: souvent direct."
+    },
+    {
+      "engine": "gemini", "label": "Gemini", "operator": "Google",
+      "hosts": ["gemini.google.com", "bard.google.com"],
+      "utm_source": ["gemini", "gemini.google.com"],
+      "confidence": "medium", "verified": "memory",
+      "notes": "Referrer gemini.google.com quand transmis. Ne pas confondre avec google.com (recherche)."
+    },
+    {
+      "engine": "copilot", "label": "Microsoft Copilot", "operator": "Microsoft",
+      "hosts": ["copilot.microsoft.com", "copilot.cloud.microsoft", "www.bing.com/chat"],
+      "utm_source": ["copilot.com", "copilot", "copilot.microsoft.com"],
+      "confidence": "medium", "verified": "memory",
+      "notes": "Copilot dans Bing/Edge peut arriver avec referrer bing.com: non separable de Bing organique sauf chemin /chat ou parametre utm."
+    },
+    {
+      "engine": "claude", "label": "Claude", "operator": "Anthropic",
+      "hosts": ["claude.ai"],
+      "utm_source": ["claude", "claude.ai"],
+      "confidence": "medium", "verified": "memory",
+      "notes": "Volume faible; referrer claude.ai quand transmis."
+    },
+    {
+      "engine": "you", "label": "You.com", "operator": "You.com",
+      "hosts": ["you.com"],
+      "utm_source": ["you.com"],
+      "confidence": "low", "verified": "memory",
+      "notes": "A valider sur donnees reelles."
+    },
+    {
+      "engine": "other_ai", "label": "Autres IA", "operator": "divers",
+      "hosts": ["meta.ai", "chat.mistral.ai", "chat.deepseek.com", "grok.com", "x.ai", "phind.com", "kagi.com", "duckduckgo.com/?ia=chat", "search.brave.com"],
+      "utm_source": ["grok", "mistral", "deepseek", "phind", "kagi"],
+      "confidence": "low", "verified": "memory",
+      "notes": "Regrouper dans 'Autres IA' tant que les volumes sont faibles. brave.com et duckduckgo.com sont aussi des moteurs classiques: ne compter comme IA que si chemin/parametre l'indique."
+    },
+    {
+      "engine": "google_ai", "label": "Google AI Mode / AI Overviews", "operator": "Google",
+      "hosts": [],
+      "utm_source": [],
+      "confidence": "none", "verified": "secondary",
+      "detectable_by_referrer": false,
+      "notes": "Indiscernable de la recherche organique cote site. AI Mode: liens noreferrer a l'origine (visites classees Direct/inconnu, bug annonce corrige fin mai 2025). Depuis juin 2025 les clics AI Mode et AI Overviews sont comptes dans Search Console, type 'Web', sans filtre dedie. Ne jamais afficher un chiffre 'trafic Google IA'; afficher 'non mesurable' + courbe Search Console globale."
+    }
+  ],
+  "classification_order": [
+    "1. utm_source (nettoye, minuscule) dans referrers[].utm_source -> engine, signal='utm'",
+    "2. host du referrer (sans www) dans referrers[].hosts -> engine, signal='referrer'",
+    "3. sinon: non-IA. Visites 'direct' sans signal: jamais attribuees a une IA (a afficher comme 'IA probable non mesurable')."
+  ],
+  "bots": [
+    {
+      "token": "GPTBot", "operator": "OpenAI", "category": "training",
+      "ua_regex": "GPTBot/", "robots_txt": "respecte",
+      "ip_ranges": "https://openai.com/gptbot.json", "verified": "doc",
+      "meaning": "Collecte pour entrainer les modeles OpenAI. Bloquer n'affecte pas l'apparition dans ChatGPT Search."
+    },
+    {
+      "token": "OAI-SearchBot", "operator": "OpenAI", "category": "index",
+      "ua_regex": "OAI-SearchBot/", "robots_txt": "respecte",
+      "ip_ranges": "https://openai.com/searchbot.json", "verified": "doc",
+      "meaning": "Indexation pour la recherche ChatGPT. Le bloquer retire le site des reponses de ChatGPT Search (delai ~24 h)."
+    },
+    {
+      "token": "ChatGPT-User", "operator": "OpenAI", "category": "user_fetch",
+      "ua_regex": "ChatGPT-User/", "robots_txt": "peut ne pas s'appliquer (action utilisateur)",
+      "ip_ranges": "https://openai.com/chatgpt-user.json", "verified": "doc",
+      "meaning": "Visite en temps reel declenchee par une question d'utilisateur ou un GPT. Signal fort: une personne vient de poser une question mettant votre page en jeu. Pas un clic humain sur le site."
+    },
+    {
+      "token": "OAI-AdsBot", "operator": "OpenAI", "category": "ads_check",
+      "ua_regex": "OAI-AdsBot/", "robots_txt": "non precise",
+      "ip_ranges": "https://openai.com/adsbot.json", "verified": "doc",
+      "meaning": "Verifie les pages de destination soumises comme annonces ChatGPT. Non utilise pour l'entrainement. Ignorer dans les indicateurs."
+    },
+    {
+      "token": "PerplexityBot", "operator": "Perplexity", "category": "index",
+      "ua_regex": "PerplexityBot/", "robots_txt": "respecte",
+      "ip_ranges": "https://www.perplexity.ai/perplexitybot.json", "verified": "doc",
+      "meaning": "Indexation pour la recherche Perplexity; annonce comme non utilise pour l'entrainement."
+    },
+    {
+      "token": "Perplexity-User", "operator": "Perplexity", "category": "user_fetch",
+      "ua_regex": "Perplexity-User/", "robots_txt": "ignore generalement (action utilisateur)",
+      "ip_ranges": "https://www.perplexity.ai/perplexity-user.json", "verified": "doc",
+      "meaning": "Visite en temps reel pour repondre a un utilisateur; la page peut etre citee dans la reponse."
+    },
+    {
+      "token": "ClaudeBot", "operator": "Anthropic", "category": "training",
+      "ua_regex": "ClaudeBot", "robots_txt": "respecte",
+      "ip_ranges": null, "verified": "doc",
+      "meaning": "Collecte pouvant contribuer a l'entrainement. Chaine UA exacte non publiee dans la doc lue: valider sur logs reels."
+    },
+    {
+      "token": "Claude-SearchBot", "operator": "Anthropic", "category": "index",
+      "ua_regex": "Claude-SearchBot", "robots_txt": "respecte",
+      "ip_ranges": null, "verified": "doc",
+      "meaning": "Indexation pour ameliorer la pertinence des resultats de recherche de Claude."
+    },
+    {
+      "token": "Claude-User", "operator": "Anthropic", "category": "user_fetch",
+      "ua_regex": "Claude-User", "robots_txt": "respecte (selon doc Anthropic)",
+      "ip_ranges": null, "verified": "doc",
+      "meaning": "Visite en temps reel quand un utilisateur de Claude pose une question."
+    },
+    {
+      "token": "Google-Extended", "operator": "Google", "category": "control_token",
+      "ua_regex": null, "appears_in_logs": false, "verified": "secondary",
+      "meaning": "Jeton robots.txt uniquement, aucune requete: n'apparait jamais dans les logs. Controle l'usage de contenus deja collectes par Googlebot pour l'entrainement Gemini ET le grounding Gemini. Sans effet sur Search ni sur AI Overviews/AI Mode (limites via nosnippet/noindex). Lire robots.txt, pas les logs."
+    },
+    {
+      "token": "Applebot-Extended", "operator": "Apple", "category": "control_token",
+      "ua_regex": null, "appears_in_logs": false, "verified": "secondary",
+      "meaning": "Jeton robots.txt uniquement: autorise ou non l'entrainement des modeles Apple sur les donnees collectees par Applebot. Le crawler visible en logs est Applebot (index Spotlight/Siri/Safari; depuis le 8 juin 2026 ses donnees peuvent aussi servir a l'entrainement et aux reponses IA selon une source secondaire)."
+    },
+    {
+      "token": "Applebot", "operator": "Apple", "category": "index",
+      "ua_regex": "Applebot/", "robots_txt": "respecte (retombe sur les regles Googlebot si aucune regle propre)",
+      "ip_ranges": "fichier CIDR publie par Apple", "verified": "secondary",
+      "meaning": "Indexation Apple. Verifier par DNS inverse: l'UA est usurpable."
+    },
+    {
+      "token": "Bytespider", "operator": "ByteDance", "category": "training",
+      "ua_regex": "Bytespider", "robots_txt": "souvent ignore (signalements tiers)",
+      "ip_ranges": null, "verified": "memory",
+      "meaning": "Collecte pour entrainement (modeles ByteDance). A valider/bloquer au niveau serveur."
+    },
+    {
+      "token": "meta-externalagent", "operator": "Meta", "category": "training",
+      "ua_regex": "meta-externalagent", "robots_txt": "respecte",
+      "ip_ranges": null, "verified": "memory",
+      "meaning": "Crawler Meta pour entrainement/indexation de contenus IA. A controler sur logs reels."
+    },
+    {
+      "token": "meta-externalfetcher", "operator": "Meta", "category": "user_fetch",
+      "ua_regex": "meta-externalfetcher", "robots_txt": "peut ignorer",
+      "ip_ranges": null, "verified": "memory",
+      "meaning": "Recuperation a la demande d'un utilisateur de Meta AI."
+    },
+    {
+      "token": "CCBot", "operator": "Common Crawl", "category": "training",
+      "ua_regex": "CCBot/", "robots_txt": "respecte", "ip_ranges": null, "verified": "memory",
+      "meaning": "Corpus public Common Crawl, utilise en aval pour entrainer de nombreux modeles."
+    },
+    {
+      "token": "Amazonbot", "operator": "Amazon", "category": "index",
+      "ua_regex": "Amazonbot/", "robots_txt": "respecte", "ip_ranges": null, "verified": "memory",
+      "meaning": "Crawler Amazon (Alexa, IA). A classer apres controle."
+    },
+    {
+      "token": "DuckAssistBot", "operator": "DuckDuckGo", "category": "user_fetch",
+      "ua_regex": "DuckAssistBot", "robots_txt": "respecte", "ip_ranges": null, "verified": "memory",
+      "meaning": "Recuperation pour les reponses IA de DuckDuckGo."
+    },
+    {
+      "token": "MistralAI-User", "operator": "Mistral", "category": "user_fetch",
+      "ua_regex": "MistralAI-User", "robots_txt": "peut ignorer", "ip_ranges": null, "verified": "memory",
+      "meaning": "Le Chat: visite a la demande d'un utilisateur."
+    }
+  ],
+  "bot_categories": {
+    "training": "Entrainement des modeles. Pas de trafic en retour; bloquer ou non est un choix editorial.",
+    "index": "Indexation pour un moteur de recherche IA. Condition necessaire pour etre cite.",
+    "user_fetch": "Lecture en temps reel pour un utilisateur precis: la page est en train d'etre utilisee dans une reponse.",
+    "ads_check": "Controle publicitaire, hors sujet GEO.",
+    "control_token": "Jeton robots.txt, jamais visible dans les logs."
+  },
+  "bot_verification": "Une UA est usurpable. Pour un statut 'verifie', comparer l'IP source (a la reception, sans la stocker) aux listes JSON publiees; stocker uniquement le booleen verified."
+}

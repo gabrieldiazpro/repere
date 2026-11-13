@@ -1,0 +1,122 @@
+/* ======================================================================
+   Coquille de l'app V4 (SYSTEME) : chargée après app.css dans src/app/app/layout.tsx.
+   Menu latéral lisible (boucle Mesurer → Comprendre → Agir → Prouver), élément actif évident (indicateur qui glisse),
+   transitions de page, retours de pression ; cartes et typo alignées sur les jetons de ui.css. Accueil « Lundi ».
+   ====================================================================== */
+
+/* ---------- Transition de page (template.tsx) ---------- */
+@keyframes rp-page-in { from { opacity: 0; translate: 0 6px; } }
+.rp-app .rp-page-in { animation: rp-page-in 260ms var(--ease-out) both; }
+
+/* ---------- Menu latéral ---------- */
+.rp-app .rp-side { border-right: 1px solid rgba(255, 255, 255, .06); }
+.rp-app .rp-side-label {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 12px 4px; font-size: 12px; font-weight: 600; letter-spacing: .01em;
+  color: color-mix(in srgb, var(--on-deep) 82%, transparent);
+}
+.rp-app .rp-side-step {
+  display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; border-radius: 99px;
+  font-size: 10.5px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+  color: var(--on-deep); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--on-deep) 45%, transparent);
+}
+/* Le groupe qui contient la page active : son numéro passe en ambre plein. */
+.rp-app .rp-side-group:has([aria-current='page']) .rp-side-step { background: var(--accent); color: #1B1F2E; box-shadow: none; }
+.rp-app .rp-side-group:has([aria-current='page']) .rp-side-label { color: #fff; }
+.rp-app .rp-side-group[data-loop] + .rp-side-group[data-loop] { margin-top: 10px; }
+
+.rp-app .rp-side-link { position: relative; z-index: 1; transition: background-color var(--dur-instant) var(--ease-ui), color var(--dur-instant) var(--ease-ui); }
+.rp-app .rp-side-link svg { transition: color var(--dur-base) var(--ease-ui); }
+.rp-app .rp-side-link[aria-current='page'] { background: rgba(255, 255, 255, .13); font-weight: 600; }
+.rp-app .rp-side-link:active { background: rgba(255, 255, 255, .16); }
+
+/* Indicateur actif qui glisse : barre ambre + fond, posés par Shell.tsx (--ind-y / --ind-h). */
+.rp-app .rp-side-ind {
+  position: absolute; left: 8px; right: 8px; top: 0; height: var(--ind-h, 36px); border-radius: 8px; z-index: 0;
+  background: rgba(255, 255, 255, .13); transform: translateY(var(--ind-y, 0)); opacity: 0; pointer-events: none;
+}
+.rp-app .rp-side-ind::before {
+  content: ''; position: absolute; left: -8px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent);
+}
+.rp-app .rp-side-nav[data-ind] .rp-side-ind { opacity: 1; }
+.rp-app .rp-side-nav[data-ind='move'] .rp-side-ind { transition: transform var(--dur-slow) var(--ease-out), height var(--dur-slow) var(--ease-out); }
+.rp-app .rp-side-nav[data-ind] .rp-side-link[aria-current='page'] { background: transparent; }
+/* Sans indicateur (JS absent) : barre ambre sur le lien lui-même. */
+.rp-app .rp-side-nav:not([data-ind]) .rp-side-link[aria-current='page']::before {
+  content: ''; position: absolute; left: -8px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent);
+}
+/* Compteurs du menu : erreurs en rouge clair, à faire en ambre doux — lisibles sur l'indigo profond. */
+.rp-app .rp-side .rp-badge { background: rgba(245, 165, 36, .22); color: #FDE7BE; }
+.rp-app .rp-side .rp-badge-danger { background: #F2B8B8; color: #5F1010; }
+
+/* ---------- Bandeau démo ---------- */
+.rp-app .rp-demobar strong { display: inline-flex; align-items: center; gap: 6px; }
+.rp-app .rp-demobar strong::before { content: ''; width: 8px; height: 8px; border-radius: 99px; background: var(--accent); flex: none; }
+.rp-app .rp-seg-btn { transition: background-color var(--dur-base) var(--ease-ui), color var(--dur-base) var(--ease-ui); }
+.rp-app .rp-seg-btn:active { transform: scale(.96); }
+
+/* ---------- En-tête de page ---------- */
+.rp-app .rp-h1 { font-size: 19px; letter-spacing: -0.02em; }
+@media (min-width: 1024px) { .rp-app .rp-h1 { font-size: var(--fs-title); } }
+.rp-app .rp-ph-intro { max-width: 1200px; margin: 16px auto 0; padding: 0 16px; }
+@media (min-width: 1024px) { .rp-app .rp-ph-intro { margin-top: 12px; padding: 0 32px; } }
+/* Aligné sur .rp-page (max 1200 px padding compris) : jamais collé au menu, même quand la zone de contenu fait < 1264 px. */
+
+/* ---------- Barre d'onglets (mobile) ---------- */
+.rp-app .rp-tab { transition: color var(--dur-base) var(--ease-ui); }
+.rp-app .rp-tab-pill { transition: background-color var(--dur-base) var(--ease-ui), transform var(--dur-instant) var(--ease-ui); }
+.rp-app .rp-tab:active .rp-tab-pill { transform: scale(.92); }
+.rp-app .rp-tab[aria-current='page'] .rp-tab-pill { animation: rp-tab-on 300ms var(--ease-spring) both; }
+@keyframes rp-tab-on { from { transform: scaleX(.6); opacity: .4; } }
+
+/* ---------- Cartes, titres, boutons (alignés sur les jetons) ---------- */
+.rp-app .rp-panel { border-radius: var(--r-lg); box-shadow: var(--sh-1); }
+.rp-app .rp-h2 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.rp-app .rp-btn { border-radius: var(--r-md); transition: background-color var(--dur-instant) var(--ease-ui), border-color var(--dur-instant) var(--ease-ui), transform var(--dur-instant) var(--ease-ui); }
+.rp-app .rp-btn:active:not([disabled]) { transform: scale(.97); }
+.rp-app .rp-btn-primary { box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 6px 16px -8px color-mix(in srgb, var(--primary) 70%, transparent); }
+.rp-app .rp-btn-done svg { animation: ui-pop 320ms var(--ease-spring) both; }
+.rp-app .rp-progress > span { transition: width var(--dur-scene) var(--ease-out); }
+
+/* ======================================================================
+   Accueil « Lundi » : lisible en 5 secondes — phrase, chiffre clé + variation, LA chose à faire, puis le reste.
+   ====================================================================== */
+.rp-app .lundi-hero { display: grid; overflow: hidden; }
+@media (min-width: 1024px) { .rp-app .lundi-hero { grid-template-columns: minmax(0, 1fr) 340px; } }
+.rp-app .lundi-hero-main { padding: 20px 18px 20px; }
+@media (min-width: 1024px) { .rp-app .lundi-hero-main { padding: 32px 36px 30px; } }
+.rp-app .lundi-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 12px; }
+.rp-app .lundi-headline { max-width: 22ch; }
+.rp-app .lundi-sub { margin-top: 10px; max-width: 60ch; font-size: 15px; line-height: 1.5; color: var(--ink); }
+.rp-app .lundi-do {
+  margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
+}
+.rp-app .lundi-do .ui-btn { min-height: 46px; padding: 0 20px; font-size: 15px; }
+.rp-app .lundi-do-meta { font-size: var(--fs-small); color: var(--muted); }
+.rp-app .lundi-figure {
+  display: flex; flex-direction: column; justify-content: center; gap: 18px;
+  padding: 20px 18px; border-top: 1px solid var(--hair);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+}
+@media (min-width: 1024px) { .rp-app .lundi-figure { padding: 32px 32px; border-top: 0; border-left: 1px solid var(--hair); } }
+.rp-app .lundi-rank { display: flex; align-items: center; gap: 14px; padding-top: 16px; border-top: 1px solid var(--hair); color: inherit; }
+.rp-app .lundi-rank:hover .lundi-rank-t { text-decoration: underline; text-underline-offset: 3px; }
+.rp-app .lundi-rank-n { display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; flex: none; color: var(--primary); }
+.rp-app .lundi-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--hair); }
+@media (min-width: 1024px) { .rp-app .lundi-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.rp-app .lundi-kpis > * { padding: 14px 18px; min-width: 0; }
+.rp-app .lundi-kpis > * + * { border-left: 1px solid var(--hair); }
+@media (max-width: 1023px) {
+  .rp-app .lundi-kpis > :nth-child(3) { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--hair); }
+}
+@media (min-width: 1024px) { .rp-app .lundi-kpis > * { padding: 18px 28px; } }
+.rp-app .lundi-grid { display: grid; gap: 16px; }
+@media (min-width: 1024px) { .rp-app .lundi-grid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; } }
+.rp-app .lundi-col { display: flex; min-width: 0; flex-direction: column; gap: 16px; }
+@media (min-width: 1024px) { .rp-app .lundi-col { gap: 20px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-app .rp-side-nav[data-ind='move'] .rp-side-ind { transition: opacity var(--dur-base) var(--ease-ui); }
+  .rp-app .rp-tab:active .rp-tab-pill, .rp-app .rp-btn:active:not([disabled]), .rp-app .rp-seg-btn:active { transform: none; }
+  @keyframes rp-tab-on { from { opacity: .4; } }
+}

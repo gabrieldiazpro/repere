@@ -1,0 +1,62 @@
+# Intégration continue : lint, types, tests, variables documentées, build (sans clé : mode démo).
+# Le dépôt peut avoir l'application à la racine ou dans app/ : APP_DIR s'adapte.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+  # Aucun secret : l'application doit construire et passer ses tests en mode démo.
+  PROMPTS_SITE_FETCH: "off"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dossier de l'application
+        id: app
+        run: |
+          if [ -f app/package.json ]; then echo "dir=app" >> "$GITHUB_OUTPUT"; else echo "dir=." >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ${{ steps.app.outputs.dir }}/package-lock.json
+
+      - name: Installation
+        working-directory: ${{ steps.app.outputs.dir }}
+        run: npm ci
+
+      - name: Lint
+        working-directory: ${{ steps.app.outputs.dir }}
+        run: npm run lint
+
+      - name: Types
+        working-directory: ${{ steps.app.outputs.dir }}
+        run: npm run typecheck
+
+      - name: Tests
+        working-directory: ${{ steps.app.outputs.dir }}
+        run: npm test
+
+      - name: Variables d'environnement documentées
+        working-directory: ${{ steps.app.outputs.dir }}
+        run: npm run check:env
+
+      - name: Build (mode démo)
+        working-directory: ${{ steps.app.outputs.dir }}
+        run: npm run build

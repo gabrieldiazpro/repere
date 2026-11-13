@@ -1,0 +1,2 @@
+- [QA-FONCTIONNEL] src/app/audit/actions.ts (prefillFromSite, ~l.18) : la limite de débit lit `x-forwarded-for` elle-même, sans le regroupement IPv6 /64 ; utiliser `getClientIp`/`ipBucket` de '@/lib/ratelimit' (F6 de qa/v3/securite-v3.md).
+- [QA-FONCTIONNEL] src/app/connexion/callback/route.ts : connexion forcée (login CSRF) par un lien `token_hash`/`local` d'un tiers ; afficher « Continuer en tant que <adresse> ? » (bouton POST) avant de poser les cookies (F6 de qa/v3/securite-v3.md). Facultatif, risque faible.

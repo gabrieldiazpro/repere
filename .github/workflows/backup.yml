@@ -1,0 +1,54 @@
+# Sauvegarde nocturne chiffrée de la base Supabase (voir scripts/ops/backup.md).
+# Secrets GitHub requis : SUPABASE_DB_URL (chaîne de connexion « Session pooler », rôle postgres),
+# AGE_RECIPIENT (clé publique age1…), et un stockage S3 compatible (Cloudflare R2, Backblaze B2) :
+# BACKUP_S3_ENDPOINT, BACKUP_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY.
+# Sans SUPABASE_DB_URL, le job s'arrête proprement (rien à sauvegarder en mode démo).
+name: Sauvegarde
+
+on:
+  schedule:
+    - cron: "37 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      AGE_RECIPIENT: ${{ secrets.AGE_RECIPIENT }}
+      BACKUP_S3_ENDPOINT: ${{ secrets.BACKUP_S3_ENDPOINT }}
+      BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+    steps:
+      - name: Configuration présente ?
+        id: cfg
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$AGE_RECIPIENT" ] || [ -z "$BACKUP_S3_BUCKET" ]; then
+            echo "Sauvegarde non configurée (voir scripts/ops/backup.md) : rien à faire."
+            echo "skip=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Outils (pg_dump 17, age)
+        if: steps.cfg.outputs.skip != '1'
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17 age
+
+      - name: Dump chiffré et envoi
+        if: steps.cfg.outputs.skip != '1'
+        run: |
+          set -euo pipefail
+          f="repere-$(date -u +%Y-%m-%dT%H%M)Z.sql.gz.age"
+          /usr/lib/postgresql/17/bin/pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges --schema=public --schema=auth \
+            | gzip -9 | age -r "$AGE_RECIPIENT" > "$f"
+          test -s "$f"
+          aws s3 cp "$f" "s3://$BACKUP_S3_BUCKET/daily/$f" --endpoint-url "$BACKUP_S3_ENDPOINT" --only-show-errors
+          echo "Sauvegarde envoyée : $f ($(du -h "$f" | cut -f1))"

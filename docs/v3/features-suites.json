@@ -1,0 +1,178 @@
+[
+  {
+    "feature": "Grader gratuit : score de marque dans les IA (porte d'entrée)",
+    "competitors": ["HubSpot AEO Grader / AI Search Grader", "Frase (GEO Score Checker, AI Visibility Checker)"],
+    "what": "Formulaire court (nom, lieu, produit, secteur), sans compte pour le score. Retourne un score /100 pondéré en 5 dimensions (sentiment 40, qualité de présence 20, notoriété 20, part de voix 10, concurrence 10), une interprétation écrite, puis le rapport complet derrière un formulaire (gated). Interroge 3 moteurs.",
+    "userValue": "Résultat en moins d'une minute, sans engagement ; chiffre partageable ; point de départ pour comprendre où on en est.",
+    "howBuilt": "Quelques requêtes standardisées envoyées aux LLM, extraction mention/ton/sources, score composite pondéré, rendu côté serveur, capture d'email avant le détail. Repéré a déjà le moteur d'audit : il s'agit surtout d'une version publique, limitée et rapide.",
+    "effort": "S",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 5,
+    "source": "https://www.hubspot.com/aeo-grader ; https://www.frase.io/ ; https://www.stackmatix.com/blog/hubspot-ai-search-grader (limites : 1 mot-clé, 3 moteurs, instantané non suivi)"
+  },
+  {
+    "feature": "Audit « AI readiness » du site (robots, schema, rendu sans JS, vitesse, structure)",
+    "competitors": ["Semrush (AI Search Site Audit, widget AI Search Health)", "Frase (Site audit, Fix Pack, Agent Readiness Checker)"],
+    "what": "Semrush : vérifie si les robots IA peuvent explorer le contenu, 100 pages incluses dans l'offre de base. Frase : score de préparation /100 sur toutes les pages, liste priorisée « Fix Pack » (exemple affiché : 212 pages, 44 problèmes).",
+    "userValue": "Une liste courte de correctifs techniques classés par impact, avec un score unique à faire monter.",
+    "howBuilt": "Crawler léger : robots.txt (GPTBot, ClaudeBot, PerplexityBot, Google-Extended), llms.txt, JSON-LD présent/valide, comparaison HTML brut vs HTML rendu pour détecter le contenu dépendant de JS, titres/FAQ/listes, poids et temps de réponse. Scoring par règles. Détail des contrôles exacts de Semrush et Frase : non vérifié.",
+    "effort": "M",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 5,
+    "source": "https://www.semrush.com/kb/1493-ai-visibility-toolkit ; https://www.frase.io/"
+  },
+  {
+    "feature": "Optimiseur de contenu pour la citabilité (score par page + suggestions)",
+    "competitors": ["Frase", "Ahrefs AI Content Helper", "Clearscope", "Surfer", "Writesonic GEO"],
+    "what": "Ahrefs : score 0-100 de couverture des sujets des pages bien classées, sujets notés un par un, aide aux titres/méta, chat IA, mode « réviser une URL existante ». Frase : score par page pour les classements et pour les réponses IA, avec correctifs priorisés. Clearscope et Surfer : non lus (pages inaccessibles), non vérifié.",
+    "userValue": "Savoir quoi ajouter ou reformuler sur une page précise pour être repris dans les réponses des IA.",
+    "howBuilt": "Pour une URL : extraire le texte, détecter les questions couvertes ou non (issues du moteur de questions), vérifier réponse directe en tête de section, faits chiffrés, FAQ balisée, signaux de confiance ; score par règles + suggestions rédigées par LLM. Éviter de prétendre prédire le classement (Ahrefs a publié une étude sur la corrélation score/classement ; contenu non lu).",
+    "effort": "M",
+    "segments": ["pme", "e-commerce"],
+    "priority": 4,
+    "source": "https://help.ahrefs.com/en/articles/9879434-about-the-new-ai-content-helper ; https://www.frase.io/"
+  },
+  {
+    "feature": "Recherche de prompts et de questions (volume, difficulté, intention)",
+    "competitors": ["Semrush (Prompt Research)", "Moz (Prompt Suggestions, non lu)", "Ahrefs Brand Radar (prompts personnalisés)", "Similarweb (analyse des prompts)"],
+    "what": "Semrush : « keyword research pour l'IA » avec volume par thème, difficulté et intention ; 1 000 requêtes de recherche par jour dans l'offre de base. Similarweb : examen des prompts derrière les réponses. Ahrefs : base de 477 millions de prompts mensuels annoncée par l'éditeur (chiffre rapporté par un blog tiers, non vérifié chez Ahrefs).",
+    "userValue": "Choisir quels prompts suivre sans partir d'une page blanche ; repérer les questions réelles des clients.",
+    "howBuilt": "Pas de volume réel accessible à un petit acteur : proposer des prompts par secteur/ville/produit via LLM et gabarits, enrichis par People Also Ask et suggestions d'autocomplétion. Afficher honnêtement « suggestion », jamais un volume inventé.",
+    "effort": "M",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 4,
+    "source": "https://www.semrush.com/kb/1493-ai-visibility-toolkit ; https://www.similarweb.com/blog/updates/announcements/introducing-ai-brand-visibility ; https://www.get-ryze.ai/blog/ahrefs-brand-radar-pricing-2026"
+  },
+  {
+    "feature": "Suivi des AI Overviews Google",
+    "competitors": ["SE Ranking (AIO Tracker, AI Mode Tracker)", "Ahrefs Brand Radar", "Surfer AI Tracker"],
+    "what": "SE Ranking : présence et position des mots-clés dans les AI Overviews, domaines cités, copies de SERP en cache pour l'historique, par pays. Surfer et Ahrefs couvrent aussi AI Overviews et AI Mode (Surfer : article d'un concurrent, Ahrefs : blog tiers).",
+    "userValue": "Savoir si Google cite la marque sur ses requêtes clés.",
+    "howBuilt": "Coûteux et fragile : exige de capter la SERP réelle (fournisseur SERP payant ou scraping, risque CGU). Pour un fondateur solo : différer, ou limiter à une vérification ponctuelle via fournisseur SERP, étiquetée « échantillon ». Gemini sans ancrage ne remplace pas AI Overviews.",
+    "effort": "L",
+    "segments": ["pme", "e-commerce"],
+    "priority": 2,
+    "source": "https://rankability.com/blog/se-rankings-ai-visibility-tracker-review ; https://www.rankability.com/blog/surfer-ai-tracker-review/ ; https://www.get-ryze.ai/blog/ahrefs-brand-radar-pricing-2026"
+  },
+  {
+    "feature": "Analyse des mentions de marque sur le web (Reddit, forums, vidéos)",
+    "competitors": ["Ahrefs Brand Radar (YouTube, TikTok, Reddit)", "SE Ranking (vue « no cited »)", "Similarweb (sources)"],
+    "what": "Ahrefs : YouTube, TikTok et Reddit comme sources, gratuites pendant la bêta d'après un blog tiers. SE Ranking : mentions non liées et sources des concurrents. Similarweb : sites et sources qui alimentent les mentions.",
+    "userValue": "Comprendre d'où les IA tirent leur image de la marque et où il faut être présent.",
+    "howBuilt": "Repéré classe déjà 436 domaines cités. Étendre : détecter dans les sources citées les fils Reddit/forums/avis, résumer ce qu'on y dit de la marque, proposer une action (répondre, demander un avis). Pas de scraping massif de Reddit (CGU/API).",
+    "effort": "M",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 3,
+    "source": "https://www.get-ryze.ai/blog/ahrefs-brand-radar-pricing-2026 ; https://rankability.com/blog/se-rankings-ai-visibility-tracker-review ; https://www.similarweb.com/blog/updates/announcements/introducing-ai-brand-visibility"
+  },
+  {
+    "feature": "Rapports automatiques et exports",
+    "competitors": ["Semrush (My Reports, exports CSV, PDF en marque blanche en option)", "Surfer (rapports de tendance hebdomadaires)"],
+    "what": "Semrush : exports CSV, My Reports, PDF en marque blanche avec add-on à 20 $/mois (sources divergentes sur l'essai gratuit). Surfer : rapport de tendance hebdomadaire.",
+    "userValue": "Un document à envoyer au dirigeant, au client ou à l'agence sans refaire de montage.",
+    "howBuilt": "Repéré a déjà digest du lundi et page Rapports. Ajouter : PDF mensuel imprimable (rendu HTML vers PDF), export CSV, lien de partage lecture seule, option marque blanche pour agences.",
+    "effort": "S",
+    "segments": ["pme", "e-commerce"],
+    "priority": 3,
+    "source": "https://www.semrush.com/kb/1493-ai-visibility-toolkit ; https://www.semrush.com/blog/ai-visibility-tracking-tools-for-agencies/ ; https://www.rankability.com/blog/surfer-ai-tracker-review/"
+  },
+  {
+    "feature": "Part de voix par thématique (topic)",
+    "competitors": ["Semrush (Brand Performance)", "SE Ranking (AI Visibility Tracker)", "Similarweb (topic focus)", "Frase"],
+    "what": "Part de voix, sentiment et récits qui forgent la réputation, avec recommandations (Semrush) ; part de voix par thème avec historique (SE Ranking) ; visibilité par grands thèmes (Similarweb) ; part de voix et sentiment par étape du parcours d'achat (Frase).",
+    "userValue": "Voir sur quels thèmes on gagne ou on perd face aux concurrents, plutôt qu'un score global unique.",
+    "howBuilt": "Regrouper les prompts suivis en thèmes (tags), calculer par thème la part de réponses citant la marque vs chaque concurrent. Simple agrégation SQL sur les audits existants ; affichage en barres empilées ou carte thermique.",
+    "effort": "M",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 5,
+    "source": "https://www.semrush.com/kb/1493-ai-visibility-toolkit ; https://rankability.com/blog/se-rankings-ai-visibility-tracker-review ; https://www.frase.io/"
+  },
+  {
+    "feature": "Vue « mentionnés chez eux, pas chez vous » (gap concurrents)",
+    "competitors": ["SE Ranking", "Semrush (Competitor Research)"],
+    "what": "Liste des prompts et thèmes où un concurrent est cité et pas la marque ; jugée utile pour les idées de contenu par des utilisateurs (avis Reddit rapporté, non vérifié).",
+    "userValue": "Une liste d'actions directement transformable en tâche.",
+    "howBuilt": "Déjà couvert par les gaps concurrents de Repéré V2 ; améliorer en reliant chaque gap à une tâche d'exécution générée (page FAQ, comparatif).",
+    "effort": "S",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 4,
+    "source": "https://rankability.com/blog/se-rankings-ai-visibility-tracker-review ; https://www.semrush.com/kb/1493-ai-visibility-toolkit"
+  },
+  {
+    "feature": "Pages du site citées par les IA (vue contenu)",
+    "competitors": ["Clearscope (AI Cited Pages Content View)", "SE Ranking (pages les plus citées en AI Mode)", "Semrush (sources et pages citées)"],
+    "what": "Clearscope : pour chaque page suivie, nombre de citations ChatGPT/Gemini/Perplexity, prompts sources, moteurs et aperçu de la réponse.",
+    "userValue": "Savoir quelles pages marchent et lesquelles ne sont jamais reprises, et mesurer l'effet d'une mise à jour.",
+    "howBuilt": "Croiser les URL citées dans nos audits avec les pages du site (sitemap) ; tableau page / nombre de citations / prompts / moteurs, avec historique avant-après modification.",
+    "effort": "M",
+    "segments": ["pme", "e-commerce"],
+    "priority": 4,
+    "source": "https://www.clearscope.io/blog/is-ai-citing-your-pages ; https://rankability.com/blog/se-rankings-ai-visibility-tracker-review"
+  },
+  {
+    "feature": "Suivi quotidien des prompts avec alertes de baisse",
+    "competitors": ["Semrush (Prompt Tracking)", "Frase (mises à jour quotidiennes)", "Surfer (blocs de prompts)"],
+    "what": "Semrush : prompts suivis jour par jour sur Google AI Mode et ChatGPT, pour repérer les chutes soudaines ; 25 prompts de base. Frase : mises à jour quotidiennes sur 5 moteurs.",
+    "userValue": "Être prévenu quand la visibilité chute, au lieu de le découvrir un mois plus tard.",
+    "howBuilt": "Planificateur d'audits (cron) sur un petit panier de prompts, comparaison à la moyenne mobile, alerte email ; le coût API limite la fréquence : hebdomadaire par défaut, quotidien en option. Repéré a déjà alertes et digest.",
+    "effort": "M",
+    "segments": ["pme", "e-commerce"],
+    "priority": 3,
+    "source": "https://www.semrush.com/kb/1493-ai-visibility-toolkit ; https://www.frase.io/"
+  },
+  {
+    "feature": "Suivi local par ville ou code postal",
+    "competitors": ["SE Ranking (suivi par ZIP et ville)", "Semrush (régions pour la visibilité)"],
+    "what": "SE Ranking : suivi cohérent par code postal et ville, salué par des utilisateurs (avis rapportés, non vérifiés). Semrush : visibilité mondiale ou par région.",
+    "userValue": "Pour un commerce local, la requête « près de moi » change d'une ville à l'autre.",
+    "howBuilt": "Injecter la ville/quartier dans les prompts et la localisation dans les appels API quand elle est supportée ; segmenter les résultats par zone. Avantage possible pour Repéré (focus France).",
+    "effort": "M",
+    "segments": ["local"],
+    "priority": 4,
+    "source": "https://rankability.com/blog/se-rankings-ai-visibility-tracker-review ; https://www.semrush.com/kb/1493-ai-visibility-toolkit"
+  },
+  {
+    "feature": "Sentiment et récit de marque",
+    "competitors": ["HubSpot AEO Grader (40 points sur 100)", "Semrush Brand Performance", "Frase"],
+    "what": "HubSpot : le sentiment pèse 40 points du score. Semrush : sentiment et récits qui façonnent la réputation.",
+    "userValue": "Savoir non seulement si l'on est cité mais comment (ton, reproches, faits erronés).",
+    "howBuilt": "Déjà couvert par perception et vérification des faits de Repéré V2 ; mettre en avant dans le grader public comme différenciateur (fiche de vérité).",
+    "effort": "S",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 3,
+    "source": "https://www.hubspot.com/aeo-grader ; https://www.semrush.com/kb/1493-ai-visibility-toolkit"
+  },
+  {
+    "feature": "Trafic référent des chatbots IA",
+    "competitors": ["Similarweb (AI traffic / GenAI Intelligence Toolkit)"],
+    "what": "Similarweb annonce le suivi de la visibilité et du trafic sur les chatbots (communiqué de juillet 2025 : titre lu seulement dans les résultats de recherche, contenu non lu). L'AI Brand Visibility est réservé aux clients via un account manager.",
+    "userValue": "Relier la visibilité IA à des visites réelles.",
+    "howBuilt": "Déjà présent : script t.js sans cookie et connecteur GA4. Pas de panel de données tiers à reproduire ; limiter à son propre site.",
+    "effort": "S",
+    "segments": ["pme", "e-commerce"],
+    "priority": 2,
+    "source": "https://www.similarweb.com/blog/updates/announcements/introducing-ai-brand-visibility ; https://ir.similarweb.com/news-events/press-releases/detail/125/similarweb-launches-genai-intelligence-toolkit-tracking-visibility-and-traffic-across-ai-chatbots (titre seul, non lu)"
+  },
+  {
+    "feature": "Détection de contenu en déclin (Content Guard)",
+    "competitors": ["Frase"],
+    "what": "Surveille la baisse de classement et de trafic et rédige des correctifs.",
+    "userValue": "Maintenir les pages utiles à jour sans les relire une à une.",
+    "howBuilt": "Comparer deux audits successifs par page + alerte et brouillon de réécriture. Dépend du suivi par page.",
+    "effort": "M",
+    "segments": ["pme", "e-commerce"],
+    "priority": 2,
+    "source": "https://www.frase.io/"
+  },
+  {
+    "feature": "Agent connecté (MCP) et exécution nocturne automatique",
+    "competitors": ["Frase (AI Agent, serveur MCP)"],
+    "what": "Agent qui lit les pages bien classées, rédige dans la voix de marque et peut agir de nuit sur les actions autorisées ; accessible depuis Claude ou Cursor via MCP.",
+    "userValue": "Automatiser la production de contenu.",
+    "howBuilt": "Hors cible pour Repéré (clients non techniques, promesse « clé en main ») ; le copilote existant couvre l'essentiel. À ne pas cloner en V3.",
+    "effort": "L",
+    "segments": ["pme"],
+    "priority": 1,
+    "source": "https://www.frase.io/"
+  }
+]

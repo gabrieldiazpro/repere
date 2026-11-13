@@ -1,0 +1,143 @@
+/* Rapport V4 : synthèse « lisible en 10 secondes ». Jetons --r-* de .root (report.module.css), mode sombre compris.
+   Mouvement : fondus et remplissages (opacité, scaleX) ; aucun déplacement, donc rien à couper en mouvement réduit. */
+
+.verdict { display: grid; gap: 24px; padding-top: 24px; scroll-margin-top: 72px; }
+@media (min-width: 720px) { .verdict { gap: 28px; } }
+
+/* ---------- En-tête ---------- */
+.head { display: grid; gap: 4px; }
+.head h1 { font-size: 20px; font-weight: 700; color: var(--r-muted); letter-spacing: -0.005em; }
+@media (min-width: 720px) { .head h1 { font-size: 22px; } }
+.meta { color: var(--r-muted); font-size: 14px; }
+.head > span { justify-self: start; margin-top: 4px; }
+
+/* ---------- Verdict en une phrase, dans le viseur ---------- */
+.sentence {
+  position: relative; font-family: var(--r-display); font-weight: 750; font-size: 25px; line-height: 1.22;
+  letter-spacing: -0.02em; text-wrap: balance; padding: 18px 20px; max-width: 30ch;
+  animation: fadeIn .5s ease-out both;
+}
+@media (min-width: 720px) { .sentence { font-size: 34px; padding: 22px 28px; max-width: 32ch; } }
+.corners { position: absolute; inset: 0; pointer-events: none; --c: var(--r-primary); --l: 18px; --t: 3px;
+  background:
+    linear-gradient(var(--c), var(--c)) top left / var(--l) var(--t),
+    linear-gradient(var(--c), var(--c)) top left / var(--t) var(--l),
+    linear-gradient(var(--c), var(--c)) top right / var(--l) var(--t),
+    linear-gradient(var(--c), var(--c)) top right / var(--t) var(--l),
+    linear-gradient(var(--c), var(--c)) bottom left / var(--l) var(--t),
+    linear-gradient(var(--c), var(--c)) bottom left / var(--t) var(--l),
+    linear-gradient(var(--c), var(--c)) bottom right / var(--l) var(--t),
+    linear-gradient(var(--c), var(--c)) bottom right / var(--t) var(--l);
+  background-repeat: no-repeat; border-radius: 4px;
+  animation: lock .7s .15s cubic-bezier(.2, .8, .2, 1) both;
+}
+.corners::after { content: ''; position: absolute; right: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--r-accent); }
+.sentence[data-tone='bad'] .corners::after { background: var(--r-danger); }
+.sentence[data-tone='good'] .corners::after { background: var(--r-success); }
+@keyframes lock { from { opacity: 0; inset: -10px; } to { opacity: 1; inset: 0; } }
+
+/* ---------- Score + 3 constats ---------- */
+.top { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 720px) { .top { grid-template-columns: 210px minmax(0, 1fr); gap: 32px; align-items: center; } }
+
+.score { display: grid; justify-items: center; text-align: center; gap: 2px; }
+.band { font-weight: 700; font-size: 15px; }
+.band[data-tone='bad'] { color: var(--r-danger); }
+.band[data-tone='warn'] { color: var(--r-warning); }
+.band[data-tone='good'] { color: var(--r-success); }
+.margin { font-size: 13px; color: var(--r-muted); }
+.margin strong { color: var(--r-ink); }
+
+.findings { list-style: none; margin: 0; padding: 0; display: grid; }
+.finding {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 14px 0;
+  border-top: 1px solid var(--r-line);
+  animation: fadeIn .45s ease-out both; animation-delay: calc(var(--k, 0) * 140ms + 250ms);
+}
+.finding:first-child { border-top: 0; padding-top: 0; }
+.finding:last-child { padding-bottom: 0; }
+.fIcon { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; }
+.finding[data-tone='bad'] .fIcon { background: var(--r-danger-bg); color: var(--r-danger); }
+.finding[data-tone='warn'] .fIcon { background: var(--r-warning-bg); color: var(--r-warning); }
+.finding[data-tone='good'] .fIcon { background: var(--r-success-bg); color: var(--r-success); }
+.fBody { display: grid; gap: 2px; min-width: 0; }
+.fLabel { font-size: 13px; font-weight: 700; color: var(--r-warning-ink); }
+.fBig { font-family: var(--r-display); font-size: 26px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.fTitle { font-size: 17px; line-height: 1.35; }
+.fText { font-size: 14.5px; color: var(--r-muted); line-height: 1.45; }
+.fLink { font-size: 14px; font-weight: 600; white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; margin-top: -10px; text-decoration: none; }
+.fLink:hover { text-decoration: underline; }
+
+/* ---------- Preuves : extraits + concurrents ---------- */
+.proof { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--r-line); padding-top: 22px; }
+@media (min-width: 760px) { .proof { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; } }
+.h { font-size: 17px !important; font-weight: 700; margin-bottom: 10px !important; }
+
+.quotes { display: grid; gap: 10px; align-content: start; }
+.quote { margin: 0; background: var(--r-bg); border: 1px solid var(--r-line); border-radius: 14px; padding: 12px 14px; display: grid; gap: 6px; animation: fadeIn .5s ease-out both; animation-delay: calc(var(--k, 0) * 160ms + 700ms); }
+.qHead { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--r-muted); line-height: 1.4; }
+.qHead strong { color: var(--r-ink); }
+.pChip { flex: none; width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: var(--r-primary-bg); color: var(--r-primary); border: 1px solid color-mix(in srgb, var(--r-primary) 30%, transparent); }
+.qText { margin: 0; font-size: 15px; line-height: 1.5; }
+.qVerdict { font-size: 13px; font-weight: 600; display: flex; gap: 6px; align-items: center; }
+.qVerdict::before { font-weight: 800; }
+.qVerdict[data-tone='bad'] { color: var(--r-danger-ink); }
+.qVerdict[data-tone='bad']::before { content: '✕'; }
+.qVerdict[data-tone='good'] { color: var(--r-success-ink); }
+.qVerdict[data-tone='good']::before { content: '✓'; }
+.more { font-size: 14px; font-weight: 600; justify-self: start; min-height: 40px; display: inline-flex; align-items: center; }
+
+.rivals { display: grid; gap: 8px; align-content: start; }
+.rivalsSub { font-size: 13px; color: var(--r-muted); margin-top: -8px !important; }
+.bars { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 12px; }
+.bar, .barYou { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; }
+.barName { font-weight: 600; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barName small { font-weight: 500; color: var(--r-muted); font-size: 12.5px; }
+.barYou .barName { color: var(--r-primary); }
+.barNum { font-family: var(--r-display); font-weight: 800; font-size: 18px; text-align: right; }
+.barTrack { grid-column: 1 / -1; grid-row: 2; height: 10px; border-radius: 99px; background: var(--r-bubble); overflow: hidden; }
+.barFill {
+  display: block; height: 100%; border-radius: 99px; background: color-mix(in srgb, var(--r-muted) 70%, var(--r-ink)); transform-origin: left center;
+  transition: transform .8s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--k, 0) * 110ms);
+}
+.bar:first-child .barFill { background: var(--r-warning); }
+.barYou .barFill { background: var(--r-primary-fill, var(--r-primary)); }
+:global(html[data-motion]) .rivals:not([data-in]) .barFill { transform: scaleX(0); }
+
+/* ---------- LE bouton suivant ---------- */
+.next {
+  display: grid; gap: 14px; align-items: center; grid-template-columns: minmax(0, 1fr);
+  background: var(--r-primary-bg); border-radius: 16px; padding: 18px;
+}
+@media (min-width: 720px) { .next { grid-template-columns: minmax(0, 1fr) auto; padding: 20px 24px; gap: 8px 24px; } }
+.nextText { display: grid; gap: 4px; }
+.nextText strong { font-family: var(--r-display); font-size: 19px; line-height: 1.25; }
+.nextText span { font-size: 14px; color: var(--r-muted); }
+.nextBtn { min-height: 54px !important; font-size: 17px !important; padding: 0 26px !important; width: 100%; }
+@media (min-width: 720px) { .nextBtn { width: auto; } }
+.nextShare { grid-column: 1 / -1; }
+.nextShare:empty { display: none; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- Sections du détail : repliables sur tous les écrans ---------- */
+.detailHead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 4px 4px 0; }
+.detailHead h2 { font-family: var(--r-display); font-size: 20px; font-weight: 700; }
+.detailHead p { font-size: 14px; color: var(--r-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .corners { animation-name: fadeIn; }
+}
+
+/* Jauge partagée (src/components/site/ScoreGauge) : couleurs fixes en attribut, recolorées ici pour le mode sombre. */
+.score svg > path:first-of-type { stroke: var(--r-line); }
+.score svg line { stroke: var(--r-card); }
+.score svg text { fill: var(--r-ink); }
+.score svg text + text { fill: var(--r-muted); }
+
+/* Mobile : le bouton suivant remonte juste après les 3 constats ; les preuves suivent. */
+@media (max-width: 759px) {
+  .next { order: 1; }
+  .proof { order: 2; }
+  .sentence { font-size: 22px; padding: 14px 16px; }
+}

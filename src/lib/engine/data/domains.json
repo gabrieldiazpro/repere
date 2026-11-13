@@ -1,0 +1,2770 @@
+[
+ {
+  "domain": "pagesjaunes.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "PagesJaunes",
+  "howToGetListed": "Créer ou revendiquer la fiche gratuite via l'espace pro Solocal (solocal.com), compléter activités, horaires, photos et site."
+ },
+ {
+  "domain": "societe.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Societe.com",
+  "howToGetListed": "Fiche générée depuis le registre (SIRENE/RCS) : vérifier les données légales, compléter la fiche via l'espace dirigeant."
+ },
+ {
+  "domain": "pappers.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Pappers",
+  "howToGetListed": "Fiche issue des registres publics : vérifier SIRET, NAF, adresse et dirigeants auprès de l'INSEE/greffe si erreur."
+ },
+ {
+  "domain": "verif.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Verif.com",
+  "howToGetListed": "Fiche issue du registre : corriger les informations à la source (INPI/INSEE)."
+ },
+ {
+  "domain": "manageo.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Manageo",
+  "howToGetListed": "Fiche issue du registre : vérifier et compléter la fiche entreprise."
+ },
+ {
+  "domain": "infonet.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Infonet",
+  "howToGetListed": "Fiche issue du registre : vérifier les données légales."
+ },
+ {
+  "domain": "kompass.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Kompass",
+  "howToGetListed": "Créer la fiche entreprise gratuite et renseigner produits/services (offres payantes optionnelles)."
+ },
+ {
+  "domain": "europages.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Europages",
+  "howToGetListed": "Créer la vitrine fournisseur gratuite (B2B, industrie)."
+ },
+ {
+  "domain": "hellopro.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Hellopro",
+  "howToGetListed": "Référencer l'entreprise et ses produits B2B (modèle payant au lead)."
+ },
+ {
+  "domain": "118712.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "118 712",
+  "howToGetListed": "Fiche reprise des données Solocal : vérifier la fiche PagesJaunes."
+ },
+ {
+  "domain": "118000.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "118 000",
+  "howToGetListed": "Vérifier ou créer la fiche via le formulaire professionnel."
+ },
+ {
+  "domain": "justacote.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Justacôté",
+  "howToGetListed": "Créer la fiche gratuite et ajouter photos et horaires."
+ },
+ {
+  "domain": "hoodspot.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Hoodspot",
+  "howToGetListed": "Créer la fiche gratuite de l'établissement."
+ },
+ {
+  "domain": "cylex-france.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Cylex France",
+  "howToGetListed": "Ajouter l'entreprise gratuitement et compléter la fiche."
+ },
+ {
+  "domain": "mappy.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Mappy",
+  "howToGetListed": "Les données viennent de Solocal/PagesJaunes : mettre à jour la fiche PagesJaunes."
+ },
+ {
+  "domain": "habitatpresto.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Habitatpresto",
+  "howToGetListed": "Inscription artisan (modèle payant par contact) : vérifier le coût par lead avant de s'engager."
+ },
+ {
+  "domain": "travaux.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Travaux.com",
+  "howToGetListed": "Inscription professionnel (mise en relation payante)."
+ },
+ {
+  "domain": "quotatis.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Quotatis",
+  "howToGetListed": "Inscription artisan (mise en relation payante)."
+ },
+ {
+  "domain": "123devis.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "123devis",
+  "howToGetListed": "Inscription professionnel (leads payants)."
+ },
+ {
+  "domain": "starofservice.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "StarOfService",
+  "howToGetListed": "Créer un profil pro gratuit ; les contacts sont payants."
+ },
+ {
+  "domain": "houzz.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Houzz",
+  "howToGetListed": "Créer un profil professionnel gratuit avec réalisations et photos."
+ },
+ {
+  "domain": "doctolib.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Doctolib",
+  "howToGetListed": "Professionnels de santé : abonnement Doctolib, compléter la fiche (spécialités, accès, langues)."
+ },
+ {
+  "domain": "planity.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Planity",
+  "howToGetListed": "Coiffure/beauté : ouvrir un compte établissement (abonnement) et compléter prestations et photos."
+ },
+ {
+  "domain": "treatwell.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Treatwell",
+  "howToGetListed": "Beauté/bien-être : inscrire le salon (commission), compléter prestations."
+ },
+ {
+  "domain": "resalib.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Resalib",
+  "howToGetListed": "Praticiens bien-être : créer la fiche praticien."
+ },
+ {
+  "domain": "medoucine.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Médoucine",
+  "howToGetListed": "Praticiens bien-être : candidature et sélection."
+ },
+ {
+  "domain": "sortlist.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Sortlist",
+  "howToGetListed": "Agences : créer le profil agence, ajouter cas clients et avis."
+ },
+ {
+  "domain": "lafrenchtech.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "La French Tech",
+  "howToGetListed": "Startups : s'inscrire dans l'annuaire de l'écosystème local."
+ },
+ {
+  "domain": "welcometothejungle.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Welcome to the Jungle",
+  "howToGetListed": "Créer une page entreprise (offre payante) avec photos et témoignages."
+ },
+ {
+  "domain": "restaurantguru.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Restaurant Guru",
+  "howToGetListed": "Revendiquer la fiche restaurant gratuite."
+ },
+ {
+  "domain": "moncompteformation.gouv.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Mon Compte Formation (catalogue CPF)",
+  "howToGetListed": "Organismes certifiés Qualiopi : publier les formations éligibles via EDOF."
+ },
+ {
+  "domain": "france-renov.gouv.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "France Rénov' (annuaire RGE)",
+  "howToGetListed": "Obtenir une qualification RGE (Qualibat, Qualit'EnR…) : l'annuaire est alimenté automatiquement."
+ },
+ {
+  "domain": "qualibat.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Qualibat",
+  "howToGetListed": "Demander une qualification/certification Qualibat (dossier + audit)."
+ },
+ {
+  "domain": "qualit-enr.org",
+  "category": "directory",
+  "country": "FR",
+  "label": "Qualit'EnR",
+  "howToGetListed": "Qualification EnR (photovoltaïque, PAC, bois) : dossier + audit."
+ },
+ {
+  "domain": "avocat.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Annuaire du CNB (avocat.fr)",
+  "howToGetListed": "Avocats inscrits au barreau : compléter le profil sur l'annuaire national."
+ },
+ {
+  "domain": "notaires.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Annuaire des notaires",
+  "howToGetListed": "Fiche officielle de l'office : mise à jour via la chambre des notaires."
+ },
+ {
+  "domain": "experts-comptables.fr",
+  "category": "directory",
+  "country": "FR",
+  "label": "Annuaire de l'Ordre des experts-comptables",
+  "howToGetListed": "Mettre à jour la fiche via l'espace membre de l'Ordre."
+ },
+ {
+  "domain": "architectes.org",
+  "category": "directory",
+  "country": "FR",
+  "label": "Annuaire de l'Ordre des architectes",
+  "howToGetListed": "Fiche automatique des inscrits : compléter le profil."
+ },
+ {
+  "domain": "gites-de-france.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Gîtes de France",
+  "howToGetListed": "Labelliser l'hébergement auprès du relais départemental."
+ },
+ {
+  "domain": "kelformation.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Kelformation",
+  "howToGetListed": "Organismes de formation : publier le catalogue."
+ },
+ {
+  "domain": "diplomeo.com",
+  "category": "directory",
+  "country": "FR",
+  "label": "Diplomeo",
+  "howToGetListed": "Écoles : créer la fiche établissement."
+ },
+ {
+  "domain": "google.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Google (Maps / Business Profile)",
+  "howToGetListed": "Revendiquer ou créer la fiche Google Business Profile (business.google.com), compléter catégories, horaires, photos, services, puis demander des avis à de vrais clients."
+ },
+ {
+  "domain": "bing.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Bing (Places)",
+  "howToGetListed": "Créer la fiche Bing Places for Business (import possible depuis Google Business Profile)."
+ },
+ {
+  "domain": "apple.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Apple (Plans / Business Connect)",
+  "howToGetListed": "Revendiquer l'établissement dans Apple Business Connect."
+ },
+ {
+  "domain": "foursquare.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Foursquare",
+  "howToGetListed": "Revendiquer le lieu (Foursquare for Business) : ses données alimentent plusieurs assistants."
+ },
+ {
+  "domain": "mapquest.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "MapQuest",
+  "howToGetListed": "Données agrégées (souvent Yext/Foursquare) : corriger la source amont."
+ },
+ {
+  "domain": "waze.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Waze",
+  "howToGetListed": "Ajouter le lieu via Waze for Cities/Business ou l'éditeur Waze."
+ },
+ {
+  "domain": "openstreetmap.org",
+  "category": "directory",
+  "country": "INT",
+  "label": "OpenStreetMap",
+  "howToGetListed": "Ajouter ou corriger l'établissement sur openstreetmap.org (données ouvertes, sans promotion)."
+ },
+ {
+  "domain": "crunchbase.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Crunchbase",
+  "howToGetListed": "Créer ou revendiquer le profil entreprise."
+ },
+ {
+  "domain": "indeed.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Indeed (pages entreprise)",
+  "howToGetListed": "Revendiquer la page entreprise employeur."
+ },
+ {
+  "domain": "hotfrog.fr",
+  "category": "directory",
+  "country": "INT",
+  "label": "Hotfrog",
+  "howToGetListed": "Ajouter l'entreprise gratuitement."
+ },
+ {
+  "domain": "brownbook.net",
+  "category": "directory",
+  "country": "INT",
+  "label": "Brownbook",
+  "howToGetListed": "Ajouter l'entreprise gratuitement."
+ },
+ {
+  "domain": "cybo.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Cybo",
+  "howToGetListed": "Revendiquer la fiche."
+ },
+ {
+  "domain": "superlawyers.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Super Lawyers"
+ },
+ {
+  "domain": "findlaw.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "FindLaw"
+ },
+ {
+  "domain": "healthgrades.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Healthgrades"
+ },
+ {
+  "domain": "zocdoc.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Zocdoc"
+ },
+ {
+  "domain": "yellowpages.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Yellow Pages (US)"
+ },
+ {
+  "domain": "thumbtack.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Thumbtack"
+ },
+ {
+  "domain": "angi.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Angi"
+ },
+ {
+  "domain": "bbb.org",
+  "category": "directory",
+  "country": "INT",
+  "label": "Better Business Bureau"
+ },
+ {
+  "domain": "f6s.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "F6S",
+  "howToGetListed": "Startups : créer le profil."
+ },
+ {
+  "domain": "builtin.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Built In"
+ },
+ {
+  "domain": "dnb.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Dun & Bradstreet",
+  "howToGetListed": "Vérifier la fiche D-U-N-S."
+ },
+ {
+  "domain": "zoominfo.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "ZoomInfo"
+ },
+ {
+  "domain": "apollo.io",
+  "category": "directory",
+  "country": "INT",
+  "label": "Apollo"
+ },
+ {
+  "domain": "toprateddentist.com",
+  "category": "directory",
+  "country": "INT",
+  "label": "Top Rated Dentist"
+ },
+ {
+  "domain": "avis-verifies.com",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Avis Vérifiés",
+  "howToGetListed": "Solution d'avis certifiés (payante, norme NF Z74-501) : collecter les avis après achat ou prestation, jamais de faux avis."
+ },
+ {
+  "domain": "societe-des-avis-garantis.fr",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Société des Avis Garantis",
+  "howToGetListed": "Solution d'avis certifiés (payante) : collecte automatique après prestation."
+ },
+ {
+  "domain": "custplace.com",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Custplace",
+  "howToGetListed": "Revendiquer la page de l'entreprise et répondre aux avis."
+ },
+ {
+  "domain": "opinion-system.fr",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Opinion System",
+  "howToGetListed": "Solution d'avis contrôlés (immobilier, services)."
+ },
+ {
+  "domain": "thefork.fr",
+  "category": "reviews",
+  "country": "FR",
+  "label": "TheFork (LaFourchette)",
+  "howToGetListed": "Restaurants : inscrire l'établissement via TheFork Manager (commission sur réservations), répondre aux avis."
+ },
+ {
+  "domain": "lafourchette.com",
+  "category": "reviews",
+  "country": "FR",
+  "label": "LaFourchette (ancien domaine TheFork)",
+  "howToGetListed": "Voir TheFork Manager."
+ },
+ {
+  "domain": "tripadvisor.fr",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Tripadvisor",
+  "howToGetListed": "Revendiquer gratuitement l'établissement (Tripadvisor Business), photos, réponses aux avis, inviter des clients réels."
+ },
+ {
+  "domain": "yelp.fr",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Yelp France",
+  "howToGetListed": "Revendiquer la page gratuite via Yelp for Business, compléter, répondre aux avis (Yelp interdit de solliciter des avis)."
+ },
+ {
+  "domain": "glassdoor.fr",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Glassdoor",
+  "howToGetListed": "Revendiquer le profil employeur gratuit."
+ },
+ {
+  "domain": "trustedshops.fr",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Trusted Shops",
+  "howToGetListed": "E-commerce : label + avis acheteurs (payant)."
+ },
+ {
+  "domain": "ekomi.fr",
+  "category": "reviews",
+  "country": "FR",
+  "label": "eKomi",
+  "howToGetListed": "Solution d'avis (payante)."
+ },
+ {
+  "domain": "guest-suite.com",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Guest Suite",
+  "howToGetListed": "Collecte d'avis (payante) multi-plateformes."
+ },
+ {
+  "domain": "signal-arnaques.com",
+  "category": "reviews",
+  "country": "FR",
+  "label": "Signal Arnaques"
+ },
+ {
+  "domain": "trustpilot.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "Trustpilot",
+  "howToGetListed": "Revendiquer la page gratuite (Trustpilot Business), inviter tous les clients sans filtrage, répondre aux avis."
+ },
+ {
+  "domain": "tripadvisor.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "Tripadvisor (international)",
+  "howToGetListed": "Revendiquer l'établissement via Tripadvisor Business."
+ },
+ {
+  "domain": "yelp.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "Yelp",
+  "howToGetListed": "Revendiquer la page via Yelp for Business."
+ },
+ {
+  "domain": "thefork.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "TheFork (international)",
+  "howToGetListed": "Voir TheFork Manager."
+ },
+ {
+  "domain": "g2.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "G2",
+  "howToGetListed": "Logiciels : revendiquer le profil produit gratuit, inviter des clients réels à laisser un avis."
+ },
+ {
+  "domain": "trustradius.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "TrustRadius",
+  "howToGetListed": "Logiciels : revendiquer le profil, campagnes d'avis clients."
+ },
+ {
+  "domain": "clutch.co",
+  "category": "reviews",
+  "country": "INT",
+  "label": "Clutch",
+  "howToGetListed": "Agences/prestataires B2B : créer le profil, faire interviewer des clients (avis vérifiés)."
+ },
+ {
+  "domain": "goodfirms.co",
+  "category": "reviews",
+  "country": "INT",
+  "label": "GoodFirms",
+  "howToGetListed": "Prestataires B2B : créer le profil et collecter des avis."
+ },
+ {
+  "domain": "glassdoor.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "Glassdoor (international)",
+  "howToGetListed": "Revendiquer le profil employeur."
+ },
+ {
+  "domain": "reviews.io",
+  "category": "reviews",
+  "country": "INT",
+  "label": "REVIEWS.io",
+  "howToGetListed": "Solution d'avis (payante)."
+ },
+ {
+  "domain": "feefo.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "Feefo",
+  "howToGetListed": "Solution d'avis (payante)."
+ },
+ {
+  "domain": "sitejabber.com",
+  "category": "reviews",
+  "country": "INT",
+  "label": "Sitejabber",
+  "howToGetListed": "Revendiquer la page entreprise."
+ },
+ {
+  "domain": "judge.me",
+  "category": "reviews",
+  "country": "INT",
+  "label": "Judge.me",
+  "howToGetListed": "Shopify : application d'avis produits."
+ },
+ {
+  "domain": "lemonde.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Le Monde"
+ },
+ {
+  "domain": "lefigaro.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Le Figaro"
+ },
+ {
+  "domain": "liberation.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Libération"
+ },
+ {
+  "domain": "leparisien.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Le Parisien"
+ },
+ {
+  "domain": "lesechos.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Les Échos"
+ },
+ {
+  "domain": "latribune.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "La Tribune"
+ },
+ {
+  "domain": "challenges.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Challenges"
+ },
+ {
+  "domain": "capital.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Capital"
+ },
+ {
+  "domain": "bfmtv.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "BFM (TV, Business, Paris)"
+ },
+ {
+  "domain": "francetvinfo.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Franceinfo"
+ },
+ {
+  "domain": "tf1info.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "TF1 Info"
+ },
+ {
+  "domain": "20minutes.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "20 Minutes"
+ },
+ {
+  "domain": "huffingtonpost.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "HuffPost France"
+ },
+ {
+  "domain": "lexpress.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "L'Express"
+ },
+ {
+  "domain": "lepoint.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Le Point"
+ },
+ {
+  "domain": "nouvelobs.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "L'Obs"
+ },
+ {
+  "domain": "marianne.net",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Marianne"
+ },
+ {
+  "domain": "radiofrance.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Radio France (France Inter, France Culture…)"
+ },
+ {
+  "domain": "europe1.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Europe 1"
+ },
+ {
+  "domain": "rtl.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "RTL"
+ },
+ {
+  "domain": "lci.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "LCI"
+ },
+ {
+  "domain": "cnews.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "CNews"
+ },
+ {
+  "domain": "ouest-france.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Ouest-France (national + éditions locales)"
+ },
+ {
+  "domain": "journaldunet.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Journal du Net"
+ },
+ {
+  "domain": "maddyness.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Maddyness"
+ },
+ {
+  "domain": "frenchweb.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "FrenchWeb"
+ },
+ {
+  "domain": "lsa-conso.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "LSA"
+ },
+ {
+  "domain": "ecommercemag.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Ecommerce Mag"
+ },
+ {
+  "domain": "blogdumoderateur.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Blog du Modérateur"
+ },
+ {
+  "domain": "siecledigital.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Siècle Digital"
+ },
+ {
+  "domain": "presse-citron.net",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Presse-citron"
+ },
+ {
+  "domain": "numerama.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Numerama"
+ },
+ {
+  "domain": "01net.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "01net"
+ },
+ {
+  "domain": "clubic.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Clubic"
+ },
+ {
+  "domain": "frandroid.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Frandroid"
+ },
+ {
+  "domain": "korben.info",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Korben"
+ },
+ {
+  "domain": "usinenouvelle.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "L'Usine Nouvelle"
+ },
+ {
+  "domain": "batiactu.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Batiactu"
+ },
+ {
+  "domain": "lemoniteur.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Le Moniteur"
+ },
+ {
+  "domain": "batiweb.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Batiweb"
+ },
+ {
+  "domain": "chefdentreprise.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Chef d'Entreprise"
+ },
+ {
+  "domain": "decideurs-magazine.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Décideurs Magazine"
+ },
+ {
+  "domain": "journaldesfemmes.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Journal des Femmes"
+ },
+ {
+  "domain": "marieclaire.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Marie Claire"
+ },
+ {
+  "domain": "elle.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "ELLE"
+ },
+ {
+  "domain": "vogue.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Vogue France"
+ },
+ {
+  "domain": "cosmopolitan.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Cosmopolitan France"
+ },
+ {
+  "domain": "femmeactuelle.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Femme Actuelle"
+ },
+ {
+  "domain": "aufeminin.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "aufeminin (magazine + forums)"
+ },
+ {
+  "domain": "madmoizelle.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Madmoizelle"
+ },
+ {
+  "domain": "doctissimo.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Doctissimo (magazine ; forums sur forum.doctissimo.fr)"
+ },
+ {
+  "domain": "santemagazine.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Santé Magazine"
+ },
+ {
+  "domain": "passeportsante.net",
+  "category": "media_national",
+  "country": "FR",
+  "label": "PasseportSanté"
+ },
+ {
+  "domain": "marmiton.org",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Marmiton"
+ },
+ {
+  "domain": "750g.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "750g"
+ },
+ {
+  "domain": "cuisineaz.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "CuisineAZ"
+ },
+ {
+  "domain": "atabula.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Atabula"
+ },
+ {
+  "domain": "timeout.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Time Out Paris (FR)"
+ },
+ {
+  "domain": "lefooding.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Le Fooding"
+ },
+ {
+  "domain": "telerama.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Télérama"
+ },
+ {
+  "domain": "lesinrocks.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Les Inrockuptibles"
+ },
+ {
+  "domain": "geo.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "GEO"
+ },
+ {
+  "domain": "futura-sciences.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Futura"
+ },
+ {
+  "domain": "studyrama.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Studyrama"
+ },
+ {
+  "domain": "letudiant.fr",
+  "category": "media_national",
+  "country": "FR",
+  "label": "L'Étudiant"
+ },
+ {
+  "domain": "categorynet.com",
+  "category": "media_national",
+  "country": "FR",
+  "label": "Categorynet (communiqués de presse)",
+  "howToGetListed": "Publier un communiqué de presse (gratuit/payant) sur une vraie actualité."
+ },
+ {
+  "domain": "forbes.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Forbes"
+ },
+ {
+  "domain": "nytimes.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "The New York Times (dont Wirecutter)"
+ },
+ {
+  "domain": "theguardian.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "The Guardian"
+ },
+ {
+  "domain": "bbc.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "BBC"
+ },
+ {
+  "domain": "bbc.co.uk",
+  "category": "media_national",
+  "country": "INT",
+  "label": "BBC (UK)"
+ },
+ {
+  "domain": "reuters.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Reuters"
+ },
+ {
+  "domain": "bloomberg.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Bloomberg"
+ },
+ {
+  "domain": "cnn.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "CNN"
+ },
+ {
+  "domain": "businessinsider.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Business Insider"
+ },
+ {
+  "domain": "techcrunch.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "TechCrunch"
+ },
+ {
+  "domain": "theverge.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "The Verge"
+ },
+ {
+  "domain": "wired.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "WIRED"
+ },
+ {
+  "domain": "cnet.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "CNET"
+ },
+ {
+  "domain": "pcmag.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "PCMag"
+ },
+ {
+  "domain": "techradar.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "TechRadar"
+ },
+ {
+  "domain": "healthline.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Healthline"
+ },
+ {
+  "domain": "webmd.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "WebMD"
+ },
+ {
+  "domain": "investopedia.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Investopedia"
+ },
+ {
+  "domain": "timeout.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Time Out"
+ },
+ {
+  "domain": "cntraveler.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Condé Nast Traveler"
+ },
+ {
+  "domain": "prnewswire.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "PR Newswire (communiqués)",
+  "howToGetListed": "Diffuser un communiqué payant sur une actualité réelle."
+ },
+ {
+  "domain": "businesswire.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Business Wire (communiqués)",
+  "howToGetListed": "Diffuser un communiqué payant."
+ },
+ {
+  "domain": "globenewswire.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "GlobeNewswire (communiqués)",
+  "howToGetListed": "Diffuser un communiqué payant."
+ },
+ {
+  "domain": "hbr.org",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Harvard Business Review"
+ },
+ {
+  "domain": "ft.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "Financial Times"
+ },
+ {
+  "domain": "wsj.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "The Wall Street Journal"
+ },
+ {
+  "domain": "hubspot.com",
+  "category": "media_national",
+  "country": "INT",
+  "label": "HubSpot (blog)"
+ },
+ {
+  "domain": "actu.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Actu.fr (réseau de presse locale)",
+  "howToGetListed": "Proposer une actualité locale (ouverture, recrutement, événement) à l'édition de la ville."
+ },
+ {
+  "domain": "sortiraparis.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Sortir à Paris",
+  "howToGetListed": "Envoyer l'événement ou la nouveauté à la rédaction."
+ },
+ {
+  "domain": "lebonbon.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Le Bonbon (Paris, Lyon, Marseille…)",
+  "howToGetListed": "Proposer une adresse ou un événement à la rédaction."
+ },
+ {
+  "domain": "parisbouge.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "ParisBouge"
+ },
+ {
+  "domain": "pariszigzag.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Paris ZigZag"
+ },
+ {
+  "domain": "parissecret.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Paris Secret"
+ },
+ {
+  "domain": "lyoncapitale.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Lyon Capitale"
+ },
+ {
+  "domain": "lyonmag.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "LyonMag"
+ },
+ {
+  "domain": "madeinmarseille.net",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Made in Marseille"
+ },
+ {
+  "domain": "marsactu.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Marsactu"
+ },
+ {
+  "domain": "rue89bordeaux.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Rue89 Bordeaux"
+ },
+ {
+  "domain": "rue89lyon.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Rue89 Lyon"
+ },
+ {
+  "domain": "rue89strasbourg.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Rue89 Strasbourg"
+ },
+ {
+  "domain": "sudouest.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Sud Ouest"
+ },
+ {
+  "domain": "lavoixdunord.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "La Voix du Nord"
+ },
+ {
+  "domain": "ledauphine.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Le Dauphiné libéré"
+ },
+ {
+  "domain": "leprogres.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Le Progrès"
+ },
+ {
+  "domain": "laprovence.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "La Provence"
+ },
+ {
+  "domain": "nicematin.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Nice-Matin"
+ },
+ {
+  "domain": "varmatin.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Var-Matin"
+ },
+ {
+  "domain": "corsematin.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Corse-Matin"
+ },
+ {
+  "domain": "midilibre.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Midi Libre"
+ },
+ {
+  "domain": "ladepeche.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "La Dépêche du Midi"
+ },
+ {
+  "domain": "lindependant.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "L'Indépendant"
+ },
+ {
+  "domain": "lanouvellerepublique.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "La Nouvelle République"
+ },
+ {
+  "domain": "letelegramme.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Le Télégramme"
+ },
+ {
+  "domain": "dna.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Dernières Nouvelles d'Alsace"
+ },
+ {
+  "domain": "lalsace.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "L'Alsace"
+ },
+ {
+  "domain": "estrepublicain.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "L'Est Républicain"
+ },
+ {
+  "domain": "republicain-lorrain.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Le Républicain lorrain"
+ },
+ {
+  "domain": "vosgesmatin.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Vosges Matin"
+ },
+ {
+  "domain": "lamontagne.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "La Montagne"
+ },
+ {
+  "domain": "lejsl.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Le Journal de Saône-et-Loire"
+ },
+ {
+  "domain": "bienpublic.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Le Bien Public"
+ },
+ {
+  "domain": "lest-eclair.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "L'Est-Éclair"
+ },
+ {
+  "domain": "lunion.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "L'Union"
+ },
+ {
+  "domain": "courrier-picard.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Courrier picard"
+ },
+ {
+  "domain": "paris-normandie.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Paris-Normandie"
+ },
+ {
+  "domain": "charentelibre.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Charente Libre"
+ },
+ {
+  "domain": "larepubliquedespyrenees.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "La République des Pyrénées"
+ },
+ {
+  "domain": "presseocean.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Presse Océan"
+ },
+ {
+  "domain": "lamarseillaise.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "La Marseillaise"
+ },
+ {
+  "domain": "francebleu.fr",
+  "category": "media_local",
+  "country": "FR",
+  "label": "ici (ex-France Bleu)",
+  "howToGetListed": "Proposer un sujet à la station locale ici."
+ },
+ {
+  "domain": "lepetitjournal.com",
+  "category": "media_local",
+  "country": "FR",
+  "label": "Le Petit Journal (Français de l'étranger)"
+ },
+ {
+  "domain": "lesnumeriques.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Les Numériques",
+  "howToGetListed": "Proposer un produit en test à la rédaction (aucune garantie de publication)."
+ },
+ {
+  "domain": "quechoisir.org",
+  "category": "comparison",
+  "country": "FR",
+  "label": "UFC-Que Choisir"
+ },
+ {
+  "domain": "60millions-mag.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "60 Millions de consommateurs"
+ },
+ {
+  "domain": "selectra.info",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Selectra"
+ },
+ {
+  "domain": "lesfurets.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "LesFurets"
+ },
+ {
+  "domain": "lelynx.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "LeLynx"
+ },
+ {
+  "domain": "meilleurtaux.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Meilleurtaux"
+ },
+ {
+  "domain": "hellosafe.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "HelloSafe"
+ },
+ {
+  "domain": "papernest.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Papernest"
+ },
+ {
+  "domain": "idealo.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "idealo",
+  "howToGetListed": "E-commerce : envoyer le flux produits (offre marchand payante au clic)."
+ },
+ {
+  "domain": "ledenicheur.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "LeDénicheur",
+  "howToGetListed": "E-commerce : inscrire la boutique et son flux produits."
+ },
+ {
+  "domain": "kelkoo.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Kelkoo",
+  "howToGetListed": "E-commerce : programme marchand (CPC)."
+ },
+ {
+  "domain": "capterra.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Capterra France",
+  "howToGetListed": "Logiciels : créer le profil gratuit, collecter des avis vérifiés (listing payant optionnel)."
+ },
+ {
+  "domain": "getapp.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "GetApp France",
+  "howToGetListed": "Logiciels : profil via le compte Capterra/Gartner Digital Markets."
+ },
+ {
+  "domain": "appvizer.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Appvizer",
+  "howToGetListed": "Logiciels : référencer la solution (offres payantes)."
+ },
+ {
+  "domain": "tomsguide.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Tom's Guide France"
+ },
+ {
+  "domain": "topito.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Topito"
+ },
+ {
+  "domain": "beautetest.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Beauté Test",
+  "howToGetListed": "Cosmétiques : proposer un produit au panel testeur."
+ },
+ {
+  "domain": "incibeauty.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "INCI Beauty",
+  "howToGetListed": "Cosmétiques : vérifier la fiche produit et la liste INCI."
+ },
+ {
+  "domain": "quelcosmetic.fr",
+  "category": "comparison",
+  "country": "FR",
+  "label": "QuelCosmetic (UFC)"
+ },
+ {
+  "domain": "monpetitforfait.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "MonPetitForfait"
+ },
+ {
+  "domain": "ariase.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Ariase"
+ },
+ {
+  "domain": "guide.michelin.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Guide Michelin"
+ },
+ {
+  "domain": "gaultmillau.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Gault & Millau"
+ },
+ {
+  "domain": "petitfute.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Petit Futé",
+  "howToGetListed": "Proposer l'établissement à la rédaction locale (fiche gratuite possible)."
+ },
+ {
+  "domain": "routard.com",
+  "category": "comparison",
+  "country": "FR",
+  "label": "Le Routard"
+ },
+ {
+  "domain": "capterra.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Capterra",
+  "howToGetListed": "Logiciels : profil gratuit + avis vérifiés."
+ },
+ {
+  "domain": "getapp.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "GetApp",
+  "howToGetListed": "Profil via Gartner Digital Markets."
+ },
+ {
+  "domain": "softwareadvice.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Software Advice",
+  "howToGetListed": "Profil via Gartner Digital Markets."
+ },
+ {
+  "domain": "gartner.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Gartner"
+ },
+ {
+  "domain": "forrester.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Forrester"
+ },
+ {
+  "domain": "alternativeto.net",
+  "category": "comparison",
+  "country": "INT",
+  "label": "AlternativeTo",
+  "howToGetListed": "Ajouter son produit comme alternative (soumission gratuite, modérée)."
+ },
+ {
+  "domain": "saasworthy.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "SaaSworthy",
+  "howToGetListed": "Soumettre le logiciel."
+ },
+ {
+  "domain": "rtings.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "RTINGS"
+ },
+ {
+  "domain": "consumerreports.org",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Consumer Reports"
+ },
+ {
+  "domain": "which.co.uk",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Which?"
+ },
+ {
+  "domain": "nerdwallet.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "NerdWallet"
+ },
+ {
+  "domain": "tomsguide.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Tom's Guide"
+ },
+ {
+  "domain": "designrush.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "DesignRush",
+  "howToGetListed": "Agences : créer le profil (classements partiellement payants : vérifier la mention « sponsorisé »)."
+ },
+ {
+  "domain": "lonelyplanet.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Lonely Planet"
+ },
+ {
+  "domain": "theinfatuation.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "The Infatuation"
+ },
+ {
+  "domain": "eater.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Eater"
+ },
+ {
+  "domain": "worlds50best.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "The World's 50 Best"
+ },
+ {
+  "domain": "versus.com",
+  "category": "comparison",
+  "country": "INT",
+  "label": "Versus",
+  "howToGetListed": "Vérifier la fiche produit."
+ },
+ {
+  "domain": "commentcamarche.net",
+  "category": "forum",
+  "country": "FR",
+  "label": "CommentÇaMarche (forums)",
+  "howToGetListed": "Répondre aux questions en expert, signature transparente, sans lien promotionnel répété."
+ },
+ {
+  "domain": "forumconstruire.com",
+  "category": "forum",
+  "country": "FR",
+  "label": "Forum Construire",
+  "howToGetListed": "Répondre en tant que professionnel identifié, conseils utiles d'abord."
+ },
+ {
+  "domain": "jeuxvideo.com",
+  "category": "forum",
+  "country": "FR",
+  "label": "Jeuxvideo.com (forums)"
+ },
+ {
+  "domain": "hardware.fr",
+  "category": "forum",
+  "country": "FR",
+  "label": "Hardware.fr (forums)"
+ },
+ {
+  "domain": "lesarnaques.com",
+  "category": "forum",
+  "country": "FR",
+  "label": "LesArnaques (forum conso)",
+  "howToGetListed": "Répondre publiquement et factuellement aux réclamations concernant votre entreprise."
+ },
+ {
+  "domain": "dealabs.com",
+  "category": "forum",
+  "country": "FR",
+  "label": "Dealabs",
+  "howToGetListed": "Marques : compte marchand officiel, répondre aux discussions, jamais de faux comptes."
+ },
+ {
+  "domain": "caradisiac.com",
+  "category": "forum",
+  "country": "FR",
+  "label": "Caradisiac (magazine + forums)"
+ },
+ {
+  "domain": "reddit.com",
+  "category": "forum",
+  "country": "INT",
+  "label": "Reddit",
+  "howToGetListed": "Participer avec un compte identifié (« je travaille chez X »), apporter des réponses utiles, respecter les règles de chaque subreddit (pas d'autopromotion répétée)."
+ },
+ {
+  "domain": "quora.com",
+  "category": "forum",
+  "country": "INT",
+  "label": "Quora",
+  "howToGetListed": "Répondre aux questions du métier avec un profil professionnel transparent."
+ },
+ {
+  "domain": "stackoverflow.com",
+  "category": "forum",
+  "country": "INT",
+  "label": "Stack Overflow"
+ },
+ {
+  "domain": "stackexchange.com",
+  "category": "forum",
+  "country": "INT",
+  "label": "Stack Exchange"
+ },
+ {
+  "domain": "ycombinator.com",
+  "category": "forum",
+  "country": "INT",
+  "label": "Hacker News"
+ },
+ {
+  "domain": "producthunt.com",
+  "category": "forum",
+  "country": "INT",
+  "label": "Product Hunt",
+  "howToGetListed": "Lancer le produit (gratuit) avec une vraie nouveauté."
+ },
+ {
+  "domain": "mumsnet.com",
+  "category": "forum",
+  "country": "INT",
+  "label": "Mumsnet"
+ },
+ {
+  "domain": "indiehackers.com",
+  "category": "forum",
+  "country": "INT",
+  "label": "Indie Hackers"
+ },
+ {
+  "domain": "amazon.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Amazon.fr",
+  "howToGetListed": "Ouvrir un compte vendeur Amazon (abonnement + commissions) et optimiser les fiches produits."
+ },
+ {
+  "domain": "cdiscount.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Cdiscount",
+  "howToGetListed": "Ouvrir un compte vendeur marketplace."
+ },
+ {
+  "domain": "fnac.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Fnac",
+  "howToGetListed": "Devenir vendeur marketplace Fnac."
+ },
+ {
+  "domain": "darty.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Darty",
+  "howToGetListed": "Devenir vendeur marketplace."
+ },
+ {
+  "domain": "boulanger.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Boulanger",
+  "howToGetListed": "Devenir vendeur marketplace."
+ },
+ {
+  "domain": "leboncoin.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "leboncoin",
+  "howToGetListed": "Créer un compte pro (boutique) et publier les annonces."
+ },
+ {
+  "domain": "vinted.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Vinted"
+ },
+ {
+  "domain": "ebay.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "eBay France",
+  "howToGetListed": "Compte vendeur professionnel."
+ },
+ {
+  "domain": "rakuten.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Rakuten France",
+  "howToGetListed": "Compte vendeur pro."
+ },
+ {
+  "domain": "manomano.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "ManoMano",
+  "howToGetListed": "Bricolage/jardin : candidater comme vendeur."
+ },
+ {
+  "domain": "laredoute.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "La Redoute",
+  "howToGetListed": "Marketplace mode/maison : candidature vendeur."
+ },
+ {
+  "domain": "zalando.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Zalando",
+  "howToGetListed": "Programme partenaires (marques)."
+ },
+ {
+  "domain": "veepee.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Veepee"
+ },
+ {
+  "domain": "backmarket.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Back Market",
+  "howToGetListed": "Reconditionneurs : candidature vendeur."
+ },
+ {
+  "domain": "decathlon.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Decathlon (marketplace)",
+  "howToGetListed": "Marques sport : candidature vendeur marketplace."
+ },
+ {
+  "domain": "leroymerlin.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Leroy Merlin (marketplace)",
+  "howToGetListed": "Candidature vendeur marketplace."
+ },
+ {
+  "domain": "castorama.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Castorama"
+ },
+ {
+  "domain": "sephora.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Sephora",
+  "howToGetListed": "Marques beauté : référencement distributeur (sélectif)."
+ },
+ {
+  "domain": "nocibe.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Nocibé"
+ },
+ {
+  "domain": "marionnaud.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Marionnaud"
+ },
+ {
+  "domain": "galerieslafayette.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Galeries Lafayette"
+ },
+ {
+  "domain": "printemps.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Printemps"
+ },
+ {
+  "domain": "carrefour.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Carrefour (marketplace)"
+ },
+ {
+  "domain": "auchan.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Auchan"
+ },
+ {
+  "domain": "intermarche.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Intermarché"
+ },
+ {
+  "domain": "monoprix.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Monoprix"
+ },
+ {
+  "domain": "conforama.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Conforama"
+ },
+ {
+  "domain": "but.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "BUT"
+ },
+ {
+  "domain": "maisonsdumonde.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Maisons du Monde"
+ },
+ {
+  "domain": "notino.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Notino"
+ },
+ {
+  "domain": "ubereats.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Uber Eats",
+  "howToGetListed": "Restaurants : inscrire l'établissement (commission)."
+ },
+ {
+  "domain": "deliveroo.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Deliveroo",
+  "howToGetListed": "Restaurants : inscrire l'établissement (commission)."
+ },
+ {
+  "domain": "just-eat.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Just Eat"
+ },
+ {
+  "domain": "airbnb.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Airbnb France"
+ },
+ {
+  "domain": "abritel.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Abritel"
+ },
+ {
+  "domain": "malt.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Malt",
+  "howToGetListed": "Freelances : créer un profil complet avec références."
+ },
+ {
+  "domain": "codeur.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Codeur.com"
+ },
+ {
+  "domain": "superprof.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Superprof",
+  "howToGetListed": "Professeurs : créer une annonce."
+ },
+ {
+  "domain": "allovoisins.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "AlloVoisins",
+  "howToGetListed": "Créer un profil pro de prestataire."
+ },
+ {
+  "domain": "yoojo.fr",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Yoojo",
+  "howToGetListed": "Prestataires : créer un profil."
+ },
+ {
+  "domain": "ankorstore.com",
+  "category": "marketplace",
+  "country": "FR",
+  "label": "Ankorstore",
+  "howToGetListed": "Marques : ouvrir une boutique grossiste (revendeurs indépendants)."
+ },
+ {
+  "domain": "amazon.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Amazon"
+ },
+ {
+  "domain": "ebay.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "eBay"
+ },
+ {
+  "domain": "etsy.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Etsy",
+  "howToGetListed": "Créateurs : ouvrir une boutique Etsy."
+ },
+ {
+  "domain": "aliexpress.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "AliExpress"
+ },
+ {
+  "domain": "temu.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Temu"
+ },
+ {
+  "domain": "shein.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Shein"
+ },
+ {
+  "domain": "walmart.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Walmart"
+ },
+ {
+  "domain": "ikea.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "IKEA"
+ },
+ {
+  "domain": "booking.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Booking.com",
+  "howToGetListed": "Hébergements : inscrire l'établissement (commission)."
+ },
+ {
+  "domain": "airbnb.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Airbnb"
+ },
+ {
+  "domain": "expedia.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Expedia"
+ },
+ {
+  "domain": "hotels.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Hotels.com"
+ },
+ {
+  "domain": "fiverr.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Fiverr"
+ },
+ {
+  "domain": "upwork.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Upwork"
+ },
+ {
+  "domain": "lookfantastic.fr",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "LOOKFANTASTIC"
+ },
+ {
+  "domain": "zalando.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Zalando (international)"
+ },
+ {
+  "domain": "asos.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "ASOS"
+ },
+ {
+  "domain": "bestbuy.com",
+  "category": "marketplace",
+  "country": "INT",
+  "label": "Best Buy"
+ },
+ {
+  "domain": "facebook.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Facebook",
+  "howToGetListed": "Page entreprise complète (catégorie, adresse, horaires), publications régulières."
+ },
+ {
+  "domain": "instagram.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Instagram",
+  "howToGetListed": "Compte professionnel avec adresse, catégorie et lien vers le site."
+ },
+ {
+  "domain": "linkedin.com",
+  "category": "social",
+  "country": "INT",
+  "label": "LinkedIn",
+  "howToGetListed": "Page entreprise complète + posts experts des dirigeants (souvent cités par AI Mode et Perplexity)."
+ },
+ {
+  "domain": "youtube.com",
+  "category": "social",
+  "country": "INT",
+  "label": "YouTube",
+  "howToGetListed": "Chaîne avec vidéos tutoriels et démonstrations, titres et descriptions explicites."
+ },
+ {
+  "domain": "tiktok.com",
+  "category": "social",
+  "country": "INT",
+  "label": "TikTok",
+  "howToGetListed": "Compte pro avec contenus utiles du métier."
+ },
+ {
+  "domain": "x.com",
+  "category": "social",
+  "country": "INT",
+  "label": "X (Twitter)"
+ },
+ {
+  "domain": "twitter.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Twitter (ancien domaine X)"
+ },
+ {
+  "domain": "pinterest.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Pinterest",
+  "howToGetListed": "Compte pro, épingles produits liées au site (e-commerce, déco, food)."
+ },
+ {
+  "domain": "pinterest.fr",
+  "category": "social",
+  "country": "INT",
+  "label": "Pinterest France",
+  "howToGetListed": "Voir Pinterest."
+ },
+ {
+  "domain": "threads.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Threads"
+ },
+ {
+  "domain": "threads.net",
+  "category": "social",
+  "country": "INT",
+  "label": "Threads (ancien domaine)"
+ },
+ {
+  "domain": "medium.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Medium",
+  "howToGetListed": "Publier des articles d'expertise signés."
+ },
+ {
+  "domain": "substack.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Substack",
+  "howToGetListed": "Lancer une newsletter d'expertise."
+ },
+ {
+  "domain": "twitch.tv",
+  "category": "social",
+  "country": "INT",
+  "label": "Twitch"
+ },
+ {
+  "domain": "vimeo.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Vimeo"
+ },
+ {
+  "domain": "dailymotion.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Dailymotion"
+ },
+ {
+  "domain": "tumblr.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Tumblr"
+ },
+ {
+  "domain": "snapchat.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Snapchat"
+ },
+ {
+  "domain": "bsky.app",
+  "category": "social",
+  "country": "INT",
+  "label": "Bluesky"
+ },
+ {
+  "domain": "spotify.com",
+  "category": "social",
+  "country": "INT",
+  "label": "Spotify (podcasts)"
+ },
+ {
+  "domain": "wikipedia.org",
+  "category": "wikipedia",
+  "country": "INT",
+  "label": "Wikipédia",
+  "howToGetListed": "Uniquement si l'entreprise est admissible (sources secondaires indépendantes de qualité). Ne jamais rédiger sa propre page : conflit d'intérêts à déclarer."
+ },
+ {
+  "domain": "wikidata.org",
+  "category": "wikipedia",
+  "country": "INT",
+  "label": "Wikidata",
+  "howToGetListed": "Créer ou compléter l'élément si l'entité est notable (identifiants officiels, site)."
+ },
+ {
+  "domain": "wikimedia.org",
+  "category": "wikipedia",
+  "country": "INT",
+  "label": "Wikimedia"
+ },
+ {
+  "domain": "wikivoyage.org",
+  "category": "wikipedia",
+  "country": "INT",
+  "label": "Wikivoyage"
+ },
+ {
+  "domain": "wiktionary.org",
+  "category": "wikipedia",
+  "country": "INT",
+  "label": "Wiktionnaire"
+ },
+ {
+  "domain": "britannica.com",
+  "category": "wikipedia",
+  "country": "INT",
+  "label": "Encyclopaedia Britannica"
+ },
+ {
+  "domain": "fandom.com",
+  "category": "wikipedia",
+  "country": "INT",
+  "label": "Fandom"
+ },
+ {
+  "domain": "imdb.com",
+  "category": "wikipedia",
+  "country": "INT",
+  "label": "IMDb"
+ },
+ {
+  "domain": "larousse.fr",
+  "category": "wikipedia",
+  "country": "FR",
+  "label": "Larousse"
+ },
+ {
+  "domain": "universalis.fr",
+  "category": "wikipedia",
+  "country": "FR",
+  "label": "Encyclopædia Universalis"
+ },
+ {
+  "domain": "service-public.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Service-Public.fr"
+ },
+ {
+  "domain": "economie.gouv.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Ministère de l'Économie (dont DGCCRF)"
+ },
+ {
+  "domain": "legifrance.gouv.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Légifrance"
+ },
+ {
+  "domain": "impots.gouv.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "impots.gouv.fr"
+ },
+ {
+  "domain": "urssaf.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Urssaf"
+ },
+ {
+  "domain": "bpifrance.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Bpifrance"
+ },
+ {
+  "domain": "bpifrance-creation.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Bpifrance Création"
+ },
+ {
+  "domain": "cci.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "CCI France",
+  "howToGetListed": "Adhérer ou se rapprocher de la CCI locale (annuaires, événements)."
+ },
+ {
+  "domain": "cma-france.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Chambres de métiers et de l'artisanat",
+  "howToGetListed": "Artisans : vérifier l'inscription et les annuaires de la CMA régionale."
+ },
+ {
+  "domain": "artisanat.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Artisanat.fr"
+ },
+ {
+  "domain": "insee.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "INSEE"
+ },
+ {
+  "domain": "data.gouv.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "data.gouv.fr (dont Annuaire des entreprises)",
+  "howToGetListed": "Vérifier la fiche sur annuaire-entreprises.data.gouv.fr (données SIRENE)."
+ },
+ {
+  "domain": "ademe.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "ADEME"
+ },
+ {
+  "domain": "ameli.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Ameli (annuaire santé)",
+  "howToGetListed": "Professionnels de santé conventionnés : données issues de l'Assurance maladie."
+ },
+ {
+  "domain": "has-sante.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "HAS"
+ },
+ {
+  "domain": "conseil-national.medecin.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Ordre des médecins"
+ },
+ {
+  "domain": "inpi.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "INPI"
+ },
+ {
+  "domain": "cnil.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "CNIL"
+ },
+ {
+  "domain": "francetravail.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "France Travail"
+ },
+ {
+  "domain": "apec.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Apec"
+ },
+ {
+  "domain": "onisep.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Onisep"
+ },
+ {
+  "domain": "education.gouv.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Éducation nationale"
+ },
+ {
+  "domain": "enseignementsup-recherche.gouv.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Enseignement supérieur"
+ },
+ {
+  "domain": "paris.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Ville de Paris"
+ },
+ {
+  "domain": "lyon.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Ville de Lyon"
+ },
+ {
+  "domain": "marseille.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Ville de Marseille"
+ },
+ {
+  "domain": "bordeaux.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Ville de Bordeaux"
+ },
+ {
+  "domain": "toulouse.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Ville de Toulouse"
+ },
+ {
+  "domain": "parisjetaime.com",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Office de tourisme de Paris",
+  "howToGetListed": "Commerces de tourisme/restauration : demander le référencement auprès de l'office."
+ },
+ {
+  "domain": "onlylyon.com",
+  "category": "institutional",
+  "country": "FR",
+  "label": "ONLYLYON Tourisme"
+ },
+ {
+  "domain": "marseille-tourisme.com",
+  "category": "institutional",
+  "country": "FR",
+  "label": "Office de tourisme de Marseille"
+ },
+ {
+  "domain": "france.fr",
+  "category": "institutional",
+  "country": "FR",
+  "label": "France.fr (Atout France)"
+ },
+ {
+  "domain": "europa.eu",
+  "category": "institutional",
+  "country": "INT",
+  "label": "Union européenne"
+ },
+ {
+  "domain": "nih.gov",
+  "category": "institutional",
+  "country": "INT",
+  "label": "NIH"
+ },
+ {
+  "domain": "cdc.gov",
+  "category": "institutional",
+  "country": "INT",
+  "label": "CDC"
+ },
+ {
+  "domain": "who.int",
+  "category": "institutional",
+  "country": "INT",
+  "label": "OMS"
+ },
+ {
+  "domain": "gov.uk",
+  "category": "institutional",
+  "country": "INT",
+  "label": "GOV.UK"
+ },
+ {
+  "domain": "irs.gov",
+  "category": "institutional",
+  "country": "INT",
+  "label": "IRS"
+ },
+ {
+  "domain": "oecd.org",
+  "category": "institutional",
+  "country": "INT",
+  "label": "OCDE"
+ },
+ {
+  "domain": "mayoclinic.org",
+  "category": "institutional",
+  "country": "INT",
+  "label": "Mayo Clinic"
+ },
+ {
+  "domain": "clevelandclinic.org",
+  "category": "institutional",
+  "country": "INT",
+  "label": "Cleveland Clinic"
+ },
+ {
+  "domain": "harvard.edu",
+  "category": "institutional",
+  "country": "INT",
+  "label": "Harvard University"
+ },
+ {
+  "domain": "w3.org",
+  "category": "institutional",
+  "country": "INT",
+  "label": "W3C"
+ },
+ {
+  "domain": "openai.com",
+  "category": "other",
+  "country": "INT",
+  "label": "OpenAI"
+ },
+ {
+  "domain": "microsoft.com",
+  "category": "other",
+  "country": "INT",
+  "label": "Microsoft"
+ },
+ {
+  "domain": "github.com",
+  "category": "other",
+  "country": "INT",
+  "label": "GitHub"
+ },
+ {
+  "domain": "shopify.com",
+  "category": "other",
+  "country": "INT",
+  "label": "Shopify"
+ },
+ {
+  "domain": "wix.com",
+  "category": "other",
+  "country": "INT",
+  "label": "Wix"
+ },
+ {
+  "domain": "wordpress.com",
+  "category": "other",
+  "country": "INT",
+  "label": "WordPress.com"
+ },
+ {
+  "domain": "blogspot.com",
+  "category": "other",
+  "country": "INT",
+  "label": "Blogger"
+ },
+ {
+  "domain": "canva.com",
+  "category": "other",
+  "country": "INT",
+  "label": "Canva"
+ },
+ {
+  "domain": "notion.so",
+  "category": "other",
+  "country": "INT",
+  "label": "Notion"
+ },
+ {
+  "domain": "archive.org",
+  "category": "other",
+  "country": "INT",
+  "label": "Internet Archive"
+ },
+ {
+  "domain": "legalstart.fr",
+  "category": "other",
+  "country": "FR",
+  "label": "Legalstart"
+ },
+ {
+  "domain": "legalplace.fr",
+  "category": "other",
+  "country": "FR",
+  "label": "LegalPlace"
+ },
+ {
+  "domain": "captaincontrat.com",
+  "category": "other",
+  "country": "FR",
+  "label": "Captain Contrat"
+ },
+ {
+  "domain": "solocal.com",
+  "category": "other",
+  "country": "FR",
+  "label": "Solocal"
+ },
+ {
+  "domain": "yuka.io",
+  "category": "other",
+  "country": "FR",
+  "label": "Yuka"
+ }
+]

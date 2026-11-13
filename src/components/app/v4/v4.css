@@ -1,0 +1,295 @@
+/* Écrans de l'app, passe V4 « clarté et dynamisme » (APP-ECRANS).
+   Tokens : ceux de app.css (--primary, --success, --danger, --warning…). Mouvement : transform/opacity, 150–400 ms,
+   ease-out ; rien ne bouge avec prefers-reduced-motion (état final direct). */
+
+/* ---------- En-tête-résultat ---------- */
+.rp-app .v4-verdict {
+  --tone: var(--primary);
+  --tone-bg: var(--primary-bg);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 18px 18px 16px 22px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  overflow: hidden;
+  animation: v4-rise 360ms cubic-bezier(.2, .7, .2, 1) both;
+}
+.rp-app .v4-verdict::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--tone);
+  transform-origin: top;
+  animation: v4-grow-y 520ms 120ms cubic-bezier(.2, .7, .2, 1) both;
+}
+.rp-app .v4-verdict[data-tone='good'] { --tone: var(--success); --tone-bg: var(--success-bg); }
+.rp-app .v4-verdict[data-tone='bad'] { --tone: var(--danger); --tone-bg: var(--danger-bg); }
+.rp-app .v4-verdict[data-tone='warn'] { --tone: var(--warning); --tone-bg: var(--warning-bg); }
+.rp-app .v4-verdict[data-tone='neutral'] { --tone: var(--muted); --tone-bg: var(--surface-2); }
+@media (min-width: 720px) {
+  .rp-app .v4-verdict { grid-template-columns: minmax(0, 1fr) auto; padding: 22px 24px 20px 28px; gap: 24px; }
+  .rp-app .v4-verdict-fig { grid-column: 2; grid-row: 1; text-align: right; border-left: 1px solid var(--hair); padding-left: 24px; min-width: 150px; }
+}
+.rp-app .v4-verdict-main { min-width: 0; }
+.rp-app .v4-verdict-title {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 21px;
+  line-height: 1.25;
+  max-width: 34ch;
+  text-wrap: balance;
+}
+@media (min-width: 1024px) { .rp-app .v4-verdict-title { font-size: 25px; max-width: 38ch; } }
+.rp-app .v4-verdict-ico {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-top: 0;
+  border-radius: 9px;
+  background: var(--tone-bg);
+  color: var(--tone);
+}
+.rp-app .v4-verdict-lead { margin-top: 6px; padding-left: 40px; font-size: 14px; color: var(--muted); max-width: 62ch; }
+.rp-app .v4-verdict-acts { margin-top: 14px; padding-left: 40px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.rp-app .v4-verdict-fig { min-width: 0; }
+.rp-app .v4-verdict-num { font-size: 40px; line-height: 1; color: var(--ink); }
+@media (min-width: 1024px) { .rp-app .v4-verdict-num { font-size: 48px; } }
+.rp-app .v4-verdict-figlabel { margin-top: 4px; font-size: 12.5px; color: var(--muted); max-width: 22ch; }
+@media (min-width: 720px) { .rp-app .v4-verdict-figlabel { margin-left: auto; } }
+@media (max-width: 719px) {
+  .rp-app .v4-verdict-fig { order: -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding-bottom: 12px; border-bottom: 1px solid var(--hair); }
+  .rp-app .v4-verdict-fig > div { margin: 0; }
+  .rp-app .v4-verdict-num { font-size: 34px; }
+  .rp-app .v4-verdict-lead, .rp-app .v4-verdict-acts { padding-left: 0; }
+}
+.rp-app .v4-verdict-details { grid-column: 1 / -1; border-top: 1px solid var(--hair); margin: -4px 0 -4px; padding-top: 10px; }
+.rp-app .v4-verdict-details > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--muted);
+  list-style: none;
+  border-radius: 6px;
+}
+.rp-app .v4-verdict-details > summary::-webkit-details-marker { display: none; }
+.rp-app .v4-verdict-details > summary:hover { color: var(--ink); }
+.rp-app .v4-verdict-details[open] .rp-chevron { transform: rotate(90deg); }
+.rp-app .v4-verdict-details .rp-chevron { transition: transform 200ms ease-out; }
+.rp-app .v4-verdict-detail-body { padding: 6px 0 4px; font-size: 13px; color: var(--muted); animation: v4-fade 240ms ease-out both; }
+.rp-app .v4-verdict-detail-body p + p { margin-top: 6px; }
+
+/* ---------- Pression des boutons ---------- */
+.rp-app .v4-press { transition: transform 120ms ease-out, background-color 150ms ease-out; }
+.rp-app .v4-press:active { transform: scale(.97); }
+
+/* ---------- État vide ---------- */
+.rp-app .v4-empty { border: 1px dashed var(--line); border-radius: 14px; padding: 28px 20px; text-align: center; background: var(--surface); }
+.rp-app .v4-empty-ico { display: inline-flex; width: 40px; height: 40px; margin-bottom: 10px; align-items: center; justify-content: center; border-radius: 12px; background: var(--primary-bg); color: var(--primary); }
+
+/* ---------- Barres qui se remplissent ---------- */
+.rp-app .v4-fill { display: block; height: 8px; border-radius: 99px; background: var(--chart-track); overflow: hidden; }
+.rp-app .v4-fill > span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transform-origin: left;
+  transform: scaleX(var(--v));
+}
+.rp-app .v4-fill[data-tone='good'] > span { background: var(--success); }
+.rp-app .v4-fill[data-tone='bad'] > span { background: var(--danger); }
+.rp-app .v4-fill[data-tone='warn'] > span { background: var(--warning); }
+.rp-app .v4-fill[data-tone='neutral'] > span { background: color-mix(in srgb, var(--muted) 55%, transparent); }
+.rp-app .v4-fill[data-arm]:not([data-in]) > span { transform: scaleX(0); }
+.rp-app .v4-fill[data-arm] > span { transition: transform 700ms var(--d, 0ms) cubic-bezier(.2, .7, .2, 1); }
+
+/* ---------- Cascade à l'entrée (enfants directs) ---------- */
+.rp-app .v4-cascade[data-arm]:not([data-in]) > * { opacity: 0; transform: translateY(8px); }
+.rp-app .v4-cascade[data-arm] > * { transition: opacity 320ms ease-out, transform 320ms ease-out; }
+.rp-app .v4-cascade[data-arm] > *:nth-child(2) { transition-delay: 50ms; }
+.rp-app .v4-cascade[data-arm] > *:nth-child(3) { transition-delay: 100ms; }
+.rp-app .v4-cascade[data-arm] > *:nth-child(4) { transition-delay: 150ms; }
+.rp-app .v4-cascade[data-arm] > *:nth-child(5) { transition-delay: 200ms; }
+.rp-app .v4-cascade[data-arm] > *:nth-child(n+6) { transition-delay: 240ms; }
+
+/* ---------- Surligneur : votre nom se révèle dans les réponses ---------- */
+.rp-app .v4-hl .rp-hl-client {
+  --v4-hl: color-mix(in srgb, var(--accent) 38%, transparent);
+  background: linear-gradient(var(--v4-hl), var(--v4-hl)) no-repeat 0 0 / 100% 100%;
+}
+.rp-app .v4-hl[data-arm]:not([data-in]) .rp-hl-client { background-size: 0% 100%; }
+.rp-app .v4-hl[data-arm] .rp-hl-client { transition: background-size 650ms 200ms cubic-bezier(.3, .7, .2, 1); }
+
+/* ---------- Contenu qui change (onglets, filtres) ---------- */
+.rp-app .v4-swap { animation: v4-fade-up 260ms ease-out both; }
+
+/* ---------- Coche animée ---------- */
+.rp-app .v4-check path { stroke-dasharray: 24; stroke-dashoffset: 0; }
+.rp-app .v4-check-play path { animation: v4-draw 360ms cubic-bezier(.3, .7, .2, 1) both; }
+.rp-app .v4-pop { animation: v4-pop 380ms cubic-bezier(.3, 1.4, .5, 1) both; }
+
+/* ---------- Glisser vers « fait » ---------- */
+.rp-app .v4-drag-handle { cursor: grab; touch-action: none; }
+.rp-app [data-dragging='true'] { opacity: .55; }
+.rp-app .v4-dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 56px;
+  border: 2px dashed var(--line);
+  border-radius: 14px;
+  color: var(--muted);
+  font-size: 14px;
+  transition: border-color 150ms ease-out, background-color 150ms ease-out, transform 150ms ease-out;
+}
+.rp-app .v4-dropzone[data-over='true'] { border-color: var(--success); background: var(--success-bg); color: var(--success-ink); transform: scale(1.01); }
+.rp-app .v4-leave { animation: v4-leave 320ms ease-in both; }
+
+/* ---------- Progression ---------- */
+.rp-app .v4-progress { display: flex; align-items: center; gap: 10px; }
+.rp-app .v4-progress .v4-fill { flex: 1; height: 10px; }
+
+/* ---------- Puces de suggestions ---------- */
+.rp-app .v4-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.rp-app .v4-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 13.5px;
+  color: var(--ink);
+  text-align: left;
+  transition: border-color 150ms ease-out, background-color 150ms ease-out, transform 120ms ease-out;
+}
+.rp-app .v4-chip:hover { border-color: var(--primary); background: var(--primary-bg); }
+.rp-app .v4-chip:active { transform: scale(.97); }
+
+/* ---------- Carte Local : quartiers qui s'allument ---------- */
+.rp-app .v4-light[data-arm]:not([data-in]) .v4-light-cell { opacity: .12; transform: scale(.85); }
+.rp-app .v4-light[data-arm] .v4-light-cell { transition: opacity 360ms ease-out, transform 360ms ease-out; transition-delay: calc(var(--k, 0) * 45ms); transform-box: fill-box; transform-origin: center; }
+
+/* ---------- Curseur d'écriture (copilote) ---------- */
+.rp-app .v4-caret::after { content: ''; display: inline-block; width: 2px; height: 1em; margin-left: 2px; vertical-align: -2px; background: var(--primary); animation: v4-blink 1s steps(1) infinite; }
+
+/* ---------- Liste lisible (remplace les tableaux denses) ---------- */
+.rp-app .v4-list { display: flex; flex-direction: column; }
+.rp-app .v4-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--hair); }
+.rp-app .v4-item:first-child { border-top: 0; }
+@media (min-width: 1024px) { .rp-app .v4-item { padding: 12px 20px; } }
+.rp-app .v4-item-title { font-weight: 600; font-size: 14.5px; min-width: 0; overflow-wrap: anywhere; }
+.rp-app .v4-item-sub { font-size: 12.5px; color: var(--muted); }
+.rp-app .v4-item-num { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 15px; text-align: right; }
+.rp-app .v4-item .v4-fill { grid-column: 1 / -1; height: 6px; }
+
+/* ---------- Squelettes ---------- */
+.rp-app .v4-skel { border-radius: 10px; background: linear-gradient(90deg, var(--hair) 0%, var(--surface-2) 50%, var(--hair) 100%); background-size: 200% 100%; animation: v4-shimmer 1.4s ease-in-out infinite; }
+
+@keyframes v4-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes v4-grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes v4-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes v4-fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes v4-draw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+@keyframes v4-pop { 0% { transform: scale(.9); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes v4-leave { to { opacity: 0; transform: translateX(24px); } }
+@keyframes v4-blink { 50% { opacity: 0; } }
+@keyframes v4-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+
+
+/* Copilote : curseur au bout du texte qui s'écrit, points d'attente. */
+.rp-app .v4-caret-host > :last-child::after { content: ''; display: inline-block; width: 2px; height: 1em; margin-left: 3px; vertical-align: -2px; background: var(--primary); animation: v4-blink 1s steps(1) infinite; }
+.rp-app .v4-dots { display: inline-flex; gap: 4px; }
+.rp-app .v4-dots i { width: 6px; height: 6px; border-radius: 99px; background: var(--primary); opacity: .3; animation: v4-dot 1.1s ease-in-out infinite; }
+.rp-app .v4-dots i:nth-child(2) { animation-delay: .15s; }
+.rp-app .v4-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes v4-dot { 40% { opacity: 1; transform: translateY(-2px); } }
+
+.rp-app h2[id], .rp-app [id$="-h"] { scroll-margin-top: 84px; }
+
+/* Graphiques : la courbe se trace, les barres se remplissent (au chargement, une fois). */
+.rp-app .v4-line { stroke-dasharray: 1; stroke-dashoffset: 0; animation: v4-line 900ms 150ms cubic-bezier(.3, .7, .2, 1) both; }
+.rp-app .v4-hbar { transform-box: fill-box; transform-origin: left; animation: v4-hbar 650ms 120ms cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes v4-line { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes v4-hbar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+
+/* Mouvement réduit (règle V4 corrigée) : on coupe le DÉPLACEMENT (glissements, zooms), jamais les fondus, compteurs,
+   texte qui s'écrit, courbes qui se tracent, barres qui se remplissent, surligneur ni coche qui se dessine. */
+@media (prefers-reduced-motion: reduce) {
+  .rp-app .v4-verdict, .rp-app .v4-swap { animation-name: v4-fade; }
+  .rp-app .v4-pop, .rp-app .v4-press:active { animation: none; transform: none; }
+  .rp-app .v4-leave { animation-name: v4-fade-out; }
+  .rp-app .v4-cascade[data-arm]:not([data-in]) > * { transform: none; }
+  .rp-app .v4-cascade[data-arm] > * { transition-property: opacity; }
+  .rp-app .v4-light[data-arm]:not([data-in]) .v4-light-cell { transform: none; }
+  .rp-app .v4-light[data-arm] .v4-light-cell { transition-property: opacity; }
+  .rp-app .v4-dots i { animation-name: v4-dot-fade; }
+  .rp-app .v4-skel { animation: none; }
+  .rp-app .v4-dropzone[data-over='true'] { transform: none; }
+}
+@keyframes v4-fade-out { to { opacity: 0; } }
+@keyframes v4-dot-fade { 40% { opacity: 1; } }
+
+/* Bien démarrer (/app/bienvenue) : étapes numérotées, barre qui se remplit, une question par étape, aperçu vivant. */
+.rp-app .ob-head { padding: var(--sp-4) var(--sp-5) var(--sp-3); border-bottom: 1px solid var(--hair); }
+@media (min-width: 1024px) { .rp-app .ob-head { padding: var(--sp-5) var(--sp-8) var(--sp-4); } }
+.rp-app .ob-track { height: 6px; border-radius: 99px; background: var(--hair); overflow: hidden; }
+.rp-app .ob-track-fill { display: block; height: 100%; width: 100%; border-radius: inherit; background: var(--tone-brand-solid, var(--primary)); transform-origin: left center; transition: transform 420ms var(--ease-out, cubic-bezier(.2,.7,.2,1)), background-color 300ms ease; animation: v4-hbar 700ms var(--ease-out, ease-out) both; }
+.rp-app .ob-track-fill[data-done] { background: var(--tone-up-solid, var(--success)); }
+.rp-app .ob-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-1); }
+@media (min-width: 640px) { .rp-app .ob-steps { gap: var(--sp-2); } .rp-app .ob-step-btn { gap: 8px; padding: 4px 6px; } }
+.rp-app .ob-step-btn { display: flex; width: 100%; min-width: 0; min-height: 40px; align-items: center; gap: 6px; padding: 4px 2px; border-radius: var(--r-sm); font-size: 13px; font-weight: 600; color: var(--muted); text-align: left; transition: color 200ms ease, background-color 200ms ease; }
+.rp-app .ob-step-btn:hover { background: var(--surface-2); }
+.rp-app .ob-step-btn[data-state='current'] { color: var(--primary); }
+.rp-app .ob-step-btn[data-state='done'] { color: var(--ink); }
+.rp-app .ob-dot { display: flex; flex: none; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 99px; border: 2px solid var(--line); background: var(--surface); font-size: 12px; font-weight: 700; transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease, box-shadow 250ms ease; }
+.rp-app .ob-step-btn[data-state='current'] .ob-dot { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 0 4px var(--primary-bg); }
+.rp-app .ob-step-btn[data-state='done'] .ob-dot { border-color: var(--success); background: var(--success); color: var(--surface); }
+.rp-app .ob-check { stroke-dasharray: 1; animation: v4-line 380ms var(--ease-out, ease-out) 120ms both; }
+.rp-app .ob-body { padding: var(--sp-5); animation: ob-in-fwd 320ms var(--ease-out, ease-out) both; }
+.rp-app .ob-body[data-dir='back'] { animation-name: ob-in-back; }
+@media (min-width: 1024px) { .rp-app .ob-body { padding: var(--sp-8); } }
+@keyframes ob-in-fwd { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@keyframes ob-in-back { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+.rp-app .ob-own > summary { list-style: none; width: max-content; }
+.rp-app .ob-own > summary::-webkit-details-marker { display: none; }
+.rp-app .ob-own[open] input { animation: v4-fade 200ms ease both; }
+/* Aperçu : la zone que l'étape remplit est mise en avant */
+.rp-app .ob-prev-zone { border-radius: var(--r-md); padding: 8px 10px; margin: 0 -10px; transition: background-color 300ms ease, box-shadow 300ms ease, opacity 300ms ease; opacity: .72; }
+.rp-app .ob-preview[data-focus='site'] [data-zone='site'],
+.rp-app .ob-preview[data-focus='questions'] [data-zone='questions'],
+.rp-app .ob-preview[data-focus='mesure'] [data-zone='mesure'] { background: var(--primary-bg); box-shadow: inset 3px 0 0 var(--primary); opacity: 1; }
+.rp-app .ob-bubble { margin-top: 4px; padding: 8px 12px; border-radius: 14px 14px 14px 4px; background: var(--surface-2); border: 1px solid var(--hair); font-size: 14px; font-weight: 500; line-height: 1.4; animation: v4-fade 260ms ease both; overflow-wrap: anywhere; }
+.rp-app .ob-answer { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.rp-app .ob-line { display: block; height: 8px; border-radius: 99px; background: var(--hair); }
+.rp-app .ob-chip { display: inline-flex; max-width: 100%; align-items: center; padding: 2px 8px; border-radius: var(--r-xs, 6px); background: var(--tone-brand-bg, var(--primary-bg)); color: var(--tone-brand, var(--primary)); font-weight: 600; overflow-wrap: anywhere; animation: v4-fade 240ms ease both; }
+.rp-app .ob-chip[data-empty] { background: transparent; border: 1px dashed var(--line); color: var(--muted); font-weight: 500; }
+@media (prefers-reduced-motion: reduce) {
+  .rp-app .ob-body, .rp-app .ob-body[data-dir='back'] { animation-name: v4-fade; }
+}
+
+/* Contrôle d'ensemble (APP-FIN) : un libellé d'action long ne déborde jamais de sa carte (mobile 390). */
+.rp-app .v4-verdict-acts > * { max-width: 100%; min-width: 0; }
+.rp-app .v4-verdict-acts .rp-btn { white-space: normal; text-align: left; height: auto; min-height: 44px; padding-top: 8px; padding-bottom: 8px; line-height: 1.3; }
+/* Notifications (page complète) : sur mobile, « Marquer lue » passe sous le texte pour lui laisser la largeur. */
+@media (max-width: 639px) {
+  .rp-app .ui-tabpanel .rp-notif { flex-direction: column; gap: 0; padding-bottom: 8px; }
+  .rp-app .ui-tabpanel .rp-notif > .rp-btn { align-self: flex-start; margin-left: 46px; }
+}

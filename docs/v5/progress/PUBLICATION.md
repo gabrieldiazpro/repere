@@ -1,0 +1,9 @@
+# PUBLICATION — journal (13 nov. 2026, terminé)
+- Fait : docs/v5/publication.md (recherche par plateforme, sources officielles, permissions minimales, vocabulaire autoFix).
+- Fait : src/lib/publish — modèle ChangeSet (brouillon→proposé→validé→appliqué→vérifié→annulé), journal immuable chaîné SHA-256, connexions chiffrées (INTEGRATIONS_SECRET), client HTTP anti-SSRF épinglé, planificateur (IA via getExtractor + repli déterministe + garde-fou anti-invention), normalisation des autoFix SEO-AUDIT et GEO-OPT (autofix.ts, réponse dans demandes-PUBLICATION.md), « [à compléter] » bloque la validation.
+- Fait : connecteurs WordPress (Yoast exposé / Rank Math), Shopify (GraphQL : seo, métachamps global.*, redirections, thème si SHOPIFY_THEME_WRITE=1), Webflow (une publication par série), PrestaShop (PATCH XML, repli PUT), GBP (PUBLISH_GBP_ENABLED=1), export ZIP + instructions + « avant ».
+- Fait : après application → relecture API + page publique, repère `an_pub_<cs>` sur les courbes, remesure `siteaudit.run` à J+7 (dédoublonnée).
+- Fait : routes /api/v5/publish (connections, connections/test, changesets, changesets/[id] actions, changesets/[id]/export) ; démo lecture seule ; admin pour valider/appliquer/annuler.
+- Tests : 44 verts (faux serveurs locaux par plateforme, cycle complet, échecs partiels, conflits, idempotence, rôles) ; tsc propre sur le périmètre.
+- Variables nouvelles : PUBLISH_GBP_ENABLED, SHOPIFY_THEME_WRITE (facultatives).
+- À faire par d'autres : (1) ecommerce/shopify.ts : ajouter write_products,write_content,write_online_store_navigation à SHOPIFY_SCOPES (ou flux OAuth « publication ») — en attendant, jeton d'app shpat_ accepté ; (2) vague B APP-AGENT : page /app/agent (lien des repères) ; (3) OAuth Google business.manage + dossier d'accès API GBP ; (4) check-env/guide : 2 variables ci-dessus ; (5) extension/snippet WordPress exposant les métas Yoast (texte dans publication.md).

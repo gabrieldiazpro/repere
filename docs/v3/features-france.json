@@ -1,0 +1,200 @@
+[
+  {
+    "feature": "Suivi gratuit permanent (freemium limité)",
+    "competitors": ["Hikoo (10 questions, ChatGPT)", "Qwairy (120 crédits offerts)", "GeoLinka (gratuit sans carte)", "Minddex (audit gratuit)"],
+    "what": "Compte gratuit sans carte qui relance chaque mois un petit lot de questions (5 à 10) sur 1 IA et envoie le résultat par email, avec invitation à passer en payant pour plus d'IA et de questions.",
+    "userValue": "Le patron garde un œil sur sa visibilité sans payer ; Repéré reste dans sa boîte mail jusqu'au déclencheur d'achat.",
+    "howBuilt": "Réutiliser l'audit existant avec un plafond (plan 'free' dans Stripe/Supabase, tâche mensuelle, digest Resend simplifié). Mode démo sans clé : données étiquetées « démo ».",
+    "effort": "S",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 5,
+    "source": "https://www.lafabriquedunet.fr/logiciels/marketing-digital/outils-geo (prix relevés 6 oct. 2026) ; https://digitiz.fr/logiciels-geo/ ; https://comparateur-ia.com/blog/meilleurs-outils-geo"
+  },
+  {
+    "feature": "Grille thème × IA (matrice de présence)",
+    "competitors": ["Qwairy (GEO Matrix)", "Semji (filtres funnel/persona)", "Meteoria (tableau par sujet, IA, période)"],
+    "what": "Tableau où chaque ligne est un thème de questions (prix, urgence, avis, comparaison…) et chaque colonne une IA ; chaque case montre la fréquence de présence sur N exécutions avec un code couleur et ouvre les réponses.",
+    "userValue": "Voir en un coup d'œil où l'on est absent (« Perplexity ne vous cite jamais sur les urgences ») et donc quoi corriger.",
+    "howBuilt": "Agrégation des runs existants par tag de requête × moteur ; composant heatmap accessible (texte + couleur) dans « Ce que disent les IA ».",
+    "effort": "S",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 5,
+    "source": "https://www.codeur.com/comparatif/outil-geo/qwairy (juin 2026) ; https://semji.com/features/intelligence-hub-geo/"
+  },
+  {
+    "feature": "Comparaison jusqu'à 10 concurrents",
+    "competitors": ["Qwairy (Compare, 10 concurrents)", "Semji (benchmark par thématique)", "BotRank (part de voix)"],
+    "what": "Vue qui classe le client et jusqu'à 10 concurrents par fréquence de recommandation, par IA et par thème, avec l'évolution dans le temps et les sources qui citent chaque concurrent.",
+    "userValue": "Répond à « qui passe devant moi, où et grâce à quoi ».",
+    "howBuilt": "Étendre la page Concurrents (gaps existants) : extraction des entités citées déjà faite ; ajouter sélection de concurrents suivis, tableau trié et sparkline.",
+    "effort": "M",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 4,
+    "source": "https://www.codeur.com/comparatif/outil-geo/qwairy ; https://semji.com/features/intelligence-hub-geo/"
+  },
+  {
+    "feature": "Écart détecté → brief de contenu fondé sur les sources citées",
+    "competitors": ["Semji (gap → brief Planning en un clic)", "GetMint (Content Studio, briefs par persona sur les 'core sources')", "Qwairy (Content Studio)"],
+    "what": "Sur chaque requête où le client est absent, un bouton « Préparer le contenu » produit un brief : titre, plan H2 en questions, faits à citer, longueur, sources que les IA reprennent pour ce sujet, puis un brouillon modifiable.",
+    "userValue": "Passer de « vous êtes absent » à « voici la page à publier » sans rédacteur SEO.",
+    "howBuilt": "Croiser requête absente + domaines cités (436 classés) + fiche de vérité ; génération LLM avec gabarit ; sortie dans Tâches et publication via le plugin WordPress ou la page /p/[slug].",
+    "effort": "M",
+    "segments": ["pme", "e-commerce", "local"],
+    "priority": 5,
+    "source": "https://semji.com/features/intelligence-hub-geo/ ; https://www.blogdumoderateur.com/tools/getmint/ (page sponsorisée) ; https://digitiz.fr/logiciels-geo/"
+  },
+  {
+    "feature": "Opportunités de sources activables (avec coût et marche à suivre)",
+    "competitors": ["Qwairy (Backlink Opportunities avec prix Getfluence/Paperclub)", "Minddex (sources activables, réseau d'éditeurs, veille Reddit)"],
+    "what": "Pour chaque source citée par les IA sur les requêtes du client (annuaire, comparatif, média, forum), une carte : comment y figurer (fiche gratuite, demande d'ajout, avis, article sponsorisé), coût indicatif daté, délai, et modèle de message.",
+    "userValue": "Agir hors du site là où les IA puisent réellement, avec un budget clair.",
+    "howBuilt": "Enrichir la table des 436 domaines (type, mode d'accès, coût public sourcé) ; générer des emails de demande ; jamais d'achat de lien déguisé, mentions « sponsorisé » rappelées.",
+    "effort": "M",
+    "segments": ["pme", "local", "e-commerce"],
+    "priority": 5,
+    "source": "https://www.codeur.com/comparatif/outil-geo/qwairy ; https://digitiz.fr/logiciels-geo/"
+  },
+  {
+    "feature": "Audit technique page par page avec correctif copiable",
+    "competitors": ["BotRank.ai (24 critères, Bob génère le code)", "Qwairy (Optimize via sitemap)", "Hikoo Agent (applique les corrections)"],
+    "what": "Analyse des pages clés (robots IA autorisés, rendu sans JavaScript, données structurées, FAQ, fraîcheur, réponses en tête de section) avec une note par page et, pour chaque défaut, le correctif prêt à coller (balise, JSON-LD, ligne robots.txt).",
+    "userValue": "Le prestataire web ou le patron corrige en 10 minutes sans expertise.",
+    "howBuilt": "Crawler léger côté serveur (fetch + parse HTML, sans navigateur) sur la sitemap, règles déterministes, gabarits de correctifs ; réutiliser le JSON-LD servi existant.",
+    "effort": "M",
+    "segments": ["pme", "e-commerce", "local"],
+    "priority": 4,
+    "source": "https://digitiz.fr/logiciels-geo/ ; https://presseagence.fr/paris-intelligence-artificielle-botrank-ai-lance-bob-lagent-ia-qui-optimise-la-visibilite-des-marques-au-dela-de-google/ (20 mai 2026)"
+  },
+  {
+    "feature": "Suivi des carrousels produits de ChatGPT (shopping)",
+    "competitors": ["GetMint (AI Shopping Analytics)", "Meteoria (carrousels produits ChatGPT)", "BotRank (suivi shopping)"],
+    "what": "Pour des requêtes d'achat, relever si les produits du marchand apparaissent dans les carrousels ou listes de produits, à quel rang, avec quel prix et quel marchand concurrent.",
+    "userValue": "Pour l'e-commerçant : savoir si ses fiches produits sont reprises là où l'IA pousse l'achat.",
+    "howBuilt": "Requêtes produit dédiées ; parsing des blocs produits quand l'API les expose, sinon des listes de produits du texte ; rapprochement avec le flux produit. Faisabilité via API à vérifier (GetMint revendique les « vraies interfaces »).",
+    "effort": "L",
+    "segments": ["e-commerce"],
+    "priority": 3,
+    "source": "https://www.blogdumoderateur.com/tools/getmint/ ; https://geotoolbox.ai/fr/blog/outils-geo ; https://digitiz.fr/logiciels-geo/"
+  },
+  {
+    "feature": "Ajout de Mistral (Le Chat) aux IA suivies",
+    "competitors": ["BotRank (3 sur 9 dont Mistral)", "Hikoo (Mistral en offre Agent)", "Qwairy (Mistral sur devis)"],
+    "what": "Mistral ajouté comme 5e IA, présenté comme l'IA française, avec ses résultats dans toutes les vues.",
+    "userValue": "Argument « IA française » rassurant pour les PME, et couverture que les concurrents réservent aux offres hautes.",
+    "howBuilt": "Adaptateur API Mistral dans le moteur multi-IA existant ; mode démo étiqueté ; vérifier les CGU d'API.",
+    "effort": "S",
+    "segments": ["pme", "local", "e-commerce"],
+    "priority": 4,
+    "source": "https://www.lafabriquedunet.fr/logiciels/marketing-digital/outils-geo ; https://digitiz.fr/logiciels-geo/"
+  },
+  {
+    "feature": "Carte du query fan-out (sous-requêtes que l'IA lance)",
+    "competitors": ["Meteoria (cartographie fan-out)"],
+    "what": "Pour une question, afficher les sous-recherches que l'IA effectue (quand le moteur les expose) et les pages trouvées pour chacune, en indiquant celles où le client est absent.",
+    "userValue": "Comprendre pourquoi un concurrent ressort : il répond à une sous-question que le client ignore.",
+    "howBuilt": "Récupérer les requêtes de recherche exposées par les API avec recherche web (ex. Perplexity/OpenAI quand disponible), sinon déduction par LLM étiquetée « estimation ».",
+    "effort": "M",
+    "segments": ["pme", "e-commerce"],
+    "priority": 3,
+    "source": "https://www.blogdumoderateur.com/tools/meteoria/ ; https://digitiz.fr/logiciels-geo/"
+  },
+  {
+    "feature": "Carte thermique du sentiment reliée aux sources",
+    "competitors": ["GetMint (heatmap positif/neutre/négatif)", "Meteoria (sentiment remonté aux sources)", "Qwairy (Analyze)"],
+    "what": "Tonalité des mentions par IA et par thème, et pour chaque mention négative, la source qui l'alimente (avis, article, forum) avec une action proposée.",
+    "userValue": "Savoir ce que les IA disent de mal et d'où ça vient, donc quoi corriger.",
+    "howBuilt": "Étendre la page Perception (sentiment déjà calculé) : agrégation thème × IA + lien vers sources citées et vers la fiche de vérité.",
+    "effort": "S",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 3,
+    "source": "https://www.blogdumoderateur.com/tools/getmint/ ; https://www.blogdumoderateur.com/tools/meteoria/"
+  },
+  {
+    "feature": "Questionnaire expert (Ask Expertise)",
+    "competitors": ["GetMint (Ask Expertise)"],
+    "what": "Repéré envoie par email au dirigeant ou à un salarié 3 à 5 questions courtes liées aux requêtes manquées ; les réponses deviennent des faits originaux injectés dans la FAQ et les contenus.",
+    "userValue": "Des contenus qui contiennent un savoir réel (que les IA valorisent), sans effort d'écriture.",
+    "howBuilt": "Formulaire public à jeton (Resend + route /r/[token]), stockage Supabase, injection dans la fiche de vérité et les générateurs existants.",
+    "effort": "S",
+    "segments": ["pme", "local"],
+    "priority": 4,
+    "source": "https://www.blogdumoderateur.com/tools/getmint/ (page sponsorisée)"
+  },
+  {
+    "feature": "Connecteurs Search Console, Bing Webmaster et Matomo",
+    "competitors": ["Qwairy (GSC, Bing WMT, GA, Looker Studio)", "Meteoria (GA, Matomo dès Starter)"],
+    "what": "Connexion OAuth/API pour croiser visibilité IA, requêtes Google/Bing et visites IA ; Bing est clé car ChatGPT s'appuie sur son index.",
+    "userValue": "Une seule vue « Google, Bing, IA » et la preuve que la visibilité IA amène des visites.",
+    "howBuilt": "Finaliser GA4 (préparé), ajouter GSC et Bing via OAuth, Matomo via token ; mode démo avec données étiquetées.",
+    "effort": "M",
+    "segments": ["pme", "e-commerce"],
+    "priority": 3,
+    "source": "https://www.codeur.com/comparatif/outil-geo/qwairy ; https://digitiz.fr/logiciels-geo/ ; https://www.journaldunet.com/seo/1555503-geo-comment-suivre-et-optimiser-sa-visibilite-ia/ (87 % des citations ChatGPT search dans le top 20 Bing, Seer cité)"
+  },
+  {
+    "feature": "Serveur MCP et export (CSV/JSON/Looker Studio)",
+    "competitors": ["Qwairy (MCP dès Starter, API, Looker Studio)", "Meteoria (export CSV/JSON, API/MCP en Enterprise)"],
+    "what": "Exports des résultats et un serveur MCP en lecture qui permet d'interroger ses données Repéré depuis Claude ou ChatGPT.",
+    "userValue": "Agences et PME outillées intègrent Repéré à leurs rapports et à leurs assistants.",
+    "howBuilt": "Routes d'export signées ; serveur MCP minimal (outils list_queries, get_visibility, get_tasks) avec jeton par compte.",
+    "effort": "M",
+    "segments": ["pme"],
+    "priority": 2,
+    "source": "https://www.codeur.com/comparatif/outil-geo/qwairy ; https://www.lafabriquedunet.fr/logiciels/marketing-digital/outils-geo"
+  },
+  {
+    "feature": "Espace prospection agence (audit de démarchage en marque blanche)",
+    "competitors": ["Qwairy (Pitch Workspace)"],
+    "what": "Une agence saisit un prospect et obtient un mini-audit à ses couleurs (score, concurrents cités, 3 actions) à envoyer, sans créer de compte client.",
+    "userValue": "Fait des agences web locales un canal de distribution de Repéré.",
+    "howBuilt": "Réutiliser l'audit gratuit + rapport PDF + la marque blanche existante ; quota par plan agence.",
+    "effort": "S",
+    "segments": ["local", "pme"],
+    "priority": 3,
+    "source": "https://www.codeur.com/comparatif/outil-geo/qwairy"
+  },
+  {
+    "feature": "Assistant contextuel « Demander » sur chaque écran",
+    "competitors": ["Qwairy (Ask AI sur tous les plans)", "BotRank (agent Bob)", "GetMint (agent Minty)"],
+    "what": "Bouton présent sur chaque carte qui ouvre le copilote déjà prérempli avec le contexte de la vue (« Pourquoi Dupont passe devant moi sur Perplexity ? »).",
+    "userValue": "Réponse immédiate en langage simple, sans chercher où poser la question.",
+    "howBuilt": "Le Copilote existe : passer le contexte de la vue en paramètre, ajouter un point d'entrée par composant.",
+    "effort": "S",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 3,
+    "source": "https://www.codeur.com/comparatif/outil-geo/qwairy ; https://presseagence.fr/paris-intelligence-artificielle-botrank-ai-lance-bob-lagent-ia-qui-optimise-la-visibilite-des-marques-au-dela-de-google/"
+  },
+  {
+    "feature": "Veille des forums et de Reddit",
+    "competitors": ["Minddex (veille Reddit)"],
+    "what": "Repérer les fils de forum (Reddit, forums métiers français) que les IA citent sur les requêtes du client et signaler les nouvelles discussions où il pourrait répondre.",
+    "userValue": "Reddit est la source la plus citée par les LLM selon l'étude BotRank : y être présent proprement pèse.",
+    "howBuilt": "Filtre sur les sources citées de type forum + recherche périodique ; alerte dans le digest ; conseils de réponse transparente (pas de faux comptes).",
+    "effort": "M",
+    "segments": ["pme", "e-commerce"],
+    "priority": 2,
+    "source": "https://digitiz.fr/logiciels-geo/ ; https://www.journaldunet.com/seo/1555503-geo-comment-suivre-et-optimiser-sa-visibilite-ia/ (étude BotRank 1,2 M réponses, non vérifiée de façon indépendante)"
+  },
+  {
+    "feature": "Baromètre public trimestriel par métier et ville",
+    "competitors": ["BotRank (étude 1,2 M réponses reprise dans le JDN)"],
+    "what": "Page /etudes publiant, avec méthode, la part des commerces et PME recommandés par chaque IA par métier et grande ville, et les sources les plus citées en France.",
+    "userValue": "Pour le prospect : se situer ; pour Repéré : contenu cité par la presse et les IA.",
+    "howBuilt": "Lancer le moteur sur un panel fixe de requêtes métier × ville, agrégation, pages statiques générées ; données réelles uniquement, étiquetées « démo » tant qu'aucune clé n'est branchée.",
+    "effort": "M",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 4,
+    "source": "https://www.journaldunet.com/seo/1555503-geo-comment-suivre-et-optimiser-sa-visibilite-ia/ (21 oct. 2026)"
+  },
+  {
+    "feature": "Vérificateur gratuit des robots IA (robots.txt)",
+    "competitors": ["geotoolbox (AI Crawler Checker gratuit)"],
+    "what": "Outil public : on saisit une URL et on voit si GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot, Google-Extended, etc. sont autorisés, avec la ligne à corriger.",
+    "userValue": "Diagnostic en 5 secondes ; porte d'entrée vers l'audit complet.",
+    "howBuilt": "Route serveur qui lit robots.txt et l'en-tête de la page, règles par user-agent ; page /outils/robots-ia indexable.",
+    "effort": "S",
+    "segments": ["local", "pme", "e-commerce"],
+    "priority": 4,
+    "source": "https://geotoolbox.ai/fr/blog/outils-geo"
+  }
+]

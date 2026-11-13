@@ -1,0 +1,19 @@
+# ANALYSE-UI — journal
+## Fait (13 nov. 2026)
+- /analyse (src/app/analyse/page.tsx) : un champ (adresse), case pro obligatoire, marque / ville / type / e-mail facultatifs (dépliable), pot de miel ; pré-rempli par ?site= ?nom= ?segment= ?ville= (src/components/analysis/prefill.ts). Indexable : title/meta/canonical, JSON-LD @graph WebPage + BreadcrumbList + WebApplication (gratuit, isPartOf #software) + HowTo (3 étapes, mêmes textes que la section visible, rendue côté serveur avant l'analyse).
+- Écran vivant (LiveAnalysis) branché sur POST /api/v5/analysis (NDJSON, stream.ts : readNdjson + reduceLive) : compteur de pages, mini-carte du site qui se dessine (mapLayout.ts, disposition stable à l'angle d'or), page en cours, constats en direct, jauges SEO/GEO qui se remplissent aux événements `score`, étapes avec durées réelles, réponses des IA (x/y, fournisseurs), chronomètre réel, « Corriger » marque/ville → relance (fresh).
+- Rapport (AnalysisReport, même composant en direct et sur le lien) : verdict, 3 scores animés, 5 priorités (pourquoi / quoi faire / pages, badge « Repéré peut le faire pour vous » si autoFix), détail SEO + GEO dépliable par section, ce que disent les IA (réponses qui s'écrivent, démo étiquetée), vitesse (ou « non configuré »), comparaison avec l'analyse précédente, « Corriger avec Repéré » → /inscription?parcours=&analyse=<id>&site=&nom=, partage (copie / partage natif), impression propre (sections dépliées, boutons masqués).
+- /analyse/[id]?t= (serveur) : jeton vérifié (tokenMatches) ou membre de l'espace rattaché ; noindex,nofollow, referrer no-referrer ; lien invalide/expiré → page d'explication. Après l'analyse, l'URL devient le lien signé (history.replaceState).
+- États : démo, partiel (notes en clair), site injoignable, robots.txt bloquant RepereBot (marche à suivre + `User-agent: RepereBot / Allow: /`), limite de débit (429/503 + délai), cache 10 min (« relancer une analyse complète »), coupure réseau.
+- Branchements : QuickAuditForm (héros de l'accueil, pages segment) → une adresse va vers /analyse?site=…&segment=…, un nom reste vers /audit (sans JS : /audit) ; /audit : encart « Vous avez un site ? Analysez-le en 60 secondes » (prérempli site/segment). Ancien audit et /r/… inchangés.
+- Tests : src/components/analysis/__tests__/analysis.test.tsx (16) ; tsc propre ; vitest analysis + motion + audit : 49/49.
+- Captures : qa/v5/ANALYSE-UI/ (form, live, rapport-direct, rapport-lien, robots, injoignable, limite, lien-expire ; 1440 et 390 ; le site public n'a pas de mode sombre : rapport-sombre-1440 vérifie qu'il reste clair et lisible). Flux rejoués = VRAIS flux enregistrés sur faux sites locaux (scratchpad aui/record.ts : crawlSite réel + setFetchDeps), rapports servis depuis qa-site/.data.
+## Demandes (docs/v5/demandes-ANALYSE-60S.md)
+1. Événement `crawl` : joindre les URL lues depuis le dernier envoi (`urls: string[]`) — la carte ne voit aujourd'hui qu'un échantillon (currentUrl throttlé 150 ms).
+2. Contrôle IA : émettre le texte des questions (événement `ai` ou `questions`) pour les afficher en direct.
+3. Détection : garder le code SafeFetchError (robots_disallowed) dans `modules.detect.error` au lieu de « page d'accueil injoignable » (le diagnostic robots est aujourd'hui une heuristique : format.ts `diagnose`).
+4. E-mail facultatif : envoyer le lien du rapport (le libellé dit seulement « pour retrouver ce rapport dans votre espace » tant que rien n'est envoyé).
+5. Auth : /inscription?analyse=<id> → `attachAnalysisToBusiness` (claim), sinon le rattachement promis par « Corriger avec Repéré » ne se fait pas.
+## Notes
+- Serveur 4101 tombé plusieurs fois (OOM du dev partagé) : relancé avec dev.sh.
+- Sitemap : /analyse à ajouter dans src/app/sitemap.ts (hors périmètre ; à faire par SITE-POSITIONNEMENT ou INTEGRATION-V5).

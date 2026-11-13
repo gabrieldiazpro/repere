@@ -1,0 +1,249 @@
+[
+  {
+    "feature": "Lien d'avis Google et QR code (/outils/lien-avis-google)",
+    "competitors": [
+      "Birdeye",
+      "Whitespark"
+    ],
+    "what": "Génère le lien d'avis Google, le QR code et une affiche imprimable à partir du Place ID, avec modèles de SMS et d'e-mail.",
+    "userValue": "Obtenir plus d'avis en deux gestes ; les avis sont corrélés à la présence dans les réponses des IA (corrélation, pas garantie).",
+    "howBuilt": "URL writereview?placeid construite sans API, extraction du Place ID depuis un lien Maps, QR serveur, affiche HTML imprimable. Sans clé d'IA.",
+    "effort": "S",
+    "segments": [
+      "local"
+    ],
+    "priority": 5,
+    "source": "https://birdeye.com/review-link-generator/ ; https://insites.com/blog/do-google-reviews-affect-ai-recommendations-yes-heres-by-how-much/ ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Vérificateur robots.txt pour robots IA (/outils/robots-ia)",
+    "competitors": [
+      "Ahrefs",
+      "Studiohawk",
+      "resolve247",
+      "AEO Engine"
+    ],
+    "what": "Teste robot par robot (GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended...) si le site est autorisé, distingue entraînement/recherche/requête utilisateur, détecte les blocages pare-feu et propose un robots.txt.",
+    "userValue": "Savoir en 5 secondes si les IA peuvent lire le site et corriger sans jargon.",
+    "howBuilt": "Fetch /robots.txt, analyse RFC 9309, requêtes de test par user-agent, tableau de robots daté et revu chaque trimestre. SSRF bloqué. Sans clé d'IA.",
+    "effort": "S",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 5,
+    "source": "https://www.digitalapplied.com/blog/ai-crawler-access-control-2026-robots-llms-txt-decision-matrix ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Validateur et générateur JSON-LD (/outils/generateur-json-ld)",
+    "competitors": [
+      "Merkle",
+      "Rank Math",
+      "Google Rich Results Test",
+      "Schema.org validator"
+    ],
+    "what": "Génère LocalBusiness, Organization, Product, FAQPage et valide un balisage existant avec messages en français et contrôle de cohérence avec le contenu visible.",
+    "userValue": "Des données structurées correctes sans toucher au code.",
+    "howBuilt": "Gabarits TS, règles de validation maison, extraction des blocs ld+json de l'URL, réutilise le moteur JSON-LD servi de Repéré. Sans clé d'IA.",
+    "effort": "M",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 4,
+    "source": "https://seomator.com/schema-markup-generator ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Test de rendu sans JavaScript (/outils/rendu-sans-javascript)",
+    "competitors": [
+      "Aucun outil GEO grand public identifié"
+    ],
+    "what": "Montre le texte et les signaux présents dans le HTML initial tels que les voit un robot IA, détecte les coquilles SPA, sans navigateur.",
+    "userValue": "Comprendre pourquoi un site JavaScript peut sembler vide aux IA.",
+    "howBuilt": "Fetch avec user-agent robot, cheerio, ratio texte/HTML, détection de racines vides. Rendu Playwright seulement en phase 2 payante. Sans clé d'IA.",
+    "effort": "M",
+    "segments": [
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 4,
+    "source": "https://vercel.com/blog/the-rise-of-the-ai-crawler ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Analyseur de citabilité d'une page (/outils/citabilite)",
+    "competitors": [
+      "Semrush",
+      "Ahrefs",
+      "outils d'audit GEO"
+    ],
+    "what": "Liste de contrôle de 20 points (réponse directe, titres-questions, listes, sources, dates, coordonnées, FAQ, JSON-LD, lisibilité sans JS) présentée comme bonnes pratiques et non comme score d'IA.",
+    "userValue": "Savoir quoi corriger sur une page précise.",
+    "howBuilt": "Parsing HTML et heuristiques publiées sur /methode ; décompte « n sur 20 ». Sans clé d'IA.",
+    "effort": "M",
+    "segments": [
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 4,
+    "source": "docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Comparateur mon site vs un concurrent (/outils/comparateur-concurrent)",
+    "competitors": [
+      "Semrush",
+      "HubSpot Website Grader"
+    ],
+    "what": "Compare deux URL sur les signaux techniques (robots, rendu, JSON-LD, citabilité, sitemap, llms.txt) et propose 3 écarts à combler.",
+    "userValue": "Voir où le concurrent est mieux préparé.",
+    "howBuilt": "Orchestration des analyseurs des outils 2 à 5 en parallèle, quota 5/h/IP, cache 24 h. Sans clé d'IA.",
+    "effort": "M",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 3,
+    "source": "https://www.hubspot.com/ai-search-grader ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Générateur de llms.txt honnête (/outils/llms-txt)",
+    "competitors": [
+      "Stork",
+      "Fibr",
+      "ChatThing"
+    ],
+    "what": "Génère llms.txt à partir du sitemap avec un encadré qui dit ce que le fichier fait réellement (Google ne l'utilise pas ; support partiel ailleurs).",
+    "userValue": "Un fichier propre sans croire aux promesses.",
+    "howBuilt": "Parsing du sitemap, titres et meta, validation du /llms.txt servi. Source de l'encadré à remplacer par les sources primaires. Sans clé d'IA.",
+    "effort": "S",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 2,
+    "source": "https://ecorpit.com/does-llms-txt-help-seo-google-2026/ ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Simulateur de trafic IA (/outils/simulateur-trafic-ia)",
+    "competitors": [
+      "Ahrefs Web Analytics (trafic IA)"
+    ],
+    "what": "Trois scénarios chiffrés à partir d'hypothèses saisies par l'utilisateur, sans chiffre de marché présenté comme un fait.",
+    "userValue": "Ordre de grandeur de l'enjeu, avec bandeau « simulation, pas une prévision ».",
+    "howBuilt": "Calcul côté navigateur, lien partageable des hypothèses. Sans clé d'IA.",
+    "effort": "S",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 2,
+    "source": "docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Carte de score partageable (image OG dynamique)",
+    "competitors": [
+      "HubSpot AI Search Grader"
+    ],
+    "what": "Page publique et image Open Graph 1200x630 d'un résultat d'audit, privée par défaut, publiée sur choix, avec date, nombre de questions et mode réel/démo.",
+    "userValue": "Partager un résultat sur LinkedIn ; chaque partage ramène vers l'audit flash.",
+    "howBuilt": "/carte/[id opaque] + opengraph-image.tsx, noindex par défaut, suppression en un clic, paramètre ?from=carte sans cookie.",
+    "effort": "M",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 5,
+    "source": "docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Badge « Cité par les IA » (mesuré et daté)",
+    "competitors": [
+      "Modèle « Powered by » (LiveAgent, Senja)"
+    ],
+    "what": "Badge SVG/widget délivré seulement si un seuil de citation est mesuré, daté, expirant à 35 jours, lié à la page de preuve.",
+    "userValue": "Preuve de confiance sur son site ; backlink et acquisition pour Repéré.",
+    "howBuilt": "/badge/[id].svg, seuil publié sur /methode, retrait auto sous le seuil, option sans lien payante. Mention « mesure, pas certification ».",
+    "effort": "M",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 4,
+    "source": "https://faziergrowthhacks.beehiiv.com/p/badges ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Classement public par ville et secteur (opt-in)",
+    "competitors": [
+      "Aucun outil GEO identifié"
+    ],
+    "what": "Pages /classement/[secteur]/[ville] avec uniquement les entreprises consentantes, mêmes questions pour tous, date et seuil minimal de 10 entreprises.",
+    "userValue": "Se situer face aux concurrents locaux ; page partageable.",
+    "howBuilt": "Opt-in en fin d'audit, modération, règlement public, noindex sous le seuil. À lancer quand la base d'audits est suffisante.",
+    "effort": "L",
+    "segments": [
+      "local",
+      "pme"
+    ],
+    "priority": 2,
+    "source": "docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Parrainage client",
+    "competitors": [
+      "Typeform (via SaaSquatch)"
+    ],
+    "what": "Lien de parrainage, remise pour le filleul, crédit d'un mois pour le parrain après le premier paiement du filleul, plafonné.",
+    "userValue": "Récompense pour recommander ; acquisition à coût faible.",
+    "howBuilt": "Table referrals, coupon Stripe, e-mail Resend, règles anti-abus dans les CGV. Montants à valider avec les marges.",
+    "effort": "M",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 3,
+    "source": "https://www.casestudies.com/company/saasquatch/case-study/user-growth-with-the-power-of-referral-marketing ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Programme agences et freelances (version 0)",
+    "competitors": [
+      "Qwairy (offre agences sur devis)",
+      "Semrush (agences)"
+    ],
+    "what": "Page de candidature, rapports PDF en marque blanche, commission récurrente ou remise (à décider), page partenaires opt-in avec clients réels uniquement.",
+    "userValue": "Les agences amènent et gèrent plusieurs TPE ; rapports prêts à remettre.",
+    "howBuilt": "V0 : candidature, lien de suivi, commission manuelle, rapport PDF existant. V1 : rôle agence multi-clients et facturation consolidée.",
+    "effort": "S",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 3,
+    "source": "../v2/07-positionnement.md ; docs/v3/11-outils-gratuits.md"
+  },
+  {
+    "feature": "Modèle freemium : 1 marque, 5 prompts, 1 mesure par mois, essai 14 jours sans carte",
+    "competitors": [
+      "Semrush (3 vérifications IA par jour)",
+      "HubSpot AI Search Grader (gratuit, une fois)"
+    ],
+    "what": "Gratuit durable (outils, audit flash limité, carte, 1 livrable de départ) ; payant pour mesure étendue, exécution complète, marque blanche ; essai sans carte avec retour au gratuit sans perte.",
+    "userValue": "Valeur réelle sans engagement ; montée en gamme à l'atteinte d'une limite.",
+    "howBuilt": "Quotas par compte, cache 30 jours des réponses, détection multi-comptes, plafonds de coût d'API ; indicateurs outil par outil jusqu'au paiement.",
+    "effort": "M",
+    "segments": [
+      "local",
+      "pme",
+      "ecommerce"
+    ],
+    "priority": 5,
+    "source": "https://dodopayments.com/blogs/saas-free-trial-vs-freemium ; https://www.semrush.com/blog/free-seo-tools/ ; docs/v3/11-outils-gratuits.md"
+  }
+]
