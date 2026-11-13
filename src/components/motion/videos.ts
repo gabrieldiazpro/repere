@@ -2,13 +2,14 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-export const DEMO_VIDEO_IDS = ["hero", "mesurer", "comprendre", "agir", "prouver"] as const;
+export const DEMO_VIDEO_IDS = ["hero", "explication", "mesurer", "comprendre", "agir", "prouver"] as const;
 export type DemoVideoId = (typeof DEMO_VIDEO_IDS)[number];
 
 export type DemoVideoFiles = { mp4: string | null; webm: string | null; poster: string | null; vtt: string | null };
 
 export const DEMO_VIDEO_LABELS: Record<DemoVideoId, string> = {
   hero: "Démo : Repéré en 30 secondes, sur un compte démo",
+  explication: "Démo : Repéré de A à Z en 2 minutes, l’analyse d’un site fictif puis l’application sur des comptes démo",
   mesurer: "Démo : ce que répondent les IA, question par question (compte démo, 30 s)",
   comprendre: "Démo : les sources des IA et pourquoi un concurrent passe devant (compte démo, 30 s)",
   agir: "Démo : les actions de la semaine, la fiche Google et les pages à corriger (compte démo, 30 s)",

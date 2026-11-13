@@ -100,6 +100,19 @@ export default function DemoPage() {
         <p className="mt-4 text-[0.92rem] text-muted">Données fictives, en lecture seule : rien de ce que vous faites n&apos;est enregistré.</p>
       </PageHero>
 
+      <section aria-labelledby="explication-title" className="bg-canvas py-20 sm:py-24">
+        <Container>
+          <SectionTitle
+            id="explication-title"
+            title="Repéré de A à Z, en 2 minutes"
+            intro="L'analyse en 60 secondes d'un site fictif, puis l'application semaine après semaine : mesurer, comprendre, agir, prouver. Sous-titrée, sans son."
+          />
+          <div className="mx-auto mt-10 max-w-4xl">
+            <DemoClip id="explication" title="Repéré de A à Z, en 2 minutes" duration="1:55" fallback={<HeroScene segment="local" data={demoHeroScene("local")} />} />
+          </div>
+        </Container>
+      </section>
+
       <section id="comptes" aria-labelledby="comptes-title" className="scroll-mt-20 bg-white py-20 sm:py-24">
         <Container>
           <SectionTitle

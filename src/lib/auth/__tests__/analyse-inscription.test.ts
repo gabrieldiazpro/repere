@@ -79,3 +79,17 @@ describe('inscription depuis une analyse 60 s', () => {
     expect((await getStoredAnalysis(id))?.businessId ?? null).toBeNull();
   });
 });
+
+describe('déclaration professionnelle à l’inscription gratuite', () => {
+  it('l’horodatage serveur passe par le jeton et une preuve est gardée avec l’espace', async () => {
+    const { getDoc } = await import('@/lib/store');
+    const s = session(`pro-${Date.now()}@exemple.fr`);
+    const at = '2026-11-13T22:00:00.000Z';
+    const claim = claims.signupClaimToken({ email: s.email, name: 'Atelier Test', segment: 'local', city: 'Lyon', trade: 'fleuriste', pro: { at, v: 'pro-v1-2026-11-13', cgv: true } });
+    const fx = await claims.applyLoginEffects(s, { claim });
+    expect(fx.selectBusinessId).toBeTruthy();
+    const proof = await getDoc<{ declaredAt: string; version: string; cgvAccepted: boolean; source: string }>('billing.pro_declarations', `signup_${fx.selectBusinessId}`);
+    expect(proof?.businessId).toBe(fx.selectBusinessId);
+    expect(proof?.data).toMatchObject({ declaredAt: at, version: 'pro-v1-2026-11-13', cgvAccepted: true, source: 'signup' });
+  });
+});

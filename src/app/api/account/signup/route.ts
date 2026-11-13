@@ -11,6 +11,7 @@ import { assertSameOrigin, json, limit, readJson, str } from '@/lib/auth/http';
 import { startBrowserLogin } from '@/lib/auth/magic';
 import { HttpError } from '@/lib/auth/roles';
 import { ensureUser, isEmail, normEmail } from '@/lib/auth/users';
+import { PRO_DECLARATION_VERSION } from '@/lib/stripe';
 import type { Segment } from '@/lib/engine/types-v2';
 
 export const runtime = 'nodejs';
@@ -40,6 +41,9 @@ export async function POST(req: Request) {
         throw new HttpError(400, 'L’adresse du site semble incorrecte.');
       }
     }
+    // Service réservé aux professionnels (CGV art. 4) : la case est obligatoire et horodatée ici, côté serveur.
+    if (body.pro !== true) throw new HttpError(400, 'Repéré est réservé aux professionnels : cochez la case « J’agis pour les besoins de mon activité professionnelle ».');
+    if (body.cgv !== true) throw new HttpError(400, 'Acceptez les conditions générales pour créer votre compte.');
     if (authMode() === 'off') throw new HttpError(503, 'L’inscription est momentanément indisponible.', 'auth_unavailable');
     const email = normEmail(body.email);
     await ensureUser(email);
@@ -56,6 +60,7 @@ export async function POST(req: Request) {
       suite: body.suite === 'carte' ? 'carte' : undefined,
       // Origine de la visite (première page / UTM, sans cookie) : validée dans le jeton, gardée à la création de l'espace.
       src: sanitizeAttribution(body.attribution),
+      pro: { at: new Date().toISOString(), v: PRO_DECLARATION_VERSION, cgv: true },
     });
     const r = await startBrowserLogin(email, { next: '/app', claim });
     if (!r.ok) {

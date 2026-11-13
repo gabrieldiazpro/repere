@@ -203,6 +203,9 @@ export function SignupForm({ defaultSegment, prefill = {} }: { defaultSegment?: 
       ...(prefill.analysis ? { analysis: prefill.analysis } : {}),
       ref: prefill.ref,
       suite: prefill.suite,
+      // Déclarations cochées (professionnel, CGV) : horodatées par le serveur à la réception.
+      pro: true,
+      cgv: true,
       // Origine de la visite (première page / UTM, gardée en mémoire de l'onglet, sans cookie).
       attribution: currentAttribution() ?? undefined,
     });

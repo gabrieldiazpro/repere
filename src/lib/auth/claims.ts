@@ -61,6 +61,8 @@ export interface SignupClaim {
   suite?: 'carte';
   /** origine de la visite (première page / UTM, sans cookie ; ROI des baromètres) */
   src?: Attribution;
+  /** horodatage serveur de la déclaration « j'agis pour mon activité professionnelle » + acceptation des CGV */
+  pro?: { at: string; v: string; cgv: boolean };
   n: string;
   exp: number;
 }
@@ -73,7 +75,7 @@ export function purchaseClaimToken(businessId: string, email: string, ttlDays = 
 
 const ANALYSIS_ID_RE = /^an_[A-Za-z0-9_-]{1,77}$/;
 
-export function signupClaimToken(input: { email: string; name: string; segment: Segment; website?: string; trade?: string; city?: string; audit?: string; analysis?: string; ref?: string; suite?: 'carte'; src?: Attribution | null }): string {
+export function signupClaimToken(input: { email: string; name: string; segment: Segment; website?: string; trade?: string; city?: string; audit?: string; analysis?: string; ref?: string; suite?: 'carte'; src?: Attribution | null; pro?: { at: string; v: string; cgv: boolean } }): string {
   return signValue({
     k: 'signup',
     e: normEmail(input.email),
@@ -87,6 +89,7 @@ export function signupClaimToken(input: { email: string; name: string; segment: 
     ref: input.ref && /^[A-Za-z0-9_-]{1,20}$/.test(input.ref) ? input.ref : undefined,
     suite: input.suite === 'carte' ? 'carte' : undefined,
     src: sanitizeAttribution(input.src) ?? undefined,
+    pro: input.pro ? { at: input.pro.at, v: input.pro.v, cgv: input.pro.cgv === true } : undefined,
     n: randomToken(12),
     exp: Math.floor(Date.now() / 1000) + 7 * DAY,
   } satisfies SignupClaim);
@@ -302,6 +305,19 @@ export async function applyLoginEffects(session: Session, params: { claim?: stri
           const b = await createOwnedBusiness(session, claim);
           // Origine de l'inscription (analyse ou audit d'origine, sinon première page / UTM) : ROI des baromètres.
           await recordSignupAttribution(b.id, { analysis: claim.analysis, audit: claim.audit, attribution: claim.src ?? null });
+          // Preuve de la déclaration professionnelle faite à l'inscription (CGV art. 4), gardée avec l'espace.
+          if (claim.pro) {
+            await putDoc('billing.pro_declarations', `signup_${b.id}`, {
+              businessId: b.id,
+              userId: session.userId,
+              email: claim.e,
+              source: 'signup',
+              version: claim.pro.v,
+              declaredAt: claim.pro.at,
+              cgvAccepted: claim.pro.cgv,
+              confirmedAt: new Date().toISOString(),
+            }, b.id).catch((e) => console.error('[auth] preuve de déclaration professionnelle non enregistrée', b.id, e));
+          }
           ids.push(b.id);
           select = b.id;
           next = await afterSignup(session, b.id, claim);
