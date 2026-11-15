@@ -5,6 +5,7 @@ import { pageMeta } from '@/lib/seo/meta';
 const SEO_TITLES: Record<string, string> = {
   'barometre-visibilite-ia': 'Baromètre de la visibilité IA en France',
   'ce-que-nous-savons-deja': 'Recherche IA en France : ce que disent les études',
+  'pourquoi-les-ia-recommandent-une-marque': 'Pourquoi une IA recommande une marque : les études',
 };
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -20,7 +21,8 @@ import {
   withRefs,
   type Source,
 } from '@/lib/seo/editorial';
-import { articleLd, breadcrumbListLd, graph, orgRef, pageIds, webPageLd } from '@/lib/seo/jsonld';
+import { articleLd, breadcrumbListLd, faqPageLd, graph, orgRef, pageIds, webPageLd } from '@/lib/seo/jsonld';
+import { BRAND_STUDY_QA, BRAND_STUDY_SLUG, BRAND_STUDY_SOURCES, BrandCitationStudy } from './marque-citee';
 import { abs, fmtDate, METHOD_VERSION } from '@/lib/seo';
 import {
   STUDIES,
@@ -68,7 +70,7 @@ export default async function StudyPage({ params }: Props) {
   ];
   const stats = s.slug === 'barometre-visibilite-ia' ? await getStudyStats() : null;
   const published = !!stats && stats.count >= STUDY_PUBLISH_AT;
-  const sources = s.slug === 'ce-que-nous-savons-deja' ? KNOWN_SOURCES : [];
+  const sources = s.slug === 'ce-que-nous-savons-deja' ? KNOWN_SOURCES : s.slug === BRAND_STUDY_SLUG ? BRAND_STUDY_SOURCES : [];
 
   return (
     <PageShell narrow>
@@ -87,6 +89,7 @@ export default async function StudyPage({ params }: Props) {
             withContext: false,
           }),
           published ? datasetLd(s, stats!) : null,
+          s.slug === BRAND_STUDY_SLUG ? faqPageLd(path, BRAND_STUDY_QA, { withContext: false }) : null,
           breadcrumbListLd(path, crumbs, { withContext: false }),
         ])}
       />
@@ -95,7 +98,7 @@ export default async function StudyPage({ params }: Props) {
         {s.title}
       </h1>
       <Byline published={s.published} updated={published ? stats!.computedAt.slice(0, 10) : s.updated} />
-      {s.slug === 'barometre-visibilite-ia' ? <Barometre stats={stats} /> : <KnownStudies />}
+      {s.slug === 'barometre-visibilite-ia' ? <Barometre stats={stats} /> : s.slug === BRAND_STUDY_SLUG ? <BrandCitationStudy /> : <KnownStudies />}
       <AuditCta />
       {sources.length > 0 && <SourcesList sources={sources} />}
       <RelatedLinks current="/etudes" />
@@ -165,12 +168,14 @@ function Barometre({ stats }: { stats: StudyStats | null }) {
         answer={
           published
             ? `Le Baromètre repose sur ${n} audits réalisés entre le ${fmtDate(stats!.periodStart)} et le ${fmtDate(stats!.periodEnd)} ; il est recalculé chaque jour.`
-            : `Collecte en cours : les résultats seront publiés à partir de ${STUDY_PUBLISH_AT} audits. D'ici là, nous ne publions aucun chiffre.`
+            : n === 0
+              ? `Premières mesures à venir : la collecte commence avec les premiers audits réels, et aucun chiffre ne sera publié avant ${STUDY_PUBLISH_AT} audits.`
+              : `Collecte en cours : les résultats seront publiés à partir de ${STUDY_PUBLISH_AT} audits. D'ici là, nous ne publions aucun chiffre.`
         }
       >
         {!published && (
           <div className="rounded-xl border p-4" style={{ borderColor: 'var(--line)', background: '#fff' }}>
-            <p className="font-semibold">État : collecte en cours, publication à {STUDY_PUBLISH_AT} audits.</p>
+            <p className="font-semibold">{n === 0 ? 'État : premières mesures à venir' : 'État : collecte en cours'}, publication à {STUDY_PUBLISH_AT} audits.</p>
             {n > 0 && (
               <>
                 <p className="mt-1 text-sm" style={{ color: 'var(--muted)' }}>

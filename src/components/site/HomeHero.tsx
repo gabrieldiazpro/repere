@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { QuickAuditForm } from "@/components/motion/QuickAuditForm";
+import { DemoEntry } from "./DemoEntry";
 
 type Seg = "local" | "pme" | "ecommerce";
 
@@ -72,17 +73,17 @@ export function HomeHero({ children, preview }: { children: ReactNode; preview?:
         </div>
         <p className="mt-3 max-w-xl text-[0.88rem] text-muted">Gratuit, sans compte ni carte bancaire. Notre robot respecte votre robots.txt.</p>
 
-        <p className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-[0.95rem]">
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-[0.95rem]">
           <Link href="/demo" className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary underline-offset-4 hover:underline">
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor">
               <path d="M4.5 2.8v10.4L13 8z" />
             </svg>
             Voir la démo en vidéo
           </Link>
-          <Link href={`/app?visite=1&segment=${seg}`} rel="nofollow" className="inline-flex min-h-11 items-center text-ink/75 underline-offset-4 hover:text-primary hover:underline">
+          <DemoEntry segment={seg} className="inline-flex min-h-11 cursor-pointer items-center text-ink/75 underline-offset-4 hover:text-primary hover:underline">
             Explorer le compte démo
-          </Link>
-        </p>
+          </DemoEntry>
+        </div>
       </div>
 
       <div className="relative mx-auto w-full max-w-xl lg:mt-1 lg:max-w-none">{preview}</div>

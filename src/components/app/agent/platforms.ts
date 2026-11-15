@@ -28,6 +28,8 @@ export interface PlatformGuide {
   fields: PlatformField[];
   /** ce que l'agent saura faire une fois connecté (avant test des droits) */
   can: ChangeKind[];
+  /** ce que la plateforme ne permet pas par son API : préparé en export avec un pas à pas (affiché tel quel) */
+  guided?: ChangeKind[];
 }
 
 export const GUIDES: PlatformGuide[] = [
@@ -96,6 +98,24 @@ export const GUIDES: PlatformGuide[] = [
       { name: 'languageId', group: 'config', label: 'Langue (identifiant)', placeholder: '1', optional: true, help: 'Facultatif : 1 = langue principale.', pattern: /^\d{0,3}$/, error: 'Un nombre (ex. 1).' },
     ],
     can: ['meta.title', 'meta.description'],
+  },
+  {
+    id: 'wix',
+    monogram: 'Wx',
+    pitch: 'Titres, descriptions, données structurées, redirections, robots.txt et llms.txt, publiés directement.',
+    steps: [
+      { text: 'Connectez-vous à Wix avec le compte propriétaire du site, puis ouvrez', path: 'Paramètres du compte > Clés API' },
+      { text: 'Cliquez sur « Générer une clé API », nommez-la « Repéré », limitez-la à ce site et cochez', path: 'SEO (gestion) · Blog et Boutique (lecture, si vous les utilisez)' },
+      { text: 'Copiez la clé : Wix ne l’affiche qu’une fois. L’identifiant du site est la suite de caractères après /dashboard/ dans l’adresse de votre tableau de bord.' },
+    ],
+    tip: 'Seul le propriétaire ou un copropriétaire du compte Wix peut créer une clé. Textes d’images, FAQ visibles et textes de page ne se modifient pas par l’API de Wix : l’agent les prépare avec un pas à pas dans l’éditeur.',
+    fields: [
+      { name: 'siteUrl', group: 'config', label: 'Adresse du site', placeholder: 'https://www.votre-site.fr', type: 'url', pattern: /^https:\/\/[^\s/]+\.[^\s]+$/i, error: 'Adresse en https requise (ex. https://www.votre-site.fr).' },
+      { name: 'siteId', group: 'config', label: 'Identifiant du site', placeholder: '1a2b3c4d-1234-…', help: 'Dans l’adresse du tableau de bord : manage.wix.com/dashboard/<identifiant>/…', pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, error: 'Format attendu : 8-4-4-4-12 caractères (chiffres et lettres a à f).' },
+      { name: 'apiKey', group: 'credentials', label: 'Clé API', placeholder: 'IST.eyJ…', type: 'password', pattern: /^\S{40,}$/, error: 'Collez la clé API complète (plusieurs centaines de caractères).' },
+    ],
+    can: ['meta.title', 'meta.description', 'canonical', 'meta.robots', 'jsonld', 'redirect', 'robots.txt', 'llms.txt'],
+    guided: ['image.alt', 'faq', 'rewrite'],
   },
   {
     id: 'gbp',

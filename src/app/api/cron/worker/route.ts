@@ -8,9 +8,12 @@
  * - Vercel Pro : passez le cron de vercel.json à `* * * * *` (ou `*\/5 * * * *`).
  * - Dans tous les cas, les tâches urgentes (premier audit après achat) sont lancées aussitôt via `after()`.
  * GET (Vercel Cron) ou POST (pg_net), `Authorization: Bearer <CRON_SECRET>`.
+ * Supervision (OPS V6) : garde-fou de coûts (tâches non urgentes en pause si le plafond du jour est dépassé),
+ * dernier passage enregistré (`ops.heartbeat/worker`, lu par /api/health), contrôle des alertes après la réponse.
  */
 import { NextResponse } from 'next/server';
-import { runWorker } from '@/lib/jobs';
+import { jobBackend, runWorker } from '@/lib/jobs';
+import { afterResponse, pausableBackend, recordHeartbeat, runOpsTick } from '@/lib/ops';
 import { captureError, withRequest } from '@/lib/log';
 import { cronAuthorized } from '../auth';
 
@@ -22,11 +25,14 @@ async function handle(req: Request) {
   if (!cronAuthorized(req)) return NextResponse.json({ error: 'Non autorisé.' }, { status: 401 });
   const l = withRequest(req);
   try {
-    const report = await runWorker();
+    const report = await runWorker({ backend: pausableBackend(jobBackend()) });
+    await recordHeartbeat('worker', true, { durationMs: report.durationMs, detail: { processed: report.processed, dead: report.dead } });
+    afterResponse(() => runOpsTick());
     l.info('jobs.worker', { processed: report.processed, done: report.done, retried: report.retried, dead: report.dead, durationMs: report.durationMs, stoppedBy: report.stoppedBy });
     return NextResponse.json(report);
   } catch (e) {
     captureError(e, { event: 'jobs.worker_failed' });
+    await recordHeartbeat('worker', false);
     return NextResponse.json({ error: 'Worker en échec.' }, { status: 500 });
   }
 }

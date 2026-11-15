@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { PageShell, Crumbs, JsonLd, Card, CtaLink, h1Class, h1Style, h2Class } from '@/lib/seo/shell';
 import {
   TRADES, ARRONDISSEMENTS, VILLES, getTrade, buildTradeQueries, directoriesFor, buildFaq, breadcrumbLd, faqLd, serviceLd,
-  tradePath, pairPath, relatedTrades, tradeLower, withArticle,
+  tradePath, pairPath, relatedTrades, tradeLower, withArticle, publishedPairs, MIN_AUDITS_FOR_INDEX,
 } from '@/lib/seo';
 
 export const dynamicParams = true;
@@ -34,6 +34,8 @@ export default async function TradePage({ params }: Props) {
   const faq = buildFaq(t, null, null);
   const path = tradePath(t);
   const featured = ARRONDISSEMENTS.filter((a) => ['paris-11e', 'paris-15e', 'paris-1er'].includes(a.slug));
+  const cities = [...featured, ...VILLES.slice(0, 6)];
+  const published = await publishedPairs(cities.map((c) => ({ t, c })));
 
   return (
     <PageShell>
@@ -64,17 +66,27 @@ export default async function TradePage({ params }: Props) {
         ))}
       </div>
 
-      <h2 className={h2Class}>Choisissez votre ville</h2>
-      <p className="mb-3">Pages par ville pour les {t.nom_pluriel.toLowerCase()} :</p>
-      <ul className="flex flex-wrap gap-2">
-        {[...featured, ...VILLES.slice(0, 6)].map((c) => (
-          <li key={c.slug}>
-            <Link href={pairPath(t, c)} className="inline-block rounded-full border px-3 py-1 text-sm underline-offset-2 hover:underline" style={{ borderColor: 'var(--line)' }}>
-              {c.nom}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <h2 className={h2Class}>Les villes que nous mesurons</h2>
+      {published.length > 0 ? (
+        <>
+          <p className="mb-3">Pages par ville publiées pour les {t.nom_pluriel.toLowerCase()} :</p>
+          <ul className="flex flex-wrap gap-2">
+            {published.map(({ c }) => (
+              <li key={c.slug}>
+                <Link href={pairPath(t, c)} className="inline-block rounded-full border px-3 py-1 text-sm underline-offset-2 hover:underline" style={{ borderColor: 'var(--line)' }}>
+                  {t.nom} à {c.nom}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p className="mb-3 max-w-3xl">
+          Nous testons ces questions à {cities.slice(0, 5).map((c) => c.nom).join(', ')} et dans d&apos;autres villes. Une page par
+          ville n&apos;est publiée qu&apos;à partir de {MIN_AUDITS_FOR_INDEX} audits réels et récents pour ce métier dans la zone :
+          aucune n&apos;a encore atteint ce seuil, nous n&apos;affichons donc aucun chiffre local.
+        </p>
+      )}
 
       <div className="mt-12 rounded-2xl p-6 sm:p-8" style={{ background: 'var(--primary-bg)' }}>
         <p className="mb-3 text-lg font-semibold">Testez votre établissement en 2 minutes.</p>

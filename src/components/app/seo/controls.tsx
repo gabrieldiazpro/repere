@@ -114,7 +114,7 @@ export function CrawlButton({ demo, allowed, rightsLabel, primary = false, nextA
       if (r.ok) {
         toast({ text: `Exploration terminée : ${r.pages} pages lues${r.truncated ? ' (plafond de votre offre atteint)' : ''}. Score Google ${r.seo}/100, IA ${r.geo}/100.`, tone: 'success' });
         router.refresh();
-      } else toast({ text: r.error, tone: 'error' });
+      } else toast({ text: r.howTo?.length ? `${r.error} ${r.howTo[0]}` : r.error, tone: 'error' });
     });
   };
   const blocked = !demo && !allowed;

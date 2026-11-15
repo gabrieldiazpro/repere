@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import r from '@/components/report/report.module.css';
 import s from './audit.module.css';
 import { AuditForm, type AuditPrefill } from './AuditForm';
@@ -9,14 +10,16 @@ import { breadcrumbListLd } from '@/lib/seo/jsonld';
 import { JsonLd } from '@/lib/seo/shell';
 
 const AUDIT_TITLE = 'Votre audit de visibilité IA gratuit';
-const AUDIT_DESC = 'Commerce, PME ou e-commerce : découvrez en quelques minutes si ChatGPT, Gemini et Perplexity vous citent, qui ils citent à votre place et quelles sources ils lisent.';
+// ≤ 160 caractères : au-delà, Google coupe la description (V6).
+const AUDIT_DESC = 'Commerce, PME ou e-commerce : ChatGPT, Gemini et Perplexity vous citent-ils ? Qui citent-ils à votre place, quelles sources lisent-ils ? Test gratuit.';
+const AUDIT_OG = { url: abs('/opengraph-image'), width: 1200, height: 630, alt: AUDIT_TITLE };
 
 export const metadata: Metadata = {
   title: AUDIT_TITLE,
   description: AUDIT_DESC,
   alternates: { canonical: abs('/audit') },
-  openGraph: { title: AUDIT_TITLE, description: AUDIT_DESC, url: abs('/audit'), type: 'website', locale: 'fr_FR', siteName: 'Repéré' },
-  twitter: { card: 'summary_large_image', title: AUDIT_TITLE, description: AUDIT_DESC },
+  openGraph: { title: AUDIT_TITLE, description: AUDIT_DESC, url: abs('/audit'), type: 'website', locale: 'fr_FR', siteName: 'Repéré', images: [AUDIT_OG] },
+  twitter: { card: 'summary_large_image', title: AUDIT_TITLE, description: AUDIT_DESC, images: [AUDIT_OG.url] },
 };
 
 const AUDIT_CRUMBS = breadcrumbListLd('/audit', [
@@ -113,7 +116,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
               ? 'Le nom de votre entreprise et votre secteur suffisent. Nous posons aux IA les questions de vos acheteurs.'
               : prefill.segment === 'ecommerce'
                 ? 'Le nom de votre marque et une catégorie de produits suffisent. Nous posons aux IA les questions de vos acheteurs.'
-                : 'Trois informations suffisent : le site et l\'e-mail sont facultatifs. Nous nous occupons du reste.'}
+                : 'Le nom, le métier et la ville suffisent : le site et l\'e-mail sont facultatifs. Nous nous occupons du reste.'}
           </p>
         </header>
         {/* V5 : qui a un site obtient l'analyse complète Google + IA (exploration réelle) ; ce formulaire reste le test par nom. */}
@@ -137,6 +140,21 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
           <span>✓ Les concurrents cités à votre place</span>
           <span>✓ Les sources que lisent les IA</span>
         </p>
+        <section className={s.after} aria-labelledby="audit-contenu">
+          <h2 id="audit-contenu">Ce que contient votre audit</h2>
+          <ul>
+            <li>Les réponses de ChatGPT, Gemini et Perplexity aux questions que posent vos clients.</li>
+            <li>Votre score de visibilité sur 100, avec sa fourchette : une mesure à un instant donné, pas une position garantie.</li>
+            <li>Les entreprises citées à votre place et les sources que les IA lisent pour votre activité.</li>
+            <li>Les premières actions à mener, par ordre d’importance.</li>
+          </ul>
+          <p>
+            Vous avez un site ? L’<Link href="/analyse">analyse SEO et IA en 60 secondes</Link> l’explore page par page. Comment nous mesurons :{' '}
+            <Link href="/methode">notre méthode et ses limites</Link>. À lire aussi :{' '}
+            <Link href="/questions/savoir-si-les-ia-recommandent-mon-entreprise">comment savoir si les IA recommandent votre entreprise</Link>{' '}
+            et <Link href="/questions/audit-seo-gratuit">comment faire un audit SEO gratuit</Link>.
+          </p>
+        </section>
       </main>
     </div>
     </>

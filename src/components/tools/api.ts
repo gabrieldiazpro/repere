@@ -15,6 +15,7 @@ import type {
 import type { GenerateResult, GenerateType } from '@/lib/siteaudit/jsonld';
 import type { LlmsResult } from '@/lib/siteaudit/llms';
 import type { ReviewLinkResult } from '@/lib/siteaudit/reviewLink';
+import type { HeadersReport, HreflangReport, IndexReport, LinksReport, MetaReport, OgReport, RedirectReport, SitemapReport } from './v6/types';
 
 export type { CheckStatus };
 
@@ -40,6 +41,15 @@ export interface Endpoints {
   '/api/tools/product': { body: { url: string }; data: ProductReport };
   '/api/tools/compare': { body: { url: string; competitorUrl: string }; data: CompareReport };
   '/api/tools/review-link': { body: { placeId?: string; name?: string; city?: string; color?: string }; data: ReviewLinkResult };
+  /* Outils V6 (SEO Google) : src/app/outils/api/[outil]/route.ts */
+  '/outils/api/meta': { body: { url: string }; data: MetaReport };
+  '/outils/api/indexabilite': { body: { url: string }; data: IndexReport };
+  '/outils/api/redirections': { body: { url: string }; data: RedirectReport };
+  '/outils/api/en-tetes': { body: { url: string }; data: HeadersReport };
+  '/outils/api/hreflang': { body: { url: string }; data: HreflangReport };
+  '/outils/api/open-graph': { body: { url: string }; data: OgReport };
+  '/outils/api/liens': { body: { url: string }; data: LinksReport };
+  '/outils/api/sitemap': { body: { url: string }; data: SitemapReport };
 }
 export type EndpointPath = keyof Endpoints;
 
@@ -152,7 +162,7 @@ export async function callTool<P extends EndpointPath>(
 export function readShareParams(search: string): Record<string, string> {
   const out: Record<string, string> = {};
   const p = new URLSearchParams(search);
-  for (const k of ['url', 'concurrent', 'placeid', 'nom', 'ville', 'mode']) {
+  for (const k of ['url', 'concurrent', 'placeid', 'nom', 'ville', 'mode', 'titre', 'description']) {
     const v = p.get(k);
     if (v && v.length <= 2048) out[k] = v;
   }

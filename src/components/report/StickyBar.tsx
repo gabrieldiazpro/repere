@@ -30,6 +30,8 @@ export function StickyBar({ score, auditId, watchId, title, shareText, signupHre
           <a
             className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSmall} ${styles.iconBtn}`}
             href={`/api/report/${encodeURIComponent(auditId)}/pdf`}
+            rel="nofollow"
+            download
             tabIndex={on ? 0 : -1}
             aria-label="Télécharger le PDF"
           >

@@ -112,7 +112,8 @@ export function TruthSection({ claims, factCheck, appHref, demo }: { claims: Bra
         <p>
           Remplissez votre fiche de vérité (adresse, téléphone, horaires, prix, services) dans votre espace. Nous comparons ensuite chaque réponse des IA avec elle et vous signalons toute erreur, avec la source probable et la correction à faire. Nous ne pouvons pas promettre qu&apos;une IA se corrigera, ni dans quel délai.
         </p>
-        <a className={`${styles.btn} ${styles.btnPrimary}`} href={appHref} style={{ justifySelf: 'start' }}>
+        {/* Lien vers l'espace client (/app, fermé aux robots) : rel="nofollow". */}
+        <a className={`${styles.btn} ${styles.btnPrimary}`} href={appHref} rel="nofollow" style={{ justifySelf: 'start' }}>
           Remplir ma fiche de vérité
         </a>
       </div>

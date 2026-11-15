@@ -35,11 +35,14 @@ export const abs = (path: string) => (path === '/' || path === '' ? `${SITE_URL}
 /* ------------------------------------------------------------------ */
 
 export const BRAND = 'Repéré';
-export const DESCRIPTOR = 'le référencement IA (GEO) des entreprises françaises';
+export const DESCRIPTOR = 'le référencement SEO et IA (GEO) des entreprises françaises';
 export const TAGLINE = 'On mesure. On explique. On le fait.';
 /** Phrase d'identité, reprise mot pour mot : /a-propos, accueil, llms.txt, JSON-LD Organization. */
 export const ONE_LINER =
-  'Repéré est un service français de référencement IA (GEO) : il mesure si ChatGPT, Gemini et Perplexity recommandent une entreprise, explique pourquoi ils citent ses concurrents et réalise les corrections, validées par le client avant publication.';
+  'Repéré est un service français de référencement SEO et IA (GEO) : il analyse un site pour de vrai, mesure si Google, ChatGPT, Gemini, Perplexity et Claude recommandent l’entreprise, explique pourquoi ses concurrents sont cités et réalise les corrections, validées par le client avant publication.';
+/** Version courte (≤ 160 caractères) : meta descriptions, profils externes (docs/visibilite-repere/01-textes-identite.md). */
+export const SHORT_DESCRIPTION =
+  'Repéré analyse votre site, mesure si Google, ChatGPT, Gemini et Perplexity recommandent votre entreprise, et réalise les corrections avec vous.';
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'contact@repere-ia.fr';
 
 /** Compte « maison » de dogfooding (tracking t.js, page officielle /p/repere, /api/schema/repere). */
@@ -57,7 +60,8 @@ const env = (k: string) => (process.env[k] ?? '').trim();
  * voir docs/MISE-EN-LIGNE.md et `node scripts/ops/check-env.mjs --prod`. Lues au build : redéployer après un changement.
  * Tant qu'un champ obligatoire est vide, ENTITY_READY vaut false :
  *  - /a-propos reste en noindex et hors du sitemap et de llms.txt ;
- *  - le JSON-LD ne publie ni Person, ni SIREN, ni adresse, ni sameAs (aucune donnée fictive).
+ *  - le JSON-LD ne publie ni Person, ni SIREN, ni adresse (aucune donnée fictive) ; sameAs ne reprend que les profils
+ *    de marque réellement renseignés (voir SAME_AS).
  * Dès que tout est rempli, tout s'active sans autre modification.
  */
 export const FOUNDER = {
@@ -123,21 +127,44 @@ export const LEGAL_READY = LEGAL_MISSING.length === 0;
 export const orTodo = (value: string, label: string): string => value || `[À COMPLÉTER : ${label}]`;
 
 /**
- * Profils officiels : page LinkedIn de l'entreprise, fiche annuaire-entreprises.data.gouv.fr/entreprise/<SIREN>,
- * Pappers, Crunchbase, YouTube… (séparés par des virgules dans NEXT_PUBLIC_SAME_AS).
+ * Profils officiels de la MARQUE (pages publiques réelles, https uniquement, vides ignorées) : liste libre
+ * NEXT_PUBLIC_SAME_AS (séparée par des virgules) + une variable nommée par plateforme (GEO-MARQUE, V6).
  */
-const RAW_SAME_AS = env('NEXT_PUBLIC_SAME_AS')
-  .split(',')
-  .map((s) => s.trim())
-  .filter((s) => /^https:\/\//.test(s));
+export const SAME_AS_PROFILES = {
+  linkedin: env('NEXT_PUBLIC_SAME_AS_LINKEDIN'),
+  crunchbase: env('NEXT_PUBLIC_SAME_AS_CRUNCHBASE'),
+  g2: env('NEXT_PUBLIC_SAME_AS_G2'),
+  capterra: env('NEXT_PUBLIC_SAME_AS_CAPTERRA'),
+  producthunt: env('NEXT_PUBLIC_SAME_AS_PRODUCTHUNT'),
+  alternativeto: env('NEXT_PUBLIC_SAME_AS_ALTERNATIVETO'),
+  youtube: env('NEXT_PUBLIC_SAME_AS_YOUTUBE'),
+  wikidata: env('NEXT_PUBLIC_SAME_AS_WIKIDATA'),
+};
+/** Libellés des profils (bloc « Nous suivre » du pied de page). */
+export const SAME_AS_LABELS: Record<keyof typeof SAME_AS_PROFILES, string> = {
+  linkedin: 'LinkedIn', crunchbase: 'Crunchbase', g2: 'G2', capterra: 'Capterra', producthunt: 'Product Hunt',
+  alternativeto: 'AlternativeTo', youtube: 'YouTube', wikidata: 'Wikidata',
+};
+const isHttps = (s: string) => /^https:\/\/[^\s]+$/.test(s);
+/** Profils nommés renseignés (dans l'ordre de SAME_AS_LABELS). */
+export const SAME_AS_LINKS = (Object.keys(SAME_AS_LABELS) as (keyof typeof SAME_AS_PROFILES)[])
+  .filter((k) => isHttps(SAME_AS_PROFILES[k]))
+  .map((k) => ({ key: k, label: SAME_AS_LABELS[k], url: SAME_AS_PROFILES[k] }));
+const RAW_SAME_AS = [
+  ...env('NEXT_PUBLIC_SAME_AS').split(',').map((s) => s.trim()),
+  ...SAME_AS_LINKS.map((l) => l.url),
+].filter(isHttps);
 
 /** LE flag : vrai quand le fondateur a rempli les informations obligatoires. */
 export const ENTITY_READY = Boolean(FOUNDER.name && FOUNDER.bio && LEGAL.siren && LEGAL.street && LEGAL.city);
 
-/** sameAs publié seulement quand l'entité est complète ; la fiche officielle de l'État est ajoutée d'office. */
-export const SAME_AS: string[] = ENTITY_READY
-  ? [...new Set([...RAW_SAME_AS, `https://annuaire-entreprises.data.gouv.fr/entreprise/${LEGAL.siren}`])]
-  : [];
+/**
+ * sameAs : les profils publics de la marque sont publiés dès qu'ils sont renseignés (ce sont des pages réelles, pas des
+ * données d'identité légale) ; la fiche officielle de l'État (SIREN) s'ajoute quand l'entité est complète.
+ */
+export const SAME_AS: string[] = [
+  ...new Set([...RAW_SAME_AS, ...(ENTITY_READY ? [`https://annuaire-entreprises.data.gouv.fr/entreprise/${LEGAL.siren}`] : [])]),
+];
 
 /* ------------------------------------------------------------------ */
 /* Dates de dernière modification éditoriale                           */
@@ -149,26 +176,30 @@ export const SAME_AS: string[] = ENTITY_READY
  * À mettre à jour à la main quand le contenu de la page change (pas à chaque build).
  */
 export const PAGE_UPDATED = {
-  '/': '2026-11-09',
-  '/local': '2026-11-09',
-  '/pme': '2026-11-09',
-  '/e-commerce': '2026-11-09',
-  '/audit': '2026-11-09',
-  '/tarifs': '2026-11-09',
-  '/methode': '2026-11-09',
-  '/guides': '2026-11-09',
-  '/visibilite-ia': '2026-11-09',
+  '/': '2026-11-13',
+  '/local': '2026-11-13',
+  '/pme': '2026-11-13',
+  '/e-commerce': '2026-11-13',
+  '/audit': '2026-11-15',
+  '/tarifs': '2026-11-13',
+  '/methode': '2026-11-13',
+  '/guides': '2026-11-15',
+  '/visibilite-ia': '2026-11-15',
   '/visibilite-ia/pme': '2026-11-09',
   '/visibilite-ia/e-commerce': '2026-11-09',
   '/a-propos': '2026-11-09',
   '/geo': '2026-11-09',
-  '/glossaire': '2026-11-09',
-  '/questions': '2026-11-09',
-  '/comparatif': '2026-11-09',
-  '/etudes': '2026-11-09',
+  '/glossaire': '2026-11-15',
+  '/questions': '2026-11-15',
+  '/comparatif': '2026-11-13',
+  '/etudes': '2026-11-15',
   '/cgv': '2026-11-09',
   '/mentions-legales': '2026-11-09',
   '/confidentialite': '2026-11-09',
+  // V6 : pages livrées par LANCEMENT et OPS (15 nov. 2026).
+  '/pilotes': '2026-11-15',
+  '/presse': '2026-11-15',
+  '/statut': '2026-11-15',
 } as const satisfies Record<string, string>;
 
 export type StaticPath = keyof typeof PAGE_UPDATED;

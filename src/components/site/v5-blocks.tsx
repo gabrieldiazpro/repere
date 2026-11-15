@@ -47,8 +47,8 @@ const READER_TONE: Record<Reader, string> = {
 };
 
 const PREVIEW_FIXES: { reader: Reader; title: string; fix: string }[] = [
-  { reader: "ia", title: "Vos pages « Services » n’affichent leur texte qu’avec JavaScript", fix: "Les robots d’OpenAI, Anthropic et Perplexity ne l’exécutent pas : ils voient une page vide." },
-  { reader: "google", title: "14 pages portent le même titre « Accueil – Atelier Sora »", fix: "Un titre par page, avec le service et la ville : prêt à appliquer." },
+  { reader: "ia", title: "Vos pages « Services » n’affichent leur texte qu’avec JavaScript", fix: "Les robots d’OpenAI, Anthropic et Perplexity ne l’exécutent pas : ils voient une page vide." },
+  { reader: "google", title: "14 pages portent le même titre « Accueil – Atelier Sora »", fix: "Un titre par page, avec le service et la ville : prêt à appliquer." },
   { reader: "both", title: "Votre téléphone diffère entre le site et le balisage", fix: "Google comme les IA hésitent quand deux sources se contredisent." },
 ];
 

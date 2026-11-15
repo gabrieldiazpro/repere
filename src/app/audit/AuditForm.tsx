@@ -1089,7 +1089,7 @@ export function AuditForm({ prefill }: { prefill: AuditPrefill }) {
         <span>
           {prog.done === prog.total
             ? 'Tout est prêt : lancez votre audit.'
-            : `${prog.done} sur ${prog.total} informations obligatoires renseignées.`}
+            : `${prog.done} sur ${prog.total} éléments obligatoires remplis, cases à cocher comprises.`}
         </span>
       </div>
 
@@ -1103,7 +1103,7 @@ export function AuditForm({ prefill }: { prefill: AuditPrefill }) {
         {hydrated ? 'Lancer mon audit' : 'Chargement…'}
       </button>
       <p className={s.rgpd}>
-        Vos informations servent à réaliser l&apos;audit, à vous envoyer le rapport et, seulement si vous avez coché la case facultative, nos conseils. <a href="/confidentialite">En savoir plus</a>
+        Vos informations servent à réaliser l&apos;audit, à vous envoyer le rapport et, seulement si vous avez coché la case facultative, nos conseils. <a href="/confidentialite">Notre politique de confidentialité</a>
       </p>
     </form>
   );

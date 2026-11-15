@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="t d" font-family="Inter, Arial, sans-serif">
+  <title id="t">Le trajet d’une question dans un moteur de réponse</title>
+  <desc id="d">La question est reformulée, des recherches sont lancées, des pages sont lues, des passages sont retenus, puis la réponse cite ses sources numérotées.</desc>
+  <rect x="0.5" y="0.5" width="719" height="219" rx="14" fill="#ffffff" stroke="#d9dde3"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker></defs>
+  <g font-size="12" text-anchor="middle">
+    <rect x="20" y="70" width="110" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5"/><text x="75" y="98" font-weight="600" fill="#1e1b4b">Question</text><text x="75" y="116" fill="#3f3f46">reformulée</text>
+    <rect x="160" y="70" width="110" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5"/><text x="215" y="98" font-weight="600" fill="#1e1b4b">Recherches</text><text x="215" y="116" fill="#3f3f46">une ou plusieurs</text>
+    <rect x="300" y="70" width="110" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5"/><text x="355" y="98" font-weight="600" fill="#1e1b4b">Pages lues</text><text x="355" y="116" fill="#3f3f46">robots autorisés</text>
+    <rect x="440" y="70" width="110" height="64" rx="10" fill="#dcfce7" stroke="#16a34a"/><text x="495" y="98" font-weight="600" fill="#14532d">Passages</text><text x="495" y="116" fill="#14532d">précis, datés</text>
+    <rect x="580" y="70" width="120" height="64" rx="10" fill="#1e1b4b"/><text x="640" y="98" font-weight="600" fill="#fff">Réponse</text><text x="640" y="116" fill="#e0e7ff">sources [1] [2] [3]</text>
+  </g>
+  <g stroke="#4f46e5" stroke-width="1.6" marker-end="url(#a)"><line x1="130" y1="102" x2="156" y2="102"/><line x1="270" y1="102" x2="296" y2="102"/><line x1="410" y1="102" x2="436" y2="102"/><line x1="550" y1="102" x2="576" y2="102"/></g>
+  <text x="360" y="176" text-anchor="middle" font-size="12" fill="#6b7280">À chaque étape, une page peut être écartée : introuvable, illisible, ou moins précise qu’une autre.</text>
+</svg>

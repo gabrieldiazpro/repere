@@ -4,6 +4,8 @@ import type { BrandFactField } from '@/lib/engine/types-v2';
 import { buildFaq, findBusinessIdBySlug, hostedPageUrl, jsonLdString, loadExecContext, schemaForBusiness, type ExecContext } from '@/lib/execution';
 import { googleReviewUrl } from '@/lib/execution/reviews';
 import { cleanUrl, splitList } from '@/lib/execution/util';
+import { fitDescription } from '@/lib/seo/meta';
+import { abs } from '@/lib/seo/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +24,9 @@ async function load(slug: string): Promise<ExecContext | null> {
   }
 }
 
+/** Image de partage propre à la page (app/p/[slug]/opengraph-image.tsx). */
+const ogImage = (slug: string) => abs(`/p/${slug}/opengraph-image`);
+
 const SEGMENT_TYPE = { local: 'Fiche officielle', pme: 'Présentation officielle', ecommerce: 'Fiche officielle de la marque' } as const;
 
 function activityOf(ctx: ExecContext): string {
@@ -36,17 +41,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const ctx = await load(slug);
   if (!ctx) return { title: { absolute: 'Page introuvable' }, robots: { index: false, follow: false } };
-  const title = `${ctx.business.name} — ${SEGMENT_TYPE[ctx.segment].toLowerCase()} et questions fréquentes`;
-  const description = `${ctx.business.name} : ${activityOf(ctx)}. Informations vérifiées par l’entreprise : coordonnées, ${ctx.segment === 'local' ? 'horaires, zone, ' : ''}services et réponses aux questions fréquentes.`.slice(0, 300);
+  // ≤ 60 caractères dans la plupart des cas (les titres plus longs sont coupés dans Google).
+  const title = `${ctx.business.name} — ${SEGMENT_TYPE[ctx.segment].toLowerCase()} et FAQ`;
+  const description = fitDescription(`${ctx.business.name} : ${activityOf(ctx)}. Informations vérifiées par l’entreprise : coordonnées, ${ctx.segment === 'local' ? 'horaires, zone, ' : ''}services et réponses aux questions fréquentes.`);
   const url = hostedPageUrl(slug);
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    // Les comptes démo ne sont pas des entreprises réelles : jamais indexés.
-    robots: ctx.demo ? { index: false, follow: false } : { index: true, follow: true },
-    openGraph: { title, description, url, type: 'website', locale: 'fr_FR', siteName: ctx.business.name },
-    twitter: { card: 'summary', title, description },
+    // Les comptes démo ne sont pas des entreprises réelles : jamais indexés. Leurs liens restent suivis (page d'exemple
+    // liée depuis notre site) ; les liens vers le site fictif portent rel="nofollow" (voir extLinkRel).
+    robots: ctx.demo ? { index: false, follow: true } : { index: true, follow: true },
+    openGraph: { title, description, url, type: 'website', locale: 'fr_FR', siteName: ctx.business.name, images: [{ url: ogImage(slug), width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage(slug)] },
   };
 }
 
@@ -79,20 +86,29 @@ export default async function HostedPage({ params }: Props) {
   const brandColor = /^#[0-9a-f]{6}$/i.test(settings.brandColor ?? '') ? (settings.brandColor as string) : '#3730A3';
   const onBrand = readableOn(brandColor);
   const faq = buildFaq(ctx.audit ?? { input: { businessName: business.name, trade: business.trade, city: business.city, district: business.district, segment } }, brand, business);
-  const jsonld = await schemaForBusiness(business.id, { withFaq: true });
+  // Compte démo (entreprise fictive) : AUCUN balisage publié dans la page. Un LocalBusiness ou des Product fictifs sur
+  // notre domaine seraient des données structurées trompeuses (adresse et téléphone inventés lus comme réels) et
+  // mêleraient une autre entité à celle de Repéré. Le balisage reste consultable en fichier brut (/api/schema/<id>).
+  const jsonld = ctx.demo ? null : await schemaForBusiness(business.id, { withFaq: true });
   const site = cleanUrl(f.site || business.website);
   const reviewUrl = settings.reviewUrl ?? googleReviewUrl(settings.placeId);
   const services = splitList(f.services);
   const products = settings.products?.length ? settings.products.map((p) => p.name) : [];
   const rows = ROWS.filter((r) => f[r.field] && (!r.segments || r.segments.includes(segment)));
   const updated = brand.updatedAt ? new Date(brand.updatedAt) : null;
+  // Compte démo : le site affiché est fictif, on ne lui transmet aucune recommandation.
+  const extLinkRel = ctx.demo ? 'noopener nofollow' : 'noopener';
 
   return (
     <div className="min-h-dvh bg-white text-[#1B1F2E]" style={{ ['--brand' as string]: brandColor }}>
       {jsonld && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonld) }} />}
       {ctx.demo && (
         <p className="bg-[#FDF1E3] px-4 py-2 text-center text-sm text-[#92400E]">
-          Données de démonstration : cette entreprise est fictive.
+          Données de démonstration : cette entreprise est fictive.{' '}
+          <a href={`/api/schema/${encodeURIComponent(business.id)}?format=json`} className="underline underline-offset-2">
+            Voir le balisage schema.org que nous livrerions
+          </a>{' '}
+          (non publié sur cette page d’exemple).
         </p>
       )}
       <header style={{ background: brandColor, color: onBrand }}>
@@ -123,7 +139,7 @@ export default async function HostedPage({ params }: Props) {
                         {f.telephone}
                       </a>
                     ) : r.field === 'site' && site ? (
-                      <a className="underline decoration-1 underline-offset-2" href={site} rel="noopener">
+                      <a className="underline decoration-1 underline-offset-2" href={site} rel={extLinkRel}>
                         {site.replace(/^https?:\/\//, '')}
                       </a>
                     ) : (
@@ -180,7 +196,7 @@ export default async function HostedPage({ params }: Props) {
         {(reviewUrl || site) && (
           <section className="mt-10 flex flex-wrap gap-3">
             {site && (
-              <a href={site} rel="noopener" className="rounded-lg px-4 py-2 text-sm font-semibold" style={{ background: brandColor, color: onBrand }}>
+              <a href={site} rel={extLinkRel} className="rounded-lg px-4 py-2 text-sm font-semibold" style={{ background: brandColor, color: onBrand }}>
                 Visiter le site
               </a>
             )}

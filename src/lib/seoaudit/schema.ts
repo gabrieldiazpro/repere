@@ -231,12 +231,27 @@ export function validateNodes(jsonLd: unknown[]): { types: string[]; issues: SdI
         if (!okCtx) issues.push({ type: typesOf(b)[0] ?? '?', level: 'context', message: '@context absent ou différent de https://schema.org' });
       }
     }
-    for (const n of allNodes(block)) {
+    // ROBUSTESSE (V6, demandes SEOAUDIT n° 6 et 10) : prix obligatoire, livraison et retours ne concernent que les
+    // offres d'un PRODUIT (fiches marchandes Google). L'offre d'un Service ou d'un abonnement n'a pas de livraison.
+    const nodes = allNodes(block);
+    const productOffers = new Set<Node>();
+    const asList = (v: unknown): Node[] => (Array.isArray(v) ? v : v && typeof v === 'object' ? [v] : []).filter((x): x is Node => !!x && typeof x === 'object');
+    for (const n of nodes) {
+      const ts = typesOf(n);
+      if (ts.some((x) => x === 'Product' || x === 'ProductGroup' || x === 'IndividualProduct' || x === 'ProductModel'))
+        for (const o of asList(n.offers)) {
+          productOffers.add(o);
+          for (const o2 of asList(o.offers)) productOffers.add(o2);
+        }
+      if (ts.includes('Offer') && asList(n.itemOffered).some((io) => typesOf(io).some((x) => /Product/.test(x)))) productOffers.add(n);
+    }
+    for (const n of nodes) {
       for (const t of typesOf(n)) {
         types.add(t);
         if (DEPRECATED[t]) issues.push({ type: t, level: 'deprecated', message: DEPRECATED[t] });
-        const r = ruleFor(t);
-        if (!r) continue;
+        const r0 = ruleFor(t);
+        if (!r0) continue;
+        const r = r0.as === 'Offer' && !productOffers.has(n) ? { ...r0, rule: { ...r0.rule, required: [], recommended: [['price', 'priceSpecification']] } } : r0;
         for (const alt of r.rule.required) if (!alt.some((k) => has(n, k))) issues.push({ type: r.as, level: 'required', prop: alt.join(' ou '), message: `${t} : propriété obligatoire manquante (${alt.join(' ou ')})` });
         for (const alt of r.rule.recommended) if (!alt.some((k) => has(n, k))) issues.push({ type: r.as, level: 'recommended', prop: alt.join(' ou '), message: `${t} : propriété recommandée manquante (${alt.join(' ou ')})` });
         checkValues(n, r.as === 'LocalBusiness' ? 'LocalBusiness' : t, issues);

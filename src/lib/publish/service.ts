@@ -199,6 +199,7 @@ export async function proposeChangeSet(businessId: string, id: string, actor: Ac
           ch.before = current;
           ch.beforeSource = cs.platform === 'export' ? (current === null ? 'none' : 'crawl') : 'platform';
         }
+        if (conn.preparePatch) ch.patch = conn.preparePatch(ch);
         ch.after = computeAfter(ch.before, ch.patch);
         if (sameValue(ch.before, ch.after)) {
           ch.status = 'skipped';
@@ -232,6 +233,8 @@ export async function editChange(businessId: string, id: string, changeId: strin
     const v = String(value ?? '').slice(0, 50_000);
     if (!v.trim()) throw new PublishError(400, 'Texte vide.');
     ch.patch = { ...ch.patch, value: v };
+    const prep = connectorFor(cs.platform).preparePatch;
+    if (prep) ch.patch = prep(ch);
     ch.after = ch.patch.op === 'set' || ch.beforeSource === 'platform' ? computeAfter(ch.before, ch.patch) : null;
     ch.generatedBy = 'user';
     if (cs.status === 'validated') {
@@ -522,6 +525,6 @@ export async function revertChangeSet(businessId: string, id: string, actor: Act
 export async function exportChangeSet(businessId: string, id: string): Promise<{ filename: string; zip: Buffer; files: { name: string; content: string }[] }> {
   const cs = await mustGet(businessId, id);
   if (cs.status === 'draft') throw new PublishError(409, 'Proposez d’abord ces modifications.');
-  const b = buildExportBundle(cs);
+  const b = buildExportBundle(cs, new Date(), { cms: (await getConnection(businessId, 'wix')) ? 'wix' : undefined });
   return { filename: `repere-${cs.id}.zip`, ...b };
 }

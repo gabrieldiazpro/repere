@@ -143,7 +143,7 @@ const FAQ: QA[] = [
   },
   {
     q: "Je gère des clients : comment fonctionne l'offre agence ?",
-    a: "L'offre agence (marque blanche et exécution à prix revendeur) ouvre prochainement. Inscrivez-vous à la liste d'attente dans l'onglet Agences : nous vous prévenons à l'ouverture.",
+    a: "L'offre Agence (marque blanche et exécution à prix revendeur) est prête : tableau de bord multi-clients, rapports à votre nom envoyés depuis votre domaine, validation des corrections par votre client, exports CSV par client. Vous pouvez la voir dans la démo agence. Elle ouvre prochainement à l'achat : inscrivez-vous à la liste d'attente dans l'onglet Agences, nous vous prévenons à l'ouverture.",
   },
 ];
 
@@ -220,7 +220,7 @@ export default async function TarifsPage({ searchParams }: { searchParams: Promi
             <SectionTitle
               id="seo-agent-title"
               title="Ce que chaque offre inclut en SEO et avec l'agent"
-              intro="Les mêmes prix qu'avant ; l'analyse du site, l'audit SEO, la Search Console, les positions et l'agent de publication s'ajoutent à la mesure des IA."
+              intro="En plus de la mesure des IA, chaque offre comprend l'analyse du site, l'audit SEO, la Search Console et l'agent de publication ; les positions Google à partir d'Essentiel."
             />
             <div className="mt-8">
               <SeoOfferTable />

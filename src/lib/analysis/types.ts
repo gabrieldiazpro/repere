@@ -7,6 +7,7 @@
 import type { CrawlOptions, Finding, ScoredSection, Severity, SiteCrawl } from '@/lib/crawl/types';
 import type { ProviderId } from '@/lib/engine/types';
 import type { PerfData as SeoDataPerfData } from '@/lib/seodata/types';
+import type { AccessReport } from './access';
 
 export type SiteType = 'local' | 'pme' | 'ecommerce';
 
@@ -102,6 +103,11 @@ export interface FullAnalysis {
   data?: DataSummary;
   ai?: AiCheckSummary;
   verdict: string;
+  /**
+   * ROBUSTESSE (V6) : ce que notre robot a pu lire (état explicite, message en français, marche à suivre adaptée à la
+   * plateforme détectée, signaux secondaires). `readable: false` : aucun score SEO / GEO n'est calculé.
+   */
+  access?: AccessReport;
   /** null si le module n'a pas pu tourner (le global est alors calculé sur ce qui existe). */
   scores: { seo: number | null; geo: number | null; global: number | null };
   priorities: PriorityItem[];

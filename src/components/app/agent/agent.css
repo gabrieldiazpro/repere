@@ -193,3 +193,6 @@
   @keyframes ag-in { from { opacity: 0; } }
   .ag-step[data-state='run'] .ag-step-dot::after { animation: none; border-right-color: var(--tone-brand); border-bottom-color: var(--tone-brand); opacity: .5; }
 }
+
+/* Assistant : automatique / guidé côte à côte (empilés sur mobile) */
+.ag-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; padding: 12px; border-radius: 10px; border: 1px solid var(--hair); }

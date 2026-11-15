@@ -1,4 +1,5 @@
-import { pageMeta } from '@/lib/seo/meta';
+import { ogImageFor, pageMeta } from '@/lib/seo/meta';
+import { abs } from '@/lib/seo/site';
 import Link from 'next/link';
 import { JsonLd } from '@/lib/seo/shell';
 import { ChoiceCards, EditorialFrame } from '@/components/pages/v4/Editorial';
@@ -12,7 +13,6 @@ import {
   AuditCta,
   withRefs,
   EDITORIAL_PUBLISHED,
-  EDITORIAL_UPDATED,
 } from '@/lib/seo/editorial';
 import { articleLd, breadcrumbListLd, faqPageLd, graph, webPageLd, type QA } from '@/lib/seo/jsonld';
 import { fmtDate } from '@/lib/seo';
@@ -31,7 +31,7 @@ export const metadata = pageMeta({
   description: DESCRIPTION,
   type: 'article',
   publishedTime: EDITORIAL_PUBLISHED,
-  modifiedTime: EDITORIAL_UPDATED,
+  modifiedTime: COMPARE_CHECKED_SEO,
 });
 
 const COLS: ColumnId[] = ['repere', 'peec', 'otterly', 'profound', 'meteoria', 'qwairy', 'agence-geo'];
@@ -64,7 +64,7 @@ const NOT_US: { title: string; text: string }[] = [
   },
   {
     title: 'Vous êtes une agence qui veut un espace multi-clients maintenant',
-    text: 'Qwairy, Peec et Otterly proposent des espaces pour agences dès aujourd’hui. Notre offre Agence (marque blanche, rapports partagés) est en liste d’attente à l’achat.',
+    text: 'Qwairy, Peec et Otterly proposent des espaces pour agences dès aujourd’hui. Notre offre Agence (marque blanche, rapports partagés) est en liste d’attente à l’achat ; ses fonctions sont visibles dans la démo agence.',
   },
   {
     title: 'Vous attendez une garantie de position',
@@ -130,14 +130,15 @@ export default function ComparatifPage() {
       head={
         <JsonLd
           data={graph([
-            webPageLd(PATH, { name: TITLE, description: DESCRIPTION, dateModified: EDITORIAL_UPDATED }, { withContext: false }),
+            webPageLd(PATH, { name: TITLE, description: DESCRIPTION, dateModified: COMPARE_CHECKED_SEO }, { withContext: false }),
             articleLd({
               path: PATH,
               headline: 'Repéré, outils de mesure, agences GEO : le comparatif',
               description: DESCRIPTION,
               datePublished: EDITORIAL_PUBLISHED,
-              dateModified: EDITORIAL_UPDATED,
+              dateModified: COMPARE_CHECKED_SEO,
               citation: sources.map((s) => s.url),
+              image: abs(ogImageFor(PATH)),
               withContext: false,
             }),
             faqPageLd(PATH, FAQ, { withContext: false }),
@@ -147,7 +148,7 @@ export default function ComparatifPage() {
       }
       crumbs={[{ name: 'Accueil', href: '/' }, { name: 'Comparatif' }]}
       title="Repéré, outils de mesure, agences GEO : le comparatif honnête"
-      meta={<Byline />}
+      meta={<Byline updated={[COMPARE_CHECKED, COMPARE_CHECKED_SEO].sort().at(-1)} />}
       intro={<p>Cette page compare Repéré à cinq outils de mesure de la visibilité IA (Peec AI, Otterly.AI, Profound, Meteoria, Qwairy), aux agences GEO et au
           fait de tout faire soi-même. Prix et fonctions ont été relevés le {fmtDate(COMPARE_CHECKED)}, avec leur source ; ce qui n’a pas pu être lu sur
           le site de l’éditeur est marqué « non vérifié ». Repéré est l’un des acteurs comparés : nous disons aussi où les autres sont meilleurs.</p>}
@@ -281,7 +282,7 @@ export default function ComparatifPage() {
           précisons à chaque fois. Un éditeur cité estime qu&apos;une information est inexacte ? Écrivez-nous depuis la page{' '}
           <Link href="/a-propos" className="underline">À propos</Link> : nous vérifions et corrigeons la page si elle est inexacte.
         </p>
-        <RelatedLinks current={PATH} />
+        <RelatedLinks current={PATH} extra={[{ href: '/questions/outils-geo-francais', label: 'Quels sont les outils GEO français ?' }, { href: '/questions/meilleur-outil-visibilite-ia', label: 'Quel est le meilleur outil pour apparaître dans ChatGPT ?' }]} />
       </>
     </EditorialFrame>
   );

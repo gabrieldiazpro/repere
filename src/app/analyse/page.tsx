@@ -50,7 +50,7 @@ const ld = graph([
     areaServed: { '@type': 'Country', name: 'France' },
     audience: { '@type': 'BusinessAudience', name: 'Professionnels' },
     availableChannel: { '@type': 'ServiceChannel', serviceUrl: abs(PATH) },
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR', category: 'Gratuit' },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR', category: 'Gratuit', availability: 'https://schema.org/OnlineOnly' },
     provider: orgRef(),
     isRelatedTo: { '@id': SOFTWARE_ID },
   },
@@ -95,7 +95,9 @@ export default async function AnalysePage({ searchParams }: { searchParams: Prom
             <Link href="/audit" className="font-semibold text-primary underline underline-offset-2">
               Faites le test de visibilité IA avec le nom de votre entreprise
             </Link>
-            . Pour aller plus loin : <Link href="/methode" className="underline underline-offset-2">notre méthode</Link>.
+            . Pour aller plus loin : <Link href="/methode" className="underline underline-offset-2">notre méthode</Link>,{' '}
+            <Link href="/questions/audit-seo-gratuit" className="underline underline-offset-2">comment faire un audit SEO gratuit</Link> et{' '}
+            <Link href="/questions/savoir-si-les-ia-recommandent-mon-entreprise" className="underline underline-offset-2">comment savoir si les IA vous recommandent</Link>.
           </p>
         </section>
         </AnalysisApp>

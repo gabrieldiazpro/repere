@@ -99,6 +99,9 @@ export interface SendEmailInput {
   kind: EmailKind;
   attachments?: { filename: string; content: Buffer }[];
   tags?: { name: string; value: string }[];
+  /** V6 (agences) : expéditeur et réponse propres (src/lib/agency/sender.ts ; domaine vérifié seulement) */
+  from?: string;
+  replyTo?: string;
 }
 
 export interface SendEmailResult {
@@ -130,7 +133,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   }
 
   const unsub = unsubscribeOneClickUrl(to);
-  const replyTo = process.env.EMAIL_REPLY_TO || undefined;
+  const replyTo = input.replyTo || process.env.EMAIL_REPLY_TO || undefined;
   const headers: Record<string, string> = {
     'List-Unsubscribe': replyTo ? `<${unsub}>, <mailto:${replyTo}?subject=STOP>` : `<${unsub}>`,
     'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
@@ -139,7 +142,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   const client = resend();
   if (!client) {
     console.info(
-      `[email:démo] à=${to} | objet="${input.subject}" | type=${input.kind}` +
+      `[email:démo] à=${to} | objet="${input.subject}" | type=${input.kind}${input.from ? ` | de=${input.from}` : ''}` +
         (input.attachments?.length ? ` | PJ=${input.attachments.map((a) => a.filename).join(',')}` : '') +
         `\n${input.text}\n`,
     );
@@ -148,7 +151,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
 
   try {
     const { data, error } = await client.emails.send({
-      from: process.env.EMAIL_FROM || `${BRAND} <onboarding@resend.dev>`,
+      from: input.from || process.env.EMAIL_FROM || `${BRAND} <onboarding@resend.dev>`,
       to: [to],
       replyTo,
       subject: input.subject,

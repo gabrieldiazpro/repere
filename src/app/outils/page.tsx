@@ -7,20 +7,20 @@ import { abs } from '@/lib/seo';
 import { pageMeta } from '@/lib/seo/meta';
 import { breadcrumbListLd, graph, pageIds, webPageLd } from '@/lib/seo/jsonld';
 import { buttonClasses } from '@/components/ui/Button';
-import { TOOLS, TOOLS_UPDATED, toolPath } from '@/components/tools/registry';
+import { TOOLS, toolPath } from '@/components/tools/registry';
 import { ToolHub } from '@/components/tools/ToolHub';
-import { HUB_GROUPS } from '@/components/tools/hub';
+import { HUB_GROUPS, HUB_UPDATED } from '@/components/tools/hub';
 import { MotionRoot } from '@/components/motion/MotionRoot';
 import { AiBubble, StepPath } from '@/components/pages/v4/diagrams';
 import { Icon, type IconName } from '@/components/app/icons';
 
 const PATH = '/outils';
-const TITLE = 'Outils gratuits pour être lu et cité par les IA';
+const TITLE = 'Outils SEO et IA gratuits, sans inscription';
 const DESCRIPTION =
-  'Neuf outils gratuits, sans inscription : robots.txt des IA, site prêt pour ChatGPT, citabilité, JSON-LD, rendu sans JavaScript, comparateur, llms.txt, lien d’avis Google, fiche produit.';
+  'Vingt outils gratuits, sans inscription : aperçu Google, title et meta, indexabilité, redirections, sitemap, en-têtes HTTP, hreflang, Open Graph, liens, lisibilité, robots.txt des IA, JSON-LD, llms.txt…';
 
 const RULES: { icon: IconName; title: string; text: ReactNode }[] = [
-  { icon: 'eye', title: 'Aucune IA interrogée', text: <>Lecture du HTML, du robots.txt et du sitemap, selon les règles de notre page <Link href="/methode" className="underline underline-offset-2">Méthode</Link>. Même site, même résultat.</> },
+  { icon: 'eye', title: 'Aucune IA interrogée, aucune donnée payante', text: <>Lecture du HTML, des en-têtes, du robots.txt et du sitemap, selon les règles de notre page <Link href="/methode" className="underline underline-offset-2">Méthode</Link>. Même page, même résultat.</> },
   { icon: 'shield', title: 'Un robot qui se déclare', text: 'RepereBot respecte le robots.txt de la page analysée et ne lit que des pages publiques.' },
   { icon: 'check', title: 'Sans inscription', text: 'Le résultat s’affiche tout de suite. L’e-mail ne sert qu’à recevoir la suite, si vous le voulez.' },
   { icon: 'lock', title: 'Usage limité', text: 'Pour éviter les abus, le nombre d’analyses par heure et par connexion est limité.' },
@@ -36,7 +36,7 @@ export default function OutilsHub() {
       <main id="contenu" className="bg-canvas text-ink">
         <JsonLd
           data={graph([
-            { ...webPageLd(PATH, { name: TITLE, description: DESCRIPTION, type: 'CollectionPage', dateModified: TOOLS_UPDATED }, { withContext: false }), mainEntity: { '@id': ids.list } },
+            { ...webPageLd(PATH, { name: TITLE, description: DESCRIPTION, type: 'CollectionPage', dateModified: HUB_UPDATED }, { withContext: false }), mainEntity: { '@id': ids.list } },
             {
               '@type': 'ItemList',
               '@id': ids.list,
@@ -54,19 +54,19 @@ export default function OutilsHub() {
           <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 lg:px-8 lg:pb-16">
             <div>
               <h1 id="outils-h1" className="max-w-xl text-[2.2rem] font-bold leading-[1.05] tracking-[-0.03em] sm:text-[3.1rem]" style={{ fontFamily: 'var(--font-display)' }}>
-                Vérifiez ce que les IA peuvent lire de votre site
+                Vérifiez ce que Google et les IA peuvent lire de votre site
               </h1>
               <p className="mt-5 max-w-[52ch] text-lg leading-relaxed text-ink/75">
-                {TOOLS.length} outils gratuits, sans inscription, résultat immédiat. Ils regardent votre site, pas ce que les IA répondent sur vous.
+                {TOOLS.length} outils gratuits, sans inscription, résultat immédiat : de l’aperçu dans Google jusqu’aux robots d’IA. Ils regardent vos pages, pas ce que les IA répondent sur vous.
               </p>
             </div>
             <StepPath
-              label="Le chemin d’un robot d’IA sur votre site, en trois étapes"
+              label={`Le chemin d’une page vers Google et les IA, en ${HUB_GROUPS.length} étapes`}
               start={{ icon: 'globe', text: 'Votre site' }}
-              steps={HUB_GROUPS.map((g, i) => ({
+              steps={HUB_GROUPS.map((g) => ({
                 href: `#${g.id}`,
-                icon: (['lock', 'database', 'quote'] as const)[i] ?? 'check',
-                title: (['Entrer', 'Comprendre', 'Citer'] as const)[i] ?? g.title,
+                icon: g.icon,
+                title: g.step,
                 text: g.text,
               }))}
               end={<AiBubble who="Exemple de réponse d’une IA">« D’après <mark>votre-site.fr</mark>, l’atelier est ouvert le samedi… »</AiBubble>}
@@ -78,12 +78,12 @@ export default function OutilsHub() {
           <section className="mt-16 grid gap-6 rounded-[20px] bg-primary-deep p-6 text-white sm:grid-cols-[1fr_auto] sm:items-center sm:p-10" aria-labelledby="hub-audit">
             <div>
               <h2 id="hub-audit" className="max-w-2xl text-[1.6rem] font-bold leading-tight sm:text-[2rem]" style={{ fontFamily: 'var(--font-display)' }}>
-                Ces outils regardent votre site. L’audit regarde ce que les IA disent de vous.
+                Ces outils regardent une page. L’analyse complète explore tout votre site.
               </h2>
-              <p className="mt-3 max-w-[56ch] text-on-deep">Nous posons à ChatGPT, Perplexity et Gemini les questions de vos clients, et vous montrons qui elles recommandent.</p>
+              <p className="mt-3 max-w-[56ch] text-on-deep">En 60 secondes : plus de 180 points SEO, ce que lisent ChatGPT, Gemini et Perplexity, et vos 5 priorités. Gratuit.</p>
             </div>
-            <Link href="/audit" className={buttonClasses({ variant: 'light', size: 'lg', className: 'lift' })}>
-              Lancer l’audit gratuit
+            <Link href="/analyse" className={buttonClasses({ variant: 'light', size: 'lg', className: 'lift' })}>
+              Lancer l’analyse gratuite
             </Link>
           </section>
           <section className="mt-14" aria-labelledby="hub-rules">

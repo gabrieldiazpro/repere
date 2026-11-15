@@ -4,7 +4,8 @@
  * aucune étude ne montre d'effet sur les citations, mais nous le recommandons à nos clients, donc nous l'appliquons.
  */
 import { GUIDES, guidePath } from '@/lib/seo/guides';
-import { CATEGORIES, SEGMENTS } from '@/lib/seo/segments';
+import { CATEGORIES, SEGMENTS, categoryPath } from '@/lib/seo/segments';
+import { TARGET_QUESTIONS, targetQuestionPath } from '@/app/questions/_lib/target-questions';
 import { TRADES, PRIORITY_TRADES, tradePath } from '@/lib/seo';
 import { STUDIES, studyPath } from '@/lib/studies';
 import { BRAND, CONTACT_EMAIL, ENTITY_READY, LEGAL, ONE_LINER, PAGE_UPDATED, abs } from '@/lib/seo/site';
@@ -73,20 +74,29 @@ export async function GET() {
     link('PME et services B2B : SEO B2B et IA', '/pme'),
     link('E-commerce : SEO e-commerce et IA (fiches produit, facettes, Shopping)', '/e-commerce'),
     '',
-    ...(routes.some((r) => r.section === 'outils') ? ['## Outils gratuits', ...routeLines('outils', routes), ''] : []),
+    ...(routes.some((r) => r.section === 'outils')
+      ? ['## Outils gratuits', 'Outils sans inscription, sans fournisseur de données payant : ils lisent le HTML, les en-têtes, le robots.txt et le sitemap d’une page publique avec le robot déclaré RepereBot.', ...routeLines('outils', routes), '']
+      : []),
     ...(routes.some((r) => r.section === 'fonctionnalites') ? ['## Fonctionnalités', ...routeLines('fonctionnalites', routes), ''] : []),
     ...(routes.some((r) => r.section === 'cas-usage') ? ['## Cas d’usage', ...routeLines('cas-usage', routes), ''] : []),
     ...(routes.some((r) => r.section === 'aide') ? ['## Centre d’aide', ...routeLines('aide', routes), ''] : []),
     '## Référence',
     link("Qu'est-ce que le GEO (référencement IA) ?", '/geo', 'définition, différences avec le SEO et l\'AEO, 7 leviers, chiffres sourcés'),
-    link('Glossaire du référencement IA', '/glossaire', 'termes du GEO définis en une ou deux phrases'),
-    link('Questions fréquentes', '/questions', 'questions de dirigeants, réponses courtes et sourcées'),
+    link('Glossaire du référencement IA et du SEO', '/glossaire', '53 termes définis en une ou deux phrases'),
+    link('Questions fréquentes', '/questions', '35 questions de dirigeants, réponses courtes et sourcées'),
     link('Comparatif', '/comparatif', 'Repéré, Semrush, Ahrefs, Screaming Frog, Peec, Otterly, Meteoria, agences GEO : tableau factuel, prix publics datés, cas où un autre outil est meilleur'),
     ...routes.filter((r) => r.path.startsWith('/comparatif/')).map((r) => link(r.label, r.path)),
     ...routeLines('reference', routes).filter((l) => !l.includes('/comparatif/')),
     link('Études', '/etudes'),
     ...STUDIES.map((s) => link(s.title, studyPath(s))),
     ...(ENTITY_READY ? [link(`À propos de ${BRAND}`, '/a-propos', 'mission, fondateur, coordonnées, engagements')] : []),
+    link('Programme entreprises pilotes', '/pilotes', '10 places, offre Accompagné offerte 3 mois, mesures J0/J30/J90'),
+    link('Espace presse', '/presse', 'présentation, chiffres vérifiables de la méthode, logos SVG, captures de la démo'),
+    link('État des services', '/statut', 'état en direct du site, des analyses, du paiement et des e-mails ; incidents des 90 derniers jours'),
+    '',
+    '## Questions clés',
+    ...TARGET_QUESTIONS.map((x) => link(x.q, targetQuestionPath(x), x.description)),
+    ...STUDIES.filter((s) => s.slug === 'pourquoi-les-ia-recommandent-une-marque').map((s) => link(s.title, studyPath(s))),
     '',
     '## Guides',
     ...GUIDES.map((g) => link(g.title, guidePath(g))),
@@ -96,6 +106,7 @@ export async function GET() {
     link("Vue d'ensemble", '/visibilite-ia', 'commerces locaux, PME, e-commerce'),
     link(SEGMENTS.pme.name, SEGMENTS.pme.path, CATEGORIES.filter((c) => c.segment === 'pme').map((c) => c.name).join(', ')),
     link(SEGMENTS.ecommerce.name, SEGMENTS.ecommerce.path, CATEGORIES.filter((c) => c.segment === 'ecommerce').map((c) => c.name).join(', ')),
+    ...CATEGORIES.map((c) => link(`${c.name} : que répond ChatGPT ?`, categoryPath(c))),
     ...PRIORITY_TRADES.map((t) => link(`${t.nom_pluriel} : qui ChatGPT recommande-t-il ?`, tradePath(t))),
     `- Autres métiers (${TRADES.length} au total), format : ${abs('/visibilite-ia/[metier]')}`,
     '',

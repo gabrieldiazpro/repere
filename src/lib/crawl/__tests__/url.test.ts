@@ -34,7 +34,7 @@ describe('url', () => {
 describe('divers', () => {
   it('sitemap texte et invalide', () => {
     expect(parseSitemap('https://a.fr/1\nhttps://a.fr/2\n')).toEqual({ kind: 'text', locs: ['https://a.fr/1', 'https://a.fr/2'] });
-    expect(parseSitemap('<html></html>').kind).toBe('unknown');
+    expect(parseSitemap('<html></html>').kind).toBe('html'); // ROBUSTESSE V6 : page HTML reconnue (message dédié)
     expect(parseSitemap('<urlset><url><loc><![CDATA[https://a.fr/?a=1&amp;b=2]]></loc></url></urlset>').locs).toEqual(['https://a.fr/?a=1&b=2']);
   });
   it('noindex', () => {

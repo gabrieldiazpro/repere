@@ -3,6 +3,7 @@
  * activité. Sources par ordre de confiance : saisie > JSON-LD > og:site_name > <title> > domaine.
  * Fonctions pures (aucun réseau) : la page est récupérée par l'orchestrateur.
  */
+import { domainToUnicode } from 'node:url';
 import { parseHtml, type ParsedPage } from '@/lib/siteaudit/html';
 import { allNodes, typesOf } from '@/lib/siteaudit/jsonld';
 import type { AnalysisInput, Detection, SiteType } from './types';
@@ -59,6 +60,8 @@ export function nameFromDomain(url: string): string {
   let host = url;
   try {
     host = new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`).hostname;
+    // Domaine accentué (IDN) : « xn--boulangerie-lonore-mwbb.fr » → « boulangerie-éléonore.fr » (ROBUSTESSE V6).
+    if (host.includes('xn--')) host = domainToUnicode(host) || host;
   } catch {
     /* saisie brute */
   }

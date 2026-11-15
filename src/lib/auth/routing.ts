@@ -6,6 +6,8 @@ import type { Segment } from '@/lib/engine/types-v2';
 import { safeNext } from './cookies';
 
 export const DEMO_PARAM = 'compte';
+/** ?compte=demo-agence : compte démo agence (src/lib/agency/load.ts). */
+export const DEMO_AGENCY_PARAM = 'demo-agence';
 const DEMO_SEGMENTS: Record<string, Segment> = { demo: 'local', 'demo-pme': 'pme', 'demo-ecom': 'ecommerce' };
 
 /** Pages de /app accessibles sans session ni démo. */
@@ -57,6 +59,8 @@ export function decideRoute(i: RouteInput): RouteDecision {
 
   // Démo explicite : /app?compte=demo|demo-pme|demo-ecom → cookie de démo, URL nettoyée.
   const sp = new URLSearchParams(search);
+  // V6 : démo agence (portefeuille de clients fictifs) → /app/agence/demo pose son repère puis ouvre le portefeuille.
+  if (sp.get(DEMO_PARAM) === DEMO_AGENCY_PARAM) return { action: 'redirect', to: '/app/agence/demo', setDemo: 'local' };
   const demo = demoSegmentFromParam(sp.get(DEMO_PARAM));
   if (demo) return { action: 'redirect', to: withoutParam(pathname, search, DEMO_PARAM), setDemo: demo };
 

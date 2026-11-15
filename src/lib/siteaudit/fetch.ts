@@ -179,7 +179,12 @@ export const systemResolver: Resolver = async (host) => {
   return all.map((a) => ({ address: a.address, family: a.family === 6 ? 6 : 4 }));
 };
 
-/** Transport réel : node:http(s) avec `lookup` forcé sur l'adresse validée, décompression bornée. */
+/**
+ * Transport réel : node:http(s) avec `lookup` forcé sur l'adresse validée, décompression bornée.
+ * ROBUSTESSE (V6) : la promesse se règle TOUJOURS — annulation, coupure en plein corps (y compris derrière un flux
+ * gzip, dont les erreurs ne remontaient pas), corps au compte-gouttes : un site lent ne peut plus bloquer un crawl.
+ * Les en-têtes Set-Cookie multiples sont joints par « \n » (une date d'expiration contient une virgule).
+ */
 export const nodeTransport: Transport = (req) =>
   new Promise<TransportResponse>((resolve, reject) => {
     const mod = req.url.protocol === 'https:' ? https : http;
@@ -188,45 +193,72 @@ export const nodeTransport: Transport = (req) =>
       if (o && o.all) (cb as unknown as (e: null, a: { address: string; family: number }[]) => void)(null, [{ address: req.address.address, family: req.address.family }]);
       else cb(null, req.address.address, req.address.family);
     };
+    let settled = false;
+    const ok = (v: TransportResponse) => {
+      if (settled) return;
+      settled = true;
+      resolve(v);
+    };
+    const fail = (e: unknown) => {
+      if (settled) return;
+      settled = true;
+      reject(e instanceof Error ? e : new Error(String(e)));
+    };
+    if (req.signal.aborted) return fail(new Error('aborted'));
     const r = mod.request(
       req.url,
       { method: req.method ?? 'GET', headers: req.headers, lookup: pinned, signal: req.signal, agent: false },
       (res) => {
         const headers: Record<string, string> = {};
-        for (const [k, v] of Object.entries(res.headers)) if (v !== undefined) headers[k.toLowerCase()] = Array.isArray(v) ? v.join(', ') : String(v);
+        for (const [k, v] of Object.entries(res.headers)) if (v !== undefined) headers[k.toLowerCase()] = Array.isArray(v) ? v.join(k.toLowerCase() === 'set-cookie' ? '\n' : ', ') : String(v);
         const status = res.statusCode ?? 0;
         if ((status >= 300 && status < 400) || req.method === 'HEAD') {
           res.resume();
-          resolve({ status, headers, body: Buffer.alloc(0), truncated: false });
+          ok({ status, headers, body: Buffer.alloc(0), truncated: false });
           return;
         }
         const enc = (headers['content-encoding'] || '').toLowerCase();
         let stream: NodeJS.ReadableStream = res;
-        if (enc.includes('gzip')) stream = res.pipe(zlib.createGunzip());
-        else if (enc.includes('br')) stream = res.pipe(zlib.createBrotliDecompress());
-        else if (enc.includes('deflate')) stream = res.pipe(zlib.createInflate());
+        let decoder: zlib.Gunzip | zlib.BrotliDecompress | zlib.Inflate | null = null;
+        if (enc.includes('gzip')) decoder = zlib.createGunzip();
+        else if (enc.includes('br')) decoder = zlib.createBrotliDecompress();
+        else if (enc.includes('deflate')) decoder = zlib.createInflate();
+        if (decoder) stream = res.pipe(decoder);
         const chunks: Buffer[] = [];
         let size = 0;
-        let done = false;
         const finish = (truncated: boolean) => {
-          if (done) return;
-          done = true;
-          resolve({ status, headers, body: Buffer.concat(chunks).subarray(0, req.maxBytes), truncated });
+          ok({ status, headers, body: Buffer.concat(chunks).subarray(0, req.maxBytes), truncated });
+          res.destroy();
+          decoder?.destroy();
         };
         stream.on('data', (c: Buffer) => {
-          if (done) return;
+          if (settled) return;
           chunks.push(c);
           size += c.length;
-          if (size >= req.maxBytes) {
-            finish(true);
-            res.destroy();
-          }
+          if (size >= req.maxBytes) finish(true);
         });
         stream.on('end', () => finish(false));
-        stream.on('error', (e) => (done ? undefined : (done = true, reject(e))));
+        stream.on('error', (e) => {
+          // Corps illisible après coup (gzip tronqué…) : on garde ce qui a été reçu s'il y en a.
+          if (chunks.length && !req.signal.aborted) finish(true);
+          else fail(e);
+        });
+        // Erreurs et coupures côté réponse : elles ne traversent pas pipe() jusqu'au décodeur.
+        res.on('error', (e) => fail(e));
+        res.on('aborted', () => fail(new Error('connexion interrompue')));
+        res.on('close', () => {
+          if (!settled && !res.complete) fail(new Error(req.signal.aborted ? 'aborted' : 'connexion interrompue'));
+        });
       },
     );
-    r.on('error', reject);
+    r.on('error', fail);
+    r.on('close', () => {
+      if (!settled && req.signal.aborted) fail(new Error('aborted'));
+    });
+    req.signal.addEventListener('abort', () => {
+      r.destroy();
+      fail(new Error('aborted'));
+    }, { once: true });
     r.end();
   });
 
@@ -331,12 +363,16 @@ function checkUrlShape(u: URL): void {
   if (/^[0-9.]+$/.test(host) && !net.isIPv4(host)) throw new SafeFetchError('invalid_url');
 }
 
-/** Résout et valide l'hôte : toutes les adresses doivent être publiques. Renvoie l'adresse à épingler. */
-export async function resolvePublic(host: string, resolver: Resolver = defaults.resolver): Promise<ResolvedAddress> {
+/**
+ * Résout et valide l'hôte : toutes les adresses doivent être publiques. Renvoie les adresses à épingler, IPv4
+ * d'abord (ROBUSTESSE V6 : beaucoup d'hébergeurs, dont des fonctions serverless, n'ont pas de sortie IPv6 ; un site
+ * qui publie un AAAA en premier était « injoignable »).
+ */
+export async function resolvePublicAll(host: string, resolver: Resolver = defaults.resolver): Promise<ResolvedAddress[]> {
   const h = host.replace(/^\[|\]$/g, '').replace(/\.$/, '');
   if (net.isIP(h)) {
     if (isBlockedIp(h)) throw new SafeFetchError('blocked_ip', h);
-    return { address: h, family: net.isIPv6(h) ? 6 : 4 };
+    return [{ address: h, family: net.isIPv6(h) ? 6 : 4 }];
   }
   let addrs: ResolvedAddress[];
   try {
@@ -346,7 +382,12 @@ export async function resolvePublic(host: string, resolver: Resolver = defaults.
   }
   if (!addrs.length) throw new SafeFetchError('dns', h);
   for (const a of addrs) if (isBlockedIp(a.address)) throw new SafeFetchError('blocked_ip', `${h} → ${a.address}`);
-  return addrs[0];
+  return [...addrs.filter((a) => a.family === 4), ...addrs.filter((a) => a.family !== 4)];
+}
+
+/** Première adresse publique validée (IPv4 de préférence). */
+export async function resolvePublic(host: string, resolver: Resolver = defaults.resolver): Promise<ResolvedAddress> {
+  return (await resolvePublicAll(host, resolver))[0];
 }
 
 /* ------------------------------------------------------------------ */
@@ -384,17 +425,51 @@ async function ourRobotsAllow(u: URL, opts: SafeFetchOptions, deadline: number):
 /* Récupération                                                        */
 /* ------------------------------------------------------------------ */
 
-function decodeBody(buf: Buffer, contentType: string): string {
-  const cs = /charset=["']?([\w-]+)/i.exec(contentType)?.[1]?.toLowerCase();
-  const head = buf.subarray(0, 2048).toString('latin1');
-  const meta = /<meta[^>]+charset=["']?([\w-]+)/i.exec(head)?.[1]?.toLowerCase();
-  const charset = cs || meta || 'utf-8';
+/**
+ * Décode un corps texte comme un navigateur (ROBUSTESSE V6) : BOM (UTF-8, UTF-16) > charset de l'en-tête >
+ * <meta charset> ou http-equiv dans les 8 premiers Ko > UTF-8 s'il est valide > windows-1252 (pages anciennes en
+ * ISO-8859-1 sans déclaration). Un charset inconnu se replie sur la détection.
+ */
+export function decodeText(buf: Buffer, contentType = ''): string {
+  if (buf.length >= 3 && buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) return new TextDecoder('utf-8').decode(buf.subarray(3));
+  if (buf.length >= 2 && buf[0] === 0xff && buf[1] === 0xfe) return new TextDecoder('utf-16le').decode(buf.subarray(2));
+  if (buf.length >= 2 && buf[0] === 0xfe && buf[1] === 0xff) return new TextDecoder('utf-16be').decode(buf.subarray(2));
+  const cs = /charset\s*=\s*["']?([\w.:-]+)/i.exec(contentType)?.[1]?.toLowerCase();
+  const head = buf.subarray(0, 8192).toString('latin1');
+  const meta = /<meta\b[^>]*charset\s*=\s*["']?([\w.:-]+)/i.exec(head)?.[1]?.toLowerCase();
+  for (const c of [cs, meta]) {
+    if (!c) continue;
+    const label = c === 'iso-8859-1' || c === 'latin1' || c === 'latin-1' ? 'windows-1252' : c;
+    try {
+      return new TextDecoder(label, { fatal: false }).decode(buf);
+    } catch {
+      /* charset inconnu : on essaie la source suivante */
+    }
+  }
   try {
-    return new TextDecoder(charset === 'iso-8859-1' || charset === 'latin1' ? 'windows-1252' : charset, { fatal: false }).decode(buf);
+    return new TextDecoder('utf-8', { fatal: true }).decode(buf);
   } catch {
-    return buf.toString('utf8');
+    // UTF-8 invalide : soit une page tronquée au milieu d'un caractère, soit une page en latin-1 non déclarée.
+    const loose = new TextDecoder('utf-8', { fatal: false }).decode(buf);
+    const bad = (loose.match(/\uFFFD/g) ?? []).length;
+    return bad > 2 ? new TextDecoder('windows-1252').decode(buf) : loose;
   }
 }
+
+/** Contenu binaire (image, archive…) servi comme du texte : beaucoup d'octets de contrôle au début. */
+export function looksBinary(buf: Buffer): boolean {
+  const n = Math.min(buf.length, 4096);
+  if (n < 32) return false;
+  if ((buf[0] === 0xff && buf[1] === 0xfe) || (buf[0] === 0xfe && buf[1] === 0xff)) return false; // UTF-16
+  let ctrl = 0;
+  for (let i = 0; i < n; i++) {
+    const c = buf[i];
+    if (c === 0 || (c < 32 && c !== 9 && c !== 10 && c !== 13 && c !== 12)) ctrl++;
+  }
+  return ctrl / n > 0.05;
+}
+
+const decodeBody = decodeText;
 
 async function doFetch(start: URL, opts: SafeFetchOptions, deadline: number, maxRedirects: number): Promise<SafeResponse> {
   const resolver = opts.resolver ?? defaults.resolver;

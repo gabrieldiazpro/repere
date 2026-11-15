@@ -48,7 +48,7 @@ export function ToolPage({ tool, children }: { tool: ToolDef; children: ReactNod
         <JsonLd
           data={graph([
             {
-              ...webPageLd(path, { name: tool.metaTitle, description: tool.description, dateModified: TOOLS_UPDATED, mainEntity: `${abs(path)}#app` }, { withContext: false }),
+              ...webPageLd(path, { name: tool.metaTitle, description: tool.description, dateModified: tool.updated ?? TOOLS_UPDATED, mainEntity: `${abs(path)}#app` }, { withContext: false }),
             },
             webApplicationLd(tool),
             faqPageLd(path, tool.faq, { withContext: false }),
@@ -147,7 +147,7 @@ export function ToolPage({ tool, children }: { tool: ToolDef; children: ReactNod
               ))}
             </ul>
             <p className="mt-6 text-sm text-muted">
-              Page mise à jour le <time dateTime={TOOLS_UPDATED}>{fmtDate(TOOLS_UPDATED)}</time> par{' '}
+              Page mise à jour le <time dateTime={tool.updated ?? TOOLS_UPDATED}>{fmtDate(tool.updated ?? TOOLS_UPDATED)}</time> par{' '}
               <Link href="/a-propos" className="underline underline-offset-2">
                 l’équipe Repéré
               </Link>

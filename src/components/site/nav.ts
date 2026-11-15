@@ -5,6 +5,7 @@
 import { GUIDES, guidePath } from "@/lib/seo/guides";
 import { TOOLS as TOOL_REGISTRY, toolPath } from "@/components/tools/registry";
 import { HELP_ARTICLES } from "@/components/pages/aide-data";
+import { PILOT_MONTHS, PILOT_SLOTS } from "@/lib/pilots/validate";
 
 export type NavItem = { href: string; label: string; text?: string };
 export type NavGroup = { id: string; label: string; items: readonly NavItem[]; wide?: boolean; footer?: NavItem };
@@ -36,7 +37,19 @@ export const SOLUTIONS: readonly NavItem[] = [
 ];
 
 /** Outils gratuits : calculés depuis le registre de l'agent OUTILS (jamais de slug écrit à la main). */
-export const TOOLS: readonly NavItem[] = TOOL_REGISTRY.map((t) => ({ href: toolPath(t.slug), label: t.name, text: t.output }));
+/** Tous les outils (registre de l'agent OUTILS). */
+export const ALL_TOOLS: readonly NavItem[] = TOOL_REGISTRY.map((t) => ({ href: toolPath(t.slug), label: t.name, text: t.output }));
+
+/**
+ * Sélection du menu et du pied de page (V6 : 20 outils, trop pour un menu) : les plus cherchés d'abord (aperçu Google,
+ * indexabilité), puis les outils IA phares ; les autres sont sur /outils. Un slug absent du registre est ignoré.
+ */
+export const NAV_TOOLS_MAX = 8;
+const NAV_TOOL_ORDER = ['apercu-google', 'indexabilite', 'robots-ia', 'pret-pour-les-ia', 'balises-title-meta', 'json-ld', 'rendu-sans-javascript', 'lien-avis-google'];
+export const TOOLS: readonly NavItem[] = [
+  ...NAV_TOOL_ORDER.map((s) => ALL_TOOLS.find((t) => t.href === `/outils/${s}`)).filter((t): t is NavItem => !!t),
+  ...ALL_TOOLS.filter((t) => !NAV_TOOL_ORDER.some((s) => t.href === `/outils/${s}`)),
+].slice(0, NAV_TOOLS_MAX);
 
 export const RESOURCES: readonly NavItem[] = [
   { href: "/guides", label: "Guides pratiques", text: "SEO + GEO, SEO local, Search Console, IA" },
@@ -48,6 +61,7 @@ export const RESOURCES: readonly NavItem[] = [
   { href: "/etudes", label: "Études et baromètre", text: "Ce que disent les données publiques" },
   { href: "/glossaire", label: "Glossaire", text: "Les termes du GEO expliqués simplement" },
   { href: "/visibilite-ia", label: "Visibilité IA par métier", text: "Questions et sources par activité" },
+  { href: "/pilotes", label: "Entreprises pilotes", text: `Repéré se lance : ${PILOT_SLOTS} places, ${PILOT_MONTHS} mois offerts` },
   { href: "/a-propos", label: "À propos", text: "Qui nous sommes, nos engagements" },
 ];
 
@@ -55,7 +69,7 @@ export const RESOURCES: readonly NavItem[] = [
 export const NAV_GROUPS: readonly NavGroup[] = [
   { id: "produit", label: "Produit", items: PRODUCT, wide: true },
   { id: "solutions", label: "Solutions", items: SOLUTIONS },
-  { id: "outils", label: "Outils gratuits", items: TOOLS, wide: true, footer: { href: "/outils", label: "Tous les outils gratuits" } },
+  { id: "outils", label: "Outils gratuits", items: TOOLS, wide: true, footer: { href: "/outils", label: `Tous les outils gratuits (${ALL_TOOLS.length})` } },
 ];
 
 export const PRIMARY_LINKS: readonly NavItem[] = [{ href: "/tarifs", label: "Tarifs" }];
@@ -63,6 +77,16 @@ export const PRIMARY_LINKS: readonly NavItem[] = [{ href: "/tarifs", label: "Tar
 export const RESOURCES_GROUP: NavGroup = { id: "ressources", label: "Ressources", items: RESOURCES, wide: true };
 
 export const GUIDE_LINKS: readonly NavItem[] = GUIDES.map((g) => ({ href: guidePath(g), label: g.title }));
+
+/**
+ * Guides du pied de page : une sélection (piliers d'abord, puis l'ordre du catalogue), pas tout le catalogue. Avec 30+
+ * guides, la liste complète alourdissait chaque page du site et diluait ses liens ; tous restent liés depuis /guides et
+ * entre eux (guides liés).
+ */
+export const FOOTER_GUIDES_MAX = 9;
+export const FOOTER_GUIDE_LINKS: readonly NavItem[] = [...GUIDES.filter((g) => g.pillar), ...GUIDES.filter((g) => !g.pillar)]
+  .slice(0, FOOTER_GUIDES_MAX)
+  .map((g) => ({ href: guidePath(g), label: g.title }));
 
 export { LOGIN_HREF, DEMO_HREF } from "./nav-links";
 
@@ -91,6 +115,7 @@ export const FOOTER_COLUMNS: readonly { title: string; links: readonly NavItem[]
       { href: "/integrations", label: "Intégrations" },
       { href: "/nouveautes", label: "Nouveautés" },
       { href: "/securite", label: "Sécurité" },
+      { href: "/statut", label: "État des services" },
       { href: "/analyse", label: "Analyse gratuite du site" },
       { href: "/audit", label: "Test de visibilité IA" },
       { href: "/inscription", label: "Créer un compte gratuit" },
@@ -103,7 +128,7 @@ export const FOOTER_COLUMNS: readonly { title: string; links: readonly NavItem[]
   {
     title: "Outils gratuits",
     links: [
-      { href: "/outils", label: "Tous les outils" },
+      { href: "/outils", label: `Tous les outils (${ALL_TOOLS.length})` },
       ...TOOLS.map(({ href, label }) => ({ href, label })),
       { href: "/badge", label: "Badge à intégrer" },
       { href: "/classement", label: "Classement public" },
@@ -112,12 +137,12 @@ export const FOOTER_COLUMNS: readonly { title: string; links: readonly NavItem[]
   {
     title: "Ressources",
     links: [
-      ...RESOURCES.filter((r) => r.href !== "/a-propos").map(({ href, label }) => ({ href, label })),
+      ...RESOURCES.filter((r) => r.href !== "/a-propos" && r.href !== "/pilotes").map(({ href, label }) => ({ href, label })),
       { href: "/methode/robot", label: "Notre robot" },
     ],
   },
   {
     title: "Guides",
-    links: [...GUIDE_LINKS, { href: "/guides", label: "Tous les guides" }],
+    links: [...FOOTER_GUIDE_LINKS, { href: "/guides", label: `Tous les guides (${GUIDES.length})` }],
   },
 ];

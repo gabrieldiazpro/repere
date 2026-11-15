@@ -10,7 +10,7 @@ import type { Finding } from '@/lib/crawl/types';
 
 export type { Finding };
 
-export const PLATFORMS = ['wordpress', 'shopify', 'webflow', 'prestashop', 'export', 'gbp'] as const;
+export const PLATFORMS = ['wordpress', 'shopify', 'webflow', 'prestashop', 'wix', 'export', 'gbp'] as const;
 export type Platform = (typeof PLATFORMS)[number];
 export const isPlatform = (v: unknown): v is Platform => typeof v === 'string' && (PLATFORMS as readonly string[]).includes(v);
 
@@ -19,6 +19,7 @@ export const PLATFORM_LABEL: Record<Platform, string> = {
   shopify: 'Shopify',
   webflow: 'Webflow',
   prestashop: 'PrestaShop',
+  wix: 'Wix',
   export: 'Export (fichiers à déposer)',
   gbp: 'Fiche Google (Business Profile)',
 };
@@ -271,6 +272,11 @@ export interface PublishConnector {
   /** valide et normalise la saisie (sans réseau) ; lève PublishError(400) si incomplète */
   connect(input: ConnectInput): ConnectInput;
   test(ctx: ConnectorContext): Promise<TestResult>;
+  /**
+   * facultatif : met le correctif au format que la plateforme relit à l'identique (ex. Wix : blocs JSON-LD sans
+   * commentaires, cible de redirection en chemin). Appelé avant le calcul de « après » (proposition, édition).
+   */
+  preparePatch?(change: Change): ChangePatch;
   /** trouve la ressource visée par un changement (depuis son URL) */
   locate(ctx: ConnectorContext, change: Change): Promise<ResourceRef>;
   /** lit la valeur actuelle exacte (null = absente) */

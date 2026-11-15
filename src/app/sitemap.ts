@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { TRADES, PRIORITY_TRADES, CITIES, getSeoStats, isIndexable, tradePath, pairPath } from '@/lib/seo';
-import { CATEGORIES, getSegmentStats, isSegmentIndexable, categoryPath } from '@/lib/seo/segments';
+import { CATEGORIES, getSegmentStats, categoryPath } from '@/lib/seo/segments';
 import { GUIDES, guidePath } from '@/lib/seo/guides';
 import { ENTITY_READY, HOUSE_PAGE_PATH, PAGE_UPDATED, TRADE_PAGES_UPDATED, abs, type StaticPath } from '@/lib/seo/site';
 import { housePageLive } from '@/lib/seo/house';
@@ -8,6 +8,7 @@ import { STUDIES, studyPath } from '@/lib/studies';
 import { NEW_ROUTES_UPDATED, v3Routes } from '@/lib/seo/routes';
 import { buildRanking, listRankingPairs } from '@/lib/growth/ranking';
 import { publishedEntries } from '@/lib/barometre/public';
+import { TARGET_QUESTIONS, targetQuestionPath } from '@/app/questions/_lib/target-questions';
 
 /** Le sitemap se régénère une fois par jour (pages métier × ville qui deviennent indexables). */
 export const revalidate = 86400;
@@ -26,6 +27,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const t of TRADES) entries.push({ url: abs(tradePath(t)), lastModified: TRADE_PAGES_UPDATED });
   for (const g of GUIDES) entries.push({ url: abs(guidePath(g)), lastModified: g.updated });
   for (const s of STUDIES) entries.push({ url: abs(studyPath(s)), lastModified: s.updated });
+  // Réponses aux questions posées aux IA (GEO-MARQUE, V6).
+  for (const x of TARGET_QUESTIONS) entries.push({ url: abs(targetQuestionPath(x)), lastModified: x.updated });
 
   // Pages V3 (outils, fonctionnalités, démo, comparatifs par concurrent…) : seulement celles dont le dossier existe
   // (vérifié avec fs) et qui ne sont pas en noindex.
@@ -62,10 +65,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (stats && isIndexable(stats)) entries.push({ url: abs(pairPath(t, c)), lastModified: stats.lastUpdated });
     }
   }
-  // Pages catégorie PME / e-commerce : même règle.
+  // Pages catégorie PME / e-commerce : éditoriales (aucun chiffre propre affiché), indexables (V6) ; lastmod = date des
+  // statistiques quand elles existeront, sinon date du contenu.
   for (const c of CATEGORIES) {
     const stats = await getSegmentStats(c.segment, c.slug);
-    if (stats && isSegmentIndexable(stats)) entries.push({ url: abs(categoryPath(c)), lastModified: stats.lastUpdated });
+    entries.push({ url: abs(categoryPath(c)), lastModified: stats?.lastUpdated ?? TRADE_PAGES_UPDATED });
   }
   return entries;
 }

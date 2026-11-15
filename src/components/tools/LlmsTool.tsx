@@ -5,12 +5,14 @@ import { buttonClasses } from '@/components/ui/Button';
 import { callTool, downloadText, hostOf } from './api';
 import { AuditBridge, CopyButton, EmailCapture, ErrorBox, ExampleNote, Loading, ResultHeader, Scope, ShareLink, UrlForm, useShareParams, useToolRun } from './ui';
 
-export function HonestBox({ honest }: { honest: LlmsResult['honest'] }) {
+/** `level` : h2 avant tout résultat (sous le H1 de la page), h3 dans le résultat (sous son h2) — pas de saut de niveau. */
+export function HonestBox({ honest, level = 'h3' }: { honest: LlmsResult['honest']; level?: 'h2' | 'h3' }) {
+  const H = level;
   return (
     <aside className="rounded-xl border-2 border-warning/40 bg-warning-bg p-4 text-warning-ink" aria-labelledby="rt-honest">
-      <h3 id="rt-honest" className="font-semibold">
+      <H id="rt-honest" className="text-base font-semibold">
         {honest.title}
-      </h3>
+      </H>
       <ul className="mt-2 list-disc space-y-1 pl-5">
         {honest.points.map((p) => (
           <li key={p}>{p}</li>
@@ -105,7 +107,7 @@ export function LlmsTool({ example }: { example: LlmsResult }) {
         {state.phase === 'done' && <LlmsResultView r={state.data} example={state.example} />}
         {state.phase === 'idle' && (
           <div className="mt-6">
-            <HonestBox honest={example.honest} />
+            <HonestBox honest={example.honest} level="h2" />
           </div>
         )}
       </Scope>

@@ -6,7 +6,7 @@ import { breadcrumbLd, faqLd } from './index';
 import { pageMeta } from './meta';
 import {
   SEGMENTS, CATEGORY_LABELS, categoriesFor, getCategory, categoryPath, categoryAuditHref, resolveSources,
-  segmentFaq, categoryServiceLd, getSegmentStats, isSegmentIndexable, type SegmentKey,
+  segmentFaq, categoryServiceLd, type SegmentKey,
 } from './segments';
 
 export function hubMetadata(segment: SegmentKey): Metadata {
@@ -72,17 +72,21 @@ export function SegmentHub({ segment }: { segment: SegmentKey }) {
   );
 }
 
+/** H1 d'une catégorie, ≤ 80 caractères (au-delà, Google et les lecteurs d'écran le tronquent ou le lisent mal). */
+export function categoryH1(name: string): string {
+  const full = `${name} : êtes-vous cité par ChatGPT, Gemini et Perplexity ?`;
+  return full.length <= 80 ? full : `${name} : êtes-vous cité par ChatGPT et les IA ?`;
+}
+
 export async function categoryMetadata(segment: SegmentKey, slug: string): Promise<Metadata> {
   const c = getCategory(segment, slug);
   if (!c) return { robots: { index: false } };
-  const stats = await getSegmentStats(segment, slug);
-  const indexable = isSegmentIndexable(stats);
   return pageMeta({
     path: categoryPath(c),
     title: `${c.name} : que répond ChatGPT ?`,
     description: `Questions que posent les acheteurs aux IA, sources typiquement citées et leviers pour ${c.who}. Audit gratuit.`,
-    // Sans données propres : noindex, canonical auto-référent (même règle que les pages métier × ville).
-    noindex: !indexable,
+    // V6 : page éditoriale (questions, sources, leviers, FAQ), sans aucun chiffre propre affiché : indexable comme les
+    // pages métier. Les pages métier × ville, elles, restent en noindex tant qu'elles n'ont pas de statistiques.
   });
 }
 
@@ -100,7 +104,7 @@ export async function CategoryPage({ segment, slug }: { segment: SegmentKey; slu
       <JsonLd data={faqLd(faq, path)} />
       <JsonLd data={categoryServiceLd(c)} />
       <Crumbs items={[{ name: 'Accueil', href: '/' }, { name: 'Visibilité IA', href: '/visibilite-ia' }, { name: s.name, href: s.path }, { name: c.name }]} />
-      <h1 className={h1Class} style={h1Style}>{c.name} : êtes-vous cité par ChatGPT, Gemini et Perplexity ?</h1>
+      <h1 className={h1Class} style={h1Style}>{categoryH1(c.name)}</h1>
       <p className="mt-4 max-w-3xl text-lg leading-relaxed" style={{ color: 'var(--muted)' }}>{c.intro}</p>
 
       <h2 className={h2Class}>Les questions que posent vos clients</h2>

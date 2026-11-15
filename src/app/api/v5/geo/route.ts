@@ -8,6 +8,7 @@
 import { z } from 'zod';
 import { HOUR_MS, getClientIp, rateLimit } from '@/lib/ratelimit';
 import { handleError, jsonError, jsonOk } from '@/lib/siteaudit/api';
+import { accessReport } from '@/lib/analysis/access';
 import { crawlSite } from '@/lib/crawl/crawl';
 import type { SiteCrawl } from '@/lib/crawl/types';
 import type { ProviderAnswer } from '@/lib/engine/types';
@@ -94,6 +95,9 @@ export async function POST(req: Request): Promise<Response> {
   if (!rl.ok) return jsonError(429, 'Trop d’analyses depuis votre connexion : réessayez dans une heure.', 'rate_limited', { 'Retry-After': String(rl.retryAfter) });
   try {
     const crawl = (b.crawl as unknown as SiteCrawl | undefined) ?? (await crawlSite(b.url as string, { maxPages: 60, timeBudgetMs: 40_000, concurrency: 4 }));
+    // Site illisible : aucune note (elle serait fausse), la vraie raison à la place.
+    const access = accessReport(crawl);
+    if (!access.readable) return jsonError(422, `${access.title}. ${access.message}`, 'unreadable');
     const ctx: GeoContext = {
       brand: b.brand,
       siteType: b.siteType,

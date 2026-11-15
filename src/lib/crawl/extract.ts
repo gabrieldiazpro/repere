@@ -3,7 +3,7 @@
  * S'appuie sur src/lib/siteaudit/html.ts.
  */
 import { createHash } from 'node:crypto';
-import { parseAttrs, parseHtml, stripTags, tags, wordCount } from '@/lib/siteaudit/html';
+import { findBlocks, parseAttrs, parseHtml, stripComments, stripTags, tags, wordCount } from '@/lib/siteaudit/html';
 import type { CrawledPage } from './types';
 import { normalizeUrl } from './url';
 
@@ -114,15 +114,37 @@ export function extractPage(html: string, pageUrl: string): Extracted {
     }
   });
 
+  // Scripts EXÉCUTÉS seulement (ROBUSTESSE V6) : fichiers et scripts en ligne, hors blocs de données (JSON-LD, JSON,
+  // importmap, données RSC de Next.js « self.__next_f.push(…) », __NEXT_DATA__) — un site Next.js App Router en compte
+  // une centaine par page sans rien télécharger ni exécuter de plus.
+  const noComments = stripComments(html);
+  const scriptsCount = findBlocks(noComments, ['script']).filter((b) => {
+    if (/\bsrc\s*=/i.test(b.attrs)) return true;
+    const type = /\btype\s*=\s*["']?([^"'\s>]+)/i.exec(b.attrs)?.[1]?.toLowerCase();
+    if (type && !/^(text\/javascript|application\/javascript|module|text\/babel)$/.test(type)) return false;
+    if (/\bid\s*=\s*["']?__NEXT_DATA__/i.test(b.attrs)) return false;
+    const body = noComments.slice(b.openEnd, b.closeStart).trim();
+    if (!body) return false;
+    return !/^\(?\s*self\.__next_f\s*=\s*self\.__next_f\s*\|\|\s*\[\]\s*\)?\s*\.push\(|^self\.__next_f\.push\(/.test(body);
+  }).length;
   const text = p.bodyText;
   const wc = wordCount(text);
   const textToHtmlRatio = html.length ? Math.round((text.length / html.length) * 1000) / 1000 : 0;
   const noscriptJs = /javascript|js\b/i.test(p.noscriptText) && /(activ|enable)/i.test(p.noscriptText);
-  const likelyClientRendered = p.scriptsCount > 0 && wc < 80 && (SPA_ROOT.test(p.clean) || noscriptJs || textToHtmlRatio < 0.02 || /<script\b[^>]*type=["']module["']/i.test(html));
+  // ROBUSTESSE (V6) : un script « module » seul ne fait pas une application JavaScript (Nuxt, Next, Astro, Vite
+  // rendus côté serveur en ont tous) ; il faut une racine vide, un <noscript> qui exige JS, ou presque aucun texte.
+  const emptyRoot = SPA_ROOT.test(p.clean);
+  const moduleScript = /<script\b[^>]*type=["']module["']/i.test(html);
+  const likelyClientRendered =
+    scriptsCount > 0 &&
+    ((wc < 80 && (emptyRoot || noscriptJs)) || (wc < 25 && (moduleScript || textToHtmlRatio < 0.02 || scriptsCount >= 3)) || (wc < 50 && textToHtmlRatio < 0.005));
 
   return {
     baseUrl,
-    html: html.length <= MAX_KEPT_HTML ? html : undefined,
+    // ROBUSTESSE (V6) : au-delà de 1,5 Mo on garde le début (marqué `htmlTruncated`) plutôt que rien — sans HTML, GEO
+    // notait 20/100 un site dont seule la page d'accueil était lourde.
+    html: html.length <= MAX_KEPT_HTML ? html : html.slice(0, MAX_KEPT_HTML),
+    ...(html.length > MAX_KEPT_HTML ? { htmlTruncated: true } : {}),
     title: p.title || undefined,
     metaDescription: p.metaDescription ?? undefined,
     metaRobots: p.metaRobots ?? undefined,
@@ -137,7 +159,7 @@ export function extractPage(html: string, pageUrl: string): Extracted {
     jsonLd,
     jsonLdErrors,
     openGraph: p.og,
-    renderHints: { scriptsCount: p.scriptsCount, textToHtmlRatio, likelyClientRendered },
+    renderHints: { scriptsCount, textToHtmlRatio, likelyClientRendered },
     links,
   };
 }

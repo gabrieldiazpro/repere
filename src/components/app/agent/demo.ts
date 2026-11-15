@@ -121,7 +121,9 @@ export function buildDemoAgent(input: DemoAgentInput): DemoAgent {
   const platform = PLATFORM[segment];
   const t = texts(segment, name, facts);
   const schemaTask = input.tasks.find((x) => x.kind === 'schema');
-  const ld = [schemaTask, ...input.tasks].map((x) => x?.deliverable?.find((d) => d.type === 'jsonld')?.content).find(Boolean) ?? JSON.stringify({ '@context': 'https://schema.org', '@type': 'Organization', name }, null, 2);
+  const ldRaw = [schemaTask, ...input.tasks].map((x) => x?.deliverable?.find((d) => d.type === 'jsonld')?.content).find(Boolean) ?? JSON.stringify({ '@context': 'https://schema.org', '@type': 'Organization', name }, null, 2);
+  // Le livrable est parfois déjà enveloppé dans sa balise <script> : on ne l'enveloppe qu'une fois.
+  const ld = ldRaw.replace(/^\s*<script[^>]*>\s*/i, '').replace(/\s*<\/script>\s*$/i, '');
   const base = { businessId, site, createdBy: { id: 'agent' }, demo: true } as const;
   const owner = { id: 'demo', role: 'owner' };
 

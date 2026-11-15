@@ -228,6 +228,14 @@ export const STUDIES: StudyMeta[] = [
     published: '2026-11-09',
     updated: '2026-11-09',
   },
+  {
+    slug: 'pourquoi-les-ia-recommandent-une-marque',
+    title: 'Pourquoi une IA recommande une marque : ce que prouvent les études (2024-2026)',
+    description:
+      "Documentation de Google, OpenAI, Bing, Perplexity, Anthropic et Mistral, expériences contrôlées et grandes études de citations : ce qui fait citer une marque par les IA, avec le niveau de preuve de chaque levier.",
+    published: '2026-11-15',
+    updated: '2026-11-15',
+  },
 ];
 
 export const getStudy = (slug: string) => STUDIES.find((s) => s.slug === slug);

@@ -40,6 +40,101 @@ export function parseAttrs(s: string): Record<string, string> {
   return out;
 }
 
+/* ------------------------------------------------------------------ */
+/* Balayages LINÉAIRES (ROBUSTESSE V6)                                 */
+/* ------------------------------------------------------------------ */
+// Les motifs « <x\b[\s\S]*?<\/x> » sont quadratiques quand une balise n'est jamais fermée (HTML réel cassé :
+// 18 000 <svg> ou <h2> ouverts = 30 s de CPU, serveur bloqué). Ces fonctions donnent le même résultat en O(n).
+
+/** Retire les commentaires HTML (un « <!-- » jamais fermé est laissé tel quel, comme le ferait la regex). */
+export function stripComments(s: string, rep = ' '): string {
+  if (!s.includes('<!--')) return s;
+  let out = '';
+  let i = 0;
+  for (;;) {
+    const a = s.indexOf('<!--', i);
+    if (a < 0) break;
+    const b = s.indexOf('-->', a + 4);
+    if (b < 0) break;
+    out += s.slice(i, a) + rep;
+    i = b + 3;
+  }
+  return out + s.slice(i);
+}
+
+export interface BlockMatch {
+  /** nom de balise en minuscules */
+  name: string;
+  start: number;
+  /** fin de la balise ouvrante (après « > ») */
+  openEnd: number;
+  /** début de la balise fermante */
+  closeStart: number;
+  /** après la balise fermante */
+  end: number;
+  /** attributs bruts de la balise ouvrante */
+  attrs: string;
+}
+
+/**
+ * Blocs `<nom …>…</nom>` successifs, sans chevauchement, comme `matchAll(/<(a|b)\b([^>]*)>([\s\S]*?)<\/\1>/gi)`,
+ * mais en temps linéaire : la position de la prochaine fermeture de chaque nom est mémorisée.
+ */
+export function findBlocks(s: string, names: string[], limit = Infinity): BlockMatch[] {
+  const out: BlockMatch[] = [];
+  if (!s) return out;
+  const lower = s.toLowerCase();
+  const open = new RegExp(`<(${names.map((n) => n.replace(/[^a-z0-9]/gi, '')).join('|')})\\b`, 'gi');
+  const nextClose = new Map<string, number>(); // -1 : plus aucune fermeture
+  let m: RegExpExecArray | null;
+  while ((m = open.exec(s)) && out.length < limit) {
+    const name = m[1].toLowerCase();
+    const start = m.index;
+    const gt = s.indexOf('>', start + m[0].length);
+    if (gt < 0) break;
+    let c = nextClose.get(name);
+    if (c === undefined || (c >= 0 && c < gt + 1)) {
+      c = lower.indexOf(`</${name}>`, gt + 1);
+      nextClose.set(name, c);
+    }
+    if (c < 0) {
+      open.lastIndex = start + 1;
+      continue;
+    }
+    const end = c + name.length + 3;
+    out.push({ name, start, openEnd: gt + 1, closeStart: c, end, attrs: s.slice(start + m[0].length, gt) });
+    open.lastIndex = end;
+  }
+  return out;
+}
+
+/** Remplace les blocs trouvés par `rep` (équivalent linéaire de `replace(/<(a|b)\b[\s\S]*?<\/\1>/gi, rep)`). */
+export function removeBlocks(s: string, names: string[], rep = ' '): string {
+  const bl = findBlocks(s, names);
+  if (!bl.length) return s;
+  let out = '';
+  let i = 0;
+  for (const b of bl) {
+    out += s.slice(i, b.start) + rep;
+    i = b.end;
+  }
+  return out + s.slice(i);
+}
+
+/** Contenu du premier bloc `<nom>…</nom>` (null si absent). */
+export function firstBlock(s: string, name: string): string | null {
+  const b = findBlocks(s, [name], 1)[0];
+  return b ? s.slice(b.openEnd, b.closeStart) : null;
+}
+
+/** Contenu entre la première balise `<nom …>` et la DERNIÈRE `</nom>` (comme `/<body\b[^>]*>([\s\S]*)<\/body>/i`). */
+export function outerContent(s: string, name: string): string | null {
+  const m = new RegExp(`<${name}\\b[^>]*>`, 'i').exec(s);
+  if (!m) return null;
+  const c = s.toLowerCase().lastIndexOf(`</${name}>`);
+  return c >= m.index + m[0].length ? s.slice(m.index + m[0].length, c) : null;
+}
+
 export interface Tag {
   name: string;
   attrs: Record<string, string>;
@@ -82,31 +177,29 @@ export interface ParsedPage {
   hasMainLandmark: boolean;
 }
 
-function first(html: string, re: RegExp): string | null {
-  const m = re.exec(html);
-  return m ? m[1] : null;
-}
-
 /** Extrait le contenu principal : <main>, sinon le plus long <article>, sinon <body> sans nav/header/footer/aside. */
 function mainContent(clean: string): { html: string; landmark: boolean } {
-  const main = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(clean);
-  if (main && stripTags(main[1]).length > 50) return { html: main[1], landmark: true };
-  const articles = [...clean.matchAll(/<article\b[^>]*>([\s\S]*?)<\/article>/gi)].map((m) => m[1]);
+  const main = firstBlock(clean, 'main');
+  if (main !== null && stripTags(main).length > 50) return { html: main, landmark: true };
+  const articles = findBlocks(clean, ['article']).map((b) => clean.slice(b.openEnd, b.closeStart));
   if (articles.length) {
     const best = articles.sort((a, b) => stripTags(b).length - stripTags(a).length)[0];
     if (stripTags(best).length > 200) return { html: best, landmark: true };
   }
-  const body = /<body\b[^>]*>([\s\S]*)<\/body>/i.exec(clean)?.[1] ?? clean;
-  return { html: body.replace(/<(nav|header|footer|aside)\b[\s\S]*?<\/\1>/gi, ' '), landmark: false };
+  const body = outerContent(clean, 'body') ?? clean;
+  return { html: removeBlocks(body, ['nav', 'header', 'footer', 'aside']), landmark: false };
 }
 
 export function parseHtml(raw: string): ParsedPage {
-  const noComments = raw.replace(/<!--[\s\S]*?-->/g, ' ');
-  const jsonLdRaw = [...noComments.matchAll(/<script\b[^>]*type\s*=\s*["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1].trim());
+  const noComments = stripComments(raw);
+  const scripts = findBlocks(noComments, ['script']);
+  const jsonLdRaw = scripts
+    .filter((b) => /\btype\s*=\s*["']?application\/ld\+json/i.test(b.attrs))
+    .map((b) => noComments.slice(b.openEnd, b.closeStart).trim());
   const scriptsCount = (noComments.match(/<script\b/gi) ?? []).length;
-  const noscriptText = stripTags([...noComments.matchAll(/<noscript\b[^>]*>([\s\S]*?)<\/noscript>/gi)].map((m) => m[1]).join(' '));
-  const clean = noComments.replace(/<(script|style|noscript|template|svg|iframe)\b[\s\S]*?<\/\1>/gi, ' ');
-  const head = /<head\b[^>]*>([\s\S]*?)<\/head>/i.exec(clean)?.[1] ?? clean;
+  const noscriptText = stripTags(findBlocks(noComments, ['noscript']).map((b) => noComments.slice(b.openEnd, b.closeStart)).join(' '));
+  const clean = removeBlocks(noComments, ['script', 'style', 'noscript', 'template', 'svg', 'iframe']);
+  const head = firstBlock(clean, 'head') ?? clean;
   const metas = tags(head, 'meta');
   const metaBy = (n: string) => metas.find((t) => (t.attrs.name ?? '').toLowerCase() === n)?.attrs.content ?? null;
   const og: Record<string, string> = {};
@@ -117,16 +210,19 @@ export function parseHtml(raw: string): ParsedPage {
   const canonical = tags(head, 'link').find((t) => (t.attrs.rel ?? '').toLowerCase().split(/\s+/).includes('canonical'))?.attrs.href ?? null;
   const htmlTag = /<html\b([^>]*)>/i.exec(clean);
   const lang = htmlTag ? (parseAttrs(htmlTag[1]).lang ?? null) : null;
-  const titleRaw = first(clean, /<title\b[^>]*>([\s\S]*?)<\/title>/i);
-  const bodyHtml = /<body\b[^>]*>([\s\S]*)<\/body>/i.exec(clean)?.[1] ?? clean.replace(/<head\b[\s\S]*?<\/head>/i, ' ');
+  const titleRaw = firstBlock(clean, 'title');
+  const bodyHtml = outerContent(clean, 'body') ?? removeBlocks(clean, ['head']);
   const { html: mainHtml, landmark } = mainContent(clean);
-  const headings = [...bodyHtml.matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gi)].map((m) => ({ level: Number(m[1]), text: stripTags(m[2]) }));
-  const blocks: Block[] = [...mainHtml.matchAll(/<(h[1-6]|p|li|td|th|dt|dd|blockquote|summary)\b[^>]*>([\s\S]*?)<\/\1>/gi)]
-    .map((m) => ({ tag: m[1].toLowerCase(), text: stripTags(m[2]), html: m[2] }))
+  const headings = findBlocks(bodyHtml, ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']).map((b) => ({ level: Number(b.name[1]), text: stripTags(bodyHtml.slice(b.openEnd, b.closeStart)) }));
+  const blocks: Block[] = findBlocks(mainHtml, ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li', 'td', 'th', 'dt', 'dd', 'blockquote', 'summary'])
+    .map((b) => {
+      const inner = mainHtml.slice(b.openEnd, b.closeStart);
+      return { tag: b.name, text: stripTags(inner), html: inner };
+    })
     .filter((b) => b.text.length > 0);
   const links = tags(bodyHtml, 'a').map((t) => ({ href: t.attrs.href ?? '', text: '', rel: (t.attrs.rel ?? '').toLowerCase() }));
   // Texte des liens (pour le maillage) : seconde passe.
-  const linkTexts = [...bodyHtml.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/gi)].map((m) => stripTags(m[1]));
+  const linkTexts = findBlocks(bodyHtml, ['a']).map((b) => stripTags(bodyHtml.slice(b.openEnd, b.closeStart)));
   links.forEach((l, i) => (l.text = linkTexts[i] ?? ''));
   const images = tags(bodyHtml, 'img').map((t) => ({ src: t.attrs.src ?? t.attrs['data-src'] ?? '', alt: t.attrs.alt ?? '' }));
   return {

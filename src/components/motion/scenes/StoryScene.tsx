@@ -207,7 +207,7 @@ export function StoryScene({ segment, data, dark = false }: { segment: string; d
           </p>
           <p>
             Dernière mesure ({d.after.when}, {d.measures}e mesure) : {d.business} est cité en position {d.after.rank}. Score {d.after.score} sur 100. Sur la même question
-            aujourd&apos;hui : {d.engines.map((e) => `${e.ia} ${e.rank ? `le cite (${e.rank}e)` : "ne le cite pas"}`).join(", ")}.
+            aujourd&apos;hui : {d.engines.map((e) => `${e.ia} ${e.rank ? `le cite (${e.rank === 1 ? "1er" : `${e.rank}e`})` : "ne le cite pas"}`).join(", ")}.
           </p>
           <p>Données du compte démo ; ce n&apos;est pas une promesse de résultat.</p>
         </>

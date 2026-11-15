@@ -6,16 +6,10 @@
 import http from 'node:http';
 import zlib from 'node:zlib';
 import { nodeTransport, setFetchDeps, type Resolver, type Transport } from '@/lib/siteaudit/fetch';
+import { HARD_DNS, HARD_SITES, type HardResponse } from './hardsites';
 
-export interface FakeResponse {
-  status?: number;
-  body?: string | Buffer;
-  type?: string;
-  headers?: Record<string, string>;
-  gzip?: boolean;
-  delayMs?: number;
-}
-type Handler = (path: string, query: string) => FakeResponse | undefined;
+export type FakeResponse = HardResponse;
+type Handler = (path: string, query: string, req: http.IncomingMessage) => FakeResponse | undefined;
 
 const html = (title: string, body: string, head = '') =>
   `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${title}</title>${head}</head><body>${body}</body></html>`;
@@ -188,20 +182,30 @@ export const SITES: Record<string, Handler> = {
   },
 };
 
+// ROBUSTESSE (V6) : faux sites du « web réel » (voir hardsites.ts).
+Object.assign(SITES, HARD_SITES);
+
 export interface FakeServer {
   port: number;
   hits: string[];
+  /** Adresses IP effectivement remises au transport (contrôle anti-SSRF : jamais d'adresse privée). */
+  addresses: string[];
   restore: () => void;
   close: () => Promise<void>;
 }
 
 export async function startFakeSites(): Promise<FakeServer> {
   const hits: string[] = [];
+  const addresses: string[] = [];
   const server = http.createServer((req, res) => {
-    const host = String(req.headers.host ?? '').split(':')[0];
+    const host = String(req.headers.host ?? '').replace(/:\d+$/, '').replace(/^\[|\]$/g, '');
     const [path, query = ''] = (req.url ?? '/').split('?');
     hits.push(`${req.method} ${host}${req.url}`);
-    const r = SITES[host]?.(path, query);
+    const r = SITES[host]?.(path, query, req);
+    if (r?.raw) {
+      r.raw(req, res);
+      return;
+    }
     const reply = () => {
       if (!r) {
         res.writeHead(404, { 'content-type': 'text/html; charset=utf-8' });
@@ -223,24 +227,32 @@ export async function startFakeSites(): Promise<FakeServer> {
       res.on('close', () => clearTimeout(t));
     } else reply();
   });
+  server.on('upgrade', (req, sock) => {
+    hits.push(`UPGRADE ${String(req.headers.host ?? '')}${req.url}`);
+    sock.destroy();
+  });
   await new Promise<void>((ok) => server.listen(0, '127.0.0.1', () => ok()));
   const port = (server.address() as { port: number }).port;
   const resolver: Resolver = async (host) => {
+    if (HARD_DNS[host]) return HARD_DNS[host]();
     if (host.endsWith('.test')) return [{ address: '93.184.216.34', family: 4 }];
     throw new Error('ENOTFOUND');
   };
   const transport: Transport = (req) => {
     const u = new URL(req.url.toString());
     const host = u.hostname;
+    const proto = u.protocol;
+    addresses.push(req.address.address);
     u.protocol = 'http:';
     u.hostname = '127.0.0.1';
     u.port = String(port);
-    return nodeTransport({ ...req, url: u, address: { address: '127.0.0.1', family: 4 }, headers: { ...req.headers, host } });
+    return nodeTransport({ ...req, url: u, address: { address: '127.0.0.1', family: 4 }, headers: { ...req.headers, host, 'x-fake-proto': proto } });
   };
   const restore = setFetchDeps({ resolver, transport });
   return {
     port,
     hits,
+    addresses,
     restore,
     close: () =>
       new Promise<void>((ok) => {

@@ -247,7 +247,8 @@ export function buildJsonLd(business: Business, factsIn: BrandFacts | FactsMap |
       org.hasOfferCatalog = {
         '@type': 'OfferCatalog',
         name: 'Services',
-        itemListElement: services.map((sv) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: capitalize(sv) } })),
+        // Services sans prix : listés comme Service (accepté par OfferCatalog), pas en Offer vide.
+        itemListElement: services.map((sv) => ({ '@type': 'Service', name: capitalize(sv) })),
       };
   } else if (f.telephone) {
     org.contactPoint = { '@type': 'ContactPoint', contactType: 'customer service', telephone: f.telephone, availableLanguage: ['fr'] };
@@ -281,6 +282,8 @@ export function buildJsonLd(business: Business, factsIn: BrandFacts | FactsMap |
           ...(p.url ? { url: p.url } : {}),
           seller: { '@id': orgId },
         };
+      // Ni image ni prix : le nœud Product ne donnerait aucun résultat enrichi (Google exige l'un ou l'autre) ; le produit reste dans le texte.
+      if (!prod.image && !prod.offers) continue;
       graph.push(prod);
     }
   }

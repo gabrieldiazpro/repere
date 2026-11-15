@@ -4,7 +4,7 @@ import { buttonClasses } from "@/components/ui/Button";
 import { CheckIcon } from "@/components/site/blocks";
 import { plansFor } from "@/components/site/plans-v2";
 
-const FALLBACK_FEATURES = ["1 marque suivie", "5 questions suivies", "1 mesure par mois", "3 IA : ChatGPT, Gemini, Perplexity", "Historique de vos mesures"];
+const FALLBACK_FEATURES = ["Analyse du site et audit SEO + GEO chaque mois (60 pages)", "1 marque suivie", "5 questions suivies", "1 mesure par mois", "3 IA : ChatGPT, Gemini, Perplexity", "Historique de vos mesures"];
 
 export function DecouverteBand({ segment }: { segment: "local" | "pme" | "ecommerce" }) {
   const plan = plansFor(segment).find((p) => /_decouverte$/.test(p.id));

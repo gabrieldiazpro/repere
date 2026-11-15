@@ -204,3 +204,9 @@ textarea.rt-field { min-height: 9rem; line-height: 1.5; resize: vertical; }
   body:has(.rt-poster[data-print="true"]) .rt-poster-title { font-size: 26pt !important; }
   body:has(.rt-poster[data-print="true"]) .rt-poster-qr { width: 92mm !important; }
 }
+
+/* ---------- V6 : jauges de largeur (aperçu Google) ---------- */
+.rt-bar { transition: width 250ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .rt-bar { transition: none; }
+}

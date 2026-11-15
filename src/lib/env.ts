@@ -115,6 +115,14 @@ export const EnvSchema = z.object({
   JOBS_BACKOFF_BASE_MS: num(60_000),
   JOBS_KICK: z.enum(['on', 'off']).optional().catch(undefined),
 
+  // Supervision (src/lib/ops, agent OPS V6) — toutes facultatives
+  ALERT_EMAIL: str(),
+  OPS_DAILY_COST_CAP_EUR: num(10),
+  OPS_PAUSE_ON_CAP: z.enum(['on', 'off']).optional().catch(undefined),
+  OPS_ERROR_SPIKE_PER_HOUR: num(20),
+  OPS_DEAD_JOBS_ALERT: num(1),
+  OPS_CRON_MAX_AGE_MIN: num(1500),
+
   // Sécurité HTTP (next.config.ts)
   CSP_REPORT_ONLY: flag(),
   CSP_DISABLE: flag(),
@@ -148,6 +156,9 @@ export const EnvSchema = z.object({
   // PUBLICATION : fiche Google (accès API à obtenir) et fichiers de thème Shopify (exemption Shopify)
   PUBLISH_GBP_ENABLED: flag(),
   SHOPIFY_THEME_WRITE: flag(),
+  // WIX (V6) : app Repéré du Wix Dev Center (connexion OAuth client_credentials) ; sans elles, connexion par clé API
+  WIX_APP_ID: str(),
+  WIX_APP_SECRET: str(),
   /** 0 = l'agent ne crée plus de brouillons automatiquement après les explorations (défaut : actif) */
   PUBLISH_AGENT_AUTO: z.enum(['0', '1']).optional().catch(undefined),
   // BAROMÈTRE : passe mensuelle automatique seulement si BAROMETRE_ENABLED=1 (décision fondateur, coût IA)
@@ -265,7 +276,8 @@ export function validateEnv(source: Source = process.env): EnvReport {
   if (production && v('STRIPE_SECRET_KEY')(source)?.startsWith('sk_test_')) warnings.push('STRIPE_SECRET_KEY est une clé de test en production.');
   const ai = ['OPENAI_API_KEY', 'PERPLEXITY_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY', 'MISTRAL_API_KEY'].filter((k) => v(k)(source));
   if (mode !== 'demo' && ai.length === 0) warnings.push('Aucune clé IA : les audits sont simulés (étiquetés « démo »).');
-  if (production && !v('SENTRY_DSN')(source)) warnings.push('SENTRY_DSN absent : les erreurs ne sont que dans les logs.');
+  if (production && !v('SENTRY_DSN')(source)) warnings.push('SENTRY_DSN absent : les erreurs ne sont que dans les logs et /admin/ops.');
+  if (v('ALERT_EMAIL')(source) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('ALERT_EMAIL')(source) ?? '')) warnings.push('ALERT_EMAIL mal formée : alertes e-mail désactivées.');
   if (mode === 'production' && isOn(source.AUTH_LOCAL_ACCOUNTS)) {
     warnings.push('AUTH_LOCAL_ACCOUNTS=1 en production : à réserver au dépannage (comptes locaux sans Supabase).');
   }
@@ -280,6 +292,7 @@ export function validateEnv(source: Source = process.env): EnvReport {
   // V5 (facultatives) : incohérences signalées, jamais bloquantes.
   if (Boolean(v('DATAFORSEO_LOGIN')(source)) !== Boolean(v('DATAFORSEO_PASSWORD')(source))) warnings.push('DATAFORSEO_LOGIN et DATAFORSEO_PASSWORD vont ensemble : positions et volumes « non configurés ».');
   if (Boolean(v('GOOGLE_CLIENT_ID')(source)) !== Boolean(v('GOOGLE_CLIENT_SECRET')(source))) warnings.push('GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET vont ensemble : connexion Google (Search Console, GA4) désactivée.');
+  if (Boolean(v('WIX_APP_ID')(source)) !== Boolean(v('WIX_APP_SECRET')(source))) warnings.push('WIX_APP_ID et WIX_APP_SECRET vont ensemble : connexion Wix par l’app Repéré désactivée (la clé API reste possible).');
   if (isOn(source.SHOPIFY_THEME_WRITE) && !v('SHOPIFY_CLIENT_ID')(source)) warnings.push('SHOPIFY_THEME_WRITE=1 sans application Shopify (SHOPIFY_CLIENT_ID) : sans effet hors jeton d’app saisi par le client.');
   if (isOn(source.SEODATA_BACKLINKS_ENABLED) && !(v('DATAFORSEO_LOGIN')(source) && v('DATAFORSEO_PASSWORD')(source))) warnings.push('SEODATA_BACKLINKS_ENABLED=1 sans DATAFORSEO_LOGIN / DATAFORSEO_PASSWORD : aucun lien entrant relevé.');
   if (isOn(source.BAROMETRE_ENABLED) && ai.length === 0) warnings.push('BAROMETRE_ENABLED=1 sans clé IA : aucune mesure réelle possible, aucun baromètre publié.');

@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { PageShell, Crumbs, JsonLd, Card, CtaLink, h1Class, h1Style, h2Class } from '@/lib/seo/shell';
 import {
   PRIORITY_TRADES, CITIES, getTrade, getCity, buildQueries, directoriesFor, buildFaq, breadcrumbLd, faqLd, serviceLd,
-  getSeoStats, isIndexable, fmtDate, tradePath, pairPath, auditHref, relatedTrades, neighbourCities, tradeLower, MIN_AUDITS_FOR_INDEX,
+  getSeoStats, isIndexable, fmtDate, tradePath, pairPath, auditHref, relatedTrades, neighbourCities, tradeLower, MIN_AUDITS_FOR_INDEX, publishedPairs,
 } from '@/lib/seo';
 
 export const dynamicParams = true;
@@ -54,8 +54,9 @@ export default async function PairPage({ params }: Props) {
     { name: 'Accueil', path: '/' }, { name: 'Visibilité IA', path: '/visibilite-ia' },
     { name: t.nom, path: tradePath(t) }, { name: c.nom, path },
   ];
-  const neighbours = neighbourCities(c);
-  const related = relatedTrades(t);
+  // Maillage : seulement vers des pages métier × ville publiées (jamais vers une page en noindex).
+  const relatedPairs = await publishedPairs(relatedTrades(t).slice(0, 2).map((r) => ({ t: r, c })));
+  const neighbourPairs = await publishedPairs(neighbourCities(c).map((n) => ({ t, c: n })));
 
   return (
     <PageShell>
@@ -140,11 +141,8 @@ export default async function PairPage({ params }: Props) {
       <h2 className={h2Class}>Voir aussi</h2>
       <ul className="list-disc space-y-1 pl-6">
         <li><Link href={tradePath(t)} className="underline" style={{ color: 'var(--primary)' }}>Visibilité IA : tous les {t.nom_pluriel.toLowerCase()}</Link></li>
-        {related.slice(0, 2).map((r) => (
-          <li key={r.slug}><Link href={pairPath(r, c)} className="underline" style={{ color: 'var(--primary)' }}>{r.nom} à {c.nom}</Link></li>
-        ))}
-        {neighbours.map((n) => (
-          <li key={n.slug}><Link href={pairPath(t, n)} className="underline" style={{ color: 'var(--primary)' }}>{t.nom} à {n.nom}</Link></li>
+        {[...relatedPairs, ...neighbourPairs].map((p) => (
+          <li key={p.t.slug + p.c.slug}><Link href={pairPath(p.t, p.c)} className="underline" style={{ color: 'var(--primary)' }}>{p.t.nom} à {p.c.nom}</Link></li>
         ))}
         <li><Link href="/methode" className="underline" style={{ color: 'var(--primary)' }}>Méthode, limites et mises à jour</Link></li>
       </ul>

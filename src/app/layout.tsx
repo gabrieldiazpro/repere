@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { BRAND, DESCRIPTOR, SITE_URL } from "@/lib/seo/site";
+import { ClientErrorReporter } from "@/lib/ops/ClientErrorReporter";
 import "./globals.css";
 
 // Polices auto-hébergées (copiées de @fontsource) : aucun appel réseau à Google (RGPD).
@@ -72,6 +73,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           Aller au contenu
         </a>
         {children}
+        {/* OPS (V6) : remonte les erreurs du navigateur à /api/ops/errors (5 par page au plus), n'affiche rien. */}
+        <ClientErrorReporter />
       </body>
     </html>
   );

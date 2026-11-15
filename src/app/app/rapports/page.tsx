@@ -83,9 +83,14 @@ export default async function RapportsPage() {
               </h2>
               <p className="mt-1 text-[13px] text-[var(--on-deep)]">{business.name} · envoyé chaque trimestre et 30 jours avant un renouvellement annuel</p>
             </div>
-            <a href={`/api/report/${encodeURIComponent(latest.id)}/pdf`} className="rp-btn border-[var(--on-deep)]/30 bg-transparent text-[var(--on-primary)] hover:bg-[var(--overlay)]" download>
-              <Icon name="download" size={16} /> PDF du dernier audit
-            </a>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/app/rapports/mensuel" className="rp-btn border-[var(--on-deep)]/30 bg-transparent text-[var(--on-primary)] hover:bg-[var(--overlay)]">
+                <Icon name="file" size={16} /> Rapport mensuel
+              </Link>
+              <a href={`/api/report/${encodeURIComponent(latest.id)}/pdf`} className="rp-btn border-[var(--on-deep)]/30 bg-transparent text-[var(--on-primary)] hover:bg-[var(--overlay)]" download>
+                <Icon name="download" size={16} /> PDF du dernier audit
+              </a>
+            </div>
           </div>
           <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
             {stats.map((s, i) => (

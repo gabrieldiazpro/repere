@@ -45,6 +45,32 @@ export interface Entitlements {
   publish: PublishLimits;
   /** V5 — explorations manuelles du site depuis l'app (APP-SEO) : src/lib/recrawl-rights.ts */
   recrawl: CrawlRights;
+  /** V6 — fonctions agences (src/lib/agency) : réservées à l'offre Agence (la démo les montre en lecture seule) */
+  agency: AgencyLimits;
+}
+
+/** V6 — fonctions agences. Toutes fausses / nulles hors offre Agence. */
+export interface AgencyLimits {
+  /** tableau de bord multi-clients (/app/agence) */
+  portfolio: boolean;
+  /** espaces clients gérés depuis le tableau de bord */
+  clients: number;
+  /** marque de l'agence (nom, logo, couleur) appliquée à tous les rapports, liens et e-mails de ses clients */
+  branding: boolean;
+  /** domaine d'envoi propre (rapports envoyés depuis rapports@agence.fr, après vérification DNS) */
+  senderDomain: boolean;
+  /** accès client : le client voit son espace et valide les propositions de l'agent, sans rien régler */
+  clientPortal: boolean;
+  /** export CSV par client (constats, positions, réponses des IA) depuis le tableau de bord */
+  clientExports: boolean;
+}
+
+const NO_AGENCY: AgencyLimits = { portfolio: false, clients: 0, branding: false, senderDomain: false, clientPortal: false, clientExports: false };
+/** « 20 clients » (offre Agence, docs/v2/07-plans-v2.json) : même plafond que `brands`. */
+const AGENCY_FULL: AgencyLimits = { portfolio: true, clients: 20, branding: true, senderDomain: true, clientPortal: true, clientExports: true };
+
+export function agencyLimitsFor(tier: EntitlementTier): AgencyLimits {
+  return tier === 'agence' || tier === 'demo' ? { ...AGENCY_FULL } : { ...NO_AGENCY };
 }
 
 export interface AnalysisLimits {
@@ -79,9 +105,9 @@ const V5: Record<EntitlementTier, { analysis: AnalysisLimits; publish: PublishLi
   demo: { analysis: { maxPages: 2_000, crawlBudgetMs: 600_000, reanalysis: 'none' }, publish: { apply: true, changeSetsPerMonth: 100 } },
 };
 
-function v5Limits(tier: EntitlementTier, segment: Segment): Pick<Entitlements, 'analysis' | 'seoData' | 'publish' | 'recrawl'> {
+function v5Limits(tier: EntitlementTier, segment: Segment): Pick<Entitlements, 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency'> {
   const v = V5[tier];
-  return { analysis: { ...v.analysis }, seoData: seoDataLimitsFor({ tier }, segment), publish: { ...v.publish }, recrawl: { ...crawlRights(tier) } };
+  return { analysis: { ...v.analysis }, seoData: seoDataLimitsFor({ tier }, segment), publish: { ...v.publish }, recrawl: { ...crawlRights(tier) }, agency: agencyLimitsFor(tier) };
 }
 
 const BASE3: ProviderId[] = ['chatgpt', 'perplexity', 'gemini'];
@@ -89,7 +115,7 @@ const BASE4: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude'];
 /** Mistral n'est réellement interrogé que si MISTRAL_API_KEY est fourni (moteur). */
 const ALL: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'];
 
-type Row = Omit<Entitlements, 'planId' | 'tier' | 'analysis' | 'seoData' | 'publish' | 'recrawl'>;
+type Row = Omit<Entitlements, 'planId' | 'tier' | 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency'>;
 
 const DECOUVERTE: Row = {
   prompts: 5, engines: BASE3, frequency: 'monthly', execution: false, seats: 1, brands: 1,
@@ -193,6 +219,12 @@ export function assertEntitled(e: Entitlements, feature: keyof Entitlements): vo
   if (ok) return;
   const offer = UNLOCKED_BY[feature];
   throw new HttpError(402, offer ? `Cette fonction est disponible avec l’offre ${offer}.` : 'Cette fonction n’est pas incluse dans votre offre.', 'upgrade_required');
+}
+
+/** Fonction agence (V6) : lève 402 hors offre Agence. */
+export function assertAgency(e: Entitlements, feature: Exclude<keyof AgencyLimits, 'clients'>): void {
+  if (e.agency[feature]) return;
+  throw new HttpError(402, 'Cette fonction est réservée à l’offre Agence.', 'upgrade_required');
 }
 
 /** Agent de publication : l'application directe chez le client demande Essentiel (l'export reste ouvert à tous). */

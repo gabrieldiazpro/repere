@@ -11,7 +11,7 @@ import { AuthShell, Notice } from '../connexion/AuthShell';
 export const metadata: Metadata = {
   title: 'Créer un compte gratuit',
   description:
-    'Offre Découverte gratuite et sans limite de durée : 1 marque, 5 questions suivies, 1 mesure par mois sur ChatGPT, Gemini et Perplexity.',
+    'Offre Découverte gratuite et sans limite de durée : analyse et audit SEO + GEO de votre site chaque mois, 5 questions suivies sur ChatGPT, Gemini et Perplexity.',
   alternates: { canonical: '/inscription' },
 };
 export const dynamic = 'force-dynamic';
@@ -60,15 +60,38 @@ export default async function InscriptionPage({ searchParams }: { searchParams: 
   return (
     <AuthShell
       title="Créer un compte gratuit"
-      intro="Offre Découverte : 1 marque, 5 questions suivies, 1 mesure par mois sur ChatGPT, Gemini et Perplexity. Gratuit, sans carte bancaire, sans limite de durée."
+      intro="Offre Découverte : votre site analysé et audité (SEO + GEO) chaque mois, 5 questions suivies sur ChatGPT, Gemini et Perplexity. Gratuit, sans carte bancaire, sans limite de durée."
       aside={
-        <p>
-          Déjà un compte ? <Link href="/connexion" className="font-semibold text-primary underline">Connectez-vous</Link>.
-        </p>
+        <>
+          <p>
+            Déjà un compte ? <Link href="/connexion" className="font-semibold text-primary underline">Connectez-vous</Link>.
+          </p>
+          <section aria-labelledby="decouverte-h" className="mt-4 rounded-xl border border-line bg-white p-4 text-ink">
+            <h2 id="decouverte-h" className="font-display text-base font-semibold">Ce que comprend l’offre Découverte</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-muted">
+              <li>Analyse du site (60 pages) et audit SEO + GEO chaque mois, avec vos 5 priorités.</li>
+              <li>1 marque, 5 questions suivies, 1 mesure par mois sur ChatGPT, Gemini et Perplexity.</li>
+              <li>Gratuit, sans carte bancaire et sans limite de durée.</li>
+              <li>
+                Passage à une offre payante seulement si vous le décidez : <Link href="/tarifs" className="font-semibold text-primary underline">voir les tarifs</Link>.
+              </li>
+            </ul>
+          </section>
+        </>
       }
     >
       {authMode() === 'off' ? (
-        <Notice tone="warning">L’inscription n’est pas disponible dans cet environnement (configuration incomplète).</Notice>
+        <>
+          <Notice tone="warning">Les inscriptions ne sont pas encore ouvertes sur ce serveur.</Notice>
+          <p className="mt-4 text-[0.95rem]">
+            En attendant, voyez l’application sur un compte de démonstration, ou proposez votre entreprise au{' '}
+            <Link href="/pilotes" className="font-semibold text-primary underline">programme pilote</Link>.
+          </p>
+          <form action="/app" method="get" className="mt-3">
+            <input type="hidden" name="compte" value={segment === 'pme' ? 'demo-pme' : segment === 'ecommerce' ? 'demo-ecom' : 'demo'} />
+            <button type="submit" className="ui-btn" data-variant="primary">Explorer le compte démo</button>
+          </form>
+        </>
       ) : (
         <>
           {prefill.audit && prefill.suite !== 'carte' && (

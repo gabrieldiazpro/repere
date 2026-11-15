@@ -16,7 +16,7 @@ export default function Hub() {
     <PageShell>
       <JsonLd data={breadcrumbLd([{ name: 'Accueil', path: '/' }, { name: 'Visibilité IA', path: '/visibilite-ia' }])} />
       <Crumbs items={[{ name: 'Accueil', href: '/' }, { name: 'Visibilité IA' }]} />
-      <h1 className={h1Class} style={h1Style}>Visibilité IA : votre métier est-il recommandé par ChatGPT, Gemini et Perplexity ?</h1>
+      <h1 className={h1Class} style={h1Style}>Visibilité IA : votre métier est-il cité par ChatGPT, Gemini, Perplexity ?</h1>
       <p className="mt-4 max-w-3xl text-lg leading-relaxed" style={{ color: 'var(--muted)' }}>
         Quand un client demande à une IA « le meilleur plombier près de chez moi », elle cite quelques noms et pas d&apos;autres.
         Chez {BRAND}, nous mesurons ces recommandations pour les commerces locaux, les PME et les e-commerces. Les spécialistes parlent de « GEO »
@@ -55,8 +55,8 @@ export default function Hub() {
           <Card key={t.slug}>
             <h3 className="font-semibold text-lg">{t.nom}</h3>
             <p className="mt-1 text-sm" style={{ color: 'var(--muted)' }}>Paris (20 arrondissements) et 15 villes.</p>
-            <Link href={`${tradePath(t)}/paris-11e`} className="mt-3 inline-block text-sm underline" style={{ color: 'var(--primary)' }}>
-              Exemple : {t.nom.toLowerCase()} à Paris 11e
+            <Link href={tradePath(t)} className="mt-3 inline-block text-sm underline" style={{ color: 'var(--primary)' }}>
+              Questions et sources : {t.nom_pluriel.toLowerCase()}
             </Link>
           </Card>
         ))}

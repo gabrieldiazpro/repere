@@ -11,7 +11,8 @@ import { DEMO_VIDEO_LABELS, findDemoVideo, type DemoVideoId } from "@/components
 import { Faq, SectionTitle, type QA } from "@/components/site/blocks";
 import { CtaBand, PageHero, SitePage } from "@/components/pages/ui";
 import { FeatureVisual } from "@/components/pages/visuals";
-import { DEMO_ACCOUNTS, DEMO_CLIPS, demoAppHref } from "@/components/pages/demo-data";
+import { DEMO_ACCOUNTS, DEMO_CLIPS } from "@/components/pages/demo-data";
+import { DemoEntry } from "@/components/site/DemoEntry";
 import { featurePath } from "@/components/pages/features-data";
 import { pageMeta } from "@/lib/seo/meta";
 import { breadcrumbListLd, faqPageLd, graph, webPageLd } from "@/lib/seo/jsonld";
@@ -90,9 +91,9 @@ export default function DemoPage() {
         }
       >
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link href={demoAppHref(first)} rel="nofollow" className={buttonClasses({ size: "lg", className: "lift" })}>
+          <DemoEntry segment={first.segment} account={first.id} className={buttonClasses({ size: "lg", className: "lift cursor-pointer" })}>
             Explorer la démo
-          </Link>
+          </DemoEntry>
           <a href="#comptes" className={buttonClasses({ size: "lg", variant: "secondary" })}>
             Choisir un autre compte
           </a>
@@ -128,9 +129,9 @@ export default function DemoPage() {
                 <p className="mt-3 font-display text-[1.05rem] text-ink/85">{a.question}</p>
                 <p className="mt-3 text-[0.98rem] text-ink/75">{a.text}</p>
                 <div className="mt-auto pt-6">
-                  <Link href={demoAppHref(a)} rel="nofollow" className={buttonClasses({ className: "w-full lift", size: "md" })} aria-label={`Explorer le compte démo ${a.name}`}>
+                  <DemoEntry segment={a.segment} account={a.id} className={buttonClasses({ className: "w-full lift cursor-pointer", size: "md" })} ariaLabel={`Explorer le compte démo ${a.name}`}>
                     Explorer ce compte
-                  </Link>
+                  </DemoEntry>
                 </div>
               </Reveal>
             ))}

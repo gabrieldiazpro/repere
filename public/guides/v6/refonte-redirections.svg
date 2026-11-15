@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img" aria-labelledby="t d" font-family="Inter, Arial, sans-serif">
+  <title id="t">Plan de redirections d’une refonte</title>
+  <desc id="d">Chaque ancienne adresse est reliée par une redirection 301 à la nouvelle page équivalente. Rediriger toutes les pages vers l’accueil est barré.</desc>
+  <rect x="0.5" y="0.5" width="719" height="319" rx="14" fill="#ffffff" stroke="#d9dde3"/>
+  <text x="150" y="36" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Ancien site</text>
+  <text x="570" y="36" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Nouveau site</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#16a34a"/></marker></defs>
+  <g font-size="12" fill="#1f2937">
+    <rect x="40" y="56" width="220" height="34" rx="7" fill="#f3f4f6" stroke="#9ca3af"/><text x="52" y="78">/plomberie-urgence.html</text>
+    <rect x="40" y="104" width="220" height="34" rx="7" fill="#f3f4f6" stroke="#9ca3af"/><text x="52" y="126">/tarifs-debouchage</text>
+    <rect x="40" y="152" width="220" height="34" rx="7" fill="#f3f4f6" stroke="#9ca3af"/><text x="52" y="174">/blog/chauffe-eau-2019</text>
+    <rect x="460" y="56" width="220" height="34" rx="7" fill="#dcfce7" stroke="#16a34a"/><text x="472" y="78">/depannage-plomberie/</text>
+    <rect x="460" y="104" width="220" height="34" rx="7" fill="#dcfce7" stroke="#16a34a"/><text x="472" y="126">/debouchage/tarifs/</text>
+    <rect x="460" y="152" width="220" height="34" rx="7" fill="#dcfce7" stroke="#16a34a"/><text x="472" y="174">/conseils/chauffe-eau/</text>
+  </g>
+  <g stroke="#16a34a" stroke-width="1.6" fill="none" marker-end="url(#a)">
+    <path d="M262 73 L 456 73"/><path d="M262 121 L 456 121"/><path d="M262 169 L 456 169"/>
+  </g>
+  <g font-size="11" fill="#14532d" text-anchor="middle"><text x="360" y="67">301</text><text x="360" y="115">301</text><text x="360" y="163">301</text></g>
+  <rect x="40" y="222" width="640" height="76" rx="10" fill="#fef2f2" stroke="#dc2626"/>
+  <text x="360" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#7f1d1d">À éviter : toutes les anciennes pages → page d’accueil</text>
+  <text x="360" y="276" text-anchor="middle" font-size="12" fill="#7f1d1d">Google traite ces redirections comme des pages disparues (404 « soft »).</text>
+</svg>

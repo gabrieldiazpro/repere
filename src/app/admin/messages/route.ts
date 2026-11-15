@@ -13,10 +13,17 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   const token = /(?:^|;\s*)admin_token=([^;]+)/.exec(req.headers.get('cookie') || '')?.[1];
   if (!isAdmin(token ? decodeURIComponent(token) : null)) return new NextResponse('Accès restreint.', { status: 403 });
-  try {
-    assertSameOrigin(req);
-  } catch {
-    return new NextResponse('Origine refusée.', { status: 403 });
+  // /admin est servi avec « Referrer-Policy: no-referrer » : Chrome envoie alors « Origin: null » sur un formulaire de
+  // même origine. Accepté seulement si le navigateur atteste Sec-Fetch-Site: same-origin.
+  const nullOrigin = req.headers.get('origin') === 'null';
+  if (nullOrigin) {
+    if (req.headers.get('sec-fetch-site') !== 'same-origin') return new NextResponse('Origine refusée.', { status: 403 });
+  } else {
+    try {
+      assertSameOrigin(req);
+    } catch {
+      return new NextResponse('Origine refusée.', { status: 403 });
+    }
   }
   const form = await req.formData().catch(() => null);
   const id = String(form?.get('id') ?? '');

@@ -2,10 +2,12 @@
 
 // État d'erreur des écrans Mesure : dit ce qui s'est passé et propose de réessayer (jamais d'erreur brute).
 import { useEffect } from 'react';
+import { reportClientError } from '@/lib/ops/client';
 
 export function MesureError({ title, error, reset }: { title: string; error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
     console.error(`[app/${title}]`, error.digest ?? error.message);
+    reportClientError(error, { boundary: title });
   }, [title, error]);
   return (
     <div className="rp-page">

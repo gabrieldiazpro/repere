@@ -2,6 +2,7 @@
 export * from './types';
 export { runFullAnalysis, collectAnalysis, analysisDomain, summarizeCrawl, DEFAULT_BUDGET_MS, CRAWL_MAX_PAGES, CRAWL_BUDGET_MS } from './run';
 export { detectSite, homeSignals, nameFromDomain, cityFromText } from './detect';
+export { accessReport, accessFinding, adaptFinding, platformTip, type AccessReport, type AccessTone } from './access';
 export { mergePriorities, computeScores, buildVerdict, compareAnalyses, autoFixesOf, priorityOf, allFindings } from './prioritize';
 export { buildQuickQuestions, planCalls, availableProviders, runQuickAiCheck, maxAiCallsFromEnv, DEFAULT_MAX_AI_CALLS } from './aicheck';
 export { defaultModules, resolveModules, setAnalysisRouteOverrides, analysisRouteOverrides } from './modules';

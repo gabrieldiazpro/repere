@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" role="img" aria-labelledby="t d" font-family="Inter, Arial, sans-serif">
+  <title id="t">Structure d’une page ville utile</title>
+  <desc id="d">Une page service générale relie trois pages ville. Chaque page ville a un bloc commun court et un bloc propre à la ville plus long.</desc>
+  <rect x="0.5" y="0.5" width="719" height="359" rx="14" fill="#ffffff" stroke="#d9dde3"/>
+  <rect x="250" y="24" width="220" height="56" rx="10" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="360" y="49" text-anchor="middle" font-size="15" font-weight="600" fill="#1e1b4b">Page service</text>
+  <text x="360" y="68" text-anchor="middle" font-size="12" fill="#3f3f46">le détail, une seule fois</text>
+  <g stroke="#4f46e5" stroke-width="1.5" fill="none">
+    <path d="M300 80 C 240 110, 140 110, 130 132"/>
+    <path d="M360 80 L 360 132"/>
+    <path d="M420 80 C 480 110, 580 110, 590 132"/>
+  </g>
+  <g font-size="13">
+    <g transform="translate(40 132)">
+      <rect width="180" height="196" rx="10" fill="#ffffff" stroke="#9ca3af"/>
+      <text x="90" y="24" text-anchor="middle" font-weight="600" fill="#111827">Ville A</text>
+      <rect x="14" y="38" width="152" height="28" rx="6" fill="#e5e7eb"/>
+      <text x="90" y="57" text-anchor="middle" font-size="11" fill="#374151">commun : 2 à 3 phrases</text>
+      <rect x="14" y="74" width="152" height="108" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+      <text x="90" y="100" text-anchor="middle" font-size="11" fill="#14532d">propre à la ville :</text>
+      <text x="90" y="118" text-anchor="middle" font-size="11" fill="#14532d">délais, quartiers,</text>
+      <text x="90" y="136" text-anchor="middle" font-size="11" fill="#14532d">réalisations, questions</text>
+    </g>
+    <g transform="translate(270 132)">
+      <rect width="180" height="196" rx="10" fill="#ffffff" stroke="#9ca3af"/>
+      <text x="90" y="24" text-anchor="middle" font-weight="600" fill="#111827">Ville B</text>
+      <rect x="14" y="38" width="152" height="28" rx="6" fill="#e5e7eb"/>
+      <text x="90" y="57" text-anchor="middle" font-size="11" fill="#374151">commun : 2 à 3 phrases</text>
+      <rect x="14" y="74" width="152" height="108" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+      <text x="90" y="100" text-anchor="middle" font-size="11" fill="#14532d">propre à la ville :</text>
+      <text x="90" y="118" text-anchor="middle" font-size="11" fill="#14532d">délais, quartiers,</text>
+      <text x="90" y="136" text-anchor="middle" font-size="11" fill="#14532d">réalisations, questions</text>
+    </g>
+    <g transform="translate(500 132)">
+      <rect width="180" height="196" rx="10" fill="#ffffff" stroke="#9ca3af"/>
+      <text x="90" y="24" text-anchor="middle" font-weight="600" fill="#111827">Ville C</text>
+      <rect x="14" y="38" width="152" height="28" rx="6" fill="#e5e7eb"/>
+      <text x="90" y="57" text-anchor="middle" font-size="11" fill="#374151">commun : 2 à 3 phrases</text>
+      <rect x="14" y="74" width="152" height="108" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+      <text x="90" y="100" text-anchor="middle" font-size="11" fill="#14532d">propre à la ville :</text>
+      <text x="90" y="118" text-anchor="middle" font-size="11" fill="#14532d">délais, quartiers,</text>
+      <text x="90" y="136" text-anchor="middle" font-size="11" fill="#14532d">réalisations, questions</text>
+    </g>
+  </g>
+</svg>

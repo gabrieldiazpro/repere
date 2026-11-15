@@ -62,7 +62,7 @@ export const SRC = {
   },
   semrushAi: { label: 'Semrush, page de prix de l’AI Visibility Toolkit', url: 'https://www.semrush.com/pricing/ai/', note: 'lue le 13 novembre 2026 ; prix en dollars, facturation annuelle' },
   semrushAiKb: { label: 'Semrush, aide : AI Visibility Toolkit et Semrush One', url: 'https://www.semrush.com/kb/1493-ai-visibility-toolkit', note: 'lue le 13 novembre 2026' },
-  docketSemrush: { label: 'Docket, prix et limites de Semrush', url: 'https://docket.io/resources/research/semrush-pricing', note: 'source tierce, vérifiée en avril 2026 ; la page officielle n’a pas pu être lue depuis notre environnement' },
+  docketSemrush: { label: 'Docket, prix et limites de Semrush', url: 'https://docket.io/resources/research/semrush-pricing', note: 'source tierce, vérifiée en avril 2026 ; mêmes prix relevés par Style Factory en juillet 2026 ; à confirmer sur la page officielle' },
   styleSemrushOne: { label: 'Style Factory, revue de Semrush One', url: 'https://www.stylefactoryproductions.com/blog/semrush-one-review', note: 'source tierce, mise à jour 2026' },
   ahrefsPricing: { label: 'Ahrefs, page Plans & pricing', url: 'https://ahrefs.com/pricing', note: 'lue le 13 novembre 2026 ; prix en dollars hors taxes' },
   pricingsaasAhrefs: { label: 'PricingSaaS, historique des prix d’Ahrefs', url: 'https://pricingsaas.com/companies/ahrefs', note: 'source tierce, consultée le 13 novembre 2026' },
@@ -554,7 +554,7 @@ export const COMPETITORS: Competitor[] = [
     answer:
       'Choisissez Qwairy si vous êtes une agence ou une équipe SEO qui veut beaucoup de moteurs, de connecteurs (Search Console, Looker Studio, MCP) et un studio de rédaction ; choisissez Repéré si vous voulez une interface française, un prix d’entrée plus bas et des corrections faites pour vous.',
     intro:
-      'Qwairy affiche trois paliers (79, 199 et 449 € par mois, HT) et un palier Enterprise. L’éditeur revendique plus de 2 000 marques. Les prix viennent d’un annuaire ; la page tarifs de l’éditeur n’a pas pu être lue.',
+      'Qwairy affiche trois paliers (79, 199 et 449 € par mois, HT) et un palier Enterprise. L’éditeur revendique plus de 2 000 marques. Les prix viennent d’un annuaire et n’ont pas été confirmés sur la page de l’éditeur.',
     strengths: [
       'Beaucoup de moteurs (12 à 18 selon les sources) et un cockpit avec grille thème par IA et comparaison jusqu’à 10 concurrents [@lfdn][@digitiz].',
       'Connecteurs : Search Console, Bing Webmaster Tools, Google Analytics, Looker Studio, WordPress, API et serveur MCP dès l’offre Starter [@codeurQwairy].',
@@ -655,7 +655,7 @@ export const COMPETITORS: Competitor[] = [
       'Un suivi quotidien de prompts dans ChatGPT et l’AI Mode de Google, que Repéré ne mesure pas pour l’AI Mode [@semrushAiKb].',
       'Une gamme d’outils annexes (contenu, réseaux sociaux, génération de prospects) en options [@semrushAi].',
     ],
-    priceStatus: 'Prix de l’AI Visibility Toolkit lus sur la page officielle le 13 novembre 2026 ; prix des offres SEO et de Semrush One relevés auprès de sources tierces (la page officielle n’a pas pu être lue depuis notre environnement).',
+    priceStatus: 'Prix de l’AI Visibility Toolkit lus sur la page officielle le 13 novembre 2026 ; prix des offres SEO et de Semrush One relevés auprès de sources tierces (à vérifier sur la page officielle avant tout achat).',
     chooseThem: [
       'Vous avez un spécialiste SEO ou une agence qui exploite l’outil chaque jour.',
       'Vous avez besoin de recherche de mots-clés à grande échelle et d’analyse des concurrents.',

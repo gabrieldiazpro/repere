@@ -9,7 +9,9 @@
  */
 import crypto from 'node:crypto';
 import type { SiteCrawl } from '@/lib/crawl/types';
-import { SafeFetchError, normalizeInputUrl, safeFetch } from '@/lib/siteaudit/fetch';
+import { CrawlFetcher, decodeBody } from '@/lib/crawl/fetcher';
+import { SafeFetchError, looksBinary, normalizeInputUrl } from '@/lib/siteaudit/fetch';
+import { accessFinding, accessReport, adaptFinding, type AccessReport } from './access';
 import { maxAiCallsFromEnv } from './aicheck';
 import { detectSite, homeSignals } from './detect';
 import { resolveModules } from './modules';
@@ -172,8 +174,13 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
   try {
     home = await bounded(Math.min(10_000, Math.max(2_000, left() * 0.25)), root.signal, async () => {
       if (opts.fetchHome) return opts.fetchHome(startUrl);
-      const r = await safeFetch(startUrl, { timeoutMs: 8_000, maxBytes: 1_500_000, accept: 'text/html' });
-      return r.status < 400 && /html/i.test(r.contentType || 'text/html') ? { finalUrl: r.finalUrl, html: r.body } : null;
+      // Même récupérateur que l'exploration (ROBUSTESSE V6) : 10 redirections, meta refresh et redirection JavaScript
+      // suivis, cookies rejoués, robots.txt respecté, anti-SSRF. Ne lève pas : l'erreur est dans `errorCode`.
+      const f = new CrawlFetcher({ deadline: Date.now() + 8_000, signal: root.signal });
+      const r = await f.fetch(startUrl, { followTo: () => true, soft: 'meta+js', maxBytes: 1_500_000 });
+      if (r.errorCode && (r.errorCode.startsWith('blocked') || r.errorCode === 'invalid_url')) throw new SafeFetchError(r.errorCode as 'blocked_ip');
+      const type = r.headers['content-type'] || 'text/html';
+      return r.status > 0 && r.status < 400 && /html/i.test(type) && !looksBinary(r.body) ? { finalUrl: r.finalUrl, html: decodeBody(r.body, type) } : null;
     });
   } catch (e) {
     // Adresse refusée (réseau interne, port, schéma…) : on s'arrête là, rien n'est exploré.
@@ -198,7 +205,7 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
 
   // ---- 2. En parallèle : exploration → SEO + GEO ; PageSpeed ; IA ----
   // Porteur unique (évite le rétrécissement de type des variables affectées dans les branches asynchrones).
-  const out: { crawl: SiteCrawl | null; seo: ModuleReport | null; geo: ModuleReport | null; data?: DataSummary; ai?: AiCheckSummary; perf?: SeoDataPerfData } = {
+  const out: { crawl: SiteCrawl | null; seo: ModuleReport | null; geo: ModuleReport | null; data?: DataSummary; ai?: AiCheckSummary; perf?: SeoDataPerfData; access?: AccessReport } = {
     crawl: null,
     seo: null,
     geo: null,
@@ -234,7 +241,9 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
     const crawlBudget = Math.min(opts.crawlBudgetMs ?? CRAWL_BUDGET_MS, left(6_000));
     try {
       const crawl = await bounded(crawlBudget + 4_000, root.signal, (signal) =>
-        mods.crawl(home?.finalUrl ?? startUrl, {
+        // Depuis l'adresse saisie (ROBUSTESSE V6) : l'exploration voit les redirections de l'accueil (déménagement,
+        // meta refresh, JavaScript, cookie) et peut les signaler.
+        mods.crawl(startUrl, {
           maxPages: opts.maxPages ?? CRAWL_MAX_PAGES,
           timeBudgetMs: crawlBudget,
           signal,
@@ -267,9 +276,15 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
       setStatus('crawl', e instanceof TimeoutError ? 'timeout' : 'failed', Date.now() - crawlStart, errMsg(e));
     }
     const c = out.crawl;
+    out.access = accessReport(c, status.crawl?.error);
     for (const m of ['seo', 'geo'] as const) {
       if (!c || !c.pages.length) {
         setStatus(m, 'skipped', 0, 'exploration indisponible');
+        continue;
+      }
+      if (!out.access.readable) {
+        // On ne note pas un site qu'on n'a pas pu lire (robots, pare-feu, erreur, page vide…) : état explicite à la place.
+        setStatus(m, 'skipped', 0, out.access.title);
         continue;
       }
       if (m === 'seo' && !out.data) {
@@ -335,8 +350,13 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
 
   // ---- 3. Synthèse ----
   const { seo, geo, data, ai } = out;
+  const access = out.access ?? accessReport(out.crawl, status.crawl?.error);
+  const platform = out.crawl?.platform ?? null;
   const scores = computeScores(seo, geo, ai);
-  const priorities = mergePriorities(seo, geo, 5);
+  // Priorités : l'état d'accès d'abord s'il est dégradé, puis SEO + GEO ; correctifs adaptés à la plateforme.
+  const af = accessFinding(access);
+  const merged = mergePriorities(seo, geo, af ? 4 : 5);
+  const priorities = [...(af ? [{ ...af, source: 'geo' as const, priority: 9 }] : []), ...merged].map((p) => adaptFinding(p, platform));
   const partial = Object.values(status).some((s) => s.status === 'failed' || s.status === 'timeout');
   const c = out.crawl;
   const base: FullAnalysis = {
@@ -352,6 +372,7 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
     ...(data ? { data } : {}),
     ...(ai ? { ai } : {}),
     verdict: '',
+    access,
     scores,
     priorities,
     autoFixes: autoFixesOf(seo, geo),

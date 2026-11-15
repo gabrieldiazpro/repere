@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { ProviderId } from '@/lib/engine';
 import { auditCounts, explainChange, sentimentShares } from '@/lib/engine';
 import { HBar, SplitBar } from '@/components/app/Charts';
-import { Empty, PageHeader, Panel } from '@/components/app/PageHeader';
+import { PageHeader, Panel } from '@/components/app/PageHeader';
 import { QuoteCard } from '@/components/app/Quote';
 import { bandFor, fmtDate, PROVIDER_LABEL, PROVIDER_ORDER } from '@/components/app/tokens';
 import { auditDate } from '@/components/app/workspace';

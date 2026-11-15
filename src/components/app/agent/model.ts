@@ -18,6 +18,7 @@ export const PLATFORM_NAME: Record<Platform, string> = {
   shopify: 'Shopify',
   webflow: 'Webflow',
   prestashop: 'PrestaShop',
+  wix: 'Wix',
   export: 'Export de fichiers',
   gbp: 'Fiche Google',
 };

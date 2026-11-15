@@ -244,7 +244,7 @@ const frDate = (iso: string) => new Date(iso).toLocaleDateString('fr-FR', { day:
 export function renderScheduledReport(
   brandName: string,
   audits: AuditResult[],
-  opts: { frequency: ReportFrequency; shareUrl?: string | null; to: string; color?: string; showRepere?: boolean },
+  opts: { frequency: ReportFrequency; shareUrl?: string | null; to: string; color?: string; showRepere?: boolean; by?: string },
 ): RenderedReport | null {
   const last = audits[audits.length - 1];
   if (!last) return null;
@@ -264,7 +264,9 @@ export function renderScheduledReport(
   const missing = (last.sources?.domains ?? []).filter((d) => d.clientPresence === 'absent').slice(0, 3);
   const period = opts.frequency === 'weekly' ? 'hebdomadaire' : 'mensuel';
   const color = opts.color && /^#[0-9a-f]{6}$/i.test(opts.color) ? opts.color : '#3730A3';
-  const footerBrand = opts.showRepere === false ? brandName : `${brandName} · rapport produit avec Repéré`;
+  // V6 : rapport préparé par une agence (« Rapport préparé par Agence Exemple »), avec ou sans mention de Repéré.
+  const author = opts.by ? `Rapport préparé par ${opts.by}` : brandName;
+  const footerBrand = opts.showRepere === false ? author : `${author} · rapport produit avec Repéré`;
   const subject = `Visibilité dans les IA de ${brandName} : ${score}/100 (rapport ${period})`.slice(0, 140);
   const demo = last.demo ? '\n(Données de démonstration.)' : '';
   const text = [
@@ -323,6 +325,22 @@ export async function sendScheduledReport(payload: Record<string, unknown>, now:
   if (!business || business.isActive === false) return { status: 'skipped', reason: 'business' };
   const ent = getEntitlements(business);
   if (!ent.exports) return { status: 'skipped', reason: 'plan' };
+  // V6 (agences) : marque de l'agence par défaut (si l'espace n'a pas sa propre marque), expéditeur de l'agence.
+  let branding: ShareBranding | null = ent.whiteLabel ? (s.branding ?? null) : null;
+  let sender: { from: string; replyTo?: string } | null = null;
+  if (ent.agency?.branding) {
+    try {
+      const { agencyProfileForBusiness, shareBrandingOf } = await import('@/lib/agency/profile');
+      const { senderFor, defaultFromAddress } = await import('@/lib/agency/sender');
+      const profile = await agencyProfileForBusiness(businessId, { ownerId: business.ownerId });
+      if (profile) {
+        branding = branding ?? shareBrandingOf(profile);
+        sender = senderFor(profile, defaultFromAddress());
+      }
+    } catch {
+      /* profil d'agence illisible : rapport envoyé avec la marque de l'espace */
+    }
+  }
   const audits = await listAuditsForBusiness(businessId);
   const recipients = s.recipients.filter((r) => r.status === 'confirmed').slice(0, maxRecipients(ent));
   let sent = 0;
@@ -331,15 +349,16 @@ export async function sendScheduledReport(payload: Record<string, unknown>, now:
     if (s.includeShareLink && ent.shareLinks) {
       const link = await createShareLink({
         businessId, scope: 'dashboard', label: `Rapport planifié du ${now.toISOString().slice(0, 10)}`,
-        expiresInDays: s.frequency === 'weekly' ? 35 : 70, branding: s.branding, whiteLabel: ent.whiteLabel, now,
+        expiresInDays: s.frequency === 'weekly' ? 35 : 70, branding, whiteLabel: ent.whiteLabel, now,
       });
       url = link.url;
     }
+    // Le rapport parle du client (son nom) ; la marque (couleur, pied de page) est celle de l'agence si elle existe.
     const brand = (ent.whiteLabel && s.branding?.name) || business.name;
     for (const r of recipients) {
-      const m = renderScheduledReport(brand, audits, { frequency: s.frequency, shareUrl: url, to: r.email, color: ent.whiteLabel ? s.branding?.color : undefined, showRepere: !(ent.whiteLabel && s.branding?.hideRepere) });
+      const m = renderScheduledReport(brand, audits, { frequency: s.frequency, shareUrl: url, to: r.email, color: branding?.color, showRepere: !branding?.hideRepere, by: branding && !s.branding?.name ? branding.name : undefined });
       if (!m) break;
-      const res = await sendEmail({ to: r.email, subject: m.subject, html: m.html, text: m.text, kind: 'service', tags: [{ name: 'type', value: 'report_scheduled' }] }).catch(() => null);
+      const res = await sendEmail({ to: r.email, subject: m.subject, html: m.html, text: m.text, kind: 'service', tags: [{ name: 'type', value: 'report_scheduled' }], ...(sender ? { from: sender.from, ...(sender.replyTo ? { replyTo: sender.replyTo } : {}) } : {}) }).catch(() => null);
       if (res && (res.status === 'sent' || res.status === 'logged')) sent++;
     }
   }

@@ -1,4 +1,5 @@
-import { pageMeta } from '@/lib/seo/meta';
+import { ogImageFor, pageMeta } from '@/lib/seo/meta';
+import { abs } from '@/lib/seo/site';
 import Link from 'next/link';
 import { PageShell, Crumbs, JsonLd, h1Class, h1Style } from '@/lib/seo/shell';
 import {
@@ -190,7 +191,8 @@ export default function GeoPage() {
             wordCount,
             about: ['Generative Engine Optimization', 'Référencement IA', 'ChatGPT', 'Google AI Overviews'],
             citation: SOURCES.map((s) => s.url),
-            withContext: false,
+            image: abs(ogImageFor(PATH)),
+              withContext: false,
           }),
           faqPageLd(PATH, FAQ, { withContext: false }),
           breadcrumbListLd(PATH, crumbs, { withContext: false }),
@@ -348,7 +350,7 @@ export default function GeoPage() {
         Contenu d&apos;information, rédigé avec l&apos;aide d&apos;un outil d&apos;IA et relu par l&apos;équipe. Les IA évoluent vite : signalez-nous
         toute erreur à l&apos;adresse indiquée sur la page <Link href="/a-propos" className="underline">À propos</Link>.
       </p>
-      <RelatedLinks current={PATH} />
+      <RelatedLinks current={PATH} extra={[{ href: '/etudes/pourquoi-les-ia-recommandent-une-marque', label: 'Pourquoi une IA recommande-t-elle une marque ? Ce que prouvent les études' }]} />
     </PageShell>
   );
 }

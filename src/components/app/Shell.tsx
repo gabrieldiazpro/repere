@@ -27,6 +27,8 @@ export interface ShellInfo {
   unread: number;
   theme: Theme;
   businesses: BusinessOption[];
+  /** V6 : lien « Tous mes clients » (offre Agence ou démo agence) */
+  agency?: boolean;
 }
 
 const HIDDEN = ['/app/hors-ligne', '/app/connexion'];
@@ -122,6 +124,12 @@ export function Sidebar({ info }: { info: ShellInfo }) {
           {info.descriptor}
         </p>
         <BusinessSwitcher current={info.businessId} options={info.businesses} />
+        {info.agency && (
+          <Link href="/app/agence" className="rp-side-agency" aria-current={pathname === '/app/agence' || pathname.startsWith('/app/agence/') ? 'page' : undefined}>
+            <Icon name="users" size={15} />
+            Tous mes clients
+          </Link>
+        )}
       </div>
       <div className="px-3 pb-2">
         <SearchButton className="rp-side-search" />

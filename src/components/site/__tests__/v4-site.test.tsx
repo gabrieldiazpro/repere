@@ -47,7 +47,10 @@ describe("V4 : accueil", () => {
       </HomeHero>,
     );
     expect(html).toContain("<h1>Google et les IA");
-    expect(html.match(/type="submit"/g)).toHaveLength(1);
+    // Un seul appel principal (le formulaire d'analyse) ; l'entrée dans le compte démo est un bouton secondaire
+    // (formulaire GET vers /app, V6 : une action qui ouvre une session démo, pas un lien préchargé).
+    expect(html.match(/type="submit"/g)).toHaveLength(2);
+    expect(html).toContain('name="compte" value="demo"');
     expect(html).toContain("Analyser mon site");
     expect(html).toContain('aria-pressed="true"');
     expect(html).toContain("Aperçu");

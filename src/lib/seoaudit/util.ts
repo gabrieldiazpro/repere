@@ -2,6 +2,7 @@
  * Outils purs de l'audit SEO : URL, texte visible, pluriels, extraction NAP (France), JSON-LD.
  */
 import type { CrawledPage } from './types';
+import { findBlocks, firstBlock, removeBlocks, stripComments } from '@/lib/siteaudit/html';
 
 export type Node = Record<string, unknown>;
 
@@ -60,9 +61,8 @@ export function decodeEntities(s: string): string {
 /** Texte visible approximatif d'un document HTML. */
 export function textOf(html: string): string {
   return decodeEntities(
-    html
-      .replace(/<!--[\s\S]*?-->/g, ' ')
-      .replace(/<(script|style|noscript|template|svg|head)\b[\s\S]*?<\/\1>/gi, ' ')
+    // Balayage linéaire (ROBUSTESSE V6) : les regex paresseuses explosaient sur le HTML jamais fermé.
+    removeBlocks(stripComments(html), ['script', 'style', 'noscript', 'template', 'svg', 'head'])
       .replace(/<br\s*\/?>|<\/(p|div|li|h[1-6]|tr|section|article|header|footer)>/gi, '\n')
       .replace(/<[^>]+>/g, ' '),
   )
@@ -74,10 +74,8 @@ export function textOf(html: string): string {
 /** Paragraphes (<p>) du document, texte brut. */
 export function paragraphs(html: string): string[] {
   const out: string[] = [];
-  const re = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(html))) {
-    const t = decodeEntities(m[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+  for (const bl of findBlocks(html, ['p'])) {
+    const t = decodeEntities(html.slice(bl.openEnd, bl.closeStart).replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
     if (t) out.push(t);
   }
   return out;
@@ -104,8 +102,7 @@ export function tags(html: string, name: string): string[] {
 }
 
 export function headOf(html: string): string {
-  const m = /<head\b[^>]*>([\s\S]*?)<\/head>/i.exec(html);
-  return m ? m[1] : html.slice(0, Math.min(html.length, 20_000));
+  return firstBlock(html, 'head') ?? html.slice(0, Math.min(html.length, 20_000));
 }
 
 /* ------------------------------------------------------------------ */

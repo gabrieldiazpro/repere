@@ -1,13 +1,14 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { pageMeta } from '@/lib/seo/meta';
+import { ogImageFor, pageMeta } from '@/lib/seo/meta';
+import { abs } from '@/lib/seo/site';
 import { JsonLd } from '@/lib/seo/shell';
 import { EditorialFrame } from '@/components/pages/v4/Editorial';
 import { Byline, SourcesList, TableWrap, AuditCta, withRefs, EDITORIAL_PUBLISHED, EDITORIAL_UPDATED } from '@/lib/seo/editorial';
 import { articleLd, breadcrumbListLd, faqPageLd, graph, webPageLd } from '@/lib/seo/jsonld';
 import { fmtDate } from '@/lib/seo';
-import { CELLS, COMPARE_CHECKED, COMPETITORS, FEATURES, competitorPath, getCompetitor, makeRefs } from '@/lib/seo/competitors';
+import { CELLS, COMPARE_CHECKED, COMPARE_CHECKED_SEO, COMPETITORS, FEATURES, competitorPath, getCompetitor, makeRefs } from '@/lib/seo/competitors';
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -26,9 +27,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: c.description,
     type: 'article',
     publishedTime: EDITORIAL_PUBLISHED,
-    modifiedTime: EDITORIAL_UPDATED,
+    modifiedTime: lastChecked(c.checked),
   });
 }
+
+/** Date de mise à jour affichée = le relevé le plus récent (jamais antérieure aux prix cités). */
+const lastChecked = (checked?: string) => [EDITORIAL_UPDATED, COMPARE_CHECKED, COMPARE_CHECKED_SEO, checked ?? ''].sort().at(-1)!;
 
 /** Lignes montrées côte à côte sur la page d'un concurrent (les plus décisives). */
 const SIDE_BY_SIDE = ['questions', 'ia', 'faits', 'execution', 'audit', 'integrations', 'prix', 'langue', 'cible', 'engagement'] as const;
@@ -72,14 +76,15 @@ export default async function CompetitorPage({ params }: Props) {
       head={
         <JsonLd
           data={graph([
-            webPageLd(path, { name: title, description: c.description, dateModified: EDITORIAL_UPDATED }, { withContext: false }),
+            webPageLd(path, { name: title, description: c.description, dateModified: lastChecked(c.checked) }, { withContext: false }),
             articleLd({
               path,
               headline: title,
               description: c.description,
               datePublished: EDITORIAL_PUBLISHED,
-              dateModified: EDITORIAL_UPDATED,
+              dateModified: lastChecked(c.checked),
               citation: sources.map((s) => s.url),
+              image: abs(ogImageFor(path)),
               withContext: false,
             }),
             faqPageLd(path, c.faq, { withContext: false }),
@@ -89,7 +94,7 @@ export default async function CompetitorPage({ params }: Props) {
       }
       crumbs={[{ name: 'Accueil', href: '/' }, { name: 'Comparatif', href: '/comparatif' }, { name: `Repéré ou ${c.name}` }]}
       title={title}
-      meta={<Byline />}
+      meta={<Byline updated={lastChecked(c.checked)} />}
       intro={<p>{c.what} Les prix et fonctions ci-dessous ont été relevés le {fmtDate(c.checked ?? COMPARE_CHECKED)} ; Repéré est un concurrent de {c.name}, nous le
           disons et nous indiquons nos limites.</p>}
       toc={toc}
@@ -189,6 +194,13 @@ export default async function CompetitorPage({ params }: Props) {
                 </Link>
               </li>
             ))}
+            {(c.slug === 'semrush' || c.slug === 'ahrefs') && (
+              <li>
+                <Link href="/questions/alternative-semrush-pme" className="underline" style={{ color: 'var(--primary)' }}>
+                  Quelle alternative à Semrush pour une PME ?
+                </Link>
+              </li>
+            )}
             <li>
               <Link href="/methode" className="underline" style={{ color: 'var(--primary)' }}>
                 Notre méthode de mesure

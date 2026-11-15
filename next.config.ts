@@ -95,7 +95,9 @@ const nextConfig: NextConfig = {
         ],
       },
       // Jamais indexés, mais crawl autorisé (pas de Disallow) : les aperçus de /rapport restent lisibles.
-      ...["/app", "/app/:path*", "/admin", "/admin/:path*", "/api/:path*", "/rapport/:path*"].map((source) => ({
+      // Rapports d'exemple des comptes démo (/rapport/demo-…, entreprises fictives, liés depuis le site) : noindex porté par
+      // la balise meta de la page (noindex, follow), sans en-tête en double (V6).
+      ...["/app", "/app/:path*", "/admin", "/admin/:path*", "/api/:path*", "/rapport/:id((?!demo-).*)"].map((source) => ({
         source,
         headers: [{ key: "X-Robots-Tag", value: "noindex" }],
       })),

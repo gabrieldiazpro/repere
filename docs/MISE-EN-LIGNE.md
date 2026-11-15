@@ -33,6 +33,8 @@ pas développeur : chaque étape dit **ce que vous cliquez**, **ce que vous coll
 | 12 | Achat test réel, remboursé | 10 min | un vrai paiement | compte créé, e-mail reçu |
 | 13 | Google (fiche, API, Places) | 30 min + attente | voir l'étape | voir l'étape |
 | 14 | Données SEO et publication (V5, facultatif) | 30 min | coller les clés, `migrate.mjs` | `--liste` les montre ✓ |
+| 15 | Supervision, alertes, sauvegardes (gratuit) | 15 min | `ALERT_EMAIL`, moniteur sur `/api/health`, `sauvegarde.mjs` | e-mail d'alerte de test reçu, sauvegarde relue |
+| 16 | Rendu JavaScript (facultatif, désactivé par défaut) | 0 min, ou 1 h avec un serveur | rien, ou `CRAWL_RENDER=on` + `CRAWL_RENDER_WS` | voir l'étape |
 
 Toutes les commandes se lancent **dans le dossier `app`** du projet (`cd chemin/vers/auditia/app`).
 
@@ -282,8 +284,7 @@ anti-iframe, nosniff, Referrer-Policy, Permissions-Policy) et redirection http �
 requête sans signature, refusée avant tout traitement : rien n'est déclenché) ; santé de la base, de la configuration
 et de la file de tâches (`/api/health`, détail grâce à `CRON_SECRET` lu dans votre fichier).
 
-**Vérifier** : « ✓ EN LIGNE ET CONFORME ». Ajoutez ensuite un moniteur gratuit (UptimeRobot, Better Stack) sur
-`https://votre-domaine.fr/api/health`, alerte si la réponse n'est pas 200.
+**Vérifier** : « ✓ EN LIGNE ET CONFORME ». Branchez ensuite la surveillance externe gratuite : étape 15.
 
 ## 12. Achat test réel, puis remboursement (10 min)
 
@@ -390,6 +391,15 @@ Sans terminal : recollez `supabase/TOUT-EN-UN.sql` dans l'éditeur SQL de Supaba
 - **WordPress** : le client installe l'extension `integrations/wordpress` (version 1.1.0 ou plus, aussi téléchargeable depuis l’app) pour que Yoast ou
   Rank Math acceptent le titre et la description SEO par l'API ; sans elle, ces modifications passent par l'export.
 - **Fiche Google** : `PUBLISH_GBP_ENABLED=1` uniquement après l'accord d'accès à l'API Business Profile (étape 13 b).
+- **Wix (V6)** : rien à configurer pour démarrer. Le client crée une **clé API** dans son propre compte Wix
+  (Paramètres du compte > Clés API, permission SEO en gestion, accès limité à son site) et la colle dans
+  /app/agent/connexions avec l'identifiant du site. Facultatif, pour un parcours en un clic plus tard : créer une app
+  **non listée** « Repéré » sur https://dev.wix.com (permissions « Gérer les paramètres SEO », lecture Blog et
+  Produits), publier une version majeure, puis copier l'App ID et l'App secret de la page OAuth dans `WIX_APP_ID` /
+  `WIX_APP_SECRET`. Pas d'examen App Market pour une app partagée par lien d'installation. La capture de l'identifiant
+  d'installation (webhook « App Instance Installed ») reste à brancher avant d'ouvrir ce parcours aux clients.
+- **Bing Places** : aucune API publique d'écriture (accès réservé à des partenaires) : rien à configurer, l'agent
+  guide le client (import de la fiche Google dans Bing Places).
 - **Offres** : export pour tous ; application directe à partir d'Essentiel (proposition : 20 / 100 / 200 séries
   appliquées par mois en Essentiel / Accompagné / Agence, à valider).
 - **Agent automatique** : après chaque exploration ou réanalyse d'un espace, l'agent prépare des **brouillons** de
@@ -443,14 +453,147 @@ Sans terminal : recollez `supabase/TOUT-EN-UN.sql` dans l'éditeur SQL de Supaba
 **Vérifier** : `node scripts/ops/secrets.mjs --liste` montre la rubrique « Données SEO » ; `node scripts/ops/check-env.mjs --prod`
 ne signale aucune incohérence (identifiant sans mot de passe, etc.).
 
+## 15. Supervision, alertes et sauvegardes (15 min, gratuit)
+
+Objectif : savoir **en moins de 5 minutes** qu'une chose casse, sans abonnement. Tout est déjà dans l'application ;
+il reste trois variables et un moniteur externe.
+
+### a) Les alertes par e-mail (2 min)
+
+Dans `.env.production.local` (puis étape 9 pour l'envoyer à Vercel) :
+
+```
+ALERT_EMAIL=votre-adresse@exemple.fr      # reçoit les alertes (envoyées par Resend, déjà configuré)
+OPS_DAILY_COST_CAP_EUR=10                 # plafond de dépense estimée IA + DataForSEO par jour (0 = aucun)
+OPS_CRON_MAX_AGE_MIN=10                   # avec pg_cron (étape 10) ; laissez vide sans pg_cron (25 h)
+```
+
+Un contrôle tourne toutes les 5 minutes au plus (déclenché par le worker chaque minute et par chaque appel du
+moniteur à `/api/health`). Il envoie **au plus un e-mail par type et par heure** quand :
+
+| Alerte | Déclencheur |
+|---|---|
+| Santé en échec | base injoignable, file de tâches illisible, configuration invalide |
+| Tâches de fond arrêtées | aucun passage du worker depuis `OPS_CRON_MAX_AGE_MIN` minutes |
+| Pic d'erreurs | plus de `OPS_ERROR_SPIKE_PER_HOUR` erreurs (défaut 20) sur une heure |
+| Tâches abandonnées | une tâche a échoué après toutes ses tentatives |
+| Webhook Stripe en échec | Stripe signale des événements non livrés depuis plus de 10 minutes (API Events) |
+| Plafond de coût | dépense estimée du jour au-dessus de `OPS_DAILY_COST_CAP_EUR` |
+
+**Garde-fou de coûts** : au-delà du plafond, les tâches **non urgentes** (baromètres, relevés SEO, analyses
+planifiées, résumés) attendent le lendemain ; les audits payés, les webhooks et les plans d'action continuent. Vous
+pouvez lever la pause pour la journée dans `/admin/ops` (`OPS_PAUSE_ON_CAP=off` : alerter sans jamais mettre en pause).
+Les coûts sont des **estimations** tirées de nos compteurs, pas les factures des fournisseurs : gardez aussi un plafond
+de dépense chez chaque fournisseur d'IA (OpenAI, Anthropic, Google, Perplexity, Mistral).
+
+**Vérifier** : `curl -s -X POST -H "Authorization: Bearer $CRON_SECRET" "https://votre-domaine.fr/api/ops/tick?force=1"`
+répond `"skipped":false`. Puis ouvrez `https://votre-domaine.fr/admin/ops` (connecté sur `/admin`) : santé, coûts du
+jour, erreurs regroupées, alertes envoyées, bouton « Déclarer un incident ».
+
+### b) Le moniteur de disponibilité externe (5 min, une inscription)
+
+Il détecte ce que l'application ne peut pas voir d'elle-même (site entièrement tombé, DNS, certificat). Deux offres
+gratuites conviennent, à choisir le jour de l'inscription (conditions relevées le 15 novembre 2026, à revérifier) :
+**Better Stack Uptime** (offre gratuite : 10 moniteurs, contrôle toutes les 3 minutes, alertes e-mail, une page de
+statut) ou **UptimeRobot** (offre gratuite, contrôle toutes les 5 minutes). Aucune n'exige de carte pour l'offre
+gratuite à notre connaissance ; si une carte vous est demandée, choisissez l'autre.
+
+**L'étape unique** : créez le compte avec votre adresse, puis un moniteur « HTTP(s) » :
+- URL : `https://votre-domaine.fr/api/health` (méthode GET ou HEAD) ;
+- alerte si le code n'est pas **200** (la route répond **503** quand la base ou la configuration est en échec) ;
+- intervalle : le plus court de l'offre gratuite ; alerte par e-mail.
+
+Ne donnez **jamais** `CRON_SECRET` au moniteur : la version publique suffit (aucun secret, rien de sensible). Le
+contrôle approfondi `/api/health/deep` (Stripe, Resend, écriture en base) est réservé à vous (Bearer `CRON_SECRET`
+ou session admin). La page publique `https://votre-domaine.fr/statut` affiche l'état des services et les incidents
+que vous déclarez dans `/admin/ops` : vous n'avez pas besoin de la page de statut du moniteur.
+
+### c) Les erreurs détaillées (facultatif, 3 min, une inscription)
+
+Sans rien faire, les erreurs serveur (et celles du navigateur remontées par `/api/ops/errors`) sont regroupées par
+signature dans `/admin/ops`, avec leur nombre et leurs première et dernière occurrences. Pour un historique plus long
+et des recherches, ajoutez **Sentry**, offre gratuite « Developer » (un utilisateur, 5 000 erreurs, 30 jours
+d'historique d'après sa page de tarifs) : à l'inscription, choisissez la **région de données UE** (Allemagne), créez
+un projet « Node.js », copiez son DSN (`https://…@….ingest.de.sentry.io/…`) dans `SENTRY_DSN`. Aucun SDK n'est
+installé : l'application envoie les erreurs par HTTP (`src/lib/log.ts`), le site ne grossit pas d'un octet.
+
+### d) Les sauvegardes (5 min, puis une fois par semaine)
+
+1. **Supabase** : l'offre gratuite n'a ni sauvegarde téléchargeable ni **PITR** (restauration à la seconde près).
+   Avant le premier client payant, envisagez l'offre Pro (sauvegardes quotidiennes, PITR en option payante) : décision
+   à prendre par vous, tarif sur supabase.com/pricing. Option gratuite complète : `app/scripts/ops/backup.md` (dump
+   nocturne chiffré par GitHub Actions, comptes inclus).
+2. **Sauvegarde depuis votre ordinateur**, sans aucun service :
+   ```bash
+   # une fois : ajoutez une phrase secrète dans .env.production.local (jamais sur Vercel), et dans votre gestionnaire
+   echo "BACKUP_PASSPHRASE=$(openssl rand -base64 32)" >> .env.production.local
+   node scripts/ops/sauvegarde.mjs                     # → ~/repere-sauvegardes/repere-AAAA-MM-JJ-HHMM.repere-sauv
+   node scripts/ops/sauvegarde.mjs --verifier ~/repere-sauvegardes/<fichier>
+   ```
+   Le fichier (chiffré AES-256-GCM, phrase dérivée par scrypt) contient les tables `businesses`, `subscriptions`,
+   `memberships`, `invitations`, `audits`, `audit_runs`, `actions_progress`, `alerts`, `leads`, `documents`, `jobs`,
+   `stripe_events`, `suppression`, `push_subscriptions`. **Pas les comptes de connexion** (schéma `auth`, inaccessible
+   par l'API) : pour eux, PITR / sauvegardes Supabase ou `backup.md`. Copiez le fichier hors de l'ordinateur.
+3. **Restauration** (à répéter une fois par trimestre, sur un projet Supabase **de test**) :
+   ```bash
+   # .env.test.local : DATABASE_URL, SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY du projet de test, BACKUP_PASSPHRASE
+   node scripts/ops/migrate.mjs --fichier .env.test.local                       # schéma à jour sur le projet de test
+   node scripts/ops/sauvegarde.mjs --restaurer <fichier> --fichier .env.test.local            # simulation : lignes prévues
+   node scripts/ops/sauvegarde.mjs --restaurer <fichier> --fichier .env.test.local --confirmer
+   ```
+   La restauration insère ou remplace par clé primaire, ne supprime rien, et refuse d'écrire dans le projet d'origine
+   sans `--meme-projet`. Les adhésions (`memberships`) exigent que les comptes existent : sur un projet neuf, restaurez
+   d'abord `auth` (dump de `backup.md`) ou limitez avec `--tables businesses,audits,documents`. Vérifiez ensuite
+   `GET /api/health` (Bearer `CRON_SECRET`) et un compte de test, et notez la date du test dans `backup.md`.
+
 ---
+
+## 16. Rendu JavaScript des sites analysés (facultatif, désactivé par défaut)
+
+**Ce que c'est.** Certains sites (applications React, Vue, constructeurs récents) n'envoient qu'une page vide : le
+texte n'apparaît qu'après l'exécution de JavaScript. Sans réglage, Repéré analyse ce HTML brut et **le dit au
+visiteur** (« Site construit en JavaScript : nous voyons ce que voient la plupart des robots d'IA… »). C'est honnête et
+utile : GPTBot, ClaudeBot ou PerplexityBot n'exécutent pas JavaScript non plus. Avec le rendu activé, Repéré ouvre en
+plus jusqu'à 3 pages clés dans un Chromium sans tête pour lire aussi ce que voit Google.
+
+**Recommandation pour l'ouverture : laissez-le désactivé** (`CRAWL_RENDER=off`, valeur par défaut). L'analyse reste
+complète et exacte sur ce que lisent les IA ; seul le complément « vue Google » manque pour ces sites.
+
+**Si vous voulez l'activer plus tard, l'option la plus simple** : un petit serveur à part qui fait tourner Chromium,
+relié à Repéré par une seule variable.
+
+| Option | Ce qu'il faut | Coût et limites |
+|---|---|---|
+| **A. Désactivé** (recommandé au lancement) | rien | 0 € ; les sites 100 % JavaScript sont analysés « vue IA » seulement, et c'est écrit dans le rapport |
+| **B. Navigateur distant** (le plus simple si besoin) | un petit serveur (VPS 2 Go de mémoire) avec une image Docker Chromium sans tête, derrière un proxy https protégé par un jeton | quelques euros par mois ; 1 à 3 s par page rendue ; un rendu à la fois par processus |
+| C. Chromium dans Vercel | paquet Chromium allégé + adaptation du code | déconseillé : Chromium pèse plus de 100 Mo décompressé (limite des fonctions Vercel : 250 Mo), demande 1 à 2 Go de mémoire par fonction et plusieurs secondes de démarrage à froid, à chaque analyse |
+
+**Mettre en place l'option B** (à faire avec un prestataire si vous n'êtes pas à l'aise avec Docker) :
+1. Sur le serveur, lancez un Chromium sans tête qui écoute le protocole DevTools (par exemple l'image
+   `chromedp/headless-shell`, port 9222), **sans accès Internet sortant** (pare-feu : tout le trafic sortant bloqué).
+   Repéré lui fournit lui-même chaque fichier de la page : le navigateur n'a jamais besoin d'Internet, et ne peut donc
+   pas servir à atteindre un réseau interne.
+2. Mettez devant un proxy https (Caddy, par exemple) qui n'accepte que les requêtes portant un jeton secret, et qui
+   transmet au navigateur l'en-tête `Host: localhost`.
+3. Dans Vercel, ajoutez `CRAWL_RENDER=on` et `CRAWL_RENDER_WS=https://rendu.votre-domaine.fr/?token=VOTRE_JETON`
+   (adresse `http(s)://` : Repéré lit `/json/version` pour trouver le navigateur ; une adresse `wss://…` complète
+   fonctionne aussi), puis redéployez.
+4. **Vérifier** : analysez un site connu pour être en JavaScript ; le rapport doit indiquer « Nous avons aussi ouvert
+   N pages dans un navigateur ».
+
+Réglages (facultatifs) : `CRAWL_RENDER_MAX_PAGES` (3, max 5), `CRAWL_RENDER_TIMEOUT_MS` (10 000 par page, max 15 000),
+`CRAWL_RENDER_BUDGET_MS` (15 000 au total), `CRAWL_RENDER_MAX_REQUESTS` (40 fichiers par page). Sur un serveur où
+Chromium est installé localement (pas Vercel), `CRAWL_RENDER=on` suffit : Repéré le trouve seul, ou via
+`CRAWL_RENDER_CHROME=/chemin/vers/chrome`. Le rendu se fait toujours dans le budget de 60 secondes de l'analyse : s'il
+manque de temps, il est simplement sauté (et le rapport reste exact).
 
 ## Après l'ouverture
 
 - **Chaque mise à jour de l'application** : `node scripts/ops/migrate.mjs`, puis `node scripts/ops/check-env.mjs --prod`
   (une nouvelle offre peut demander un prix : `node scripts/ops/stripe-setup.mjs --live`), redéploiement, puis
   `node scripts/ops/verifier-prod.mjs https://votre-domaine.fr`.
-- **Sauvegardes** : `app/scripts/ops/backup.md` (faites un premier test de restauration).
+- **Sauvegardes** : étape 15 d (`sauvegarde.mjs` chaque semaine) et `app/scripts/ops/backup.md` ; faites un premier test de restauration.
+- **Chaque matin, 1 minute** : `/admin/ops` (erreurs nouvelles, coûts du jour, alertes de la nuit).
 - **Une semaine après l'ouverture** : relisez les rapports de sécurité du contenu (`csp.violation`) dans les journaux
   Vercel.
 
@@ -467,6 +610,8 @@ ne signale aucune incohérence (identifiant sans mot de passe, etc.).
 | `webhook … 503` (verifier-prod) | clés Stripe absentes sur Vercel | étape 9, puis redéployer |
 | `[À COMPLÉTER]` visibles (verifier-prod) | identité manquante, ou texte juridique à finaliser | étape 7 ; relecture des CGV par un juriste |
 | Le site reste en « démo » | variables non importées en Production, ou pas de redéploiement | étape 9 |
+| Alerte « Tâches de fond arrêtées » | pg_cron arrêté ou `CRON_SECRET` changé | Supabase › Integrations › Cron ; `migrate.mjs --cron` |
+| Alerte « Plafond de coût » chaque jour | plafond trop bas pour l'activité réelle | relever `OPS_DAILY_COST_CAP_EUR` après vérification des factures |
 
 ## Sources vérifiées le 13 novembre 2026
 
@@ -477,3 +622,4 @@ ne signale aucune incohérence (identifiant sans mot de passe, etc.).
 - IA : [Claude](https://platform.claude.com/docs/en/get-api-key), [Gemini](https://ai.google.dev/gemini-api/docs/api-key), [Perplexity](https://docs.perplexity.ai/docs/getting-started/quickstart), [Mistral](https://docs.mistral.ai/getting-started/quickstarts/studio/activate-and-generate-api-key)
 - Données SEO : [clé PageSpeed Insights](https://developers.google.com/speed/docs/insights/v5/get-started), [API CrUX](https://developer.chrome.com/docs/crux/api), [accès API DataForSEO](https://app.dataforseo.com/api-access), portées Shopify ([liste officielle](https://shopify.dev/docs/api/usage/access-scopes))
 - Google : [éligibilité des fiches](https://support.google.com/business/answer/13763036), [ajouter une fiche](https://support.google.com/places/answer/142902), [vérification](https://support.google.com/business/answer/7107242), [prérequis API Business Profile](https://developers.google.com/my-business/content/prereqs), [clé Places API (New)](https://developers.google.com/maps/documentation/places/web-service/get-api-key)
+- Supervision (relevé le 15 novembre 2026) : [offre gratuite Better Stack](https://betterstack.com/uptime-robot-alternative), [tarifs Sentry (offre Developer)](https://sentry.io/pricing/), [Stripe : filtre `delivery_success` des événements](https://docs.stripe.com/api/events/list)

@@ -226,7 +226,7 @@ const SOCLE: Feature[] = [
       "Nous n'analysons pas encore les journaux de votre serveur.",
       "Aucune règle GEO ne garantit une citation : les éditeurs d'IA le disent eux-mêmes.",
     ],
-    related: ["analyse-60-secondes", "comprendre", "agent-de-publication"],
+    related: ["analyse-60-secondes", "comprendre", "agent-de-publication", "barometres"],
     plans: "Audit GEO dans toutes les offres ; réécritures et sources hors site en Essentiel et Accompagné.",
   },
   {
@@ -251,11 +251,11 @@ const SOCLE: Feature[] = [
       { title: "Application et suivi", text: "Publication, relecture de la page publique, nouvelle mesure 7 jours plus tard, et retour arrière en un clic." },
     ],
     sections: [
-      { id: "plateformes", title: "Ce que l'agent sait modifier", text: "Selon la plateforme : titres et descriptions, textes alternatifs, balisage, redirections, réécriture de passages, fiches produit. Ce qu'une plateforme ne permet pas part en fichier prêt à déposer.", points: ["WordPress (Yoast ou Rank Math)", "Shopify (produits, pages, redirections)", "Webflow, PrestaShop ; export pour les autres"] },
+      { id: "plateformes", title: "Ce que l'agent sait modifier", text: "Selon la plateforme : titres et descriptions, textes alternatifs, balisage, redirections, réécriture de passages, fiches produit. Ce qu'une plateforme ne permet pas part en fichier prêt à déposer.", points: ["WordPress (Yoast ou Rank Math)", "Shopify (produits, pages, redirections)", "Webflow, PrestaShop, Wix ; export pour les autres"] },
       { id: "journal", title: "Un journal qu'on ne peut pas réécrire", text: "Chaque changement garde sa valeur d'origine exacte, qui l'a validé et quand. Le journal est chaîné : une modification après coup se verrait.", points: ["Valeur « avant » conservée", "Retour arrière par changement", "Effet mesuré sur vos courbes"] },
     ],
     limits: [
-      "Wix et Bing Places ne sont pas encore connectés : vous recevez un fichier et les instructions.",
+      "Wix : titres, descriptions, données structurées, redirections, robots.txt et llms.txt appliqués directement (clé API du site) ; textes d'images et FAQ guidés pas à pas. Bing Places n'a pas d'API publique : l'agent vous guide (import de la fiche Google).",
       "Sur WordPress, écrire les métas Yoast demande une petite extension ; sans elle, l'agent passe par l'export.",
       "Les fichiers du thème Shopify (robots.txt, llms.txt) demandent une autorisation spéciale de Shopify ; sinon, export.",
     ],
@@ -333,7 +333,7 @@ const BASE_FEATURES: Feature[] = [
       "Gemini est interrogé sans recherche web (sans ancrage) : il ne renvoie pas de sources.",
       "Les AI Overviews et le mode IA de Google ne sont pas suivis : il n'existe pas d'accès officiel pour le faire proprement.",
     ],
-    related: ["questions-suivies", "comprendre", "copilote"],
+    related: ["questions-suivies", "comprendre", "copilote", "barometres"],
     plans: "Découverte (5 questions, 1 mesure par mois), Essentiel et Accompagné.",
   },
   {
@@ -645,11 +645,11 @@ const BASE_FEATURES: Feature[] = [
       { title: "Vers vos outils", text: "Exports CSV de chaque vue, alertes dans Slack et webhook signé pour vos propres outils." },
     ],
     limits: [
-      "La marque blanche (votre logo et vos couleurs sur le rapport) est réservée aux agences, en liste d'attente.",
+      "La marque blanche (votre logo et vos couleurs sur le rapport) est réservée à l'offre Agence (ouverture prochaine ; démo disponible).",
       "Les exports et liens de partage ne sont pas inclus dans Découverte.",
     ],
     related: ["prouver", "mesurer", "copilote"],
-    plans: "Essentiel et Accompagné. Marque blanche : offre Agence (liste d'attente).",
+    plans: "Essentiel et Accompagné. Marque blanche : offre Agence (ouverture prochaine ; démo disponible).",
   },
 ];
 

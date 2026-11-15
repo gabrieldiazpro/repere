@@ -1,3 +1,4 @@
+import { TOOLS as TOOL_REGISTRY } from '@/components/tools/registry';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -73,12 +74,12 @@ describe('comparatif', () => {
 describe('méthode et glossaire', () => {
   it('version de la méthode V3', () => expect(METHOD_VERSION).toBe('v3.0'));
   it('compteurs affichés = contenu réel', () => {
-    expect(src('glossaire/page.tsx').match(/^\s+slug: '/gm)).toHaveLength(36);
-    expect(src('questions/page.tsx').match(/^\s+id: '/gm)).toHaveLength(30);
+    expect(src('glossaire/page.tsx').match(/^\s+slug: '/gm)).toHaveLength(53);
+    expect(src('questions/page.tsx').match(/^\s+id: '/gm)).toHaveLength(35);
   });
   it('réponses de la page Questions : 40 à 60 mots', () => {
     const answers = [...src('questions/page.tsx').matchAll(/\n\s+a: "((?:[^"\\]|\\.)*)"/g)].map((m) => m[1]);
-    expect(answers).toHaveLength(30);
+    expect(answers).toHaveLength(35);
     for (const a of answers) {
       const n = a.split(/\s+/).length;
       expect(n, a.slice(0, 40)).toBeGreaterThanOrEqual(38);
@@ -142,7 +143,11 @@ describe('routes du sitemap et de llms.txt', () => {
     for (const p of ['/outils', '/fonctionnalites', '/demo', '/nouveautes', '/securite', '/integrations', '/contact', '/aide', '/cas-usage', '/inscription', '/badge', '/parrainage', '/methode/robot']) {
       expect(paths, p).toContain(p);
     }
-    expect(paths.filter((p) => p.startsWith('/outils/'))).toHaveLength(9);
+    // Outils : ceux du registre + les pages d'outils ajoutées en dossier (V6, agent OUTILS), sans doublon.
+    const tools = paths.filter((p) => p.startsWith('/outils/'));
+    for (const t of TOOL_REGISTRY) expect(tools).toContain(`/outils/${t.slug}`);
+    expect(tools.length).toBeGreaterThanOrEqual(TOOL_REGISTRY.length);
+    expect(new Set(tools).size).toBe(tools.length);
     expect(paths.filter((p) => p.startsWith('/fonctionnalites/'))).toHaveLength(17);
     expect(paths.filter((p) => p.startsWith('/cas-usage/'))).toHaveLength(6);
     expect(paths.filter((p) => p.startsWith('/aide/')).length).toBeGreaterThan(0);

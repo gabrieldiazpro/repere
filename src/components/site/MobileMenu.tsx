@@ -14,6 +14,12 @@ import { DEMO_HREF, LOGIN_HREF } from "./nav-links";
 export function MobileMenu({ groups, links, resources, cta }: { groups: readonly NavGroup[]; links: readonly NavItem[]; resources: NavGroup; cta: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // Le contenu du panneau n'est rendu qu'à la première ouverture : les mêmes liens sont déjà dans le HTML du menu de
+  // bureau (HeaderNav) et du pied de page ; on évite ~13 Ko de HTML en double sur chaque page (V6, poids des pages).
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    if (open) setShown(true);
+  }, [open]);
   const panelId = useId();
   const btn = useRef<HTMLButtonElement>(null);
 
@@ -63,6 +69,7 @@ export function MobileMenu({ groups, links, resources, cta }: { groups: readonly
         data-open={open ? "" : undefined}
         className="site-menu absolute inset-x-0 top-16 shadow-[0_24px_40px_-24px_rgba(30,26,92,.45)] max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-white lg:hidden"
       >
+        {(open || shown) && (
         <nav aria-label="Navigation mobile" className="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6">
           <div className="grid grid-cols-2 gap-2">
             <Link href={cta} onClick={close} className={buttonClasses({ size: "md", className: "w-full" })}>
@@ -117,6 +124,7 @@ export function MobileMenu({ groups, links, resources, cta }: { groups: readonly
           </ul>
           <p className="mt-4 px-1 text-[0.9rem] text-muted">Offre Découverte gratuite, sans carte bancaire.</p>
         </nav>
+        )}
       </div>
     </>
   );

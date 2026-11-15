@@ -127,12 +127,22 @@ export function auditAccess(crawl: SiteCrawl, pages: GeoPage[]): AccessResult {
           const bots = SEARCH_CRITICAL.filter((t) => !decide(parsed, t, path).allowed);
           if (bots.length) partial.push({ url: p.url, detail: `interdite à ${bots.join(', ')}` });
         }
+        // ROBUSTESSE (V6, demande SEOAUDIT n° 8) : espace client, panier, API, administration bloqués = voulu.
+        const UTIL = /^\/(app|api|admin|dashboard|espace-client|panier|cart|checkout|commande|mon-compte|my-account|account|compte|connexion|login|wp-admin|recherche|search)(\/|$|\?)/i;
+        const pathOf = (u: string) => {
+          try {
+            return new URL(u).pathname;
+          } catch {
+            return u;
+          }
+        };
+        const allUtility = partial.length > 0 && partial.every((x) => UTIL.test(pathOf(x.url)));
         if (partial.length) {
           findings.push(
             finding({
               id: 'geo.acces.partial_block',
               category: CAT,
-              severity: 'medium',
+              severity: allUtility ? 'info' : 'medium',
               title: `${plural(partial.length, 'page de votre site est interdite', 'pages de votre site sont interdites')} aux robots de recherche IA`,
               why: 'Ces pages ne peuvent pas être reprises dans les réponses avec recherche. C’est voulu pour un espace client ou un panier, pas pour vos pages d’offre.',
               fix: 'Vérifiez la liste : si ce sont des pages d’offre, de service ou d’information, retirez la règle Disallow correspondante.',
@@ -234,7 +244,12 @@ export function auditAccess(crawl: SiteCrawl, pages: GeoPage[]): AccessResult {
   }
 
   /* --- rendu côté client -------------------------------------------- */
-  const csr = pages.filter((p) => p.page.renderHints?.likelyClientRendered || (p.parsed && p.page.wordCount < 60 && p.page.renderHints?.scriptsCount >= 5));
+  // ROBUSTESSE (V6) : le repli « < 60 mots et ≥ 5 scripts » prenait pour vide une vitrine courte rendue côté serveur
+  // (49 mots dans le HTML, 8 scripts WordPress → « critique », note plafonnée à 35). On s'appuie sur le diagnostic du
+  // crawl (racine vide, <noscript>, quasi aucun texte) et on ne garde le repli que pour une page vraiment sans texte.
+  const csr = pages.filter(
+    (p) => p.page.renderHints?.likelyClientRendered || (p.parsed && p.page.wordCount < 15 && p.page.renderHints?.scriptsCount >= 5 && (p.page.renderHints?.textToHtmlRatio ?? 1) < 0.05),
+  );
   if (csr.length) {
     const share = csr.length / Math.max(1, pages.length);
     findings.push(

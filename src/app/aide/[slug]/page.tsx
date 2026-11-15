@@ -15,10 +15,15 @@ export function generateStaticParams(): Params[] {
   return HELP_ARTICLES.map((a) => ({ slug: a.slug }));
 }
 
+/** Meta description : le résumé, complété par la première phrase d'introduction quand il est trop court (< 70 car.). */
+function metaDescription(a: { summary: string; intro?: string[] }): string {
+  return a.summary.length >= 70 || !a.intro?.[0] ? a.summary : `${a.summary} ${a.intro[0]}`;
+}
+
 export async function generateMetadata({ params }: { params: Promise<Params> }) {
   const a = getHelpArticle((await params).slug);
   if (!a) return {};
-  return pageMeta({ path: helpPath(a.slug), title: `${a.title} (aide)`, description: a.summary, type: "article", publishedTime: HELP_UPDATED, modifiedTime: HELP_UPDATED });
+  return pageMeta({ path: helpPath(a.slug), title: `${a.title} (aide)`, description: metaDescription(a), type: "article", publishedTime: HELP_UPDATED, modifiedTime: HELP_UPDATED });
 }
 
 export default async function AideArticlePage({ params }: { params: Promise<Params> }) {

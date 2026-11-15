@@ -69,7 +69,7 @@ export default async function SeoOverviewPage() {
         resultTone={latest ? (fixes.some((f) => f.severity === 'critical' || f.severity === 'high') ? 'down' : 'neutral') : undefined}
         subtitle={
           latest
-            ? `Exploration du ${fmtDay(latest.at)} : ${fmtInt(latest.pagesCrawled)} pages lues par RepereBot, ${fmtInt(latest.seo.stats.checksRun)} contrôles Google et un audit de lisibilité par les IA.`
+            ? `Exploration du ${fmtDay(latest.at)} : ${fmtInt(latest.pagesCrawled)} pages lues par RepereBot, ${fmtInt(latest.seo.stats.checksRun)} contrôles Google applicables à votre type de site (sur 185) et un audit de lisibilité par les IA.`
             : s.website
               ? `RepereBot lit les pages de ${s.website.replace(/^https?:\/\//, '')} (1 minute au plus), puis Repéré vérifie 185 points Google et la lisibilité par les IA.`
               : 'Renseignez l’adresse de votre site dans les réglages : Repéré l’explorera pour vérifier 185 points Google et la lisibilité par les IA.'

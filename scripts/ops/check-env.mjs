@@ -27,7 +27,7 @@ const root = APP_ROOT;
 const PLATFORM = new Set(['NODE_ENV', 'NEXT_PHASE', 'NEXT_RUNTIME', 'VITEST', 'CI', 'PORT', 'HOSTNAME', 'TZ', 'HOME', 'PATH']);
 const isPlatform = (k) => PLATFORM.has(k) || k.startsWith('VERCEL_') || k === 'VERCEL' || k.startsWith('npm_') || k.startsWith('__NEXT');
 /** Lues uniquement par les scripts de scripts/ops (pas par l'application). */
-const SCRIPT_ONLY = new Set(['DATABASE_URL']);
+const SCRIPT_ONLY = new Set(['DATABASE_URL', 'BACKUP_PASSPHRASE']); // BACKUP_PASSPHRASE : scripts/ops/sauvegarde.mjs (OPS V6)
 
 const PATTERNS = [
   /process\.env\.([A-Z][A-Z0-9_]*)/g,

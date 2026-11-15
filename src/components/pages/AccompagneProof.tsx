@@ -4,6 +4,7 @@
  * (entreprises fictives) étiquetés comme tels.
  */
 import Link from "next/link";
+import { DemoEntry } from "@/components/site/DemoEntry";
 import { CheckIcon, CrossIcon } from "@/components/site/blocks";
 import {
   COMMITMENT_MONTHS,
@@ -53,8 +54,12 @@ export function AccompagneProof({ segment }: { segment: AccSeg }) {
               <KindPill kind={e.kind} />
               <h4 className="mt-3 text-[1.05rem] font-bold leading-snug">{e.title}</h4>
               <p className="mt-1.5 text-[0.93rem] text-ink/75">{e.what}</p>
-              {e.raw ? (
-                <a href={e.href} target="_blank" rel="noopener nofollow" className="mt-auto inline-flex min-h-11 items-center pt-3 font-semibold text-primary underline underline-offset-4 hover:no-underline">
+              {e.app ? (
+                <DemoEntry segment={e.app} className="mt-auto inline-flex min-h-11 cursor-pointer items-center pt-3 font-semibold text-primary underline underline-offset-4 hover:no-underline">
+                  Ouvrir
+                </DemoEntry>
+              ) : e.raw ? (
+                <a href={e.href} target="_blank" rel="noopener" className="mt-auto inline-flex min-h-11 items-center pt-3 font-semibold text-primary underline underline-offset-4 hover:no-underline">
                   Ouvrir le fichier<span className="sr-only"> (nouvel onglet)</span>
                 </a>
               ) : (

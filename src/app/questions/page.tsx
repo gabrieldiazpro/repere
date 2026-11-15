@@ -3,13 +3,16 @@ import Link from 'next/link';
 import { PageShell, Crumbs, JsonLd, h1Class, h1Style } from '@/lib/seo/shell';
 import { Byline, RelatedLinks, AuditCta, EDITORIAL_UPDATED } from '@/lib/seo/editorial';
 import { breadcrumbListLd, faqPageLd, graph, webPageLd } from '@/lib/seo/jsonld';
+import { TARGET_QUESTIONS, targetQuestionPath } from './_lib/target-questions';
 
 const PATH = '/questions';
-const TITLE = 'Référencement IA : 30 questions de dirigeants, 30 réponses directes';
+/** Nombre de questions affichées (vérifié plus bas). */
+const COUNT = 35;
+const TITLE = `Référencement SEO et IA : ${COUNT} questions de dirigeants, ${COUNT} réponses directes`;
 const DESCRIPTION =
-  "Comment apparaître dans ChatGPT, que faire si une IA dit des choses fausses sur votre entreprise, combien coûte le GEO : 30 réponses courtes et sourcées, avec un lien vers la page détaillée.";
+  "Comment apparaître dans ChatGPT, quel outil GEO choisir, quelle alternative à Semrush, que faire si une IA dit des choses fausses sur votre entreprise : 35 réponses courtes et sourcées, avec un lien vers la page détaillée.";
 
-const SEO_TITLE = "Référencement IA : 30 questions, 30 réponses";
+const SEO_TITLE = "Référencement IA : 35 questions, 35 réponses";
 
 export const metadata = pageMeta({
   path: PATH,
@@ -21,7 +24,7 @@ export const metadata = pageMeta({
 
 interface Question {
   id: string;
-  theme: 'Comprendre' | 'Apparaître' | 'Erreurs et réputation' | 'Mesurer' | 'Coût et prestataires';
+  theme: 'Comprendre' | 'Apparaître' | 'Choisir un outil' | 'Erreurs et réputation' | 'Mesurer' | 'Coût et prestataires';
   q: string;
   /** réponse directe de 40 à 60 mots */
   a: string;
@@ -104,6 +107,37 @@ const QUESTIONS: Question[] = [
     a: "Non, mais elles aident. Le balisage JSON-LD (Organization, LocalBusiness, Product, FAQPage) rend vos informations lisibles par les machines. Google précise qu'aucun balisage spécial n'est requis pour apparaître dans AI Overviews ou AI Mode. Voyez-le comme une aide à la compréhension de votre site, pas comme un raccourci vers les recommandations.",
     link: { href: '/glossaire#json-ld', label: 'JSON-LD dans le glossaire' },
   },
+  // Choisir un outil
+  {
+    id: 'meilleur-outil-geo', theme: 'Choisir un outil',
+    q: 'Quel est le meilleur outil pour apparaître dans ChatGPT ?',
+    a: "Aucun outil ne fait apparaître une entreprise dans ChatGPT : il mesure si elle est citée, montre les sources utilisées par l'IA et aide à corriger. Choisissez selon qui fera le travail, les IA suivies, la répétition des questions avec marge d'erreur, l'analyse des sources et le prix à usage égal.",
+    link: { href: '/questions/meilleur-outil-visibilite-ia', label: 'Critères et outils comparés' },
+  },
+  {
+    id: 'outils-geo-francais', theme: 'Choisir un outil',
+    q: 'Quels sont les outils GEO français ?',
+    a: "Les comparatifs francophones citent Meteoria, Qwairy, BotRank.ai, GetMint et Hikoo, avec des prix d'entrée payants relevés entre 69 et 89 € par mois à l'automne 2026. Repéré, qui publie cette page, est aussi français, avec une offre gratuite permanente. Ils diffèrent par les IA suivies et l'aide à l'exécution.",
+    link: { href: '/questions/outils-geo-francais', label: 'Le tableau daté et sourcé' },
+  },
+  {
+    id: 'ce-qui-fait-citer', theme: 'Choisir un outil',
+    q: "Qu'est-ce qui fait qu'une IA cite une marque ?",
+    a: "Selon les études publiées, surtout ce que des sources tierces disent d'elle : comparatifs, médias, sites d'avis, forums. Les mentions de la marque sur le web vont de pair avec sa visibilité bien plus que les liens. Côté site, il faut être explorable, indexable et clair ; aucune astuce technique n'est prouvée.",
+    link: { href: '/etudes/pourquoi-les-ia-recommandent-une-marque', label: 'La synthèse des études' },
+  },
+  {
+    id: 'alternative-semrush', theme: 'Choisir un outil',
+    q: 'Quelle alternative à Semrush pour une PME ?',
+    a: "Cela dépend de l'usage. Pour l'audit de votre site, Search Console, PageSpeed Insights, le compte gratuit d'Ahrefs et la version gratuite de Screaming Frog suffisent souvent. Pour les mots-clés, les comparatifs citent SE Ranking, Haloscan ou Ranxplorer. Pour le SEO et les IA en français, avec les corrections faites, il y a Repéré.",
+    link: { href: '/questions/alternative-semrush-pme', label: 'Les alternatives comparées' },
+  },
+  {
+    id: 'audit-seo-gratuit', theme: 'Choisir un outil',
+    q: 'Comment faire un audit SEO gratuit de son site ?',
+    a: "Combinez Google Search Console pour l'indexation et les erreurs, PageSpeed Insights pour la vitesse mobile et un robot d'exploration gratuit pour parcourir vos pages. Classez ensuite les problèmes par impact : pages bloquées ou non indexées d'abord, puis titres absents, doublons et lenteur, et enfin les détails page par page.",
+    link: { href: '/questions/audit-seo-gratuit', label: 'La méthode et les outils' },
+  },
   // Erreurs et réputation
   {
     id: 'chatgpt-dit-faux', theme: 'Erreurs et réputation',
@@ -134,7 +168,7 @@ const QUESTIONS: Question[] = [
     id: 'savoir-si-chatgpt-me-cite', theme: 'Mesurer',
     q: 'Comment savoir si ChatGPT cite mon entreprise ?',
     a: "Posez plusieurs fois les questions de vos clients à ChatGPT, dans des conversations séparées, et notez qui est cité à chaque fois. Une seule réponse ne prouve rien, car les IA varient d'une fois à l'autre. Un outil de mesure fait ce travail sur plusieurs IA et doit indiquer le nombre de réponses analysées.",
-    link: { href: '/audit', label: 'Test gratuit Repéré' },
+    link: { href: '/questions/savoir-si-les-ia-recommandent-mon-entreprise', label: 'La méthode pas à pas' },
   },
   {
     id: 'mesurer-trafic-ia', theme: 'Mesurer',
@@ -217,7 +251,8 @@ const QUESTIONS: Question[] = [
   },
 ];
 
-const THEMES = ['Comprendre', 'Apparaître', 'Erreurs et réputation', 'Mesurer', 'Coût et prestataires'] as const;
+const THEMES = ['Comprendre', 'Apparaître', 'Choisir un outil', 'Erreurs et réputation', 'Mesurer', 'Coût et prestataires'] as const;
+if (QUESTIONS.length !== COUNT) throw new Error(`/questions : ${QUESTIONS.length} questions, le titre en annonce ${COUNT}`);
 
 export default function QuestionsPage() {
   const crumbs = [
@@ -235,7 +270,7 @@ export default function QuestionsPage() {
       />
       <Crumbs items={[{ name: 'Accueil', href: '/' }, { name: 'Questions' }]} />
       <h1 className={h1Class} style={h1Style}>
-        Référencement IA : les 30 questions des dirigeants
+        Référencement SEO et IA : les {COUNT} questions des dirigeants
       </h1>
       <Byline />
       <p className="mt-6 text-lg leading-relaxed">
@@ -245,6 +280,24 @@ export default function QuestionsPage() {
         <Link href="/etudes/ce-que-nous-savons-deja" className="underline" style={{ color: 'var(--primary)' }}>études</Link> et{' '}
         <Link href="/comparatif" className="underline" style={{ color: 'var(--primary)' }}>comparatif</Link>.
       </p>
+
+      <section aria-labelledby="grandes-questions" className="mt-8">
+        <h2 id="grandes-questions" className="mb-3 font-semibold text-xl">
+          Les grandes questions, traitées en détail
+        </h2>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TARGET_QUESTIONS.map((x) => (
+            <li key={x.slug} className="rounded-xl border p-4" style={{ borderColor: 'var(--line)', background: '#fff' }}>
+              <Link href={targetQuestionPath(x)} className="font-semibold underline-offset-2 hover:underline">
+                {x.q}
+              </Link>
+              <p className="mt-1 text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
+                {x.description}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <nav aria-label="Thèmes" className="mt-8 rounded-xl border p-4 text-sm" style={{ borderColor: 'var(--line)', background: '#fff' }}>
         {THEMES.map((t) => (

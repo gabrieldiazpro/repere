@@ -5,6 +5,15 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { buttonClasses } from "@/components/ui/Button";
 import { CheckIcon, CrossIcon } from "./blocks";
 import { WaitlistForm } from "./WaitlistForm";
+import { DemoEntry } from "./DemoEntry";
+
+/** Fonctions de l'offre Agence, construites et visibles dans la démo agence (AGENCES, V6). */
+const AGENCY_FUNCTIONS = [
+  "Tous vos clients sur une page (scores Google et IA, alertes, validations)",
+  "Rapports à votre nom, logo et couleur, envoyés depuis votre domaine",
+  "Votre client valide les corrections, vous les appliquez",
+  "Exports CSV par client",
+];
 import { euros, planLink, plansFor, tiersFor, type SitePlan, type SiteSegment } from "./plans-v2";
 
 type Billing = "month" | "year";
@@ -370,9 +379,23 @@ function AgencyTiers({ billing }: { billing: Billing }) {
       <div className="mt-8 rounded-2xl bg-white p-6 shadow-[0_0_0_1px_rgba(27,31,46,.09)] sm:p-8">
         <h3 className="text-xl font-bold">Rejoindre la liste d&apos;attente agences</h3>
         <p className="mt-1.5 max-w-2xl text-[0.97rem] text-ink/75">
-          La marque blanche est en cours de construction. Laissez votre e-mail : nous vous écrivons une seule fois, à
-          l&apos;ouverture, avec les conditions des premières agences partenaires.
+          Marque blanche, tableau de bord multi-clients, accès client et exports CSV sont prêts : voyez-les dans la démo
+          agence. L&apos;offre ouvre prochainement : laissez votre e-mail, nous vous écrivons une seule fois, à l&apos;ouverture,
+          avec les conditions des premières agences partenaires.
         </p>
+        <ul className="mt-4 grid max-w-2xl gap-2 text-[0.95rem] sm:grid-cols-2">
+          {AGENCY_FUNCTIONS.map((f) => (
+            <li key={f} className="flex gap-2.5">
+              <CheckIcon className="mt-0.5 text-primary" />
+              {f}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4">
+          <DemoEntry account="demo-agence" className="inline-flex min-h-11 cursor-pointer items-center font-semibold text-primary underline underline-offset-4 hover:no-underline">
+            Voir la démo agence
+          </DemoEntry>
+        </div>
         <div className="mt-5 max-w-2xl">
           <WaitlistForm fixedInterest="agency" idPrefix="waitlist-agence" />
         </div>

@@ -68,3 +68,27 @@ async function checkHousePage(): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Le classement public (/classement) a-t-il au moins un classement métier × ville publié ? Tant que non, la page est en
+ * noindex et hors sitemap : on ne la lie pas non plus depuis le pied de page (pas de lien vers une page exclue).
+ */
+let rankingCache: { at: number; v: Promise<boolean> } | null = null;
+
+export function rankingLive(): Promise<boolean> {
+  if (!rankingCache || Date.now() - rankingCache.at > 10 * 60_000) rankingCache = { at: Date.now(), v: checkRanking() };
+  return rankingCache.v;
+}
+
+async function checkRanking(): Promise<boolean> {
+  try {
+    const { buildRanking, listRankingPairs } = await import('@/lib/growth/ranking');
+    const pairs = (await withTimeout(listRankingPairs(), 2500)) ?? [];
+    for (const p of pairs.slice(0, 40)) {
+      if ((await withTimeout(buildRanking(p.tradeSlug, p.citySlug), 2500))?.state === 'published') return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}

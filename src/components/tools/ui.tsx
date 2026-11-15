@@ -517,14 +517,19 @@ export function ShareLink({ params }: { params: Record<string, string | undefine
  * Pont vers l'audit. Avant le résultat : une ligne discrète (le bouton principal reste celui de l'outil).
  * Après le résultat : « Étape suivante », le parcours en 3 temps et LE bouton, adresse du site pré-remplie.
  */
-export function AuditBridge({ text, done = false, url }: { text: string; done?: boolean; url?: string | null }) {
-  const href = url ? `/audit?site=${encodeURIComponent(url)}` : '/audit';
+export function AuditBridge({ text, done = false, url, to = 'audit' }: { text: string; done?: boolean; url?: string | null; to?: 'audit' | 'analyse' }) {
+  // V6 : les outils SEO renvoient vers l'analyse complète du site (/analyse?site=), les outils IA vers l'audit.
+  const seo = to === 'analyse';
+  const base = seo ? '/analyse' : '/audit';
+  const href = url ? `${base}?site=${encodeURIComponent(url)}` : base;
+  const cta = seo ? 'Lancer l’analyse complète' : 'Lancer l’audit gratuit';
+  const head = seo ? 'Ce test regarde une page. L’analyse complète explore tout votre site, pour Google et les IA.' : 'Ce test regarde votre site. L’audit regarde ce que les IA disent de vous.';
   if (!done) {
     return (
       <p className="mt-6 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm text-muted">
-        <span>Ce test regarde votre site. L’audit gratuit regarde ce que les IA disent de vous.</span>
+        <span>{seo ? 'Ce test regarde une page. L’analyse gratuite explore tout votre site.' : 'Ce test regarde votre site. L’audit gratuit regarde ce que les IA disent de vous.'}</span>
         <Link href={href} className="font-semibold text-primary underline underline-offset-2">
-          Lancer l’audit gratuit
+          {cta}
         </Link>
       </p>
     );
@@ -533,16 +538,16 @@ export function AuditBridge({ text, done = false, url }: { text: string; done?: 
     <aside className="rt-fade rt-next mt-8 rounded-2xl bg-primary-deep p-5 text-white sm:p-6" aria-label="Étape suivante">
       <p className="text-sm font-semibold text-on-deep">Étape suivante</p>
       <p className="mt-1 text-xl font-semibold leading-snug" style={{ fontFamily: 'var(--font-display)' }}>
-        Ce test regarde votre site. L’audit regarde ce que les IA disent de vous.
+        {head}
       </p>
       <p className="mt-2 max-w-2xl text-on-deep">{text}</p>
       <ol className="rt-path mt-4" aria-label="Votre parcours">
         <li data-state="done">Ce test</li>
-        <li data-state="next">Audit gratuit, quelques minutes</li>
+        <li data-state="next">{seo ? 'Analyse gratuite, 60 secondes' : 'Audit gratuit, quelques minutes'}</li>
         <li>Espace gratuit, suivi mensuel</li>
       </ol>
       <Link href={href} className={buttonClasses({ variant: 'light', className: 'mt-5' })}>
-        Lancer l’audit gratuit
+        {cta}
       </Link>
     </aside>
   );

@@ -17,9 +17,9 @@ PrestaShop) épinglés sur une IP publique validée (anti-SSRF), https uniquemen
 | Shopify | OAuth (app Repéré), jeton hors ligne expirant | Oui : `productUpdate(product:{seo})` ; pages/articles : métachamps `global.title_tag` / `global.description_tag` via `metafieldsSet` | Oui (`fileUpdate`, alt du média ; à confirmer) | Métachamp + snippet de thème → export (thème) | Oui : `urlRedirectCreate` / `urlRedirectDelete` | `templates/robots.txt.liquid`, `templates/llms.txt.liquid` via `themeFilesUpsert` (exemption Shopify requise) → sinon export | Oui (`descriptionHtml` produit, `body` page) | `write_products`, `write_content`, `write_online_store_navigation` (+ `write_themes` avec exemption) |
 | Webflow | Jeton de site (Bearer) | Oui : `PUT /v2/pages/{id}` `seo{title,description}` puis publication | Non par la Data API (à confirmer) → export | Code personnalisé (Custom Code API, à confirmer) → export | Non (réglages du site) → export | Non → export | Éléments CMS : `PATCH /v2/collections/{c}/items/{i}/live` | `pages:read`, `pages:write`, `sites:write` (publication), `CMS:write` |
 | PrestaShop | URL + clé webservice (Basic, clé en identifiant, mot de passe vide) | Oui : `products`/`categories`/`content_management_system` champs multilingues `meta_title`, `meta_description` (PATCH ≥ 8, sinon PUT XML complet) | Non (images sans alt par le webservice ; legend d'image : à confirmer) → export | Non → export | Non (Paramètres > SEO & URL) → export | Non → export | `description` produit (multilingue) | Clé limitée aux ressources `products`, `categories`, `content_management_system` en GET + PUT/PATCH |
-| Wix | App Wix (OAuth) | Oui : Item SEO Tags API (pages statiques, produits, articles) | Non → export | Balises personnalisées via SEO Tags (à confirmer) | Non → export | Non → export | Non | Permission « Manage SEO » (à confirmer) — **non implémenté en V5** (app Wix à créer), export à la place |
+| Wix (V6) | Clé API du compte du client (`Authorization` + `wix-site-id`) ; app Wix OAuth `client_credentials` en option | Oui : Item SEO Tags API (pages statiques publiées avec `publish: true`, articles de blog, produits Wix Stores) | Non par l'API (Media Manager ne change que la médiathèque) → export guidé | JSON-LD : oui (balise `script` de l'élément) ; FAQ visible → export guidé | Oui : SEO Redirects API (301) | Oui : Txt File Server API (robots.txt, llms.txt) | Non → export guidé (éditeur) | « Gérer les paramètres SEO » (+ lecture Blog / Produits) |
 | Google Business Profile | OAuth Google `business.manage` | — | — | — | — | — | Description de fiche, horaires (`locations.patch`) ; publications (`localPosts`) | **Accès API sur dossier (14 jours)** : connecteur derrière `PUBLISH_GBP_ENABLED=1` |
-| Bing Places | — | — | — | — | — | — | Pas d'API publique (programme partenaires > 10 000 fiches) ; import/synchro depuis la fiche Google → instructions | — |
+| Bing Places | — | — | — | — | — | — | Pas d'API publique d'écriture (vérifié le 15 nov. 2026 : accès réservé à des partenaires) ; import de la fiche Google → instructions | — |
 | Export (tout site) | aucune | Fichier + instructions | idem | Bloc `<script type="application/ld+json">` prêt à coller | Fichier `.htaccess` / `_redirects` / CSV | `robots.txt`, `llms.txt` prêts à déposer | Avant/après en texte | — |
 
 ## WordPress
@@ -82,11 +82,49 @@ PrestaShop) épinglés sur une IP publique validée (anti-SSRF), https uniquemen
 - Ressources : `products` (https://devdocs.prestashop-project.org/9/webservice/resources/products/), `categories`,
   `content_management_system`. Le connecteur fait PATCH (≥ 8) et, sur 405, PUT du XML complet relu juste avant.
 
-## Wix
-- Item SEO Tags API : « Set an item's title, description, and other meta tags » ; pages statiques en brouillon sauf
-  `publish: true` ; écriture dans la langue principale uniquement —
-  https://dev.wix.com/docs/api-reference/business-management/seo/item-seo-tags-v1/introduction . Nécessite une app Wix
-  publiée : **hors V5**, export à la place.
+## Wix (V6, recherche du 15 nov. 2026, connecteur src/lib/publish/connectors/wix.ts)
+- **Authentification.** Trois méthodes (https://dev.wix.com/docs/api-reference/articles/authentication/rest-api-authentication.md) :
+  - *Clé API* (mode par défaut, aucune app Repéré nécessaire) : « long-lived credential for site-level or
+    account-level administrative access », créée par le propriétaire ou un copropriétaire du compte, avec des portées
+    et un accès limité à certains sites ; en-têtes `Authorization: <clé>` et `wix-site-id`. « Site-level calls only
+    work with keys generated from the account that owns the site » : c'est donc **le client** qui crée la clé dans son
+    compte. Cas d'usage cité par Wix : « External integrations with third-party tools that call Wix APIs on your
+    behalf ». « API keys aren't available for third-party Wix apps » : la clé ne peut pas venir d'une app Repéré.
+  - *App Wix (OAuth)* : `POST https://www.wixapis.com/oauth2/token` `{ grant_type: client_credentials, client_id,
+    client_secret, instance_id }` → jeton de 4 h (https://dev.wix.com/docs/build-apps/develop-your-app/access/authentication/authenticate-using-oauth.md).
+    L'`instanceId` arrive par le webhook « App Instance Installed ». Une app **non listée** se partage par lien
+    d'installation, « no need to go through the submission process for the Wix App Market » ; « agencies may build
+    and install apps for customers' sites » (https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/install-your-app/share-an-app-install-link.md).
+    Implémenté (jeton, cache) mais désactivé sans `WIX_APP_ID` / `WIX_APP_SECRET` ; capture de l'`instanceId` à faire.
+- **Balises SEO** — Item SEO Tags API (https://dev.wix.com/docs/api-reference/business-management/seo/item-seo-tags-v1/introduction.md) :
+  `GET|PATCH /seo-metatags-server/v1/item-seo-tags/{itemType}/{itemId}` (`fieldMask: "tags"`), liste
+  `GET …/{itemType}`, `POST …/reset-to-default` ; portée `SCOPE.PROMOTE.MANAGE-SEO`. Couvre `STATIC_PAGE`,
+  `BLOG_POST`, `STORES_PRODUCT` (titre, méta-description, canonique, meta robots, données structurées). Points
+  documentés pris en compte : « Setting `tags` replaces the item's tags in full » (relecture de la liste complète
+  avant chaque écriture) ; pages statiques en brouillon sauf `publish: true` (erreur `DRAFT_SAVED_NOT_PUBLISHED` si le
+  site n'a jamais été publié) ; écriture dans la langue principale seulement ; `custom: true` interdit pour `title`
+  et `script`. La liste ne renvoie pas d'URL : la page est retrouvée par slug (`GET /v3/posts/slugs/{slug}` pour le
+  blog, `GET /stores/v3/products/slug/{slug}` pour la boutique en catalogue V3) ou, à défaut, par l'URL canonique
+  résolue (`resolvedTags`). La documentation montre deux chemins (schéma `/seo-metatags-server/v1`, exemples curl
+  `/promote/seo/v1`) : le connecteur essaie le second seulement sur un 404 sans code applicatif.
+- **Redirections 301** — SEO Redirects API (`/seo-redirects-service/v1` : `GET /redirects`, `POST /create-redirect`,
+  `DELETE /redirects/{id}`). « Redirects do not chain, they replace » : si une redirection existante part de la cible,
+  Wix la supprime ; le connecteur refuse alors d'écrire (conflit expliqué). Pas de mise à jour : suppression puis
+  recréation (options conservées).
+- **robots.txt / llms.txt** — Txt File Server API (`GET|PUT /promote-seo-robots-server/v2/robots|llms`, exemples curl
+  `/promote-seo-txt-file-server/v2`) ; `default: true` rétablit le contenu Wix (utilisé au retour arrière quand le
+  fichier était celui par défaut) ; llms.txt écrit avec `manuallyEdited: true` (exigé ensuite par Wix).
+- **Guidé (export + pas à pas dans l'éditeur Wix)** : textes alternatifs (Update File Descriptor ne modifie que le
+  fichier de la médiathèque : rien ne documente sa propagation aux images placées), FAQ visible (le balisage seul
+  serait trompeur), réécriture de texte, plan du site (généré par Wix). Libellés dans `WIX_STEPS` (export.ts).
+
+## Bing Places (vérifié le 15 nov. 2026)
+- Aucune API publique documentée pour créer ou modifier une fiche ; les échanges sur Microsoft Q&A parlent
+  d'endpoints « restricted to verified partners » (https://learn.microsoft.com/en-us/answers/questions/5672165/bing-places-for-business-overview) ;
+  le programme partenaires vise les gestionnaires de très nombreuses fiches (https://whitespark.ca/guides/the-ultimate-guide-to-your-bing-places-listing/).
+  La refonte d'octobre 2025 améliore l'**import depuis la fiche Google** (https://ppc.land/bing-places-for-business-migrates-to-bing-com-domain-with-import-tools/).
+- **Rien n'est implémenté** : l'agent corrige la fiche Google (ou prépare le texte) et indique d'importer / synchroniser
+  la fiche dans Bing Places.
 
 ## Google Business Profile
 - Accès aux API sur demande (examen sous 14 jours, motif professionnel légitime) —
@@ -97,10 +135,6 @@ PrestaShop) épinglés sur une IP publique validée (anti-SSRF), https uniquemen
   (masques utilisés : `profile.description`, `regularHours`).
 - Publications : `accounts.locations.localPosts` (API v4 « get, create, or update local posts »).
 - Connecteur écrit et testé sur faux serveur, **désactivé tant que `PUBLISH_GBP_ENABLED` ≠ 1**.
-
-## Bing Places
-- Pas d'API publique : réservée aux partenaires gérant plus de 10 000 fiches ; import et synchronisation automatique
-  depuis la fiche Google — https://whitespark.ca/guides/the-ultimate-guide-to-your-bing-places-listing/ → instructions.
 
 ## Vocabulaire `autoFix.kind` accepté (pour SEO-AUDIT et GEO-OPT)
 `meta.title`, `meta.description`, `image.alt`, `jsonld`, `faq`, `redirect`, `canonical`, `robots.txt`, `llms.txt`,

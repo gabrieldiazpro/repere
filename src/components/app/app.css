@@ -595,3 +595,8 @@
 .rp-app .rp-zone-l { font-size: 11px; line-height: 1.1; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 3px; }
 .rp-app .rp-zone-home { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 700; line-height: 1; padding: 2px 5px; border-radius: 99px; background: var(--ink); color: var(--bg); }
 @media (prefers-reduced-motion: reduce) { .rp-app .rp-zone { transition: none; } .rp-app .rp-zone:hover { transform: none; } }
+
+/* V6 (agences) : retour au portefeuille depuis l'espace d'un client, sous le nom de l'espace. */
+.rp-app .rp-side-agency { display: flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 8px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255, 255, 255, 0.08); text-decoration: none; transition: background-color 160ms ease-out; }
+.rp-app .rp-side-agency:hover, .rp-app .rp-side-agency[aria-current='page'] { background: rgba(255, 255, 255, 0.16); }
+.rp-app .rp-side-agency:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

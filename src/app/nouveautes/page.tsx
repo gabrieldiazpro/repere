@@ -39,6 +39,9 @@ export default function NouveautesPage() {
       headline: e.title,
       description: e.text,
       datePublished: e.date,
+      // Une entrée du journal n'est pas réécrite après publication : modifiée = publiée.
+      dateModified: e.date,
+      image: abs("/opengraph-image"),
       inLanguage: "fr-FR",
       author: orgRef(),
       publisher: orgRef(),

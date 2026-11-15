@@ -27,7 +27,7 @@ export function Byline({ published = EDITORIAL_PUBLISHED, updated = EDITORIAL_UP
     <p className="mt-3 text-sm" style={{ color: 'var(--muted)' }}>
       Par{' '}
       <Link href="/a-propos" className="underline underline-offset-2">
-        {AUTHOR_LABEL}
+        {AUTHOR_LABEL.charAt(0).toLowerCase() + AUTHOR_LABEL.slice(1)}
       </Link>
       {FOUNDER.name ? ` (${FOUNDER.name})` : ''}
       {published ? (
@@ -111,8 +111,8 @@ export function Toc({ items, title = 'Sur cette page' }: { items: { id: string; 
 /** Maillage croisé entre les pages de référence. */
 export const REFERENCE_LINKS = [
   { href: '/geo', label: "Qu'est-ce que le GEO (référencement IA) ?" },
-  { href: '/glossaire', label: 'Glossaire du référencement IA (36 termes)' },
-  { href: '/questions', label: 'Les 30 questions que les dirigeants posent sur le référencement IA' },
+  { href: '/glossaire', label: 'Glossaire du référencement IA et du SEO' },
+  { href: '/questions', label: 'Les questions que les dirigeants posent sur le référencement SEO et IA' },
   { href: '/etudes', label: 'Études et Baromètre Repéré de la visibilité IA' },
   { href: '/comparatif', label: 'Repéré, outils de mesure, agences GEO : le comparatif' },
   { href: '/guides', label: 'Guides pratiques' },
@@ -174,19 +174,23 @@ export function TableWrap({ head, rows, caption }: { head: string[]; rows: React
   );
 }
 
-export function AuditCta({ text = 'Que répondent ChatGPT, Gemini et Perplexity quand on cherche une entreprise comme la vôtre ?' }: { text?: string }) {
+export function AuditCta({ text = 'Que voient Google, ChatGPT, Gemini et Perplexity quand on cherche une entreprise comme la vôtre ?' }: { text?: string }) {
   return (
     <div className="mt-12 rounded-2xl p-6 sm:p-8" style={{ background: 'var(--primary-bg)' }}>
       <p className="mb-3 text-lg font-semibold">{text}</p>
       <Link
-        href="/audit"
-        className="inline-flex items-center justify-center rounded-lg px-5 py-3 font-semibold text-white"
+        href="/analyse"
+        className="inline-flex min-h-11 items-center justify-center rounded-lg px-5 py-3 font-semibold text-white"
         style={{ background: 'var(--primary)' }}
       >
-        Lancer mon test gratuit
+        Analyser mon site gratuitement
       </Link>
       <p className="mt-3 text-sm" style={{ color: 'var(--muted)' }}>
-        Gratuit, sans carte bancaire. Aucune promesse de position : une mesure datée, avec sa marge d&apos;erreur.{' '}
+        60 secondes, sans compte ni carte bancaire. Pas de site ?{' '}
+        <Link href="/audit" className="underline">
+          Testez votre entreprise par son nom
+        </Link>
+        . Aucune promesse de position : une mesure datée, avec sa marge d&apos;erreur.{' '}
         <Link href="/methode" className="underline">
           Voir la méthode
         </Link>

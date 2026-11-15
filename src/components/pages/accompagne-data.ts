@@ -6,6 +6,7 @@
  */
 import { ACCOMPAGNE_COMMITMENT_MONTHS, getPlan, type PlanId } from "@/lib/plans";
 import { enginesLabel, frequencyAdverb, promptsCount } from "@/components/site/offer-facts";
+import { demoEntryHref } from "@/components/site/DemoEntry";
 
 export type AccSeg = "local" | "pme" | "ecommerce";
 
@@ -17,6 +18,8 @@ export interface DeliverableExample {
   kind: "reel" | "demo";
   /** lien vers un fichier brut (JSON-LD, texte) plutôt qu'une page */
   raw?: boolean;
+  /** entrée dans le compte démo de ce parcours (bouton, pas lien : voir DemoEntry) */
+  app?: AccSeg;
 }
 
 const PLAN: Record<AccSeg, PlanId> = {
@@ -90,7 +93,8 @@ export function deliverableExamples(seg: AccSeg): DeliverableExample[] {
         : seg === "ecommerce"
           ? "Les textes livrés : fiches produit, e-mails aux auteurs de comparatifs, demande d'avis."
           : "Les textes livrés : page comparative, FAQ métier, fiches comparateurs, point pour votre comité.",
-    href: `/app?visite=1&segment=${seg}`,
+    href: demoEntryHref(seg),
+    app: seg,
     kind: "demo",
   };
   return seg === "pme" ? [comparatif, ...own, demoActions, demoSchema] : [demoPage, demoActions, demoSchema, ...own];

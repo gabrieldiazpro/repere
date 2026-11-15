@@ -189,7 +189,7 @@ function Scene({ d, phase, playing }: { d: HeroSceneData; phase: number; playing
 export function HeroScene({ segment, data }: { segment: HeroSegment; data: HeroSceneData }) {
   const d = data;
   const { cues, total } = heroCues(d);
-  const cited = d.engines.filter((e) => e.rank !== null).map((e) => `${e.ia} (${e.rank}e)`);
+  const cited = d.engines.filter((e) => e.rank !== null).map((e) => `${e.ia} (${e.rank === 1 ? "1er" : `${e.rank}e`})`);
   const absent = d.engines.filter((e) => e.rank === null).map((e) => e.ia);
   return (
     <ScenePlayer

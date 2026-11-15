@@ -7,7 +7,7 @@ import { AcceptInvitation, LoginForm, LogoutButton } from './AccountForms';
 import { AuthShell, Notice } from './AuthShell';
 
 export const metadata: Metadata = {
-  title: 'Connexion',
+  title: 'Connexion à votre espace',
   description: 'Connectez-vous à votre espace Repéré avec un lien envoyé par e-mail, sans mot de passe.',
   alternates: { canonical: '/connexion' },
   robots: { index: false, follow: false },
@@ -66,7 +66,7 @@ export default async function ConnexionPage({ searchParams }: { searchParams: Pr
       {first(sp.deconnecte) === '1' && <Notice tone="success">Vous êtes déconnecté.</Notice>}
       {erreur && ERRORS[erreur] && <Notice tone="danger">{ERRORS[erreur]}</Notice>}
       {mode === 'off' ? (
-        <Notice tone="warning">La connexion n’est pas disponible dans cet environnement (configuration incomplète).</Notice>
+        <Notice tone="warning">Les comptes ne sont pas encore ouverts sur ce serveur : explorez l’application sur un compte de démonstration (lien ci-dessous).</Notice>
       ) : (
         <>
           {mode === 'local' && (

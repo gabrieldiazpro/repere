@@ -11,6 +11,7 @@ import { listStoredTasks, putTask, saveGeneratedTasks, saveSettings, weeklyFromS
 import { buildCtx, buildDrafts, generateTasksAsync } from './tasks';
 import type { StoredTask } from './types';
 import { shortHash } from './util';
+import { SITE_URL } from '@/lib/seo/site';
 
 export { generateTasks, generateTasksAsync, officialDescription, priority, GBP_DESCRIPTION_MAX } from './tasks';
 export { buildJsonLd, buildFaq, jsonLdScriptTag, jsonLdString, validateJsonLd, schemaTypeFor, parseOpeningHours, toFactsMap } from './jsonld';
@@ -105,7 +106,8 @@ export async function createCustomTask(businessId: string, t: { title: string; w
 // ---------------------------------------------------------------------------
 // JSON-LD servi côté serveur (cache mémoire 10 min)
 // ---------------------------------------------------------------------------
-const SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://repere-ia.fr').replace(/\/$/, '');
+// Même repli que le site (jamais localhost en production : un canonical local désindexerait la fiche).
+const SITE = SITE_URL;
 const schemaCache = new Map<string, { at: number; data: Record<string, unknown> }>();
 const SCHEMA_TTL_MS = 10 * 60 * 1000;
 

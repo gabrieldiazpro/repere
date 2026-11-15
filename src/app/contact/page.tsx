@@ -86,6 +86,9 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                   <li>
                     <Link href="/tarifs" className={linkClass}>Les tarifs</Link> sont publics et nets.
                   </li>
+                  <li>
+                    Journalistes : <Link href="/presse" className={linkClass}>l&apos;espace presse</Link> réunit présentation, chiffres et logos.
+                  </li>
                 </ul>
               </div>
               <div>

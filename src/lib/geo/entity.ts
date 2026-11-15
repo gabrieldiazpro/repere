@@ -25,8 +25,13 @@ const ARTICLE_TYPES = new Set(['Article', 'BlogPosting', 'NewsArticle', 'TechArt
 const BYLINE = /\b(par|rédigé par|écrit par|auteur\s*:|by)\s+[A-ZÀ-Ý][\p{L}'’-]+(\s+[A-ZÀ-Ý][\p{L}'’-]+)?/u;
 const SOCIAL = /(facebook\.com|instagram\.com|linkedin\.com|youtube\.com|x\.com|twitter\.com|tiktok\.com|pinterest\.|wikipedia\.org|wikidata\.org|pagesjaunes\.fr|tripadvisor\.|g\.page|maps\.app\.goo\.gl|google\.[a-z.]+\/maps|trustpilot\.com)/i;
 
+/** Types JSON-LD d'une page de liste (index de blog, de guides…) : ils l'emportent sur l'adresse (demande SEOAUDIT n° 5). */
+const LISTING_TYPES = new Set(['CollectionPage', 'ItemList', 'WebSite', 'SearchResultsPage']);
+
 export function isArticlePage(p: GeoPage): boolean {
-  return [...p.types].some((t) => ARTICLE_TYPES.has(t)) || (p.page.openGraph?.['og:type'] ?? '') === 'article' || ARTICLE_URL.test(p.path + '/');
+  if ([...p.types].some((t) => ARTICLE_TYPES.has(t)) || (p.page.openGraph?.['og:type'] ?? '') === 'article') return true;
+  if ([...p.types].some((t) => LISTING_TYPES.has(t))) return false;
+  return ARTICLE_URL.test(p.path + '/');
 }
 
 /** Pages d'information générale où une date ou un auteur n'est pas attendu. */
@@ -63,7 +68,10 @@ function addressText(a: unknown): { text: string | null; postcode: string | null
 /** Faits d'entité trouvés sur le site (JSON-LD + texte visible + liens). */
 export function collectEntity(pages: GeoPage[], brand?: string): EntityFacts {
   const orgs = nodesOfType(pages, isOrgType).map((x) => x.node);
-  const names = [...new Set(orgs.map((n) => str(n.name)).filter((x): x is string => !!x))];
+  // ROBUSTESSE (V6, demande SEOAUDIT n° 4) : les noms d'entité ne se comparent que sur les pages indexables (une page
+  // d'exemple en noindex décrit souvent une autre entreprise).
+  const indexable = pages.filter((p) => p.page.isIndexable !== false);
+  const names = [...new Set(nodesOfType(indexable.length ? indexable : pages, isOrgType).map((x) => str(x.node.name)).filter((x): x is string => !!x))];
   const home = homePage(pages);
   const siteName = home?.page.openGraph?.['og:site_name'] ?? null;
   const allNames = [...new Set([...names, ...(siteName ? [siteName] : [])])];

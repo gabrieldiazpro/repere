@@ -19,6 +19,9 @@ export function allFindings(r: ModuleReport | null | undefined): Finding[] {
   return out;
 }
 
+/** Constats qui décrivent le même problème, côté Google et côté IA (une seule place dans les priorités). */
+const OVERLAPS: string[][] = [['geo.entite.no_contact', 'seo.local.no_phone', 'seo.local.no_address', 'seo.local.no_contact_page']];
+
 /** Priorité = impact × (4 − effort) : un correctif fort et facile (3 × 3 = 9) passe avant un fort et lourd (3 × 1). */
 export function priorityOf(f: Pick<Finding, 'impact' | 'effort'>): number {
   return f.impact * (4 - f.effort);
@@ -41,13 +44,24 @@ export function mergePriorities(seo: ModuleReport | null, geo: ModuleReport | nu
       b.affectedCount - a.affectedCount ||
       a.id.localeCompare(b.id),
   );
-  const out = pool.slice(0, n);
-  const hasSeo = pool.some((f) => f.source === 'seo');
-  const hasGeo = pool.some((f) => f.source === 'geo');
+  // Un même problème vu par les deux lectures (ex. coordonnées absentes : constat GEO + constats SEO locaux) n'occupe
+  // qu'une place parmi les priorités ; les autres constats restent dans le détail.
+  const groupOf = (id: string) => OVERLAPS.findIndex((g) => g.includes(id));
+  const used = new Set<number>();
+  const deduped = pool.filter((f) => {
+    const g = groupOf(f.id);
+    if (g < 0) return true;
+    if (used.has(g)) return false;
+    used.add(g);
+    return true;
+  });
+  const out = deduped.slice(0, n);
+  const hasSeo = deduped.some((f) => f.source === 'seo');
+  const hasGeo = deduped.some((f) => f.source === 'geo');
   if (hasSeo && hasGeo && n > 1) {
     for (const missing of ['seo', 'geo'] as const) {
       if (!out.some((f) => f.source === missing)) {
-        const best = pool.find((f) => f.source === missing)!;
+        const best = deduped.find((f) => f.source === missing)!;
         out[out.length - 1] = best;
         out.sort((a, b) => b.priority - a.priority || SEV_RANK[b.severity] - SEV_RANK[a.severity]);
       }
@@ -85,9 +99,11 @@ function band(score: number): string {
 }
 
 /** Verdict en une phrase, sans promesse de résultat. */
-export function buildVerdict(a: Pick<FullAnalysis, 'scores' | 'priorities' | 'detected' | 'ai' | 'partial' | 'crawl'>): string {
+export function buildVerdict(a: Pick<FullAnalysis, 'scores' | 'priorities' | 'detected' | 'ai' | 'partial' | 'crawl'> & Partial<Pick<FullAnalysis, 'access'>>): string {
   const { seo, geo, global } = a.scores;
   const name = a.detected.brand;
+  // ROBUSTESSE (V6) : la vraie raison (robots.txt, pare-feu, erreur, page vide…), jamais « n'a pas répondu » par défaut.
+  if (a.access && !a.access.readable) return `Nous n'avons pas pu lire le site de ${name} : ${lowerFirst(a.access.title)}. Aucun score n'est calculé sur un site que nous n'avons pas vu.`;
   if (global === null) return `Nous n'avons pas pu analyser le site de ${name} : la page d'accueil n'a pas répondu à notre robot.`;
   const first = a.priorities[0];
   const weakest = seo !== null && geo !== null ? (seo <= geo ? 'Google' : 'les IA') : null;
@@ -98,8 +114,10 @@ export function buildVerdict(a: Pick<FullAnalysis, 'scores' | 'priorities' | 'de
         : ', absent des réponses d’IA testées'
       : '';
   const lead = `${name} : un socle ${band(global)} (${global}/100${weakest ? `, plus faible côté ${weakest}` : ''})${ai}`;
-  const tail = first ? ` ; premier chantier (${first.source === 'seo' ? 'Google' : 'IA'}) : ${lowerFirst(first.title)}.` : '.';
-  return `${lead}${tail}${a.partial ? ' (Analyse partielle : un module n’a pas pu aboutir.)' : ''}`;
+  // Deux phrases courtes plutôt qu'une longue : le verdict sert de titre au rapport.
+  const tail = first ? `. Premier chantier, côté ${first.source === 'seo' ? 'Google' : 'IA'} : ${lowerFirst(first.title)}.` : '.';
+  const js = a.access?.state === 'js_only' ? ' Site construit en JavaScript : les constats portent sur le HTML brut, celui que lisent la plupart des robots d’IA.' : '';
+  return `${lead}${tail}${js}${a.partial ? ' (Analyse partielle : un module n’a pas pu aboutir.)' : ''}`;
 }
 
 function lowerFirst(s: string): string {

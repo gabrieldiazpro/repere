@@ -11,13 +11,13 @@ import { useAgent, useWait } from './state';
 
 type TestView = { ok: boolean; detail: string; capabilities: ChangeKind[] };
 
-function Caps({ kinds }: { kinds: ChangeKind[] }) {
+function Caps({ kinds, label = 'Ce que l’agent peut modifier', tone = 'neutral' }: { kinds: ChangeKind[]; label?: string; tone?: 'neutral' | 'warn' }) {
   if (!kinds.length) return null;
   return (
-    <ul className="ag-caps m-0 list-none p-0" aria-label="Ce que l’agent peut modifier">
+    <ul className="ag-caps m-0 list-none p-0" aria-label={label}>
       {kinds.map((k) => (
         <li key={k}>
-          <StatusBadge tone="neutral" icon={false}>
+          <StatusBadge tone={tone} icon={false}>
             {KIND_NAME[k]}
           </StatusBadge>
         </li>
@@ -102,6 +102,18 @@ function Wizard({ guide, onClose }: { guide: PlatformGuide; onClose: () => void 
                 </li>
               ))}
             </ol>
+            {guide.guided && (
+              <div className="ag-split">
+                <div>
+                  <p className="m-0 mb-1.5 text-[13px] font-semibold">Automatique, après votre validation</p>
+                  <Caps kinds={guide.can} label="Modifié automatiquement" />
+                </div>
+                <div>
+                  <p className="m-0 mb-1.5 text-[13px] font-semibold">Guidé : pas à pas dans l’éditeur</p>
+                  <Caps kinds={guide.guided} label="Préparé avec des instructions" tone="warn" />
+                </div>
+              </div>
+            )}
             {guide.tip && <p className="m-0 rounded-[10px] bg-[var(--surface-2)] px-3 py-2 text-[13.5px] text-[var(--muted)]">{guide.tip}</p>}
             <p className="m-0 text-[13px] text-[var(--muted)]">Vos accès sont chiffrés et ne sont jamais réaffichés. Vous pouvez les retirer à tout moment, ici ou dans {PLATFORM_NAME[guide.id]}.</p>
           </div>
@@ -166,6 +178,12 @@ function Wizard({ guide, onClose }: { guide: PlatformGuide; onClose: () => void 
                   <>
                     <p className="m-0 text-[13.5px] font-semibold">L’agent pourra proposer :</p>
                     <Caps kinds={result.capabilities} />
+                    {guide.guided && (
+                      <>
+                        <p className="m-0 text-[13.5px] font-semibold">Et préparer avec un pas à pas :</p>
+                        <Caps kinds={guide.guided} label="Préparé avec des instructions" tone="warn" />
+                      </>
+                    )}
                   </>
                 )}
                 {!result.ok && <p className="m-0 text-[13.5px] text-[var(--muted)]">Vérifiez l’accès à l’étape précédente, puis réessayez. Rien n’a été modifié sur votre site.</p>}
@@ -349,6 +367,11 @@ export function Connections({ gbpAvailable }: { gbpAvailable: boolean }) {
                   {soon && <StatusBadge tone="neutral">Bientôt</StatusBadge>}
                 </div>
                 <p className="ag-plat-d m-0">{soon ? g.steps[0].text : g.pitch}</p>
+                {!soon && g.guided && (
+                  <p className="ag-plat-d m-0">
+                    <b className="font-semibold text-[var(--ink)]">Guidé</b> (pas à pas) : {g.guided.map((k) => KIND_NAME[k].toLowerCase()).join(', ')}.
+                  </p>
+                )}
                 {!soon && (
                   <button type="button" className="ui-btn mt-auto self-start" data-size="sm" disabled={!admin} onClick={() => start(g)}>
                     Connecter {PLATFORM_NAME[g.id]}
@@ -368,6 +391,18 @@ export function Connections({ gbpAvailable }: { gbpAvailable: boolean }) {
               <StatusBadge tone="up">Toujours disponible</StatusBadge>
             </div>
             <p className="ag-plat-d m-0">Pour tout site, et pour ce qu’une plateforme ne permet pas (robots.txt, llms.txt, redirections) : fichiers prêts à déposer, avec les instructions et l’état « avant ».</p>
+          </article>
+          <article className="ag-plat" data-state="soon" aria-labelledby="pl-bing">
+            <div className="ag-plat-h">
+              <span className="ag-mono" aria-hidden="true">
+                B
+              </span>
+              <h3 id="pl-bing" className="ag-plat-n m-0 flex-1">
+                Bing Places
+              </h3>
+              <StatusBadge tone="neutral">Guidé</StatusBadge>
+            </div>
+            <p className="ag-plat-d m-0">Microsoft ne propose pas d’API publique pour modifier une fiche (accès réservé à des partenaires). Importez votre fiche Google dans Bing Places : l’agent vous indique quoi corriger dans la fiche Google.</p>
           </article>
         </div>
       </section>

@@ -11,6 +11,7 @@ import { CommandPalette } from '@/components/app/shell/CommandPalette';
 import { Toaster } from '@/components/app/shell/Toaster';
 import { Visite } from '@/components/app/shell/Visite';
 import { loadBusinessOptions, loadEntitlements, loadSearchIndex, loadUnread, themePref } from '@/components/app/shell/server';
+import { showAgencyNav } from '@/components/app/agence/server';
 
 export const metadata: Metadata = {
   title: { default: 'Mon espace · Repéré', template: '%s · Repéré' },
@@ -41,13 +42,14 @@ export const viewport: Viewport = {
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const ws = await loadWorkspace();
-  const [tasks, theme, ent, businesses, unread, index] = await Promise.all([
+  const [tasks, theme, ent, businesses, unread, index, agency] = await Promise.all([
     adaptTasks(ws.business.id, ws.fb),
     themePref(),
     loadEntitlements(),
     loadBusinessOptions(),
     loadUnread(ws.business.id),
     loadSearchIndex(),
+    showAgencyNav().catch(() => false),
   ]);
   const weekly = await adaptWeekly(ws.business.id, tasks, ws.fb);
   const info: ShellInfo = {
@@ -63,6 +65,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     unread,
     theme,
     businesses,
+    agency,
   };
   return (
     <div className="rp-app" data-theme={theme}>

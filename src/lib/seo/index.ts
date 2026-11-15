@@ -249,6 +249,17 @@ export function fmtDate(iso: string): string {
 export const tradePath = (t: Trade | string) => `/visibilite-ia/${typeof t === 'string' ? t : t.slug}`;
 export const pairPath = (t: Trade | string, c: City | string) =>
   `${tradePath(t)}/${typeof c === 'string' ? c : c.slug}`;
+/**
+ * Pages métier × ville publiées (indexables) parmi `pairs`. Règle de maillage V6 : on ne lie jamais une page
+ * métier × ville en noindex (sans données propres) ; elle reste accessible à son adresse, hors sitemap et hors liens,
+ * comme le veut la règle du sitemap (le robot ne perd pas son temps sur des pages exclues).
+ */
+export async function publishedPairs<T extends { t: Trade; c: City }>(pairs: T[]): Promise<T[]> {
+  const out: T[] = [];
+  for (const p of pairs) if (isIndexable(await getSeoStats(p.t.slug, p.c.slug))) out.push(p);
+  return out;
+}
+
 export const auditHref = (t: Trade, c: City) =>
   `/audit?metier=${encodeURIComponent(t.slug)}&ville=${encodeURIComponent(c.slug)}`;
 

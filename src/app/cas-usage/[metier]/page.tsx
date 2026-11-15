@@ -6,7 +6,8 @@ import { Reveal } from "@/components/motion/Reveal";
 import { CheckIcon } from "@/components/site/blocks";
 import { CtaBand, MainActions, PageHero, SitePage, linkClass } from "@/components/pages/ui";
 import { USE_CASES, USE_CASES_UPDATED, getUseCase, casUsagePath } from "@/components/pages/cas-usage-data";
-import { DEMO_ACCOUNTS, demoAppHref } from "@/components/pages/demo-data";
+import { DEMO_ACCOUNTS } from "@/components/pages/demo-data";
+import { DemoEntry } from "@/components/site/DemoEntry";
 import { pageMeta } from "@/lib/seo/meta";
 import { breadcrumbListLd, graph, webPageLd } from "@/lib/seo/jsonld";
 
@@ -108,9 +109,9 @@ export default async function CasUsageMetierPage({ params }: { params: Promise<P
                 <h3 className="mt-1 text-2xl font-bold text-white">{demo.name}</h3>
                 <p className="mt-1 text-on-deep">{demo.activity}</p>
                 <p className="mt-4 text-[1rem] text-white/90">{demo.text}</p>
-                <Link href={demoAppHref(demo)} rel="nofollow" className={buttonClasses({ variant: "light", className: "mt-6" })}>
+                <DemoEntry segment={demo.segment} account={demo.id} className={buttonClasses({ variant: "light", className: "mt-6 cursor-pointer" })}>
                   Explorer ce compte démo
-                </Link>
+                </DemoEntry>
               </div>
             ) : null}
           </div>

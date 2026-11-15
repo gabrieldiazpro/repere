@@ -9,6 +9,9 @@ import { pageMeta } from '@/lib/seo/meta';
 import { Byline } from '@/lib/seo/editorial';
 import { articleLd, breadcrumbListLd, faqPageLd, graph, webPageLd } from '@/lib/seo/jsonld';
 import { GuideFigure } from '@/components/pages/guide-figures';
+import { GUIDE_V6_FIGURES } from '@/lib/seo/guides-v6';
+import fs from 'node:fs';
+import path from 'node:path';
 
 export const dynamicParams = false;
 
@@ -32,17 +35,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-/** Transforme les renvois [n] en liens vers la liste des sources. */
+/**
+ * Transforme les renvois [n] en liens vers la liste des sources, et `[texte](/chemin)` en lien interne (V6, demande
+ * GUIDES : chemins internes uniquement, commençant par « / » ; tout autre motif reste du texte).
+ */
 function withRefs(text: string): ReactNode {
-  const parts = text.split(/(\[\d+\])/g);
+  const parts = text.split(/(\[\d+\]|\[[^\]\n]+\]\(\/[^)\s]*\))/g);
   return parts.map((p, i) => {
     const m = /^\[(\d+)\]$/.exec(p);
-    return m ? (
-      <sup key={i}><a href={`#source-${m[1]}`} className="px-0.5 underline" style={{ color: 'var(--primary)' }}>{m[1]}</a></sup>
-    ) : (
-      <span key={i}>{p}</span>
-    );
+    if (m) return <sup key={i}><a href={`#source-${m[1]}`} className="px-0.5 underline" style={{ color: 'var(--primary)' }}>{m[1]}</a></sup>;
+    const l = /^\[([^\]\n]+)\]\((\/[^)\s]*)\)$/.exec(p);
+    if (l && !l[2].startsWith('//')) return <Link key={i} href={l[2]} className="underline underline-offset-2" style={{ color: 'var(--primary)' }}>{l[1]}</Link>;
+    return <span key={i}>{p}</span>;
   });
+}
+
+/** Dimensions d'un schéma SVG de public/ (viewBox), pour réserver sa place (pas de décalage à l'affichage). */
+function svgSize(src: string): { width: number; height: number } {
+  try {
+    const svg = fs.readFileSync(path.join(process.cwd(), 'public', src.replace(/^\//, '')), 'utf8').slice(0, 600);
+    const vb = /viewBox="\s*[\d.]+\s+[\d.]+\s+([\d.]+)\s+([\d.]+)\s*"/.exec(svg);
+    if (vb) return { width: Math.round(Number(vb[1])), height: Math.round(Number(vb[2])) };
+  } catch {
+    /* repli */
+  }
+  return { width: 720, height: 360 };
 }
 
 const isCode = (t: string) => /^[a-z0-9|\\.]+$/i.test(t) && t.includes('|');
@@ -51,6 +68,7 @@ export default async function GuidePage({ params }: Props) {
   const g = getGuide((await params).slug);
   if (!g) notFound();
   const path = guidePath(g);
+  const v6Figure = GUIDE_V6_FIGURES[g.slug];
   const related = g.related.map(getGuide).filter((x): x is NonNullable<typeof x> => !!x);
   const crumbs = [
     { name: 'Accueil', path: '/' },
@@ -97,6 +115,13 @@ export default async function GuidePage({ params }: Props) {
         <section key={s.h2} id={`s${i + 1}`} className="scroll-mt-20">
           <h2 className="mt-10 mb-3 font-semibold text-2xl">{s.h2}</h2>
           {s.figure ? <GuideFigure id={s.figure} /> : null}
+          {v6Figure && v6Figure.section === i ? (
+            <figure className="my-4">
+              {/* eslint-disable-next-line @next/next/no-img-element -- schéma SVG statique, rien à optimiser */}
+              <img src={v6Figure.src} alt={v6Figure.alt} {...svgSize(v6Figure.src)} loading="lazy" decoding="async" className="h-auto w-full rounded-xl" />
+              <figcaption className="mt-1 text-sm" style={{ color: 'var(--muted)' }}>{v6Figure.caption}</figcaption>
+            </figure>
+          ) : null}
           {s.paras?.map((p, j) =>
             isCode(p) ? (
               <p key={j} className="mb-3 relative overflow-x-auto rounded-lg border p-3 font-mono text-sm" style={{ background: '#fff', borderColor: 'var(--line)' }}>{p}</p>

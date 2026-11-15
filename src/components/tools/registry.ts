@@ -3,6 +3,7 @@
  * Docs : docs/v3/11-outils-gratuits.md. Aucun chiffre de trafic ni promesse de citation.
  */
 import type { QA } from '@/lib/seo/jsonld';
+import { V6_TOOLS, type V6Slug } from './v6/registry';
 
 export type Parcours = 'local' | 'pme' | 'ecommerce';
 export type ToolSlug =
@@ -14,7 +15,8 @@ export type ToolSlug =
   | 'rendu-sans-javascript'
   | 'comparateur'
   | 'llms-txt'
-  | 'fiche-produit';
+  | 'fiche-produit'
+  | V6Slug;
 
 export interface ToolSource {
   label: string;
@@ -44,6 +46,8 @@ export interface ToolDef {
   faq: QA[];
   sources: ToolSource[];
   related: { label: string; href: string }[];
+  /** Date de mise à jour propre à l'outil (sinon TOOLS_UPDATED). */
+  updated?: string;
 }
 
 export const PARCOURS_LABEL: Record<Parcours, string> = {
@@ -152,7 +156,7 @@ export const TOOLS: ToolDef[] = [
   {
     slug: 'robots-ia',
     name: 'Robots.txt et robots d’IA',
-    h1: 'Les robots d’OpenAI, Anthropic, Perplexity et Google peuvent-ils lire votre site ?',
+    h1: 'Les robots d’OpenAI, Anthropic, Perplexity et Google lisent-ils votre site ?',
     lead: 'Nous lisons votre robots.txt comme le font les robots, robot par robot, et vous donnons les lignes à ajouter selon ce que vous voulez autoriser.',
     metaTitle: 'Vérifier son robots.txt pour les robots d’IA',
     description:
@@ -450,6 +454,7 @@ export const TOOLS: ToolDef[] = [
       { label: 'Repéré pour l’e-commerce', href: '/e-commerce' },
     ],
   },
+  ...V6_TOOLS,
 ];
 
 export const toolPath = (slug: ToolSlug) => `/outils/${slug}`;

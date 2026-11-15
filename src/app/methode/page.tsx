@@ -364,7 +364,7 @@ export default function MethodPage() {
           montre à ce jour d&apos;effet sur les citations.
         </li>
       </ul>
-      <RelatedLinks current={PATH} />
+      <RelatedLinks current={PATH} extra={[{ href: '/etudes/pourquoi-les-ia-recommandent-une-marque', label: 'Pourquoi une IA recommande-t-elle une marque ? Ce que prouvent les études' }]} />
       </>
     </EditorialFrame>
   );

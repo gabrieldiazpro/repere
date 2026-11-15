@@ -19,7 +19,7 @@ export function isHouseBusinessId(id: string | null | undefined): boolean {
 export const HOUSE_BUSINESS: BusinessRecord = {
   id: HOUSE_ID,
   name: 'Repéré',
-  trade: 'référencement IA / GEO',
+  trade: 'référencement SEO et IA (GEO)',
   city: 'France',
   website: 'repere-ia.fr',
   segment: 'pme',
@@ -31,13 +31,16 @@ export const HOUSE_BUSINESS: BusinessRecord = {
   alertThreshold: 5,
 };
 
-/** Faits publiés (prix : grille docs/v2/07-plans-v2.json, nets, TVA non applicable). */
+/**
+ * Faits publiés, alignés mot pour mot sur le kit d'identité (docs/visibilite-repere/01-textes-identite.md) et sur la
+ * grille src/lib/plans.ts (prix nets, TVA non applicable). Si un fait change, il change d'abord dans le kit.
+ */
 export const HOUSE_FACTS: Partial<Record<BrandFactField, string>> = {
   site: 'repere-ia.fr',
   services:
-    'Audit de visibilité dans les IA (ChatGPT, Perplexity, Gemini, Claude), suivi mensuel, détection des informations fausses données par les IA, sources à obtenir, tâches hebdomadaires avec textes et balisage prêts à publier, copilote',
-  prix: 'Audit gratuit ; suivi à partir de 29 € par mois pour un commerce local, 79 € par mois pour une boutique en ligne, 99 € par mois pour une PME ; TVA non applicable, art. 293 B du CGI',
-  clients: 'Commerces et artisans, PME et boutiques en ligne françaises',
+    "Analyse réelle du site en 60 secondes (jusqu'à 60 pages sans compte), 185 contrôles SEO et audit GEO, mesure de ce que répondent ChatGPT, Gemini, Perplexity et Claude avec marge d'erreur, vérification de l'exactitude des faits, suivi des positions Google et de la Search Console, agent qui applique les corrections sur WordPress, Shopify, Webflow ou PrestaShop après validation, offre Agence en marque blanche",
+  prix: "Découverte gratuite, sans carte bancaire ; Essentiel 29 € par mois (commerce local), 79 € par mois (e-commerce), 99 € par mois (PME) ; Accompagné dès 99 € par mois ; Agence 149 € par mois ; TVA non applicable, art. 293 B du CGI",
+  clients: 'TPE, PME, commerces locaux, e-commerces et agences en France',
   zone: 'France entière',
   statut: 'en activité',
 };

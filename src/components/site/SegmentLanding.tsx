@@ -14,6 +14,7 @@ import { MotionRoot } from "@/components/motion/MotionRoot";
 import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
 import { QuickAuditForm } from "@/components/motion/QuickAuditForm";
+import { DemoEntry } from "./DemoEntry";
 import { HeroScene } from "@/components/motion/scenes/HeroScene";
 import { euros, planLink, tiersFor, VAT_NOTICE, type SitePlan } from "./plans-v2";
 import { JsonLd } from "@/lib/seo/shell";
@@ -417,9 +418,9 @@ export function SegmentLanding(p: SegmentLandingProps) {
             </h2>
             <QuickAuditForm segment={p.segment} idPrefix="seg-cta" submitLabel={p.primaryCta} dark className="mt-8" />
             <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-              <Link href={`/app?visite=1&segment=${p.segment}`} rel="nofollow" className={buttonClasses({ size: "lg", variant: "ghost", className: "!text-white !min-h-12 justify-start" })}>
+              <DemoEntry segment={p.segment} className={buttonClasses({ size: "lg", variant: "ghost", className: "!text-white !min-h-12 cursor-pointer justify-start" })}>
                 Visiter le compte démo
-              </Link>
+              </DemoEntry>
               {p.secondaryCta ? (
                 <Link
                   href={p.secondaryCta.href}

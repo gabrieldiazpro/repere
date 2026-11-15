@@ -1,0 +1,11 @@
+# WIX — journal (15 nov. 2026, terminé)
+- Fait : recherche dev.wix.com (sources dans docs/v5/publication.md § Wix et § Bing Places).
+- Fait : src/lib/publish/connectors/wix.ts. Automatique : titre, méta-description, canonique, meta robots, JSON-LD (Item SEO Tags API : pages statiques avec publish:true, articles, produits Stores), redirections 301 (Redirects API, refus si Wix supprimerait une autre redirection), robots.txt et llms.txt (Txt File Server, retour au contenu Wix par défaut). Guidé (export + WIX_STEPS dans l'éditeur Wix) : alt d'images, FAQ visible, textes, sitemap.
+- Auth : clé API du compte du client (Authorization + wix-site-id), opérationnelle sans app. App OAuth (client_credentials, WIX_APP_ID/SECRET) codée, désactivée tant que non configurée ; capture de l'instanceId (webhook App Instance Installed) NON faite.
+- Ajouts au contrat : PLATFORMS + 'wix' ; crochet facultatif PublishConnector.preparePatch (appelé par service.ts à la proposition et à l'édition) ; buildExportBundle(cs, now, { cms: 'wix' }).
+- Bing Places : pas d'API publique d'écriture (réservée aux partenaires) → rien implémenté ; carte « Guidé » dans /app/agent/connexions, doc mise à jour.
+- Interface : guide Wix dans l'assistant (platforms.ts : champ `guided`), bloc Automatique / Guidé, carte Bing ; démo simulée comme les autres. Captures : qa/v6/WIX/ (1440/390, clair/sombre, aucun défilement horizontal). Serveur 4103 arrêté.
+- Tests : src/lib/publish/__tests__/wix.test.ts (14, faux serveur wixfake.ts). Vitest complet : 1 722 verts, 1 échec hors périmètre (src/lib/crawl/__tests__/zz-probe2.test.ts, sonde d'un autre agent). tsc : seule erreur src/lib/crawl/__tests__/hardsites.ts (ROBUSTESSE, en cours). eslint : 0 erreur.
+- Hors périmètre modifié (minimal) : src/lib/env.ts, .env.example, scripts/ops/lib/catalog.mjs (WIX_APP_ID/SECRET), docs/MISE-EN-LIGNE.md, docs/v5/publication.md.
+- À faire par d'autres : SITE-SEO-90 → features-data.ts dit encore « Wix pas connecté » (docs/v6/demandes-SITE-SEO-90.md).
+- À confirmer sur un vrai site Wix : chemins de l'API (la doc montre deux variantes, les deux gérées), libellés de l'éditeur dans WIX_STEPS.

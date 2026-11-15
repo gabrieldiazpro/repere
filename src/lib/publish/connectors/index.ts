@@ -4,6 +4,7 @@ import { gbpConnector } from './gbp';
 import { prestashopConnector } from './prestashop';
 import { shopifyConnector } from './shopify';
 import { webflowConnector } from './webflow';
+import { wixConnector } from './wix';
 import { wordpressConnector } from './wordpress';
 
 export const CONNECTORS: Record<Platform, PublishConnector> = {
@@ -11,6 +12,7 @@ export const CONNECTORS: Record<Platform, PublishConnector> = {
   shopify: shopifyConnector,
   webflow: webflowConnector,
   prestashop: prestashopConnector,
+  wix: wixConnector,
   export: exportConnector,
   gbp: gbpConnector,
 };
@@ -20,4 +22,4 @@ export function connectorFor(platform: Platform): PublishConnector {
 }
 
 export { buildExportBundle } from './export';
-export { exportConnector, gbpConnector, prestashopConnector, shopifyConnector, webflowConnector, wordpressConnector };
+export { exportConnector, gbpConnector, prestashopConnector, shopifyConnector, webflowConnector, wixConnector, wordpressConnector };

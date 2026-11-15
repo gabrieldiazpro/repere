@@ -38,7 +38,9 @@ export function inSitemap(ctx: AuditCtx, p: CrawledPage): boolean {
 }
 
 /** Pages « utilitaires » où un noindex est normal. */
-export const UTILITY = /\/(panier|cart|checkout|commande|mon-compte|my-account|account|connexion|login|register|inscription|wishlist|merci|thank-you|thanks|recherche|search|mentions-legales|legal|cgv|cgu|conditions|politique|privacy|confidentialite|cookies?|plan-du-site|wp-admin|admin)(\/|$|\?|-)/i;
+// ROBUSTESSE (V6, demande SEOAUDIT n° 2-3) : accord de sous-traitance (DPA) et entrée d'espace client (/app, /dashboard,
+// /espace-client, au premier niveau seulement) sont des pages utilitaires, pas des contenus à indexer.
+export const UTILITY = /\/(panier|cart|checkout|commande|mon-compte|my-account|account|connexion|login|register|inscription|wishlist|merci|thank-you|thanks|recherche|search|mentions-legales|legal|cgv|cgu|conditions|politique|privacy|confidentialite|cookies?|plan-du-site|wp-admin|admin|dpa|sous-traitance|data-processing)(\/|$|\?|-)|^https?:\/\/[^/]+\/(app|dashboard|espace-client)(\/|$|\?)/i;
 
 export function isUtility(p: CrawledPage): boolean {
   return UTILITY.test(new URL(p.finalUrl || p.url).pathname + new URL(p.finalUrl || p.url).search);

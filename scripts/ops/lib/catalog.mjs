@@ -195,6 +195,17 @@ export const CATALOG = [
     where: 'https://app.dataforseo.com/api-access (mot de passe API, différent du mot de passe du compte)',
   },
 
+  // --- Agent de publication : app Wix (facultatif ; sans elle, le client connecte Wix par clé API) ---
+  {
+    name: 'WIX_APP_ID', group: 'Publication', required: false, sensitive: false,
+    where: 'https://dev.wix.com › votre app Repéré › OAuth (App ID) — app non listée, partagée par lien d’installation',
+    check: (v, env) => (env?.WIX_APP_SECRET ? null : warn('WIX_APP_SECRET manquant : connexion par l’app Wix désactivée')),
+  },
+  {
+    name: 'WIX_APP_SECRET', group: 'Publication', required: false, sensitive: true,
+    where: 'https://dev.wix.com › votre app Repéré › OAuth (App secret key)',
+  },
+
   // --- Suivi des erreurs ---
   { name: 'SENTRY_DSN', group: 'Suivi', required: false, sensitive: false, where: 'https://sentry.io › Settings › Projects › Client Keys (DSN) — facultatif', check: (v) => (/^https:\/\/[^@]+@[^/]+\/\d+$/.test(v) ? null : err('DSN invalide (https://clé@hôte/numéro)')) },
 

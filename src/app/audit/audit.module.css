@@ -145,3 +145,9 @@
 .qActive, .qDone { animation: fadeIn .4s ease-out both; }
 .qCount { font-variant-numeric: tabular-nums; color: var(--r-primary); }
 .qNote { font-size: 12.5px; color: var(--r-muted); }
+
+/* V6 : ce que contient l'audit (intertitre H2, liens vers l'analyse et la méthode). */
+.after { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--r-line, rgba(27, 31, 46, 0.12)); font-size: 15px; line-height: 1.6; }
+.after h2 { font-size: 18px; font-weight: 700; margin: 0 0 10px; }
+.after ul { margin: 0 0 12px; padding-left: 1.2em; list-style: disc; display: grid; gap: 4px; }
+.after a { color: var(--primary); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }

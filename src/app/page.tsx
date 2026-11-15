@@ -120,6 +120,9 @@ const PARCOURS = [
   },
 ];
 
+/** Prix mensuel d'entrée (Essentiel, le moins cher des trois parcours), lu dans la grille affichée. */
+const ENTRY_MONTHLY = Math.min(...(["local", "pme", "ecommerce"] as const).map((s) => tiersFor(s).essentielMonth?.priceCents ?? Number.POSITIVE_INFINITY));
+
 const FAQ: QA[] = [
   {
     q: "Que fait exactement l'analyse gratuite en 60 secondes ?",
@@ -128,6 +131,10 @@ const FAQ: QA[] = [
   {
     q: "Qu'est-ce que le GEO, et en quoi diffère-t-il du SEO ?",
     a: "Le SEO travaille votre place dans les résultats de Google. Le GEO (ou référencement IA) travaille vos chances d'être cité quand on interroge ChatGPT, Gemini ou Perplexity. Les deux partagent l'essentiel : des pages accessibles, lisibles et dignes de confiance. Le GEO ajoute les robots des IA, les passages citables et les sources que ces IA lisent.",
+  },
+  {
+    q: "Repéré est-il un outil GEO français ?",
+    a: `Oui. Repéré est un service français de référencement SEO et IA (GEO) ; il propose une offre gratuite permanente et des offres dès ${euros(ENTRY_MONTHLY)} par mois. Il ne suit pas directement les aperçus IA (AI Overviews) ni le mode IA de Google : leurs clics sont compris dans la Search Console.`,
   },
   {
     q: "Repéré remplace-t-il Semrush ou Ahrefs ?",
@@ -486,6 +493,10 @@ export default async function HomePage() {
               et{" "}
               <Link href="/questions" className="font-semibold text-primary underline underline-offset-4">
                 les questions les plus posées
+              </Link>
+              , dont{" "}
+              <Link href="/questions/outils-geo-francais" className="font-semibold text-primary underline underline-offset-4">
+                les outils GEO français
               </Link>
               .
             </p>

@@ -256,6 +256,7 @@ export const LEGACY_PLANS: readonly Plan[] = [
 // ---------------------------------------------------------------------------
 
 const DECOUVERTE_FEATURES = [
+  'Analyse du site et audit SEO + GEO chaque mois (60 pages)',
   '1 marque suivie',
   '5 questions suivies',
   '1 mesure par mois',

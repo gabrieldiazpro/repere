@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { requireBusiness } from '@/lib/auth';
 import { crawlSite } from '@/lib/crawl';
+import { accessReport } from '@/lib/analysis/access';
 import { getEntitlements } from '@/lib/entitlements';
 import { isDemoBusinessId } from '@/lib/demo-v2';
 import { putDoc } from '@/lib/store';
@@ -12,7 +13,7 @@ import { loadWorkspace } from '@/components/app/workspace';
 import { auditBoth, listRealRuns, RUN_COLLECTION } from '@/components/app/seo/data';
 import { crawlRights, nextCrawlAllowed, type SeoRun } from '@/components/app/seo/model';
 
-export type CrawlResult = { ok: true; seo: number; geo: number; pages: number; truncated: boolean } | { ok: false; error: string; code?: string };
+export type CrawlResult = { ok: true; seo: number; geo: number; pages: number; truncated: boolean } | { ok: false; error: string; code?: string; howTo?: string[] };
 
 /** Budget de temps d'une exploration lancée depuis l'app (la page reste ouverte pendant ce temps). */
 const TIME_BUDGET_MS = 50_000;
@@ -36,7 +37,9 @@ export async function relancerExploration(): Promise<CrawlResult> {
   if (next) return { ok: false, error: `Votre offre permet ${rights.label.toLowerCase()}. Prochaine exploration possible le ${next.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' })}.`, code: 'quota' };
   try {
     const crawl = await crawlSite(website, { maxPages: rights.maxPages, timeBudgetMs: TIME_BUDGET_MS, concurrency: 4, checkLinks: true, maxLinkChecks: 40 });
-    if (!crawl.pages.length) return { ok: false, error: 'Le site n’a pas répondu à notre robot (RepereBot). Vérifiez l’adresse et que le site est en ligne.', code: 'unreachable' };
+    // Site illisible (bloque RepereBot, anti-robots, 404, maintenance…) : aucune note, la vraie raison et quoi faire.
+    const access = accessReport(crawl);
+    if (!access.readable) return { ok: false, error: `${access.title}. ${access.message}`, code: 'unreadable', howTo: access.howTo };
     // Vitesse réelle de la page d'accueil si PageSpeed est configuré (sinon l'audit se limite à l'exploration).
     let perf;
     try {

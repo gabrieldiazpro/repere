@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon } from '@/components/app/icons';
-import { ACCOUNT_NAV, navGroups, TAB_HREFS } from '@/components/app/nav';
+import { ACCOUNT_NAV, AGENCY_NAV, navGroups, TAB_HREFS } from '@/components/app/nav';
+import { showAgencyNav } from '@/components/app/agence/server';
 import { PageHeader } from '@/components/app/PageHeader';
 import { SearchButton } from '@/components/app/shell/CommandPalette';
 import { loadUnread, themePref } from '@/components/app/shell/server';
@@ -12,11 +13,12 @@ export const metadata = { title: 'Plus' };
 /** Page « Plus » (mobile) : toutes les rubriques hors onglets, regroupées comme la barre latérale. */
 export default async function PlusPage() {
   const ws = await loadWorkspace();
-  const [unread, theme] = await Promise.all([loadUnread(ws.business.id), themePref()]);
+  const [unread, theme, agency] = await Promise.all([loadUnread(ws.business.id), themePref(), showAgencyNav().catch(() => false)]);
   const errors = ws.latest?.factCheck?.errors ?? 0;
   const groups = navGroups(ws.segment)
     .map((g) => ({ ...g, items: g.items.filter((n) => !TAB_HREFS.includes(n.href)) }))
     .filter((g) => g.items.length);
+  if (agency) groups.unshift({ id: 'agence', label: 'Agence', items: AGENCY_NAV });
   groups.push({ id: 'compte', label: 'Compte', items: ACCOUNT_NAV });
   return (
     <>

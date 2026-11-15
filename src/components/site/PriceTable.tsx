@@ -53,8 +53,8 @@ export function PriceTable({ updated }: { updated: string }) {
             <tr className="border-t border-line/70 align-top">
               <th scope="row" className="px-5 py-3 font-semibold">Agences</th>
               <td className="px-4 py-3" colSpan={4}>
-                Partenaire : 30 % de commission pendant 12 mois, sans abonnement. Agence (marque blanche) : {euros(agency.priceCents)}/mois. Ouverture prochaine,
-                sur liste d&apos;attente.
+                Partenaire : 30 % de commission pendant 12 mois, sans abonnement. Agence (marque blanche) : {euros(agency.priceCents)}/mois. Fonctions visibles dans la démo
+                agence ; ouverture prochaine, sur liste d&apos;attente.
               </td>
             </tr>
           ) : null}

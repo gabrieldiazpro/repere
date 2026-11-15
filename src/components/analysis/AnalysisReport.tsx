@@ -54,6 +54,9 @@ export function AnalysisReport({
   const signup = signupHref(a);
   const down = problem?.kind === 'unreachable';
   const rerunHref = `/analyse?site=${encodeURIComponent(a.crawl?.finalOrigin ?? a.input.url)}`;
+  // État d'accès au site (ROBUSTESSE, V6) : encadré dès que l'accès n'est pas simplement « ok ».
+  const accessBox = a.access && a.access.tone !== 'ok' ? a.access : null;
+  const unreadable = !!a.access && !a.access.readable;
 
   // Impression / PDF : toutes les sections dépliées.
   useEffect(() => {
@@ -83,8 +86,10 @@ export function AnalysisReport({
         </div>
       </header>
 
-      {problem ? <ProblemBox problem={problem} onRerun={onRerun} rerunHref={rerunHref} /> : null}
+      {accessBox ? <AccessBox access={accessBox} onRerun={onRerun} rerunHref={rerunHref} /> : problem ? <ProblemBox problem={problem} onRerun={onRerun} rerunHref={rerunHref} /> : null}
 
+      {/* Site illisible pour notre robot : pas de cadrans « non mesuré », l'encadré d'accès dit pourquoi et quoi faire. */}
+      {unreadable ? null : (
       <div className={s.scores}>
         <div className={s.score}>
           <ScoreDial value={a.scores.seo} name="Google" waiting="non mesuré" size={116} />
@@ -99,6 +104,7 @@ export function AnalysisReport({
           <span className={s.scoreWord}>sur 100</span>
         </div>
       </div>
+      )}
 
       {notes.length && !down ? (
         <div className={`${s.alert} mt-4`} data-tone="warn" role="note">
@@ -117,7 +123,7 @@ export function AnalysisReport({
           Corriger avec Repéré
         </Link>
         <ShareActions shareUrl={shareUrl} host={host} />
-        <p className={s.ctaNote}>Espace gratuit : cette analyse y est rattachée, rien n’est publié sur votre site sans votre accord.</p>
+        <p className={s.ctaNote}>Espace gratuit, sans carte bancaire : votre site y est réanalysé chaque mois, et rien n’est publié sans votre accord.</p>
       </div>
       )}
 
@@ -225,6 +231,43 @@ function ShareActions({ shareUrl, host }: { shareUrl?: string | null; host: stri
         Imprimer ou PDF
       </button>
     </>
+  );
+}
+
+/** Encadré d'accès (src/lib/analysis/access.ts) : titre, explication, marche à suivre numérotée (les signaux secondaires
+ * `notes` vont dans « Ce qui manque à ce résultat », via partialNotes). */
+function AccessBox({ access, onRerun, rerunHref }: { access: NonNullable<FullAnalysis['access']>; onRerun?: () => void; rerunHref: string }) {
+  const tone = access.tone === 'block' ? 'down' : access.tone === 'warn' ? 'warn' : 'brand';
+  return (
+    <div className={`${s.alert} mt-6`} data-tone={tone} role={access.tone === 'block' || access.tone === 'warn' ? 'alert' : 'status'}>
+      <p className="flex flex-wrap items-center gap-2">
+        <StatusBadge tone={access.tone === 'block' ? 'down' : access.tone === 'warn' ? 'warn' : 'neutral'}>
+          {access.tone === 'block' ? 'Site non lu' : access.tone === 'warn' ? 'Lecture incomplète' : 'À savoir'}
+        </StatusBadge>
+        <strong>{access.title}</strong>
+      </p>
+      <p className="mt-2">{access.message}</p>
+      {access.howTo.length ? (
+        <ol className="mt-2 list-decimal space-y-1 pl-5">
+          {access.howTo.map((h) => (
+            <li key={h}>{h}</li>
+          ))}
+        </ol>
+      ) : null}
+      {!access.readable ? (
+        <div className="mt-3">
+          {onRerun ? (
+            <button type="button" className="ui-btn" onClick={onRerun}>
+              Relancer l’analyse
+            </button>
+          ) : (
+            <Link href={rerunHref} className="ui-btn">
+              Relancer l’analyse
+            </Link>
+          )}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -544,6 +587,22 @@ function Method({ a }: { a: FullAnalysis }) {
           bonnes pratiques publiées par Google et par les éditeurs d’IA, sans promettre de position ni de citation.
           {a.crawl?.sitemapUrls ? ` Votre plan de site déclare ${a.crawl.sitemapUrls} adresses.` : ''}
         </p>
+        {a.access?.platform ? (
+          <p className={`${s.small} mt-2`}>
+            Site réalisé avec <span title={a.access.platform.evidence.join(' ; ')}>{a.access.platform.name}</span>
+            {a.access.platform.publishable ? (
+              <>
+                {' '}: Repéré peut appliquer les corrections sur {a.access.platform.name} (après votre validation),{' '}
+                <Link href="/fonctionnalites/agent-de-publication" className="underline underline-offset-2">
+                  voir l’agent de publication
+                </Link>
+                .
+              </>
+            ) : (
+              '.'
+            )}
+          </p>
+        ) : null}
         <p className={`${s.small} mt-2`}>
           <Link href="/methode" className="underline underline-offset-2">
             Notre méthode en détail

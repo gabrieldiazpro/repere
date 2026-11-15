@@ -49,6 +49,13 @@ describe('synthèse', () => {
     expect(computeScores(null, rep(50, []))).toEqual({ seo: null, geo: 50, global: 50 });
     expect(computeScores(null, null).global).toBeNull();
   });
+  it('priorités : un même problème vu par Google et par les IA ne prend qu’une place', () => {
+    const seo = rep(50, [f('seo.local.no_phone', 3, 1), f('seo.local.no_address', 3, 1), f('seo.title.missing', 2, 1)]);
+    const geo = rep(50, [f('geo.entite.no_contact', 3, 1), f('geo.x', 1, 1)]);
+    const ids = mergePriorities(seo, geo).map((p) => p.id);
+    expect(ids.filter((i) => ['seo.local.no_phone', 'seo.local.no_address', 'geo.entite.no_contact'].includes(i))).toHaveLength(1);
+    expect(ids).toContain('seo.title.missing');
+  });
   it('verdict en une phrase, partiel signalé', () => {
     const seo = rep(70, [f('seo.a', 3, 1)]);
     const a = { scores: computeScores(seo, rep(30, [])), priorities: mergePriorities(seo, null), detected: { brand: 'Acme', siteType: 'pme' as const, sources: { brand: '', siteType: '' } }, partial: true, crawl: null };

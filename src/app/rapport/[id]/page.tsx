@@ -1,3 +1,4 @@
+import { fitDescription } from '@/lib/seo/meta';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getAudit, getAuditBusinessId, getBusiness } from '@/lib/db';
@@ -52,16 +53,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const r = await load(id);
   const robots = { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } };
   if (!r) return { title: 'Rapport introuvable', robots };
+  // Rapport d'exemple (compte démo, entreprise fictive) : lié depuis le site, jamais indexé, mais ses liens peuvent être
+  // suivis (rien de privé). Les rapports des clients restent noindex, nofollow (+ X-Robots-Tag, next.config.ts).
+  const pageRobots = r.demo ? { index: false, follow: true } : robots;
   const title = `${r.input.businessName} : ${Math.round(r.score)}/100 de visibilité IA`;
   const what = segmentOf(r) === 'local'
     ? `${r.input.trade}, ${r.input.district ? `${r.input.district}, ` : ''}${r.input.city}`
     : topicOf(r);
-  const description = `Rapport de visibilité IA de ${r.input.businessName} (${what}) : ce que ChatGPT, Gemini et Perplexity répondent, les sources qu'ils citent et pourquoi les concurrents passent devant.`;
+  const description = fitDescription(`Rapport de visibilité IA de ${r.input.businessName} (${what}) : ce que ChatGPT, Gemini et Perplexity répondent, les sources qu'ils citent et pourquoi les concurrents passent devant.`);
   return {
     title,
     description,
-    robots,
-    openGraph: { title, description, type: 'article', locale: 'fr_FR', siteName: 'Repéré' },
+    robots: pageRobots,
+    openGraph: { title, description, type: 'website', locale: 'fr_FR', siteName: 'Repéré' },
     twitter: { card: 'summary_large_image', title, description },
   };
 }

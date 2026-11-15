@@ -271,7 +271,8 @@ export function ReportView({
             <span>Ce rapport reste gratuit et à vous, que vous choisissiez une offre ou non.</span>
           </p>
           <div className={styles.ctaRow}>
-            <a className={`${styles.btn} ${styles.btnOnDark}`} href={`/api/report/${encodeURIComponent(r.id)}/pdf`}>
+            {/* Téléchargement (espace /api/, fermé aux robots) : rel="nofollow", rien à explorer. */}
+            <a className={`${styles.btn} ${styles.btnOnDark}`} href={`/api/report/${encodeURIComponent(r.id)}/pdf`} rel="nofollow" download>
               Télécharger mon rapport PDF
             </a>
             <ShareCardLink cardHref={cardHref} signupHref={signupHref} demo={r.demo} onDark />

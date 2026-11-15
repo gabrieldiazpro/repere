@@ -155,7 +155,7 @@ export const MAILLAGE: CheckDef[] = [
     why: 'Vous dirigez visiteurs et robots vers des pages que vous excluez vous-même : vérifiez la cohérence.',
     fix: 'Rendez ces pages indexables si elles sont importantes, ou réduisez les liens vers elles.',
     source: SRC.blockIndexing,
-    run: (ctx) => hitPages(ctx.html.filter((p) => isNoindex(p) && inlinkCount(ctx, p) >= 3 && !/panier|cart|compte|account|login|connexion|mentions|cgv|cgu|confidentialit|privacy|cookie/i.test(p.finalUrl)), (p) => `${inlinkCount(ctx, p)} liens reçus`),
+    run: (ctx) => hitPages(ctx.html.filter((p) => isNoindex(p) && inlinkCount(ctx, p) >= 3 && !/panier|cart|compte|account|login|connexion|mentions|cgv|cgu|confidentialit|privacy|cookie|\/dpa\b|sous-traitance|data-processing/i.test(p.finalUrl)), (p) => `${inlinkCount(ctx, p)} liens reçus`),
   },
 ];
 
@@ -193,9 +193,21 @@ export const LIENS: CheckDef[] = [
     fix: 'Remplacez ces adresses par celles du site en ligne.',
     source: SRC.links,
     run: (ctx) => {
-      const re = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|[^/]*\.(local|test|localhost)(:\d+)?\/|(staging|preprod|recette|dev|test)[.-][^/]+)/i;
+      // ROBUSTESSE (V6, demande SEOAUDIT n° 7) : « dev. », « test- »… ne désignent un site de test que sur VOTRE domaine
+      // (dev.monsite.fr) ; dev.wix.com ou dev.to sont des documentations. localhost, .local, .test : partout.
+      const hard = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|[^/]*\.(local|test|localhost)(:\d+)?(\/|$))/i;
+      const soft = /^https?:\/\/(staging|preprod|recette|dev|test)[.-][^/]+/i;
+      const base = ctx.host.replace(/^www\./, '').split('.').slice(-2).join('.');
+      const ownSoft = (u: string) => {
+        try {
+          const h = new URL(u).hostname.toLowerCase();
+          return soft.test(u) && (h === base || h.endsWith(`.${base}`) || h.includes(base.split('.')[0]));
+        } catch {
+          return false;
+        }
+      };
       const by = new Map<string, string[]>();
-      for (const l of ctx.crawl.links) if (re.test(l.to) && !sameSite(l.to, ctx.origin)) by.set(l.from, [...(by.get(l.from) ?? []), l.to]);
+      for (const l of ctx.crawl.links) if ((hard.test(l.to) || ownSoft(l.to)) && !sameSite(l.to, ctx.origin)) by.set(l.from, [...(by.get(l.from) ?? []), l.to]);
       return hitItems([...by.entries()].map(([url, t]) => ({ url, detail: t[0] })));
     },
   },

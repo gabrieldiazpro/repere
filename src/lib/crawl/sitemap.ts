@@ -1,24 +1,42 @@
 /**
  * Lecture des sitemaps : index imbriqués, fichiers gzip, plafonds (fichiers, profondeur, URL).
  */
-import { decodeBody, maybeGunzip, type CrawlFetcher } from './fetcher';
+import { decodeBody, maybeGunzip, MAX_GUNZIP_BYTES, type CrawlFetcher } from './fetcher';
 import { decodeEntities } from '@/lib/siteaudit/html';
+import { baseHost } from './url';
+
+/**
+ * Un fichier sitemap est-il hébergé sur le site (même hôte, avec ou sans www, ou sous-domaine) ? ROBUSTESSE (V6) :
+ * un robots.txt peut déclarer des sitemaps n'importe où ; les lire ferait de RepereBot un relais vers des tiers.
+ */
+export function sitemapOnSite(url: string, origin: string): boolean {
+  try {
+    const h = baseHost(new URL(url).hostname);
+    const b = baseHost(new URL(origin).hostname);
+    return h === b || h.endsWith(`.${b}`);
+  } catch {
+    return false;
+  }
+}
 
 export const MAX_SITEMAP_FILES = 30;
 export const MAX_SITEMAP_DEPTH = 3;
 export const MAX_SITEMAP_URLS = 10_000;
 
 export interface ParsedSitemap {
-  kind: 'index' | 'urlset' | 'text' | 'unknown';
+  kind: 'index' | 'urlset' | 'text' | 'unknown' | 'html';
   locs: string[];
+  /** XML coupé avant sa balise fermante (fichier incomplet ou mal formé) */
+  incomplete?: boolean;
 }
 
 /** Analyse un sitemap XML (urlset ou sitemapindex) ou texte (une URL par ligne). */
 export function parseSitemap(text: string): ParsedSitemap {
   const t = text.replace(/^﻿/, '').trim();
   const locs = (re: RegExp) => [...t.matchAll(re)].map((m) => decodeEntities(m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')).trim()).filter(Boolean);
-  if (/<sitemapindex\b/i.test(t)) return { kind: 'index', locs: locs(/<sitemap\b[^>]*>[\s\S]*?<loc\b[^>]*>([\s\S]*?)<\/loc>/gi) };
-  if (/<urlset\b/i.test(t)) return { kind: 'urlset', locs: locs(/<url\b[^>]*>[\s\S]*?<loc\b[^>]*>([\s\S]*?)<\/loc>/gi) };
+  if (/<sitemapindex\b/i.test(t)) return { kind: 'index', locs: locs(/<sitemap\b[^>]*>[\s\S]*?<loc\b[^>]*>([\s\S]*?)<\/loc>/gi), ...(/<\/sitemapindex\s*>/i.test(t.slice(-200)) ? {} : { incomplete: true }) };
+  if (/<urlset\b/i.test(t)) return { kind: 'urlset', locs: locs(/<url\b[^>]*>[\s\S]*?<loc\b[^>]*>([\s\S]*?)<\/loc>/gi), ...(/<\/urlset\s*>/i.test(t.slice(-200)) ? {} : { incomplete: true }) };
+  if (/^(<!doctype html|<html|<head)/i.test(t)) return { kind: 'html', locs: [] };
   if (!t.startsWith('<')) {
     const lines = t.split(/\r?\n/).map((l) => l.trim()).filter((l) => /^https?:\/\//i.test(l));
     if (lines.length) return { kind: 'text', locs: lines };
@@ -52,6 +70,10 @@ export async function readSitemaps(
     const { url, depth } = queue.shift()!;
     if (seen.has(url)) continue;
     seen.add(url);
+    if (!sitemapOnSite(url, origin)) {
+      out.sitemaps.push({ url, status: 0, urlCount: 0, errors: ['Sitemap hébergé hors de votre site : non lu (Google ne l’accepte que sur votre domaine, sauf vérification croisée).'] });
+      continue;
+    }
     // En repli, /sitemap_index.xml n'est essayé que si /sitemap.xml n'a rien donné.
     if (fallback && foundOne && url.endsWith('/sitemap_index.xml') && depth === 0) continue;
     const errors: string[] = [];
@@ -68,16 +90,19 @@ export async function readSitemaps(
     let text: string;
     try {
       text = decodeBody(maybeGunzip(r.body), r.headers['content-type']);
-    } catch {
-      out.sitemaps.push({ url, status: r.status, urlCount: 0, errors: ['Fichier gzip illisible.'] });
+    } catch (e) {
+      const big = /maxOutputLength|buffer|RangeError|ERR_BUFFER_TOO_LARGE/i.test(`${(e as Error).name} ${(e as Error).message} ${(e as { code?: string }).code ?? ''}`);
+      out.sitemaps.push({ url, status: r.status, urlCount: 0, errors: [big ? `Fichier gzip trop volumineux une fois décompressé (plus de ${MAX_GUNZIP_BYTES / 1024 / 1024} Mo) : non lu.` : 'Fichier gzip illisible.'] });
       continue;
     }
     if (r.truncated) errors.push('Fichier tronqué (plus de 2 Mo) : seules les premières entrées sont lues.');
     const parsed = parseSitemap(text);
-    if (parsed.kind === 'unknown') {
-      if (!fallback) out.sitemaps.push({ url, status: r.status, urlCount: 0, errors: [...errors, 'Ce fichier n’est pas un sitemap valide (ni urlset, ni sitemapindex).'] });
+    if (parsed.kind === 'unknown' || parsed.kind === 'html') {
+      const msg = parsed.kind === 'html' ? 'Cette adresse renvoie une page HTML, pas un sitemap (page d’erreur servie en 200 ?).' : 'Ce fichier n’est pas un sitemap valide (ni urlset, ni sitemapindex).';
+      if (!fallback) out.sitemaps.push({ url, status: r.status, urlCount: 0, errors: [...errors, msg] });
       continue;
     }
+    if (parsed.incomplete && !r.truncated) errors.push('XML incomplet ou mal formé : le fichier s’arrête avant sa balise de fin.');
     foundOne = true;
     if (parsed.kind === 'index') {
       if (depth + 1 > MAX_SITEMAP_DEPTH) errors.push('Index de sitemaps trop imbriqué : niveaux suivants ignorés.');

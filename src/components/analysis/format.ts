@@ -113,6 +113,8 @@ export function partialNotes(a: FullAnalysis): string[] {
   if (bad('geo')) out.push('L’audit IA n’a pas pu se terminer : son score n’est pas calculé.');
   if (bad('ai')) out.push('Les IA n’ont pas toutes répondu à temps : le contrôle rapide n’est pas affiché.');
   if (bad('data')) out.push('La mesure de vitesse PageSpeed n’a pas abouti.');
+  // Signaux d'accès secondaires (limitation de débit, pare-feu partiel, pièges à URL… : ROBUSTESSE, V6).
+  out.push(...(a.access?.notes ?? []));
   if (a.crawl?.truncated) out.push(`Exploration limitée aux ${a.crawl.pagesFetched} premières pages (analyse gratuite) : l’espace Repéré explore jusqu’à 2 000 pages.`);
   return out;
 }

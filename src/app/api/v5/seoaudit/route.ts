@@ -8,6 +8,7 @@
  * (stats.pagesWithHtml le dit) — on ne signale jamais un défaut qu'on n'a pas pu vérifier.
  */
 import { z } from 'zod';
+import { accessReport } from '@/lib/analysis/access';
 import { crawlSite } from '@/lib/crawl';
 import { HOUR_MS, getClientIp, rateLimit } from '@/lib/ratelimit';
 import { auditSeo } from '@/lib/seoaudit';
@@ -98,6 +99,9 @@ export async function POST(req: Request): Promise<Response> {
     const crawl: SiteCrawl = b.crawl
       ? (b.crawl as unknown as SiteCrawl)
       : await crawlSite(b.url!, { maxPages: PUBLIC_MAX_PAGES, timeBudgetMs: PUBLIC_TIME_BUDGET_MS, concurrency: 4, checkLinks: b.checkLinks ?? false, signal: req.signal });
+    // Site illisible : aucune note (elle serait fausse), la vraie raison à la place.
+    const access = accessReport(crawl);
+    if (!access.readable) return jsonError(422, `${access.title}. ${access.message}`, 'unreadable');
     const report = auditSeo(crawl, { siteType: b.siteType, perf: b.perf as SeoAuditOptions['perf'] });
     return jsonOk(report);
   } catch (e) {

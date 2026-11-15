@@ -52,8 +52,27 @@ function pathOf(u: string | undefined): string {
   }
 }
 
-/** Fichiers de l'export (texte) + archive ZIP. */
-export function buildExportBundle(cs: ChangeSet, now: Date = new Date()): { files: { name: string; content: string }[]; zip: Buffer } {
+/**
+ * Pas à pas dans Wix pour ce que l'API ne permet pas (ou que le client préfère faire lui-même). Libellés de l'éditeur
+ * Wix en français ; ils peuvent légèrement différer dans Wix Studio.
+ */
+export const WIX_STEPS: Partial<Record<Change['kind'], string>> = {
+  'image.alt': 'Textes d’images (Wix) : dans l’éditeur, cliquez sur l’image, puis sur l’icône Paramètres ; collez la valeur « après » dans « Que représente cette image ? », puis cliquez sur Publier. Pour une image de produit, ouvrez le produit dans Boutique > Produits.',
+  faq: 'FAQ (Wix) : ajoutez la section visible dans l’éditeur (Ajouter > Texte, ou l’appli FAQ de Wix) avec exactement ces questions et réponses ; puis, dans Pages et menu > (…) > SEO avancé > Données structurées, ajoutez le bloc JSON-LD de balisage/. Publiez.',
+  rewrite: 'Textes (Wix) : dans l’éditeur, double-cliquez sur le bloc de texte de la page, remplacez le passage « avant » par le passage « après », puis cliquez sur Publier.',
+  'sitemap.xml': 'Plan du site (Wix) : Wix le génère et le met à jour automatiquement ; vérifiez seulement dans Tableau de bord > Marketing et SEO > Outils SEO que la page n’est pas masquée des moteurs de recherche.',
+  'meta.title': 'Balises (Wix) : dans l’éditeur, Pages et menu > (…) à côté de la page > SEO de base ; pour un produit ou un article, ouvrez-le dans le tableau de bord, section « SEO ». Publiez ensuite le site.',
+  'meta.description': 'Balises (Wix) : même emplacement que le titre (SEO de base de la page, ou section SEO du produit ou de l’article).',
+  canonical: 'URL canonique (Wix) : Pages et menu > (…) > SEO avancé > Balises supplémentaires.',
+  'meta.robots': 'Indexation (Wix) : Pages et menu > (…) > SEO de base > « Laisser les moteurs de recherche indexer cette page ».',
+  jsonld: 'Données structurées (Wix) : Pages et menu > (…) > SEO avancé > Données structurées > Ajouter un balisage ; collez le contenu JSON (sans les balises script).',
+  redirect: 'Redirections (Wix) : Tableau de bord > Marketing et SEO > Outils SEO > Gestionnaire de redirections d’URL > Nouvelle redirection (301).',
+  'robots.txt': 'robots.txt (Wix) : Tableau de bord > Marketing et SEO > Outils SEO > Éditeur de robots.txt ; remplacez le contenu par celui du fichier robots.txt.',
+  'llms.txt': 'llms.txt (Wix) : si votre tableau de bord propose son édition (Marketing et SEO > Outils SEO), remplacez le contenu par celui du fichier llms.txt ; sinon, connectez Wix avec une clé API pour que l’agent l’écrive lui-même.',
+};
+
+/** Fichiers de l'export (texte) + archive ZIP. `cms: 'wix'` ajoute le pas à pas dans l'éditeur Wix. */
+export function buildExportBundle(cs: ChangeSet, now: Date = new Date(), opts: { cms?: 'wix' } = {}): { files: { name: string; content: string }[]; zip: Buffer } {
   const files: { name: string; content: string }[] = [];
   const steps: string[] = [];
   const changes = cs.changes.filter((c) => c.status !== 'skipped' && c.after !== null);
@@ -95,6 +114,7 @@ export function buildExportBundle(cs: ChangeSet, now: Date = new Date()): { file
         : `Texte ${i + 1} : dans la page ${c.target.url ?? ''}, remplacez le passage « avant » par le passage « après » (textes/${i + 1}-….txt).`,
     );
   });
+  if (opts.cms === 'wix') for (const k of [...new Set(changes.map((c) => c.kind))]) if (WIX_STEPS[k]) steps.push(WIX_STEPS[k] as string);
   const readme = [
     `Repéré — modifications à appliquer : ${cs.title}`,
     `Site : ${cs.site}`,

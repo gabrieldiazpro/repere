@@ -51,6 +51,18 @@ export default function EtudesHub() {
         Études sur la visibilité des entreprises dans les IA
       </h1>
       <Byline />
+      <p className="mt-6 max-w-3xl text-lg font-medium leading-relaxed">
+        En bref : selon les études publiques, les IA citent surtout des sources tierces (médias, comparatifs, avis) plutôt que les sites des
+        marques, et les mentions d&apos;une marque sur le web vont de pair avec sa visibilité bien plus que les liens (
+        <Link href="/etudes/pourquoi-les-ia-recommandent-une-marque" className="underline" style={{ color: 'var(--primary)' }}>
+          synthèse
+        </Link>
+        ). En France, 48 % des personnes de 12 ans et plus ont utilisé une IA générative en 2025 (
+        <Link href="/etudes/ce-que-nous-savons-deja" className="underline" style={{ color: 'var(--primary)' }}>
+          sources
+        </Link>
+        ). Nos propres mesures viendront avec le Baromètre Repéré : premières mesures à venir.
+      </p>
       <p className="mt-4 max-w-3xl text-lg leading-relaxed" style={{ color: 'var(--muted)' }}>
         Deux types de contenus : nos propres mesures, agrégées et anonymes, publiées seulement quand l&apos;échantillon est suffisant, et une synthèse
         des études publiques, chacune avec sa source, son périmètre et ses limites. Aucun chiffre n&apos;est inventé ni extrapolé.

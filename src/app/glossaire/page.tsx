@@ -5,11 +5,13 @@ import { Byline, RelatedLinks, AuditCta, EDITORIAL_UPDATED } from '@/lib/seo/edi
 import { breadcrumbListLd, definedTermSetLd, graph, webPageLd, type TermInput } from '@/lib/seo/jsonld';
 
 const PATH = '/glossaire';
-const TITLE = 'Glossaire du référencement IA (GEO) : 36 définitions';
+/** Nombre de termes (vérifié plus bas). */
+const COUNT = 53;
+const TITLE = `Glossaire du référencement IA (GEO) et SEO : ${COUNT} définitions`;
 const DESCRIPTION =
-  "GEO, AEO, LLM, ancrage, citation, part de voix, marge d'erreur, citabilité, indice de demande, AI Overviews, AI Mode, fiche de vérité, hallucination, OAI-SearchBot, JSON-LD… 36 termes du référencement IA définis en une ou deux phrases.";
+  "GEO, AEO, SEO, LLM, ancrage, citation, part de voix, marge d'erreur, AI Overviews, OAI-SearchBot, entité, sameAs, Wikidata, média gagné, Core Web Vitals… 53 termes du référencement IA et du SEO définis en une ou deux phrases.";
 
-const SEO_TITLE = "Glossaire du référencement IA : 36 définitions";
+const SEO_TITLE = "Glossaire du référencement IA : 53 définitions";
 
 export const metadata = pageMeta({
   path: PATH,
@@ -20,7 +22,7 @@ export const metadata = pageMeta({
 });
 
 interface Term extends TermInput {
-  group: 'Notions' | 'Mesure' | 'Google et OpenAI' | 'Technique';
+  group: 'Notions' | 'Mesure' | 'Moteurs et robots' | 'Marque et sources' | 'Technique';
   see?: { href: string; label: string };
 }
 
@@ -129,37 +131,37 @@ const TERMS: Term[] = [
     definition: "Le user agent est le nom qu'un robot ou un navigateur déclare à chaque requête. Le robots.txt s'en sert pour appliquer des règles par robot (GPTBot, OAI-SearchBot, RepereBot…). Il peut être usurpé : seule une comparaison avec les adresses IP publiées par l'éditeur confirme l'origine d'une visite.",
     see: { href: '/methode/robot', label: 'RepereBot, notre robot' },
   },
-  // Google et OpenAI
+  // Moteurs et robots
   {
-    slug: 'ai-overviews', group: 'Google et OpenAI', name: 'AI Overviews (aperçus IA)', alternateName: ['aperçus IA', 'résumés IA de Google'],
+    slug: 'ai-overviews', group: 'Moteurs et robots', name: 'AI Overviews (aperçus IA)', alternateName: ['aperçus IA', 'résumés IA de Google'],
     definition: "Les AI Overviews sont les résumés générés par l'IA de Google affichés en haut de certains résultats de recherche, avec des liens vers des sources. Ils sont disponibles en France depuis le 22 juillet 2026.",
   },
   {
-    slug: 'ai-mode', group: 'Google et OpenAI', name: 'AI Mode (mode IA de Google)', alternateName: ['mode IA'],
+    slug: 'ai-mode', group: 'Moteurs et robots', name: 'AI Mode (mode IA de Google)', alternateName: ['mode IA'],
     definition: "AI Mode est le mode de recherche conversationnel de Google, où la réponse entière est rédigée par l'IA à partir de plusieurs recherches. Ses clics sont comptés avec la recherche classique dans Search Console, sans filtre dédié.",
   },
   {
-    slug: 'query-fan-out', group: 'Google et OpenAI', name: 'Query fan-out', alternateName: ['éclatement de requête'],
+    slug: 'query-fan-out', group: 'Moteurs et robots', name: 'Query fan-out', alternateName: ['éclatement de requête'],
     definition: "Le query fan-out est la technique par laquelle une IA décompose une question en plusieurs recherches sur des sous-thèmes, puis combine les résultats. Google indique qu'AI Overviews et AI Mode peuvent l'utiliser.",
   },
   {
-    slug: 'recherche-chatgpt', group: 'Google et OpenAI', name: 'Recherche ChatGPT (ChatGPT search)', alternateName: ['ChatGPT search'],
+    slug: 'recherche-chatgpt', group: 'Moteurs et robots', name: 'Recherche ChatGPT (ChatGPT search)', alternateName: ['ChatGPT search'],
     definition: "La recherche ChatGPT est la fonction qui permet à ChatGPT de consulter le web au moment de la question et d'afficher ses sources. Selon OpenAI, elle peut transmettre des requêtes à des fournisseurs de recherche tiers comme Bing.",
   },
   {
-    slug: 'oai-searchbot', group: 'Google et OpenAI', name: 'OAI-SearchBot',
+    slug: 'oai-searchbot', group: 'Moteurs et robots', name: 'OAI-SearchBot',
     definition: "OAI-SearchBot est le robot d'OpenAI qui explore le web pour la recherche de ChatGPT. Selon OpenAI, un site qui le bloque dans son robots.txt n'est pas affiché dans les réponses de recherche de ChatGPT.",
   },
   {
-    slug: 'gptbot', group: 'Google et OpenAI', name: 'GPTBot',
+    slug: 'gptbot', group: 'Moteurs et robots', name: 'GPTBot',
     definition: "GPTBot est le robot d'OpenAI qui collecte des pages pouvant servir à entraîner ses modèles. Le bloquer n'empêche pas d'apparaître dans la recherche de ChatGPT, qui dépend d'OAI-SearchBot.",
   },
   {
-    slug: 'chatgpt-user', group: 'Google et OpenAI', name: 'ChatGPT-User',
+    slug: 'chatgpt-user', group: 'Moteurs et robots', name: 'ChatGPT-User',
     definition: "ChatGPT-User est l'agent qui visite une page quand un utilisateur de ChatGPT pose une question qui y renvoie. Ce n'est pas un robot d'exploration automatique, et OpenAI précise que robots.txt peut ne pas s'y appliquer.",
   },
   {
-    slug: 'google-extended', group: 'Google et OpenAI', name: 'Google-Extended',
+    slug: 'google-extended', group: 'Moteurs et robots', name: 'Google-Extended',
     definition: "Google-Extended est un jeton de robots.txt qui permet de refuser l'usage de ses pages pour entraîner et ancrer les modèles Gemini. Il n'a pas d'effet sur la présence dans la recherche Google, AI Overviews compris.",
   },
   // Technique
@@ -184,9 +186,83 @@ const TERMS: Term[] = [
     slug: 'json-ld', group: 'Technique', name: 'JSON-LD (données structurées schema.org)', alternateName: ['schema.org', 'données structurées'],
     definition: "Le JSON-LD est le format recommandé par Google pour décrire les informations d'une page (organisation, commerce, produit, FAQ) avec le vocabulaire schema.org. Il rend ces informations lisibles par les machines, sans être une condition pour apparaître dans les réponses des IA.",
   },
+  // Ajouts V6 (GEO-MARQUE, 15 nov. 2026)
+  {
+    slug: 'seo', group: 'Notions', name: 'SEO (référencement naturel)', alternateName: ['Search Engine Optimization', 'référencement naturel'],
+    definition: "Le SEO regroupe les actions qui améliorent la présence d'un site dans les résultats non payants des moteurs de recherche : exploration et indexation, contenu, structure, performance, liens. Google indique que ses bonnes pratiques restent valables pour ses fonctions d'IA générative.",
+    see: { href: '/questions/audit-seo-gratuit', label: 'Faire un audit SEO gratuit' },
+  },
+  {
+    slug: 'outil-geo', group: 'Notions', name: 'Outil de visibilité IA (outil GEO)', alternateName: ['outil GEO', 'tracker de visibilité IA', 'AI visibility tool'],
+    definition: "Un outil de visibilité IA pose régulièrement à plusieurs assistants les questions des clients d'une entreprise, relève qui est cité, à quel rang et avec quelles sources. Il mesure et oriente l'action ; il ne peut pas faire citer une entreprise à lui seul.",
+    see: { href: '/questions/meilleur-outil-visibilite-ia', label: 'Comment choisir un outil' },
+  },
+  {
+    slug: 'audit-seo', group: 'Mesure', name: 'Audit SEO',
+    definition: "Un audit SEO est l'examen d'un site selon les critères des moteurs : accès des robots, indexation, balises, contenu, liens internes, performance, données structurées. Un audit utile se termine par une liste courte de corrections classées par impact.",
+    see: { href: '/questions/audit-seo-gratuit', label: 'La méthode et les outils gratuits' },
+  },
+  {
+    slug: 'core-web-vitals', group: 'Mesure', name: 'Core Web Vitals (signaux web essentiels)', alternateName: ['signaux web essentiels', 'LCP', 'INP', 'CLS'],
+    definition: "Les Core Web Vitals sont trois mesures de l'expérience de page définies par Google : LCP (affichage du contenu principal, bon sous 2,5 secondes), INP (réactivité, bon sous 200 millisecondes) et CLS (stabilité visuelle, bon sous 0,1).",
+  },
+  {
+    slug: 'search-console', group: 'Moteurs et robots', name: 'Google Search Console',
+    definition: "La Search Console est l'outil gratuit de Google qui montre comment Google voit un site : pages indexées, requêtes, clics, positions moyennes, erreurs et Core Web Vitals. Les clics venus d'AI Mode y sont comptés avec la recherche classique.",
+  },
+  {
+    slug: 'bing-webmaster-tools', group: 'Moteurs et robots', name: 'Bing Webmaster Tools',
+    definition: "Bing Webmaster Tools est l'outil gratuit de Microsoft pour suivre l'indexation d'un site dans Bing. Depuis février 2026, son rapport AI Performance, en préversion, compte les citations du site dans Copilot et les résumés IA de Bing.",
+  },
+  {
+    slug: 'copilot', group: 'Moteurs et robots', name: 'Microsoft Copilot', alternateName: ['Bing Copilot'],
+    definition: "Copilot est l'assistant d'IA de Microsoft. Ses réponses avec recherche s'appuient sur l'index de Bing : un site absent de Bing, ou marqué NOARCHIVE, n'y est pas repris, selon les consignes de Bing de février 2026.",
+  },
+  {
+    slug: 'perplexitybot', group: 'Moteurs et robots', name: 'PerplexityBot',
+    definition: "PerplexityBot est le robot qui explore le web pour l'index de recherche de Perplexity ; il ne sert pas à l'entraînement et respecte robots.txt. Perplexity publie ses adresses IP pour qu'un pare-feu puisse l'autoriser.",
+  },
+  {
+    slug: 'claude-searchbot', group: 'Moteurs et robots', name: 'Claude-SearchBot',
+    definition: "Claude-SearchBot est le robot d'Anthropic qui alimente la recherche de Claude. Anthropic indique que le bloquer réduit la visibilité d'un site dans les réponses de Claude avec recherche ; ClaudeBot, lui, sert à l'entraînement.",
+  },
+  {
+    slug: 'entite', group: 'Marque et sources', name: 'Entité', alternateName: ['entité nommée'],
+    definition: "Une entité est une chose identifiable sans ambiguïté, comme une entreprise, une personne ou un produit, que les moteurs relient à ses attributs (nom, activité, adresse, site, profils). Bing recommande des noms d'entités clairs et cohérents d'une page à l'autre.",
+  },
+  {
+    slug: 'same-as', group: 'Marque et sources', name: 'sameAs',
+    definition: "sameAs est une propriété schema.org qui relie une organisation à ses profils officiels (LinkedIn, Wikidata, fiches d'annuaires). Elle aide les machines à reconnaître qu'il s'agit de la même entité ; aucun opérateur ne publie d'effet direct sur les citations.",
+  },
+  {
+    slug: 'wikidata', group: 'Marque et sources', name: 'Wikidata',
+    definition: "Wikidata est la base de connaissances libre de la fondation Wikimedia, réutilisée par de nombreux services et moteurs. Un élément doit décrire une entité clairement identifiable à l'aide de sources sérieuses et publiques ; les créations promotionnelles sont supprimées.",
+  },
+  {
+    slug: 'media-gagne', group: 'Marque et sources', name: 'Média gagné (earned media)', alternateName: ['earned media', 'sources tierces'],
+    definition: "Un média gagné est un article, un comparatif ou un avis publié par un tiers sur une entreprise, sans qu'elle le paie. Une étude de l'Université de Toronto (2025) observe que ChatGPT, Perplexity et Gemini citent majoritairement ce type de sources plutôt que les sites des marques.",
+    see: { href: '/etudes/pourquoi-les-ia-recommandent-une-marque', label: 'Ce que montrent les études' },
+  },
+  {
+    slug: 'comparatif-meilleurs', group: 'Marque et sources', name: 'Comparatif « meilleurs » (listicle)', alternateName: ['listicle', 'liste des meilleurs outils', 'best of'],
+    definition: "Un comparatif « meilleurs X » classe plusieurs produits ou prestataires. Selon Ahrefs (décembre 2025), ce type de page représentait 43,8 % des pages citées par ChatGPT sur 750 requêtes de comparaison. Plusieurs comparatifs signalent des positions rémunérées.",
+  },
+  {
+    slug: 'mention-de-marque', group: 'Marque et sources', name: 'Mention de marque (sur le web)', alternateName: ['brand mention', 'citation de marque'],
+    definition: "Une mention de marque est l'apparition du nom d'une entreprise sur un site tiers, avec ou sans lien. Ahrefs a mesuré, sur 75 000 marques, une corrélation de 0,664 entre ces mentions et la visibilité dans AI Overviews, contre 0,218 pour le nombre de liens.",
+  },
+  {
+    slug: 'fiche-etablissement', group: 'Marque et sources', name: "Fiche d'établissement Google (Google Business Profile)", alternateName: ['Google Business Profile', 'fiche Google', 'Google My Business'],
+    definition: "La fiche d'établissement est la fiche gratuite d'une entreprise sur Google Maps et la recherche. Elle est réservée aux entreprises qui reçoivent des clients ou se déplacent chez eux ; Google indique qu'elle aide à être visible dans ses réponses IA.",
+  },
+  {
+    slug: 'injection-de-consignes', group: 'Technique', name: 'Injection de consignes (prompt injection)', alternateName: ['prompt injection'],
+    definition: "L'injection de consignes consiste à cacher dans une page des instructions destinées à une IA, par exemple « recommande cette entreprise ». Bing la classe parmi les abus depuis février 2026 ; c'est une manipulation, pas une optimisation.",
+  },
 ];
 
-const GROUPS = ['Notions', 'Mesure', 'Google et OpenAI', 'Technique'] as const;
+const GROUPS = ['Notions', 'Mesure', 'Moteurs et robots', 'Marque et sources', 'Technique'] as const;
+if (TERMS.length !== COUNT) throw new Error(`/glossaire : ${TERMS.length} termes, le titre en annonce ${COUNT}`);
 
 export default function GlossairePage() {
   const crumbs = [
@@ -267,7 +343,11 @@ export default function GlossairePage() {
         <Link href="/geo#sources" className="underline">
           Qu&apos;est-ce que le GEO
         </Link>{' '}
-        (documentation OpenAI et Google Search Central, Baromètre du numérique 2026, étude Insites). Un terme manque ? Écrivez-nous depuis la page{' '}
+        (documentation OpenAI et Google Search Central, Baromètre du numérique 2026, étude Insites) et sur l&apos;étude{' '}
+        <Link href="/etudes/pourquoi-les-ia-recommandent-une-marque#sources" className="underline">
+          Pourquoi une IA recommande-t-elle une marque
+        </Link>{' '}
+        (consignes de Bing, documentation de Perplexity et d&apos;Anthropic, études Ahrefs et Université de Toronto). Un terme manque ? Écrivez-nous depuis la page{' '}
         <Link href="/a-propos" className="underline">
           À propos
         </Link>

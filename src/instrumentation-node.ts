@@ -13,6 +13,12 @@ export async function registerNode(): Promise<void> {
   assertEnv();
 
   const { log } = await import('@/lib/log');
+  // Supervision (agent OPS V6) : les erreurs journalisées alimentent /admin/ops et les alertes.
+  try {
+    (await import('@/lib/ops/capture')).installServerCapture();
+  } catch (e) {
+    log.error('startup.ops_capture_failed', e);
+  }
   const modules: [string, () => Promise<unknown>][] = [
     ['integrations', () => import('@/lib/integrations')],
     ['notify/reports', () => import('@/lib/notify/reports')],
