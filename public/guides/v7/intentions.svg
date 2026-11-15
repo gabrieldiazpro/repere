@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" role="img" aria-labelledby="t d" font-family="Inter, Arial, sans-serif">
+  <title id="t">Quatre intentions de recherche</title>
+  <desc id="d">Quatre cases : savoir, faire, aller sur un site, se rendre sur place, chacune avec un exemple de requête et le type de page qui y répond.</desc>
+  <rect x="0.5" y="0.5" width="719" height="339" rx="14" fill="#ffffff" stroke="#d9dde3"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker></defs>
+  <rect x="30" y="30" width="320" height="120" rx="12" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="50" y="62" text-anchor="start" font-size="16" fill="#1e1b4b" font-weight="600">Savoir</text>
+  <text x="50" y="92" text-anchor="start" font-size="12" fill="#374151">« comment fonctionne une pompe à chaleur »</text>
+  <text x="50" y="124" text-anchor="start" font-size="12" fill="#4f46e5" font-weight="600">→ Guide, réponse en tête</text>
+  <rect x="370" y="30" width="320" height="120" rx="12" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="390" y="62" text-anchor="start" font-size="16" fill="#1e1b4b" font-weight="600">Faire</text>
+  <text x="390" y="92" text-anchor="start" font-size="12" fill="#374151">« devis pompe à chaleur Annecy »</text>
+  <text x="390" y="124" text-anchor="start" font-size="12" fill="#4f46e5" font-weight="600">→ Page service ou produit, prix, action</text>
+  <rect x="30" y="170" width="320" height="120" rx="12" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="50" y="202" text-anchor="start" font-size="16" fill="#1e1b4b" font-weight="600">Aller sur un site</text>
+  <text x="50" y="232" text-anchor="start" font-size="12" fill="#374151">« espace client EDF »</text>
+  <text x="50" y="264" text-anchor="start" font-size="12" fill="#4f46e5" font-weight="600">→ Page d’accueil, pages clés faciles à trouver</text>
+  <rect x="370" y="170" width="320" height="120" rx="12" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="390" y="202" text-anchor="start" font-size="16" fill="#1e1b4b" font-weight="600">Se rendre sur place</text>
+  <text x="390" y="232" text-anchor="start" font-size="12" fill="#374151">« librairie ouverte dimanche Lyon »</text>
+  <text x="390" y="264" text-anchor="start" font-size="12" fill="#4f46e5" font-weight="600">→ Fiche Google, page établissement</text>
+  <text x="360" y="322" text-anchor="middle" font-size="12" fill="#6b7280">Regardez ce que Google affiche déjà : il montre l’intention dominante de la requête.</text>
+</svg>

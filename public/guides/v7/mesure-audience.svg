@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 350" role="img" aria-labelledby="t d" font-family="Inter, Arial, sans-serif">
+  <title id="t">Mesure d’audience : exemption de consentement</title>
+  <desc id="d">Arbre de décision : l’outil sert-il uniquement à la mesure d’audience pour votre compte, produit-il des statistiques anonymes sans recoupement, sans suivi multisite, avec des durées limitées ? Si oui à tout, exemption possible ; sinon, consentement.</desc>
+  <rect x="0.5" y="0.5" width="719" height="349" rx="14" fill="#ffffff" stroke="#d9dde3"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker></defs>
+  <rect x="40" y="24" width="420" height="48" rx="9" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="250.0" y="53.0" text-anchor="middle" font-size="12" font-weight="600" fill="#1e1b4b">Uniquement la mesure d’audience, pour votre compte ?</text>
+  <path d="M250 72 L 250 88" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <path d="M460 48 L 528 48" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="495" y="42" text-anchor="middle" font-size="11" fill="#6b7280">non</text>
+  <rect x="40" y="90" width="420" height="48" rx="9" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="250.0" y="119.0" text-anchor="middle" font-size="12" font-weight="600" fill="#1e1b4b">Statistiques anonymes, sans recoupement ni transmission ?</text>
+  <path d="M250 138 L 250 154" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <path d="M460 114 L 528 114" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="495" y="108" text-anchor="middle" font-size="11" fill="#6b7280">non</text>
+  <rect x="40" y="156" width="420" height="48" rx="9" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="250.0" y="185.0" text-anchor="middle" font-size="12" font-weight="600" fill="#1e1b4b">Pas de suivi d’une personne sur plusieurs sites ?</text>
+  <path d="M250 204 L 250 220" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <path d="M460 180 L 528 180" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="495" y="174" text-anchor="middle" font-size="11" fill="#6b7280">non</text>
+  <rect x="40" y="222" width="420" height="48" rx="9" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="250.0" y="251.0" text-anchor="middle" font-size="12" font-weight="600" fill="#1e1b4b">Traceurs ≤ 13 mois, données ≤ 25 mois, information ?</text>
+  <path d="M460 246 L 528 246" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="495" y="240" text-anchor="middle" font-size="11" fill="#6b7280">non</text>
+  <rect x="530" y="24" width="160" height="246" rx="10" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="610" y="140" text-anchor="middle" font-size="14" fill="#1e1b4b" font-weight="600">Consentement</text>
+  <text x="610" y="160" text-anchor="middle" font-size="12" fill="#4b5563">requis (bandeau)</text>
+  <path d="M250 270 L 250 290" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="130" y="292" width="240" height="40" rx="9" fill="#1e1b4b"/>
+  <text x="250.0" y="317.0" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">Exemption possible</text>
+  <text x="610" y="316" text-anchor="middle" font-size="12" fill="#6b7280">Conditions cumulatives</text>
+</svg>

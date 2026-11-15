@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { statSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { Container } from "@/components/ui/Container";
 import { buttonClasses } from "@/components/ui/Button";
@@ -42,6 +42,21 @@ const FAQ: QA[] = [
   },
 ];
 
+/** Durée ISO 8601 lue sur la fin du dernier sous-titre (les sous-titres couvrent toute la vidéo). */
+function videoDuration(vtt: string | null): string | null {
+  if (!vtt) return null;
+  try {
+    const text = readFileSync(path.join(process.cwd(), "public", vtt), "utf8");
+    const ends = [...text.matchAll(/--> (\d{2}):(\d{2}):(\d{2})\.\d{3}/g)];
+    const last = ends.at(-1);
+    if (!last) return null;
+    const secs = Number(last[1]) * 3600 + Number(last[2]) * 60 + Math.round(Number(last[3]));
+    return `PT${Math.floor(secs / 60) ? `${Math.floor(secs / 60)}M` : ""}${secs % 60}S`;
+  } catch {
+    return null;
+  }
+}
+
 /** VideoObject seulement pour une vidéo réellement présente (fichier dans public/videos). */
 function videoLd(id: DemoVideoId) {
   const files = findDemoVideo(id);
@@ -61,6 +76,7 @@ function videoLd(id: DemoVideoId) {
     thumbnailUrl: abs(files.poster),
     contentUrl: abs(src),
     uploadDate,
+    ...(videoDuration(files.vtt) ? { duration: videoDuration(files.vtt) } : {}),
     inLanguage: "fr-FR",
   };
 }

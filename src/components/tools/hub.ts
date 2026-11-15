@@ -1,11 +1,11 @@
 /** Regroupement des outils pour le hub /outils (sans dépendance client : lisible côté serveur). */
 import type { IconName } from '@/components/app/icons';
 
-/** Date de mise à jour du hub (V6 : 11 outils SEO ajoutés). */
+/** Date de mise à jour du hub (V6 : 11 outils SEO ajoutés ; V7 : 11 de plus, 31 en tout). */
 export const HUB_UPDATED = '2026-11-15';
 
 /**
- * Les 20 outils rangés selon le chemin d'une page vers Google et les IA : s'afficher, être indexée, laisser entrer
+ * Les 31 outils rangés selon le chemin d'une page vers Google et les IA : s'afficher, être indexée, laisser entrer
  * les robots d'IA, être comprise, être lue et citée.
  */
 export const HUB_GROUPS: { id: string; title: string; text: string; step: string; icon: IconName; slugs: string[] }[] = [
@@ -14,40 +14,40 @@ export const HUB_GROUPS: { id: string; title: string; text: string; step: string
     step: 'S’afficher',
     icon: 'search',
     title: 'Votre page s’affiche-t-elle bien dans Google ?',
-    text: 'Titre, description, aperçu de partage : ce que voient ceux qui cherchent.',
-    slugs: ['apercu-google', 'balises-title-meta', 'open-graph'],
+    text: 'Titre, description, aperçu de partage, affichage mobile, liens suivis.',
+    slugs: ['apercu-google', 'balises-title-meta', 'open-graph', 'compatibilite-mobile', 'generateur-utm'],
   },
   {
     id: 'indexer',
     step: 'Être indexée',
     icon: 'list',
     title: 'Google peut-il explorer et indexer vos pages ?',
-    text: 'Indexabilité, redirections, sitemap, en-têtes, versions linguistiques.',
-    slugs: ['indexabilite', 'redirections', 'validateur-sitemap', 'en-tetes-http', 'hreflang'],
+    text: 'Indexabilité, redirections, sitemap, en-têtes, HTTPS, doublons, langues.',
+    slugs: ['indexabilite', 'redirections', 'validateur-sitemap', 'en-tetes-http', 'https-contenu-mixte', 'contenu-duplique', 'hreflang'],
   },
   {
     id: 'entrer',
     step: 'Laisser entrer les IA',
     icon: 'lock',
     title: 'Les robots d’IA peuvent-ils entrer ?',
-    text: 'Accès autorisé, page lisible sans JavaScript.',
-    slugs: ['pret-pour-les-ia', 'robots-ia', 'generateur-robots-txt', 'rendu-sans-javascript'],
+    text: 'Accès autorisé, page lisible sans JavaScript, page légère.',
+    slugs: ['pret-pour-les-ia', 'robots-ia', 'generateur-robots-txt', 'rendu-sans-javascript', 'poids-page'],
   },
   {
     id: 'comprendre',
     step: 'Être comprise',
     icon: 'database',
     title: 'Comprennent-ils ce que vous faites ?',
-    text: 'Qui vous êtes, où, ce que vous vendez : balisé pour eux.',
-    slugs: ['json-ld', 'llms-txt', 'fiche-produit'],
+    text: 'Qui vous êtes, où, ce que vous vendez : balisé, décrit, cohérent.',
+    slugs: ['json-ld', 'resultats-enrichis', 'textes-alternatifs', 'coherence-nap', 'llms-txt', 'fiche-produit'],
   },
   {
     id: 'citer',
     step: 'Être lue et citée',
     icon: 'quote',
     title: 'Vos pages se lisent-elles, et se citent-elles ?',
-    text: 'Textes clairs, liens sains, passages nets, avis, avantage sur le concurrent.',
-    slugs: ['lisibilite', 'analyse-liens', 'citabilite', 'comparateur', 'lien-avis-google'],
+    text: 'Plan clair, textes lisibles et datés, faits nets, liens sains, avis.',
+    slugs: ['structure-titres', 'lisibilite', 'citabilite', 'fraicheur-page', 'fiche-faits-cles', 'analyse-liens', 'comparateur', 'lien-avis-google'],
   },
 ];
 
@@ -72,4 +72,15 @@ export const TOOL_ICON: Record<string, IconName> = {
   'generateur-robots-txt': 'shield',
   lisibilite: 'eye',
   'analyse-liens': 'link',
+  'resultats-enrichis': 'spark',
+  'structure-titres': 'list',
+  'textes-alternatifs': 'eye',
+  'poids-page': 'bolt',
+  'compatibilite-mobile': 'monitor',
+  'https-contenu-mixte': 'lock',
+  'contenu-duplique': 'copy',
+  'fraicheur-page': 'bell',
+  'coherence-nap': 'store',
+  'generateur-utm': 'trend',
+  'fiche-faits-cles': 'flag',
 };

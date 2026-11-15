@@ -4,6 +4,7 @@
  */
 import type { QA } from '@/lib/seo/jsonld';
 import { V6_TOOLS, type V6Slug } from './v6/registry';
+import { V7_TOOLS, type V7Slug } from './v7/registry';
 
 export type Parcours = 'local' | 'pme' | 'ecommerce';
 export type ToolSlug =
@@ -16,7 +17,8 @@ export type ToolSlug =
   | 'comparateur'
   | 'llms-txt'
   | 'fiche-produit'
-  | V6Slug;
+  | V6Slug
+  | V7Slug;
 
 export interface ToolSource {
   label: string;
@@ -455,6 +457,7 @@ export const TOOLS: ToolDef[] = [
     ],
   },
   ...V6_TOOLS,
+  ...V7_TOOLS,
 ];
 
 export const toolPath = (slug: ToolSlug) => `/outils/${slug}`;

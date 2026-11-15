@@ -16,6 +16,7 @@ import type { GenerateResult, GenerateType } from '@/lib/siteaudit/jsonld';
 import type { LlmsResult } from '@/lib/siteaudit/llms';
 import type { ReviewLinkResult } from '@/lib/siteaudit/reviewLink';
 import type { HeadersReport, HreflangReport, IndexReport, LinksReport, MetaReport, OgReport, RedirectReport, SitemapReport } from './v6/types';
+import type { DuplicateReport, FreshnessReport, HeadingsReport, HttpsReport, ImagesReport, MobileReport, RichReport, WeightReport } from './v7/types';
 
 export type { CheckStatus };
 
@@ -50,6 +51,15 @@ export interface Endpoints {
   '/outils/api/open-graph': { body: { url: string }; data: OgReport };
   '/outils/api/liens': { body: { url: string }; data: LinksReport };
   '/outils/api/sitemap': { body: { url: string }; data: SitemapReport };
+  /* Outils V7 (OUTILS-2) : même route */
+  '/outils/api/titres': { body: { url: string }; data: HeadingsReport };
+  '/outils/api/images': { body: { url: string }; data: ImagesReport };
+  '/outils/api/poids': { body: { url: string }; data: WeightReport };
+  '/outils/api/mobile': { body: { url: string }; data: MobileReport };
+  '/outils/api/https': { body: { url: string }; data: HttpsReport };
+  '/outils/api/doublons': { body: { url: string; url2: string }; data: DuplicateReport };
+  '/outils/api/fraicheur': { body: { url: string }; data: FreshnessReport };
+  '/outils/api/resultats-enrichis': { body: { url: string }; data: RichReport };
 }
 export type EndpointPath = keyof Endpoints;
 
@@ -162,7 +172,7 @@ export async function callTool<P extends EndpointPath>(
 export function readShareParams(search: string): Record<string, string> {
   const out: Record<string, string> = {};
   const p = new URLSearchParams(search);
-  for (const k of ['url', 'concurrent', 'placeid', 'nom', 'ville', 'mode', 'titre', 'description']) {
+  for (const k of ['url', 'url2', 'concurrent', 'placeid', 'nom', 'ville', 'mode', 'titre', 'description']) {
     const v = p.get(k);
     if (v && v.length <= 2048) out[k] = v;
   }

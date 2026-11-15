@@ -88,7 +88,7 @@ const STATIC_CANDIDATES: RouteEntry[] = [
 
 /** Hubs de familles : listés seulement si la page existe. */
 const HUBS: RouteEntry[] = [
-  { path: '/outils', label: 'Outils gratuits', note: `${TOOLS.length} outils SEO et IA gratuits : aperçu Google, title et meta, indexabilité, redirections, sitemap, en-têtes HTTP, hreflang, Open Graph, liens, lisibilité, robots.txt des IA, JSON-LD, llms.txt, fiche produit, lien d’avis`, section: 'outils' },
+  { path: '/outils', label: 'Outils gratuits', note: `${TOOLS.length} outils SEO et IA gratuits : aperçu Google, title et meta, indexabilité, redirections, sitemap, en-têtes HTTP, hreflang, Open Graph, liens, lisibilité, mobile, HTTPS, contenu dupliqué, poids de page, résultats enrichis, textes alternatifs, cohérence NAP, structure des titres, fraîcheur, robots.txt des IA, JSON-LD, llms.txt, fiche produit, lien d’avis`, section: 'outils' },
   { path: '/fonctionnalites', label: 'Fonctionnalités', note: 'mesurer, comprendre, agir, prouver', section: 'fonctionnalites' },
   { path: '/cas-usage', label: 'Cas d’usage par métier', section: 'cas-usage' },
 ];

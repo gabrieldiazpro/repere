@@ -13,16 +13,17 @@ const DESCRIPTION =
   'Guides sourcés pour les sites pros : SEO local, IA et GEO, WordPress, Shopify, Wix, e-commerce, Search Console, maillage, refonte, liens entrants.';
 
 /**
- * Grappes de sujets (V6, demande GUIDES : 33 guides en une grille devenaient longs). Un guide absent des listes va dans
+ * Grappes de sujets (V6, demande GUIDES : 33 guides en une grille devenaient longs ; V7, GUIDES-2 : grappe « Par métier », 53 guides). Un guide absent des listes va dans
  * « SEO de fond » ; chaque grappe reste une liste de liens HTML ordinaires (pas de filtre en JavaScript).
  */
 const CLUSTERS: { id: string; title: string; intro: string; slugs: string[] }[] = [
   { id: 'essentiel', title: 'Pour commencer', intro: 'Le tour d’horizon : ce que Google et les IA lisent, et par où commencer.', slugs: ['seo-geo-sites-pros-2026', 'audit-seo-30-minutes', 'search-console-debutants'] },
-  { id: 'local', title: 'SEO local', intro: 'Fiche Google, pages par ville, annuaires et avis : être recommandé près de chez vos clients.', slugs: ['seo-local-et-ia', 'fiche-google-business-profile', 'pages-ville-sans-doublon', 'annuaires-locaux-bing-apple', 'avis-clients-ia'] },
-  { id: 'ia', title: 'IA et GEO', intro: 'ChatGPT, Perplexity, Copilot, aperçus IA de Google : être lu, compris et cité.', slugs: ['apparaitre-dans-chatgpt-pme', 'page-que-les-ia-citent', 'robots-ia-robots-txt', 'llms-txt-faut-il-en-creer-un', 'perplexity-sources', 'bing-copilot-indexnow', 'apercus-ia-google', 'ia-disent-des-choses-fausses', 'suivre-ses-questions-chatgpt', 'trafic-chatgpt-ga4', 'contenu-ecrit-avec-ia'] },
+  { id: 'local', title: 'SEO local', intro: 'Fiche Google, pages par ville, annuaires et avis : être recommandé près de chez vos clients.', slugs: ['seo-local-et-ia', 'fiche-google-business-profile', 'pages-ville-sans-doublon', 'annuaires-locaux-bing-apple', 'avis-clients-ia', 'repondre-avis-clients', 'seo-local-multi-etablissements'] },
+  { id: 'metiers', title: 'Par métier', intro: 'Restaurants, artisans, santé, professions du droit et du chiffre : les règles et les leviers propres à chaque métier.', slugs: ['seo-restaurant', 'seo-artisans-batiment', 'seo-professions-sante', 'seo-avocats-experts-comptables'] },
+  { id: 'ia', title: 'IA et GEO', intro: 'ChatGPT, Perplexity, Copilot, aperçus IA de Google : être lu, compris et cité.', slugs: ['apparaitre-dans-chatgpt-pme', 'page-que-les-ia-citent', 'robots-ia-robots-txt', 'llms-txt-faut-il-en-creer-un', 'perplexity-sources', 'bing-copilot-indexnow', 'apercus-ia-google', 'ia-disent-des-choses-fausses', 'suivre-ses-questions-chatgpt', 'trafic-chatgpt-ga4', 'contenu-ecrit-avec-ia', 'chatgpt-search-oai-searchbot', 'gemini-sources-google-extended', 'claude-mistral-vibe-sources', 'video-youtube-ia', 'linkedin-visibilite-b2b-ia', 'entite-de-marque-wikidata-sameas'] },
   { id: 'cms', title: 'Votre outil de site', intro: 'Les réglages qui comptent, outil par outil.', slugs: ['seo-wordpress', 'seo-shopify', 'seo-wix', 'seo-prestashop'] },
-  { id: 'ecommerce', title: 'E-commerce', intro: 'Fiches produit, Merchant Center, images : vendre sur Google et dans les réponses des IA.', slugs: ['fiche-produit-et-ia', 'google-merchant-center', 'seo-images'] },
-  { id: 'fond', title: 'SEO de fond', intro: 'Structure, balises, vitesse, liens : ce qui fait tenir un site dans la durée.', slugs: ['donnees-structurees-utiles', 'core-web-vitals-sans-jargon', 'titres-meta-descriptions', 'maillage-interne', 'seo-b2b-acheteurs', 'refonte-site-sans-perdre-seo', 'liens-entrants-sans-risque'] },
+  { id: 'ecommerce', title: 'E-commerce', intro: 'Fiches produit, Merchant Center, images : vendre sur Google et dans les réponses des IA.', slugs: ['fiche-produit-et-ia', 'google-merchant-center', 'seo-images', 'pagination-filtres-e-commerce'] },
+  { id: 'fond', title: 'SEO de fond', intro: 'Structure, balises, vitesse, liens : ce qui fait tenir un site dans la durée.', slugs: ['donnees-structurees-utiles', 'core-web-vitals-sans-jargon', 'titres-meta-descriptions', 'maillage-interne', 'seo-b2b-acheteurs', 'refonte-site-sans-perdre-seo', 'liens-entrants-sans-risque', 'intention-de-recherche', 'mots-cles-sans-outil-payant', 'eeat-petite-entreprise', 'seo-international-hreflang', 'migration-https-changement-domaine', 'accessibilite-et-seo', 'rgpd-mesure-audience-cnil'] },
 ];
 
 function clustered() {

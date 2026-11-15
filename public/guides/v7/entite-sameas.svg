@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" role="img" aria-labelledby="t d" font-family="Inter, Arial, sans-serif">
+  <title id="t">Entité de marque et liens sameAs</title>
+  <desc id="d">La page « À propos » porte le balisage Organization et pointe par sameAs vers les profils officiels : LinkedIn, fiche Google, annuaire des entreprises et Wikidata si l’entreprise est admissible.</desc>
+  <rect x="0.5" y="0.5" width="719" height="339" rx="14" fill="#ffffff" stroke="#d9dde3"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker></defs>
+  <rect x="250" y="130" width="220" height="60" rx="9" fill="#1e1b4b"/>
+  <text x="360.0" y="157.0" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">Page « À propos »</text>
+  <text x="360.0" y="174.0" text-anchor="middle" font-size="11" fill="#e0e7ff">Organization : nom, SIREN, adresse</text>
+  <rect x="40" y="30" width="180" height="44" rx="9" fill="#f3f4f6" stroke="#4f46e5"/>
+  <text x="130.0" y="57.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1e1b4b">LinkedIn</text>
+  <path d="M250 150 L 220 74" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="500" y="30" width="180" height="44" rx="9" fill="#f3f4f6" stroke="#4f46e5"/>
+  <text x="590.0" y="57.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1e1b4b">Fiche Google</text>
+  <path d="M470 150 L 500 74" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="40" y="250" width="180" height="44" rx="9" fill="#f3f4f6" stroke="#4f46e5"/>
+  <text x="130.0" y="277.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1e1b4b">Annuaire des entreprises</text>
+  <path d="M250 175 L 220 250" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="500" y="250" width="180" height="44" rx="9" fill="#f3f4f6" stroke="#4f46e5"/>
+  <text x="590.0" y="277.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1e1b4b">Wikidata (si admissible)</text>
+  <path d="M470 175 L 500 250" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="360" y="110" text-anchor="middle" font-size="12" fill="#4f46e5" font-weight="600">sameAs</text>
+  <text x="360" y="322" text-anchor="middle" font-size="12" fill="#374151">Mêmes faits partout : nom, adresse, date de création, activité.</text>
+</svg>

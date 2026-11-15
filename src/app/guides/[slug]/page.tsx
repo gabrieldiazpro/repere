@@ -10,6 +10,7 @@ import { Byline } from '@/lib/seo/editorial';
 import { articleLd, breadcrumbListLd, faqPageLd, graph, webPageLd } from '@/lib/seo/jsonld';
 import { GuideFigure } from '@/components/pages/guide-figures';
 import { GUIDE_V6_FIGURES } from '@/lib/seo/guides-v6';
+import { GUIDE_V7_FIGURES } from '@/lib/seo/guides-v7';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -68,7 +69,7 @@ export default async function GuidePage({ params }: Props) {
   const g = getGuide((await params).slug);
   if (!g) notFound();
   const path = guidePath(g);
-  const v6Figure = GUIDE_V6_FIGURES[g.slug];
+  const v6Figure = GUIDE_V6_FIGURES[g.slug] ?? GUIDE_V7_FIGURES[g.slug];
   const related = g.related.map(getGuide).filter((x): x is NonNullable<typeof x> => !!x);
   const crumbs = [
     { name: 'Accueil', path: '/' },

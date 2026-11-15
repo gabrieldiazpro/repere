@@ -41,6 +41,7 @@ export interface Guide {
 import { GUIDES_V3 } from './guides-v3';
 import { GUIDES_V5, GUIDE_V5_EXTRAS } from './guides-v5';
 import { GUIDES_V6 } from './guides-v6';
+import { GUIDES_V7 } from './guides-v7';
 
 export const GUIDES_UPDATED = '2026-11-09';
 /** Première mise en ligne des guides. */
@@ -470,7 +471,7 @@ function withV5(g: Guide): Guide {
 }
 
 /** Guides V5 (pilier en tête), puis V2 et V3 (guides-v3.ts), enrichis en V5. */
-export const GUIDES: Guide[] = [...GUIDES_V5, ...GUIDES_V2, ...GUIDES_V3.map(withV5), ...GUIDES_V6];
+export const GUIDES: Guide[] = [...GUIDES_V5, ...GUIDES_V2, ...GUIDES_V3.map(withV5), ...GUIDES_V6, ...GUIDES_V7];
 export const getGuide = (slug: string) => GUIDES.find((g) => g.slug === slug);
 export const guidePublished = (g: Guide) => g.published ?? GUIDES_PUBLISHED;
 export const guidePath = (g: Guide | string) => `/guides/${typeof g === 'string' ? g : g.slug}`;

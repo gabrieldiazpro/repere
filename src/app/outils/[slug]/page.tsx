@@ -39,6 +39,22 @@ import {
   exampleSitemap,
 } from '@/components/tools/v6/examples';
 import { V6_UPDATED } from '@/components/tools/v6/registry';
+import { DuplicateTool, FreshnessTool, HeadingsTool, HttpsTool, ImagesTool, MobileTool, RichTool, WeightTool } from '@/components/tools/v7/PageTools';
+import { FactsTool, NapTool, UtmTool } from '@/components/tools/v7/LocalTools';
+import {
+  FACTS_EXAMPLE,
+  NAP_EXAMPLE,
+  RICH_SAMPLE,
+  UTM_EXAMPLE,
+  exampleDuplicate,
+  exampleFreshness,
+  exampleHeadings,
+  exampleHttps,
+  exampleImages,
+  exampleMobile,
+  exampleRich,
+  exampleWeight,
+} from '@/components/tools/v7/examples';
 
 export const dynamicParams = false;
 
@@ -96,6 +112,28 @@ function ToolFor({ slug }: { slug: ToolSlug }) {
       return <ReadabilityTool exampleText={READABILITY_EXAMPLE} />;
     case 'generateur-robots-txt':
       return <RobotsGenTool today={V6_UPDATED} />;
+    case 'resultats-enrichis':
+      return <RichTool example={exampleRich()} sample={RICH_SAMPLE} />;
+    case 'structure-titres':
+      return <HeadingsTool example={exampleHeadings()} />;
+    case 'textes-alternatifs':
+      return <ImagesTool example={exampleImages()} />;
+    case 'poids-page':
+      return <WeightTool example={exampleWeight()} />;
+    case 'compatibilite-mobile':
+      return <MobileTool example={exampleMobile()} />;
+    case 'https-contenu-mixte':
+      return <HttpsTool example={exampleHttps()} />;
+    case 'contenu-duplique':
+      return <DuplicateTool example={exampleDuplicate()} />;
+    case 'fraicheur-page':
+      return <FreshnessTool example={exampleFreshness()} />;
+    case 'coherence-nap':
+      return <NapTool example={NAP_EXAMPLE} />;
+    case 'generateur-utm':
+      return <UtmTool example={UTM_EXAMPLE} />;
+    case 'fiche-faits-cles':
+      return <FactsTool example={FACTS_EXAMPLE} />;
   }
 }
 

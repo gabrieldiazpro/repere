@@ -28,3 +28,4 @@
 - SITE-SEO-90 : livré — SEO 55→95, GEO 96→99 (198 pages, build prod). Restes : demandes-OUTILS/GUIDES/GEO-MARQUE/
   LANCEMENT/EXECUTION (petits points), sameAs vide, /a-propos noindex tant que l'identité légale manque.
 ## Vague 3 : REGARD-CLIENT (tout le dépôt, après la fin des autres agents)
+- Vague 3 terminée ; vidéos réenregistrées ; GitHub fe1dafc ; dossier Docs V6 ; archive repere-v6.zip (15 nov.)

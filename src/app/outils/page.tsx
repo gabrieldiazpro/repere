@@ -17,7 +17,7 @@ import { Icon, type IconName } from '@/components/app/icons';
 const PATH = '/outils';
 const TITLE = 'Outils SEO et IA gratuits, sans inscription';
 const DESCRIPTION =
-  'Vingt outils gratuits, sans inscription : aperçu Google, title et meta, indexabilité, redirections, sitemap, en-têtes HTTP, hreflang, Open Graph, liens, lisibilité, robots.txt des IA, JSON-LD, llms.txt…';
+  `${TOOLS.length} outils gratuits, sans inscription : aperçu Google, indexabilité, résultats enrichis, mobile, HTTPS, poids, titres H1–H6, images, doublons, robots.txt des IA, JSON-LD, llms.txt…`;
 
 const RULES: { icon: IconName; title: string; text: ReactNode }[] = [
   { icon: 'eye', title: 'Aucune IA interrogée, aucune donnée payante', text: <>Lecture du HTML, des en-têtes, du robots.txt et du sitemap, selon les règles de notre page <Link href="/methode" className="underline underline-offset-2">Méthode</Link>. Même page, même résultat.</> },

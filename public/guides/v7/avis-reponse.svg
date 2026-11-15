@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" role="img" aria-labelledby="t d" font-family="Inter, Arial, sans-serif">
+  <title id="t">Répondre à un avis client</title>
+  <desc id="d">Trois cas : un avis positif appelle un remerciement précis, un avis négatif réel une réponse sur le fond avec une suite hors ligne, un avis contraire aux règles un signalement à la plateforme.</desc>
+  <rect x="0.5" y="0.5" width="719" height="339" rx="14" fill="#ffffff" stroke="#d9dde3"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker></defs>
+  <rect x="270" y="20" width="180" height="44" rx="9" fill="#1e1b4b"/>
+  <text x="360.0" y="47.0" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">Un avis arrive</text>
+  <path d="M360 64 L 130 118" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="40" y="120" width="180" height="44" rx="9" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="130.0" y="147.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1e1b4b">Positif</text>
+  <path d="M130 164 L 130 206" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="40" y="208" width="180" height="62" rx="9" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="130" y="234" text-anchor="middle" font-size="12" fill="#1e1b4b" font-weight="600">Remercier, citer un détail</text>
+  <text x="130" y="254" text-anchor="middle" font-size="11" fill="#4b5563">Pas de mots-clés ni de promo</text>
+  <path d="M360 64 L 360 118" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="270" y="120" width="180" height="44" rx="9" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="360.0" y="147.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1e1b4b">Négatif mais réel</text>
+  <path d="M360 164 L 360 206" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="270" y="208" width="180" height="62" rx="9" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="360" y="234" text-anchor="middle" font-size="12" fill="#1e1b4b" font-weight="600">Reconnaître, expliquer, corriger</text>
+  <text x="360" y="254" text-anchor="middle" font-size="11" fill="#4b5563">Proposer une suite hors ligne</text>
+  <path d="M360 64 L 590 118" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="500" y="120" width="180" height="44" rx="9" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="590.0" y="147.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1e1b4b">Contraire aux règles</text>
+  <path d="M590 164 L 590 206" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <rect x="500" y="208" width="180" height="62" rx="9" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="590" y="234" text-anchor="middle" font-size="12" fill="#1e1b4b" font-weight="600">Signaler à la plateforme</text>
+  <text x="590" y="254" text-anchor="middle" font-size="11" fill="#4b5563">Réponse neutre si l’avis reste</text>
+  <text x="360" y="300" text-anchor="middle" font-size="12" fill="#374151">Jamais : contrepartie pour modifier un avis, données personnelles du client, menaces.</text>
+  <text x="360" y="320" text-anchor="middle" font-size="11" fill="#6b7280">Faux avis, conflit d’intérêts, sollicitation sélective : interdits par Google et le Code de la consommation.</text>
+</svg>

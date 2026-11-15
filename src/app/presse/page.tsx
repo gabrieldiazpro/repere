@@ -223,7 +223,7 @@ export default function PressePage() {
             {SHOTS.map((s, i) => (
               <li key={s.file}>
                 <figure>
-                  <Image src={s.img} unoptimized loading={i === 0 ? "eager" : "lazy"} alt={`Capture de l'application Repéré : ${s.title.toLowerCase()} (données de démonstration)`} sizes="(min-width: 1024px) 33vw, 100vw" className="h-auto w-full rounded-xl shadow-[0_0_0_1px_var(--color-line),0_20px_40px_-28px_rgba(30,26,92,.45)]" />
+                  <Image src={s.img} loading={i === 0 ? "eager" : "lazy"} alt={`Capture de l'application Repéré : ${s.title.toLowerCase()} (données de démonstration)`} sizes="(min-width: 1024px) 33vw, 100vw" className="h-auto w-full rounded-xl shadow-[0_0_0_1px_var(--color-line),0_20px_40px_-28px_rgba(30,26,92,.45)]" />
                   <figcaption className="mt-3">
                     <span className="font-semibold">{s.title}</span>
                     <span className="block text-[0.95rem] text-ink/75">{s.text}</span>

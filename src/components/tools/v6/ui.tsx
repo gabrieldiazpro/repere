@@ -7,6 +7,7 @@ import { useState, type ReactNode } from 'react';
 import { callTool, hostOf, type EndpointPath, type Endpoints } from '../api';
 import { AuditBridge, CheckList, EmailCapture, ErrorBox, ExampleNote, Loading, ResultHeader, Scope, ShareLink, UrlForm, useShareParams, useToolRun } from '../ui';
 import type { CheckStatus, V6Check, Verdict } from './types';
+import type { AccessInfo } from '../v7/types';
 
 const TONE: Record<CheckStatus, { box: string; dot: string; label: string }> = {
   ok: { box: 'bg-success-bg text-success-ink', dot: 'bg-success text-white', label: 'Bon' },
@@ -43,6 +44,44 @@ export function VerdictBanner({ verdict }: { verdict: Verdict }) {
   );
 }
 
+/**
+ * Page illisible (pare-feu, robots.txt, erreur, délai…) ou lue partiellement (JavaScript) : état et marche à suivre,
+ * tirés du moteur de l'analyse complète (src/lib/analysis/access.ts).
+ */
+export function AccessNote({ access }: { access: AccessInfo }) {
+  const tone: CheckStatus = access.blocked ? 'fail' : 'warn';
+  return (
+    <section className={`mb-5 rounded-xl border p-4 ${access.blocked ? 'border-danger/30 bg-white' : 'border-warning/40 bg-white'}`} aria-label="Accès à la page" data-access={access.state}>
+      <p className="flex items-start gap-2 font-semibold text-ink">
+        <span className={TONE[tone].box + ' mt-0.5 grid size-6 shrink-0 place-items-center rounded-full'}>
+          <ToneIcon tone={tone} size={14} />
+        </span>
+        <span className="min-w-0">{access.blocked ? 'Ce que nous avons constaté' : access.title}</span>
+      </p>
+      <p className="mt-2 break-words text-[0.95rem] text-ink/80">{access.message}</p>
+      {access.howTo.length > 0 && (
+        <>
+          <p className="mt-3 text-sm font-semibold text-ink">Marche à suivre{access.platform ? ` (${access.platform})` : ''}</p>
+          <ol className="mt-1 list-decimal space-y-1 pl-5 text-[0.95rem] text-ink/80">
+            {access.howTo.map((h, i) => (
+              <li key={i} className="break-words">
+                {h}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+      {access.notes.length > 0 && (
+        <ul className="mt-3 space-y-1 text-sm text-muted">
+          {access.notes.map((n, i) => (
+            <li key={i}>{n}</li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 /** Petite statistique (chiffre grand, libellé petit). */
 export function Stat({ value, label, tone }: { value: ReactNode; label: string; tone?: CheckStatus }) {
   const c = tone === 'fail' ? 'text-danger-ink' : tone === 'warn' ? 'text-warning-ink' : 'text-ink';
@@ -67,7 +106,7 @@ export function HttpCode({ status }: { status: number }) {
   );
 }
 
-type Report = { url: string; verdict: Verdict; checks: V6Check[]; finalUrl?: string };
+type Report = { url: string; verdict: Verdict; checks: V6Check[]; finalUrl?: string; access?: AccessInfo };
 
 /**
  * Gabarit d'un outil V6 qui analyse une adresse : formulaire, exemple fictif, chargement, erreur utile, verdict,
@@ -123,9 +162,14 @@ export function UrlTool<P extends EndpointPath>({
               actions={!done.example ? <ShareLink params={{ url: done.data.url }} /> : undefined}
             />
             <VerdictBanner verdict={done.data.verdict} />
-            {render?.(done.data, done.example)}
-            <h3 className="mb-3 mt-6 font-semibold text-ink">Le détail des contrôles</h3>
-            <CheckList checks={done.data.checks} />
+            {done.data.access && <AccessNote access={done.data.access} />}
+            {!done.data.access?.blocked && (
+              <>
+                {render?.(done.data, done.example)}
+                <h3 className="mb-3 mt-6 font-semibold text-ink">Le détail des contrôles</h3>
+                <CheckList checks={done.data.checks} />
+              </>
+            )}
           </div>
         )}
       </Scope>

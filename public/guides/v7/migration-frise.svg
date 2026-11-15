@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img" aria-labelledby="t d" font-family="Inter, Arial, sans-serif">
+  <title id="t">Les quatre temps d’une migration</title>
+  <desc id="d">Frise en quatre étapes : préparer la table de correspondance, basculer avec des redirections 301, surveiller pendant 180 jours, conserver redirections et ancien domaine au moins un an.</desc>
+  <rect x="0.5" y="0.5" width="719" height="329" rx="14" fill="#ffffff" stroke="#d9dde3"/>
+  <text x="360" y="40" text-anchor="middle" font-size="15" fill="#1e1b4b" font-weight="600">Changement de domaine ou passage en https</text>
+  <path d="M105 150 L 615 150" stroke="#c7d2fe" stroke-width="6"/>
+  <circle cx="105" cy="150" r="14" fill="#4f46e5"/>
+  <text x="105" y="155" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="600">1</text>
+  <text x="105" y="110" text-anchor="middle" font-size="15" fill="#1e1b4b" font-weight="600">Préparer</text>
+  <text x="105" y="192" text-anchor="middle" font-size="11" fill="#4b5563">table de correspondance</text>
+  <text x="105" y="210" text-anchor="middle" font-size="11" fill="#4b5563">variantes validées</text>
+  <circle cx="275" cy="150" r="14" fill="#1e1b4b"/>
+  <text x="275" y="155" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="600">2</text>
+  <text x="275" y="110" text-anchor="middle" font-size="15" fill="#1e1b4b" font-weight="600">Basculer</text>
+  <text x="275" y="192" text-anchor="middle" font-size="11" fill="#4b5563">redirections 301 directes</text>
+  <text x="275" y="210" text-anchor="middle" font-size="11" fill="#4b5563">liens internes, sitemaps</text>
+  <circle cx="445" cy="150" r="14" fill="#4f46e5"/>
+  <text x="445" y="155" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="600">3</text>
+  <text x="445" y="110" text-anchor="middle" font-size="15" fill="#1e1b4b" font-weight="600">Surveiller</text>
+  <text x="445" y="192" text-anchor="middle" font-size="11" fill="#4b5563">180 jours :</text>
+  <text x="445" y="210" text-anchor="middle" font-size="11" fill="#4b5563">indexation, 404, trafic</text>
+  <circle cx="615" cy="150" r="14" fill="#4f46e5"/>
+  <text x="615" y="155" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="600">4</text>
+  <text x="615" y="110" text-anchor="middle" font-size="15" fill="#1e1b4b" font-weight="600">Conserver</text>
+  <text x="615" y="192" text-anchor="middle" font-size="11" fill="#4b5563">redirections et ancien</text>
+  <text x="615" y="210" text-anchor="middle" font-size="11" fill="#4b5563">domaine : 1 an au moins</text>
+  <text x="360" y="280" text-anchor="middle" font-size="12" fill="#374151">L’outil de changement d’adresse sert au changement de domaine, pas au passage en https.</text>
+  <text x="360" y="302" text-anchor="middle" font-size="12" fill="#6b7280">Ses effets durent 180 jours ; le classement peut fluctuer pendant quelques semaines.</text>
+</svg>

@@ -141,9 +141,9 @@ describe('partage et surlignage', () => {
 });
 
 describe('catalogue', () => {
-  it('20 outils (9 + 11 en V6), slugs uniques, contenu SEO complet', () => {
-    expect(TOOLS).toHaveLength(20);
-    expect(new Set(TOOLS.map((t) => t.slug)).size).toBe(20);
+  it('31 outils (9 + 11 en V6 + 11 en V7), slugs uniques, contenu SEO complet', () => {
+    expect(TOOLS).toHaveLength(31);
+    expect(new Set(TOOLS.map((t) => t.slug)).size).toBe(31);
     for (const t of TOOLS) {
       expect(t.faq.length, t.slug).toBeGreaterThanOrEqual(4);
       expect(t.howItWorks.length).toBeGreaterThanOrEqual(3);
