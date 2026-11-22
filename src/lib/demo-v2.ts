@@ -7,7 +7,7 @@
  * `buildDemoWorkspace` est synchrone et sans dépendance à db.ts (db.ts l'utilise pour getBusiness/getAudit).
  * `getDemoWorkspace` ajoute l'amorçage des tâches (EXECUTION) et du trafic IA (TRACKING), tolérant à leur absence.
  */
-import { createMockAudit, createMockFacts, type AuditInput, type AuditResult } from '@/lib/engine';
+import { createMockAudit, createMockFacts, type AuditInput, type AuditResult, type ProviderId } from '@/lib/engine';
 import type { AuditInputV2, AuditResultV2Ext, BrandFacts, Segment } from '@/lib/engine/types-v2';
 import type { BusinessRecord } from '@/lib/db';
 import { computeMargins } from '@/lib/engine/analytics';
@@ -53,6 +53,16 @@ interface DemoSpec {
   input: DemoInput;
   scores: number[];
 }
+
+/**
+ * V8 : IA simulées des comptes démo (données de démonstration étiquetées, modèle « demo-mock ») — y compris les IA
+ * mesurées via les pages de résultats (aperçus IA et AI Mode de Google, Copilot dans Bing) et DeepSeek.
+ */
+const DEMO_PROVIDERS: Record<Segment, ProviderId[]> = {
+  local: ['chatgpt', 'perplexity', 'gemini', 'google_aio', 'google_ai_mode', 'copilot'],
+  pme: ['chatgpt', 'perplexity', 'gemini', 'claude', 'google_aio', 'google_ai_mode', 'copilot', 'deepseek'],
+  ecommerce: ['chatgpt', 'perplexity', 'gemini', 'claude', 'google_aio', 'google_ai_mode', 'copilot', 'deepseek'],
+};
 
 const SPECS: Record<Segment, DemoSpec> = {
   local: {
@@ -127,7 +137,8 @@ function shapeAudits(spec: DemoSpec, now: Date): DemoAudit[] {
   const dateOf = (i: number) => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - (scores.length - 1 - i), 5, 8, 0, 0)).toISOString();
   const poolSeed = `${spec.seedPrefix}-pool`;
   // Vivier brut (mois courant, non façonné) : sert à l'ordre des questions et au choix de l'entrant.
-  const base0 = createMockAudit(input, poolSeed, { measuredAt: dateOf(last) }) as DemoAudit;
+  const providers = DEMO_PROVIDERS[input.segment ?? 'local'] ?? DEMO_PROVIDERS.local;
+  const base0 = createMockAudit(input, poolSeed, { measuredAt: dateOf(last), providers }) as DemoAudit;
   // l'entrant : le moins cité des concurrents classés du mois courant
   const entrant = base0.competitors.length > 4 ? base0.competitors[base0.competitors.length - 1].name : null;
   const client = mockClientName(input);
@@ -170,6 +181,7 @@ function shapeAudits(spec: DemoSpec, now: Date): DemoAudit[] {
     // le moteur en dérive ensuite « cité », le rang, les concurrents, les parts de voix et les sources.
     const base = createMockAudit(input, poolSeed, {
       measuredAt: iso,
+      providers,
       rewrite: (a) => {
         const key = `${a.provider}|${a.queryId}|${a.run}`;
         return alignAnswer(

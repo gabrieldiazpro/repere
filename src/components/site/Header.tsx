@@ -39,7 +39,7 @@ export function Header({ segment }: { segment?: LandingSegment } = {}) {
             Connexion
           </Link>
           <Link href={cta} className={buttonClasses({ size: "sm", className: "lift whitespace-nowrap max-[359px]:hidden" })}>
-            Analyse gratuite
+            Tester ma marque
           </Link>
           <MobileMenu groups={NAV_GROUPS} links={PRIMARY_LINKS} resources={RESOURCES_GROUP} cta={cta} />
         </div>

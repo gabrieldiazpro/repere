@@ -70,10 +70,11 @@ describe('questions liées et état « avant »', () => {
 
 describe('cycle complet', () => {
   it('avant, relances J+14 / J+30 planifiées, impact', async () => {
-    const doneAt = '2026-11-06T10:00:00.000Z';
+    // Dates futures : une échéance déjà passée serait exécutée tout de suite par la file locale (test daté).
+    const doneAt = '2030-01-06T10:00:00.000Z';
     const m = (await startActionMeasure('bizM', { id: 't-faq', title: 'Page FAQ publiée', doneAt }, new Date(doneAt)))!;
     expect(m.before?.answers).toBeGreaterThan(0);
-    expect(m.checkpoints.map((c) => c.dueAt)).toEqual(['2026-11-20T10:00:00.000Z', '2026-12-06T10:00:00.000Z']);
+    expect(m.checkpoints.map((c) => c.dueAt)).toEqual(['2030-01-20T10:00:00.000Z', '2030-02-05T10:00:00.000Z']);
     const jobs = await listLocalJobs('measure.action');
     expect(jobs.filter((j) => j.payload.taskId === 't-faq')).toHaveLength(2);
     expect((await getActionImpact('t-faq', { businessId: 'bizM' }))!.verdict).toBe('en_attente');
@@ -88,7 +89,7 @@ describe('cycle complet', () => {
       queries,
       mentions: audit.mentions.filter((x) => queries.some((q) => q.id === x.queryId)).map((x) => ({ ...x, mentioned: true, rank: 1 })),
     }));
-    expect(await runDueLocalJobs(new Date('2026-11-21T00:00:00Z'), 'measure.action')).toBe(1);
+    expect(await runDueLocalJobs(new Date('2030-01-21T00:00:00Z'), 'measure.action')).toBe(1);
     const i = (await getActionImpact('t-faq', { businessId: 'bizM' }))!;
     expect(i.after?.rate).toBe(1);
     expect(['hausse', 'insuffisant']).toContain(i.verdict);

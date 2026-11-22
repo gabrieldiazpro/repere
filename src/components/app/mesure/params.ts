@@ -2,7 +2,7 @@
  * État des écrans Mesure dans l'URL (période, comparaison, IA, tag, recherche) : partageable, conservé d'un écran à
  * l'autre. Fonctions pures (testées) — aucune lecture de données ici.
  */
-import type { ProviderId } from '@/lib/engine/types';
+import { ALL_PROVIDERS, type ProviderId } from '@/lib/engine/types';
 
 export type RawSearch = Record<string, string | string[] | undefined>;
 
@@ -23,7 +23,7 @@ export const VS: { key: VsKey; label: string }[] = [
 ];
 export const DEFAULT_VS: VsKey = 'precedent';
 
-const PROVIDERS: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'];
+const PROVIDERS: ProviderId[] = ALL_PROVIDERS;
 
 export interface MesureParams {
   periode: PeriodKey;

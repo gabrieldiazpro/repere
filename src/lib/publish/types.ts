@@ -10,7 +10,7 @@ import type { Finding } from '@/lib/crawl/types';
 
 export type { Finding };
 
-export const PLATFORMS = ['wordpress', 'shopify', 'webflow', 'prestashop', 'wix', 'export', 'gbp'] as const;
+export const PLATFORMS = ['wordpress', 'shopify', 'webflow', 'prestashop', 'wix', 'magento', 'export', 'gbp'] as const;
 export type Platform = (typeof PLATFORMS)[number];
 export const isPlatform = (v: unknown): v is Platform => typeof v === 'string' && (PLATFORMS as readonly string[]).includes(v);
 
@@ -20,6 +20,7 @@ export const PLATFORM_LABEL: Record<Platform, string> = {
   webflow: 'Webflow',
   prestashop: 'PrestaShop',
   wix: 'Wix',
+  magento: 'Magento / Adobe Commerce',
   export: 'Export (fichiers à déposer)',
   gbp: 'Fiche Google (Business Profile)',
 };

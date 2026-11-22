@@ -11,14 +11,20 @@ import { auditStats } from '@/lib/digest/stats';
 
 /* ---------- Fournisseurs ---------- */
 
-export const PROVIDER_ORDER: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'];
+export const PROVIDER_ORDER: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral', 'google_aio', 'google_ai_mode', 'copilot', 'deepseek', 'grok'];
 
 export const PROVIDER_META: Record<ProviderId, { label: string; short: string; color: string; about: string }> = {
   chatgpt: { label: 'ChatGPT', short: 'C', color: '#10A37F', about: "L'assistant le plus utilisé par le grand public." },
   perplexity: { label: 'Perplexity', short: 'P', color: '#1F7A8C', about: 'Un moteur de réponse qui cite ses sources.' },
   gemini: { label: 'Gemini', short: 'G', color: '#4C6EF5', about: "L'assistant de Google, présent sur Android et dans la recherche." },
   claude: { label: 'Claude', short: 'Cl', color: '#C1663B', about: "L'assistant d'Anthropic." },
-  mistral: { label: 'Mistral (Le Chat)', short: 'M', color: '#B45309', about: "L'assistant français de Mistral AI." },
+  mistral: { label: 'Mistral Vibe', short: 'M', color: '#B45309', about: "L'assistant français de Mistral AI (ex-Le Chat, renommé Vibe en mai 2026)." },
+  // V8 : couleurs neutres (pas de couleurs ni de logos de marque), toujours doublées du nom.
+  google_aio: { label: 'Google AI Overviews', short: 'AO', color: '#3B7A57', about: "L'aperçu IA en haut des résultats Google, relevé en France." },
+  google_ai_mode: { label: 'Google AI Mode', short: 'AM', color: '#5B6CB8', about: 'Le mode conversationnel de la recherche Google, relevé en France.' },
+  copilot: { label: 'Copilot (Bing)', short: 'Co', color: '#2B7BB9', about: 'La réponse Copilot affichée dans la recherche Bing, relevée en France.' },
+  deepseek: { label: 'DeepSeek', short: 'D', color: '#6B5BD5', about: "L'assistant de DeepSeek, interrogé avec sa recherche web." },
+  grok: { label: 'Grok', short: 'Gk', color: '#5C6673', about: "L'assistant de xAI, interrogé avec sa recherche web." },
 };
 
 export function providersUsed(r: AuditResult): ProviderId[] {

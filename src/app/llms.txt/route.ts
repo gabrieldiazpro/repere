@@ -13,6 +13,7 @@ import { euros, tiersFor, VAT_NOTICE } from '@/components/site/plans-v2';
 import { v3Routes, type RouteEntry } from '@/lib/seo/routes';
 import { publishedEntries } from '@/lib/barometre/public';
 import { SOFTWARE_FEATURES } from '@/lib/seo/jsonld';
+import { aiCoverage, aiCoverageCounts } from '@/components/site/ai-coverage';
 
 // Régénéré toutes les heures : la section « Baromètres » n'apparaît qu'une fois un baromètre réellement mesuré.
 export const revalidate = 3600;
@@ -56,7 +57,7 @@ export async function GET() {
     priceLine('pme', 'PME et services B2B'),
     priceLine('ecommerce', 'E-commerce'),
     '- Offre gratuite permanente (Découverte) : 1 marque, 5 questions suivies, 1 mesure par mois, 3 IA (ChatGPT, Perplexity, Gemini), sans carte bancaire',
-    '- IA suivies : ChatGPT, Perplexity, Gemini, Claude ; Mistral (Le Chat) en option. Les aperçus IA et le mode IA de Google ne sont pas mesurés directement ; leurs clics sont compris dans la Search Console',
+    `- IA mesurables (${aiCoverageCounts().total}) : ${aiCoverage().map((a) => `${a.name} : ${a.mode}, ${a.status === 'offres' ? `offres : ${a.offers}` : a.offers.replace(/^En/, 'en').replace(/^Sur/, 'sur')}`).join(' ; ')}. Une IA en option n'est interrogée que si elle est activée, jamais simulée ; méthode et marge d'erreur par IA sur /methode`,
     '- Agences : marque blanche et partenariat, sur liste d\'attente',
     "- Ce que nous ne faisons pas : aucune garantie de position dans Google ni de citation par une IA, aucun faux avis, rien n'est publié sans la validation du client, aucune donnée inventée (un fournisseur non configuré est affiché comme tel)",
     '- Limites : pas d\'index de liens propre (liens entrants via un fournisseur de données, selon l\'offre) ; exploration plafonnée à 60 pages (analyse publique), 500 ou 2 000 pages selon l\'offre ; pas d\'analyse de journaux serveur',
@@ -65,14 +66,18 @@ export async function GET() {
     `- Mise à jour de ce fichier : ${updated}`,
     '',
     '## Produit',
-    link('Analyse gratuite du site en 60 secondes', '/analyse', 'exploration réelle, audit SEO et GEO, score Google et score IA, 5 priorités'),
+    link('Test de marque gratuit', '/analyse', 'test gratuit, sans carte bancaire : votre marque est-elle citée par les IA (questions posées en direct, qui est cité à votre place et pourquoi), puis analyse SEO et GEO du site'),
     link('Test de visibilité IA par nom', '/audit', 'score de visibilité IA sur 100, concurrents cités, premières sources, selon le parcours (local, PME, e-commerce)'),
     link('Tarifs', '/tarifs', 'tous les prix des trois parcours, rendus dans la page sans JavaScript'),
     link('Méthode', '/methode', 'exploration du site, audit SEO (familles, poids, note), audit GEO et niveaux de preuve, Search Console et positions, agent de publication, formule du score IA, marge d’erreur, sources, vérification des faits, limites, versions'),
     ...routeLines('produit', routes).filter((l) => !l.includes('/analyse)')),
     link('Commerces locaux : SEO local et IA', '/local'),
     link('PME et services B2B : SEO B2B et IA', '/pme'),
-    link('E-commerce : SEO e-commerce et IA (fiches produit, facettes, Shopping)', '/e-commerce'),
+    link('E-commerce : SEO e-commerce et IA (fiches produit, facettes, Shopping)', '/e-commerce', 'Shopify, WooCommerce, PrestaShop, Magento / Adobe Commerce, Wix'),
+    link('Simulateur pour ma boutique', '/outils/simulateur-boutique', 'ce que la visibilité IA peut représenter pour une boutique : fourchette basse, médiane et haute, hypothèses sourcées et modifiables, une estimation, pas une promesse'),
+    link('Agences', '/agences', 'offre Agence : marque blanche, tableau de bord multi-clients, validation par le client, API et MCP ; partenariat sans abonnement'),
+    link('Agent de contenu', '/fonctionnalites/agent-de-contenu', 'pages manquantes proposées sur preuves, rédigées avec les seuls faits du client, créées en brouillon chez lui, publiées après validation, mesurées à J+30 et J+90 ; pas d’échange de liens ni de production de masse'),
+    link('Développeurs', '/developpeurs', 'API REST (OpenAPI 3.1 sur /api/public/v1/openapi.json), serveur MCP en lecture (/api/mcp), webhooks signés'),
     '',
     ...(routes.some((r) => r.section === 'outils')
       ? ['## Outils gratuits', 'Outils sans inscription, sans fournisseur de données payant : ils lisent le HTML, les en-têtes, le robots.txt et le sitemap d’une page publique avec le robot déclaré RepereBot.', ...routeLines('outils', routes), '']

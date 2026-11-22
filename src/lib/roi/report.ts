@@ -20,6 +20,7 @@ import { listAttributions, type AttributionRecord } from './attribution';
 import { backlinksIncrementalUsd, monthlyRecurringCents, roiRatio, stopDecision, type MonthPoint, type StopDecision } from './compute';
 import { barometreLinks, type BarometreLinksView } from './links';
 import { readTabUsage, type TabUsage } from './usage';
+import { readSerpAiUsd } from './serpai';
 import { monthOf, readVisits, type VisitsMonth } from './visits';
 
 export const SNAPSHOTS = 'roi.snapshots';
@@ -64,6 +65,8 @@ export interface LiensRoi {
   enabled: boolean;
   fixedUsd: number;
   spentBacklinksUsd: number;
+  /** V8 : relevés d'IA (aperçus IA, AI Mode, Copilot) facturés par DataForSEO, comptés dans les autres appels */
+  spentSerpAiUsd: number;
   spentOtherUsd: number;
   costEur: number;
   subscribers: number;
@@ -216,6 +219,9 @@ async function liensSection(month: string, deps: RoiDeps, now: Date): Promise<Li
       else other += v.usd;
     }
   }
+  // V8 : les relevés d'IA du moteur consomment aussi l'engagement DataForSEO (hors registre seodata.costs).
+  const serpAi = await readSerpAiUsd(month);
+  other += serpAi;
   const incUsd = enabled ? backlinksIncrementalUsd(other, bl, fixedUsd) : r2(bl);
   const costEur = r2(incUsd * eurPerUsd());
   const paidList = await (deps.listPaid ?? (() => listBusinessesForDigest(10_000)))().catch(() => [] as BusinessRecord[]);
@@ -241,6 +247,7 @@ async function liensSection(month: string, deps: RoiDeps, now: Date): Promise<Li
     enabled,
     fixedUsd,
     spentBacklinksUsd: r2(bl),
+    spentSerpAiUsd: r2(serpAi),
     spentOtherUsd: r2(other),
     costEur,
     subscribers: withTab.length,

@@ -162,6 +162,20 @@ export async function attachAnalysisToBusiness(id: string, businessId: string, s
   return true;
 }
 
+/**
+ * V8 : la personne qui détient le lien signé de l'analyse (preuve de possession) y ajoute son adresse, pour que
+ * l'inscription la rattache même si aucun e-mail n'avait été saisi au lancement. Seul le hachage est gardé.
+ * Refus (false) : jeton invalide ou expiré, analyse déjà rattachée à un espace.
+ */
+export async function addRequesterEmail(id: string, token: string, email: string, now: Date = new Date()): Promise<boolean> {
+  const doc = await getStoredAnalysis(id);
+  if (!doc || doc.businessId || !tokenMatches(doc, token, now) || !email) return false;
+  const eh = emailHash(email);
+  if (doc.emailHashes.includes(eh)) return true;
+  await putDoc<StoredAnalysis>(RUNS, id, { ...doc, emailHashes: [...doc.emailHashes, eh].slice(-TOKENS_MAX) }, null);
+  return true;
+}
+
 /** L'analyse a-t-elle été demandée avec cette adresse ? (préremplissage de l'inscription, même règle que le rattachement) */
 export async function analysisRequestedBy(id: string, email: string): Promise<StoredAnalysis | null> {
   if (!id || !email) return null;

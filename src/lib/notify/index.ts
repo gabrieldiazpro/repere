@@ -52,6 +52,19 @@ export async function notify(businessId: string, n: NotificationInput & { delta?
       console.warn('[notify] diffusion impossible', e);
     }
   }
+  // V8 (API-PUBLIQUE) : webhooks « score.dropped » (fin de mesure, baisse au-delà de la marge) et « proposal.pending ».
+  // Seules les cibles webhook abonnées à ces événements les reçoivent (Réglages › Intégrations).
+  if (n.type === 'audit_done' || n.type === 'agent_proposals') {
+    try {
+      const { extraWebhookEvents } = await import('@/lib/publicapi/webhooks');
+      for (const x of await extraWebhookEvents(businessId, n)) {
+        const d = { title: x.title, body: x.body, href: x.href, severity: x.severity, businessName: business?.name, data: x.data };
+        out.webhook += await dispatchEvent(businessId, x.event, d, { only: ['webhook'], ...(n.dedupeKey ? { dedupeKey: `${x.event}:${n.dedupeKey}` } : {}) });
+      }
+    } catch (e) {
+      console.warn('[notify] webhooks API publique indisponibles', e);
+    }
+  }
   if (!EMAIL_HANDLED_ELSEWHERE.includes(n.type) && wants(prefs, n.type, 'email', opt) && business?.contactEmail) {
     const to = business.contactEmail;
     const link = n.href && n.href.startsWith('/') && !n.href.startsWith('//') ? `${appUrl()}${n.href}` : `${appUrl()}/app`;

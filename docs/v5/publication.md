@@ -141,3 +141,17 @@ PrestaShop) épinglés sur une IP publique validée (anti-SSRF), https uniquemen
 `rewrite`, `gbp.description`, `gbp.hours`, `sitemap.xml`, `meta.robots` (+ alias `img.alt`, `robots`, `sitemap`, `link.update`).
 Formats réels de SEO-AUDIT (`{ items: [...] }`) et GEO-OPT : src/lib/publish/autofix.ts et docs/v5/demandes-PUBLICATION.md.
 Sans `value`, le planificateur rédige ; sans `url`, il prend `affected[]`. « [à compléter] » bloque la validation.
+
+## V8 — Création de pages et d'articles (agent de contenu, 22 nov. 2026)
+Code : src/lib/publish/pages/** (interface `PageConnector` : findBySlug → createDraft → read → publish → unpublish → remove),
+utilisé par src/lib/content/service.ts après validation humaine, contrôle « [à compléter] » et plafond mensuel.
+| Plateforme | Pages | Articles | Brouillon d'abord | Retrait / suppression | Points à confirmer sur un vrai site |
+|---|---|---|---|---|---|
+| WordPress | `POST /wp/v2/pages` `status: draft` | `/wp/v2/posts` | oui | `status: draft` ; `DELETE` sans `force` = corbeille 30 j | métas Yoast/Rank Math comme les correctifs ; JSON-LD seulement avec `unfiltered_html` |
+| Shopify | `pageCreate` `isPublished: false` + métachamps `global.title_tag/description_tag` | `articleCreate` (1er blog ou réglage) | oui (masqué) | `isPublished: false` ; `pageDelete`/`articleDelete` définitif | portée `write_content` (ou `write_online_store_pages`) |
+| Webflow | non (pas d'API de création de page statique) → export | élément CMS `isDraft: true` dans la collection choisie | oui | `DELETE …/items/{id}/live` puis brouillon ; `DELETE …/items/{id}` | champ corps = 1er champ RichText — https://developers.webflow.com/data/reference/cms/collection-items/staged-items/create-item |
+| Wix | non → export guidé | Blog : `POST /blog/v3/draft-posts` (Ricos), `…/publish`, `…/unpublish`, `DELETE` | oui | corbeille du blog | `memberId` obligatoire : membre choisi ou premier membre ; Repéré n'en crée jamais — https://dev.wix.com/docs/api-reference/business-solutions/blog/skills/how-to-create-blog-posts.md ; chemin `unpublish` à confirmer |
+| PrestaShop | CMS `content_management_system` XML `active=0` | non (pas de blog natif) → export | oui (désactivée) | `active=0` ; `DELETE` définitif | catégorie CMS (défaut 1) |
+| Autres (Magento, sans connexion) | export ZIP : page.html, page.md, jsonld.json, LISEZ-MOI | idem | — | — | — |
+Réécriture d'une page existante : `createRewriteChangeSet` (publish/service.ts) → ChangeSet `rewrite` en `set` dans /app/agent
+(avant/après exacts lus chez la plateforme, application, relecture, retour arrière).

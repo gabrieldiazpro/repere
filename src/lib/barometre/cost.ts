@@ -15,6 +15,12 @@ export const COST_PER_CALL_EUR: Record<ProviderId, number> = {
   gemini: 0.016 * USD_TO_EUR,
   claude: 0.02 * USD_TO_EUR,
   mistral: 0.033 * USD_TO_EUR,
+  // V8 (src/lib/engine/providers : deepseek.ts, grok.ts, serp.ts)
+  deepseek: 0.01 * USD_TO_EUR,
+  grok: 0.035 * USD_TO_EUR,
+  google_aio: 0.004 * USD_TO_EUR,
+  google_ai_mode: 0.004 * USD_TO_EUR,
+  copilot: 0.002 * USD_TO_EUR,
 };
 /** Extraction des noms par réponse (extracteur le moins cher : openai.ts 0,0003 $ ; heuristique gratuite sinon). */
 export const EXTRACT_COST_EUR = 0.0003 * USD_TO_EUR;

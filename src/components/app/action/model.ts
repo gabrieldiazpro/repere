@@ -68,7 +68,7 @@ export interface ActionProof {
 
 type Audit = Pick<AuditResult, 'queries' | 'mentions'> & Pick<AuditResultV2Ext, 'sources' | 'factCheck'>;
 
-const PROVIDER: Record<string, string> = { chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', mistral: 'Mistral (Le Chat)' };
+const PROVIDER: Record<string, string> = { chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', mistral: 'Mistral Vibe', google_aio: 'Google AI Overviews', google_ai_mode: 'Google AI Mode', copilot: 'Copilot (Bing)', deepseek: 'DeepSeek', grok: 'Grok' };
 const FIELD_WORDS: Record<string, RegExp> = {
   adresse: /adresse/i,
   telephone: /t[ée]l[ée]phone|num[ée]ro/i,

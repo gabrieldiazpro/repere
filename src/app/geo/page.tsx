@@ -149,7 +149,7 @@ const FAQ: QA[] = [
   },
   {
     q: 'Comment savoir si ChatGPT cite mon entreprise ?',
-    a: "Posez-lui plusieurs fois les questions que posent vos clients, dans des conversations séparées, et notez qui est cité. Une seule réponse ne prouve rien, car les réponses varient. Le test gratuit de Repéré le fait sur trois IA et indique sa marge d'erreur.",
+    a: "Posez-lui plusieurs fois les questions que posent vos clients, dans des conversations séparées, et notez qui est cité. Une seule réponse ne prouve rien, car les réponses varient. Le test de marque gratuit de Repéré le fait en direct sur les IA activées, et indique sa marge d'erreur.",
   },
 ];
 

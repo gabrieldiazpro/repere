@@ -39,6 +39,7 @@ import {
   exampleSitemap,
 } from '@/components/tools/v6/examples';
 import { V6_UPDATED } from '@/components/tools/v6/registry';
+import { SimulatorTool } from '@/components/tools/v8/SimulatorTool';
 import { DuplicateTool, FreshnessTool, HeadingsTool, HttpsTool, ImagesTool, MobileTool, RichTool, WeightTool } from '@/components/tools/v7/PageTools';
 import { FactsTool, NapTool, UtmTool } from '@/components/tools/v7/LocalTools';
 import {
@@ -134,6 +135,8 @@ function ToolFor({ slug }: { slug: ToolSlug }) {
       return <UtmTool example={UTM_EXAMPLE} />;
     case 'fiche-faits-cles':
       return <FactsTool example={FACTS_EXAMPLE} />;
+    case 'simulateur-boutique':
+      return <SimulatorTool />;
   }
 }
 

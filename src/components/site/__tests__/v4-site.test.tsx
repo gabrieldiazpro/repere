@@ -51,7 +51,7 @@ describe("V4 : accueil", () => {
     // (formulaire GET vers /app, V6 : une action qui ouvre une session démo, pas un lien préchargé).
     expect(html.match(/type="submit"/g)).toHaveLength(2);
     expect(html).toContain('name="compte" value="demo"');
-    expect(html).toContain("Analyser mon site");
+    expect(html).toContain("Tester ma marque");
     expect(html).toContain('aria-pressed="true"');
     expect(html).toContain("Aperçu");
   });

@@ -90,6 +90,11 @@ describe('rapports planifiés', () => {
     expect(readConfirmToken(t.slice(0, -2) + 'xx')).toBeNull();
   });
   it('destinataires côté serveur, double opt-in, envoi', async () => {
+    // Horloge figée au 9 nov. 2026 : la file mémoire exécute tout de suite une tâche dont l'échéance est passée ;
+    // sans cela, le test dépendait de la date du jour (il échouait après le 16 nov.).
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-09T10:00:00Z'));
+    try {
     const b = biz('bizR', 'essentiel') as unknown as BusinessRecord;
     await expect(saveSchedule(b, { recipients: ['1@a.fr', '2@a.fr', '3@a.fr', '4@a.fr', '5@a.fr', '6@a.fr'] })).rejects.toThrow(/5 destinataires/);
     const s = await saveSchedule(b, { active: true, frequency: 'weekly', day: 1, hour: 9, recipients: ['associe@garage.fr'] }, new Date('2026-11-09T10:00:00Z'));
@@ -106,6 +111,9 @@ describe('rapports planifiés', () => {
     // idempotent, version périmée ignorée
     expect((await sendScheduledReport({ businessId: 'bizR', version: cur.version, runAt: '2026-11-23T08:00:00.000Z' })).reason).toBe('already_sent');
     expect((await sendScheduledReport({ businessId: 'bizR', version: 0 })).reason).toBe('stale');
+    } finally {
+      vi.useRealTimers();
+    }
   });
   it('offre Découverte : pas de rapport planifié', async () => {
     await expect(saveSchedule(biz('bizFree', 'free') as unknown as BusinessRecord, { recipients: ['a@b.fr'] })).rejects.toThrow(/offre/);

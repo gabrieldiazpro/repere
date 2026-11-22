@@ -20,15 +20,23 @@ import {
   defaultSeed,
   getExtractor,
   getProvider,
+  isConfigured,
+  isExtended,
   mockAnswerV2,
+  paidExtraEngines,
   selectedProviders,
+  SERP_ENGINES,
   type EngineProvider,
   type Extractor,
 } from './providers';
+import { USD_TO_EUR } from './providers/http';
+
+const isSerpEngine = (id: ProviderId) => (SERP_ENGINES as readonly string[]).includes(id);
 import { templateOf, zoneInfo } from './queries';
 import { buildBrandQueries, isBrandQuery, segmentOf } from './queries-v2';
 import { resolveAuditQueries, withTheme } from './queries-v3';
 import { computeMargins, buildVoiceMatrix } from './analytics';
+import { buildEngineMeasures } from './engines';
 import { auditCounts, reconcilePerception } from './coherence';
 import { computeScore } from './scoring';
 import { analyzeSources, type SourcesAnalysis } from './sources';
@@ -54,6 +62,20 @@ function numEnv(k: string): number | undefined {
   if (v == null || v === '') return undefined;
   const n = Number(v.replace(',', '.'));
   return Number.isFinite(n) ? n : undefined;
+}
+
+/**
+ * V8 (FINALE, docs/v8/economie-offres.md) : budget d'une mesure PAYANTE aligné sur le volume de l'offre.
+ * AUDIT_BUDGET_PAID_MODE=offre → budget = coût prévu de toutes les réponses de l'offre + 10 %, plafonné par
+ * AUDIT_BUDGET_PAID_MAX_EUR (défaut 25 €) : les questions, IA et passages promis sont mesurés en entier.
+ * Variable vide (défaut) → comportement inchangé : AUDIT_BUDGET_PAID_EUR, sinon 2,50 € (local) / 2,70 € (PME, e-commerce).
+ */
+export function paidBudgetForPlan(mode: 'free' | 'paid', plannedEur: number, fixedEur: number): number {
+  if (mode !== 'paid') return fixedEur;
+  const m = (env('AUDIT_BUDGET_PAID_MODE') || '').trim().toLowerCase();
+  if (m !== 'offre' && m !== 'offer' && m !== 'plan') return fixedEur;
+  const max = numEnv('AUDIT_BUDGET_PAID_MAX_EUR') ?? 25;
+  return Math.max(fixedEur, Math.min(max, plannedEur * 1.1));
 }
 
 interface Task {
@@ -296,6 +318,8 @@ function assemble(a: AssembleArgs): AuditResult {
   result.counts = auditCounts(result);
   result.margins = computeMargins(result);
   result.voice = buildVoiceMatrix(result);
+  // ---- V8 : fiche de mesure par IA (méthode, modèle, date, échantillons, marge) ----
+  result.engines = buildEngineMeasures(result);
   return result;
 }
 
@@ -308,7 +332,10 @@ export async function runAudit(input: AuditInput, opts: RunAuditOptions = {}): P
   const id = newId();
   const seed = opts.seed ?? defaultSeed(input);
   const segment = segmentOf(input);
-  const providerIds = opts.providers?.length ? [...new Set(opts.providers)] : selectedProviders(mode);
+  // V8 : une IA en option non configurée est désactivée (jamais remplacée par des réponses simulées dans un audit réel).
+  // Mesure payante dont les IA viennent de l'offre : + IA en option activées par la plateforme (AUDIT_PAID_EXTRA_ENGINES).
+  const requested = opts.providers?.length ? [...opts.providers, ...(mode === 'paid' && !opts.forceMock ? paidExtraEngines() : [])] : selectedProviders(mode);
+  const providerIds = [...new Set(requested)].filter((p) => opts.forceMock || !isExtended(p) || isConfigured(p));
   const providers = providerIds.map((p) => getProvider(p, input, seed, opts.forceMock));
   const queries = resolveAuditQueries(input, mode, opts.queries, opts.queriesMode);
   const runs = mode === 'paid' ? 3 : 2;
@@ -316,7 +343,7 @@ export async function runAudit(input: AuditInput, opts: RunAuditOptions = {}): P
   // Budget : PME / e-commerce ajoutent 2 requêtes de marque (1 exécution) et l'extraction de perception (≈ +0,07 €).
   const defaultFree = segment === 'local' ? 0.6 : 0.7;
   const defaultPaid = segment === 'local' ? 2.5 : 2.7;
-  const budget =
+  const fixedBudget =
     opts.budgetEur ??
     (mode === 'paid' ? numEnv('AUDIT_BUDGET_PAID_EUR') ?? defaultPaid : numEnv('AUDIT_BUDGET_EUR') ?? defaultFree);
   const concurrency = Math.max(1, opts.concurrency ?? numEnv('AUDIT_CONCURRENCY') ?? 6);
@@ -329,12 +356,15 @@ export async function runAudit(input: AuditInput, opts: RunAuditOptions = {}): P
       for (const provider of providers)
         all.push({ query, run, provider, cost: provider.demo ? 0 : provider.costPerCallEur + (extractor?.costPerCallEur ?? 0) });
   }
+  const budget = opts.budgetEur ?? paidBudgetForPlan(mode, all.reduce((a, t) => a + t.cost, 0), fixedBudget);
   const { kept, skipped } = applyBudget(all, budget);
 
   const zi = zoneInfo(input);
   const answers: ProviderAnswer[] = new Array(kept.length);
   const extractions: (Extraction | null)[] = new Array(kept.length);
   let spent = 0;
+  /** V8 FINALE : dépense des relevés de pages de résultats (DataForSEO), pour /admin/roi */
+  let serpUsd = 0;
   let skippedRuntime = 0;
   let done = 0;
 
@@ -346,11 +376,12 @@ export async function runAudit(input: AuditInput, opts: RunAuditOptions = {}): P
       extractions[i] = null;
     } else {
       spent += task.cost;
+      if (!task.provider.demo && isSerpEngine(task.provider.id)) serpUsd += task.cost / USD_TO_EUR;
       try {
-        const r = await task.provider.ask(task.query.text, { city: zi.city, country: DEFAULT_COUNTRY, queryId: task.query.id, run: task.run });
+        const r = await task.provider.ask(task.query.text, { city: zi.city, country: DEFAULT_COUNTRY, language: 'fr', queryId: task.query.id, run: task.run });
         // Gemini sans ancrage (ou ancré, CGU) : aucune source conservée pour le pilier Sources.
         const sources = task.provider.id === 'gemini' ? undefined : r.sources;
-        answers[i] = { ...base, text: r.text, citations: r.citations, ...(sources?.length ? { sources } : {}), at: new Date().toISOString() };
+        answers[i] = { ...base, text: r.text, citations: r.citations, ...(sources?.length ? { sources } : {}), ...(r.absent ? { absent: true } : {}), at: new Date().toISOString() };
       } catch (e) {
         answers[i] = { ...base, text: '', citations: [], error: e instanceof Error ? e.message : String(e), at: new Date().toISOString() };
       }
@@ -361,6 +392,7 @@ export async function runAudit(input: AuditInput, opts: RunAuditOptions = {}): P
     opts.onProgress?.({ done, total: kept.length, provider: task.provider.id });
   });
 
+  if (serpUsd > 0 && !opts.forceMock) await (await import('@/lib/roi/serpai')).recordSerpAiSpend(serpUsd).catch(() => undefined);
   const models: Partial<Record<ProviderId, string>> = {};
   for (const p of providers) models[p.id] = p.model;
   // Les réponses en budget dépassé à l'exécution sont retirées (non mesurées), comme les appels sautés au plan.
@@ -452,11 +484,12 @@ export function createMockAudit(input: AuditInput, seed?: string, opts: MockAudi
           text: r.text,
           citations: r.citations,
           ...(r.sources?.length ? { sources: r.sources } : {}),
+          ...(r.absent ? { absent: true } : {}),
           demo: true,
           model: 'demo-mock',
           at,
         };
-        answers.push(opts.rewrite && !isBrandQuery(q) ? { ...opts.rewrite(ans, q), at } : ans);
+        answers.push(opts.rewrite && !isBrandQuery(q) && !ans.absent ? { ...opts.rewrite(ans, q), at } : ans);
       }
   }
   const qById = new Map(queries.map((q) => [q.id, q]));

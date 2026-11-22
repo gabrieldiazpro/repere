@@ -4,7 +4,7 @@
  * Utilisés par le routeur du mode démo ET par la boucle d'appels d'outils du mode LLM (TOOL_DEFS).
  * Aucun outil n'écrit quoi que ce soit : les actions (suivre une question, ajouter une tâche) sont PROPOSÉES.
  */
-import type { ProviderId } from '@/lib/engine';
+import { ALL_PROVIDERS, type ProviderId } from '@/lib/engine';
 import type { AiEngine, BrandFactField, ExecTask } from '@/lib/engine/types-v2';
 import { isBrandQuery } from '@/lib/engine/queries-v2';
 import { scoredMentions } from '@/lib/engine/coherence';
@@ -22,7 +22,7 @@ import type { SourceRef, ToolName, ToolResult } from './types';
 type Args = Record<string, unknown>;
 export type ToolFn = (c: CopilotContext, args: Args) => ToolResult;
 
-const PROVIDERS: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'];
+const PROVIDERS: ProviderId[] = ALL_PROVIDERS;
 const ENGINES: AiEngine[] = ['chatgpt', 'perplexity', 'gemini', 'copilot', 'claude', 'other_ai'];
 
 /** Arguments venus d'un LLM : chaînes bornées, énumérations vérifiées. */
@@ -583,7 +583,7 @@ export function runTool(c: CopilotContext, name: string, args: unknown): ToolRes
   }
 }
 
-const P = { type: 'string', enum: ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'], description: 'IA concernée (facultatif)' };
+const P = { type: 'string', enum: [...ALL_PROVIDERS], description: 'IA concernée (facultatif)' };
 const E = { type: 'string', enum: ENGINES, description: 'IA d’origine des visites (facultatif)' };
 
 export interface ToolDef {

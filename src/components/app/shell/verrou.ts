@@ -1,6 +1,7 @@
 // Verrouillage par offre (logique pure, testée). Une fonction hors offre s'affiche verrouillée avec l'offre requise
 // et un lien vers /tarifs : jamais cachée, jamais d'erreur brute.
 import type { Entitlements } from '@/lib/entitlements';
+import { ALL_PROVIDERS, type ProviderId } from '@/lib/engine/types';
 
 /** Fonctions verrouillables : drapeaux de @/lib/entitlements + quelques fonctions dérivées. */
 export type VerrouFeature =
@@ -39,7 +40,7 @@ export const BENEFICE: Record<VerrouFeature, string> = {
   weekly: 'Une mesure chaque semaine au lieu d’une par mois.',
   daily: 'Une mesure chaque jour.',
   claude: 'Les réponses de Claude en plus de ChatGPT, Perplexity et Gemini.',
-  mistral: 'Les réponses de Mistral (Le Chat) en plus des autres IA.',
+  mistral: 'Les réponses de Mistral Vibe (ex-Le Chat) en plus des autres IA.',
   team: 'Invitez vos collègues ou votre agence.',
 };
 
@@ -87,12 +88,19 @@ export function quota(used: number, max: number) {
   return { used: u, max: m, ratio: m ? Math.min(1, u / m) : 1, full: u >= m, label: `${u} sur ${m}` };
 }
 
-/** IA suivies dans Réglages : incluse (cochée) ou verrouillée avec l'offre minimale qui l'ouvre, pour ce parcours. */
+/**
+ * IA suivies dans Réglages : incluse (cochée), verrouillée avec l'offre minimale qui l'ouvre pour ce parcours, ou
+ * « en option » (V8 : IA mesurables qu'aucune offre n'annonce encore, ajoutées par la plateforme quand elle les active).
+ * Liste dynamique : toutes les IA du moteur (ALL_PROVIDERS), jamais une liste figée.
+ */
 export interface EngineAccess {
-  id: import('@/lib/engine/types').ProviderId;
+  id: ProviderId;
   included: boolean;
-  /** offre minimale qui inclut cette IA pour ce parcours (« Essentiel », « Accompagné ») ; null si incluse */
+  /** offre minimale qui inclut cette IA pour ce parcours (« Essentiel », « Accompagné ») ; null si incluse ou en option */
   unlock: string | null;
+  /** aucune offre ne l'annonce (IA en option) ; `extraActive` : mesurée en plus pour les offres payantes (plateforme) */
+  optional: boolean;
+  extraActive?: boolean;
 }
 
 export function engineAccess(
@@ -100,12 +108,16 @@ export function engineAccess(
   segment: 'local' | 'pme' | 'ecommerce',
   getEnt: (b: { id: string; plan: 'essentiel' | 'accompagne'; segment: 'local' | 'pme' | 'ecommerce' }) => Pick<Entitlements, 'engines'>,
   names: Record<'essentiel' | 'accompagne', string>,
+  opts: { extras?: readonly ProviderId[] } = {},
 ): EngineAccess[] {
-  const all = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'] as const;
   const ladder = (['essentiel', 'accompagne'] as const).map((plan) => ({ plan, engines: getEnt({ id: `offre-${plan}`, plan, segment }).engines }));
-  return all.map((id) => {
+  const anyOffer = new Set<ProviderId>(ladder.flatMap((l) => l.engines));
+  const paid = e.tier === 'essentiel' || e.tier === 'accompagne' || e.tier === 'agence';
+  return ALL_PROVIDERS.map((id) => {
     const included = e.engines.includes(id);
     const first = included ? null : ladder.find((l) => l.engines.includes(id));
-    return { id, included, unlock: first ? names[first.plan] : null };
+    const optional = !included && !anyOffer.has(id);
+    const extraActive = optional && paid && (opts.extras ?? []).includes(id);
+    return { id, included, unlock: first ? names[first.plan] : null, optional, ...(extraActive ? { extraActive } : {}) };
   });
 }

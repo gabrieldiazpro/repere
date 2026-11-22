@@ -4,7 +4,11 @@ export { runFullAnalysis, collectAnalysis, analysisDomain, summarizeCrawl, DEFAU
 export { detectSite, homeSignals, nameFromDomain, cityFromText } from './detect';
 export { accessReport, accessFinding, adaptFinding, platformTip, type AccessReport, type AccessTone } from './access';
 export { mergePriorities, computeScores, buildVerdict, compareAnalyses, autoFixesOf, priorityOf, allFindings } from './prioritize';
-export { buildQuickQuestions, planCalls, availableProviders, runQuickAiCheck, maxAiCallsFromEnv, DEFAULT_MAX_AI_CALLS } from './aicheck';
+export { buildQuickQuestions, planCalls, availableProviders, runQuickAiCheck, maxAiCallsFromEnv, brandTestEngines, knownProviders, DEFAULT_MAX_AI_CALLS } from './aicheck';
+export { buildBrandTest, wilson, sentenceWith, competitorSite, competitorsByQuestion, engineLabel } from './brandtest';
+export { guardedBrandTest, brandCacheKey, brandLimits } from './aiguard';
+export { draftWhy, finalizeWhy } from './why';
+export { pageSignals, siteSignals, SIGNAL_LABEL } from './signals';
 export { defaultModules, resolveModules, setAnalysisRouteOverrides, analysisRouteOverrides } from './modules';
 export {
   saveAnalysis,

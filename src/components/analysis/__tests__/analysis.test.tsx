@@ -188,7 +188,7 @@ describe('diagnostics et libellés', () => {
     expect(sortedSections(a.seo)[0].id).toBe('contenu');
     expect(hasAutoFix(a, a.priorities[0])).toBe(true);
     expect(hasAutoFix(a, a.priorities[1])).toBe(false);
-    expect(signupHref(a)).toBe('/inscription?parcours=local&analyse=an_test123&site=https%3A%2F%2Fex.test&nom=Atelier+Test');
+    expect(signupHref(a)).toBe('/inscription?parcours=local&analyse=an_test123&site=https%3A%2F%2Fex.test&nom=Atelier+Test&ville=Nantes');
   });
 
   it('carte du site : un point placé ne bouge plus quand d’autres arrivent', () => {

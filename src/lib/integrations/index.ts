@@ -27,7 +27,9 @@ import { getBusinessRecord } from '@/lib/db';
 export const CONFIG = 'integrations.config';
 export const DELIVERIES = 'integrations.deliveries';
 
-export const EVENTS = ['audit.completed', 'alert.created', 'task.done', 'measure.result'] as const;
+// V8 (API-PUBLIQUE) : « score.dropped » et « proposal.pending » ajoutés (émis par src/lib/publicapi/webhooks.ts via
+// src/lib/notify) ; une cible existante ne les reçoit qu'après les avoir cochés.
+export const EVENTS = ['audit.completed', 'alert.created', 'task.done', 'measure.result', 'score.dropped', 'proposal.pending'] as const;
 export type IntegrationEvent = (typeof EVENTS)[number] | 'test';
 export const isEvent = (v: unknown): v is (typeof EVENTS)[number] => typeof v === 'string' && (EVENTS as readonly string[]).includes(v);
 
@@ -36,6 +38,8 @@ export const EVENT_LABELS: Record<(typeof EVENTS)[number], string> = {
   'alert.created': 'Nouvelle alerte',
   'task.done': 'Tâche faite',
   'measure.result': 'Résultat d’une mesure avant/après',
+  'score.dropped': 'Score en baisse au-delà de la marge',
+  'proposal.pending': 'Proposition de l’agent à valider',
 };
 
 export type TargetKind = 'slack' | 'webhook';

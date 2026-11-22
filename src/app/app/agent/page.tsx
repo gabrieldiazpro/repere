@@ -68,6 +68,18 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
           </div>
         )}
         <ProposalList highlight={taskCs ?? null} />
+        {/* V8 (AGENT-CONTENU) : les pages manquantes sont rédigées dans « Contenus » (validation, brouillon chez vous, effet). */}
+        <div className="ui-card mt-6">
+          <div className="ui-card-body flex flex-wrap items-center gap-3">
+            <p className="m-0 min-w-0 flex-1 text-[14.5px]">
+              <b>Des pages vous manquent ?</b> L’agent de contenu repère les questions où les IA citent un concurrent et rédige la page avec vos seuls faits. Les
+              réécritures validées là-bas arrivent ici, avec l’avant / après exact.
+            </p>
+            <Link className="ui-btn" href="/app/contenu">
+              Ouvrir Contenus
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );

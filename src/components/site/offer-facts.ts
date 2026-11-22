@@ -20,17 +20,22 @@ export const ENGINE_NAMES: Record<ProviderId, string> = {
   gemini: "Gemini",
   perplexity: "Perplexity",
   claude: "Claude",
-  mistral: "Mistral Le Chat",
+  mistral: "Mistral Vibe",
+  google_aio: "Google AI Overviews",
+  google_ai_mode: "Google AI Mode",
+  copilot: "Copilot (Bing)",
+  deepseek: "DeepSeek",
+  grok: "Grok",
 };
 
 /** Ordre d'affichage du site (ChatGPT, Gemini, Perplexity, Claude, Mistral). */
 const ORDER: ProviderId[] = ["chatgpt", "gemini", "perplexity", "claude", "mistral"];
 
-/** « ChatGPT, Gemini, Perplexity, Claude, plus Mistral Le Chat en option » (Mistral n'est interrogé qu'avec sa clé). */
+/** « ChatGPT, Gemini, Perplexity, Claude, plus Mistral Vibe en option » (Mistral n'est interrogé qu'avec sa clé). */
 export function enginesLabel(segment: OfferSegment, tier: OfferTier): string {
   const e = offerEntitlements(segment, tier).engines;
   const core = ORDER.filter((p) => p !== "mistral" && e.includes(p)).map((p) => ENGINE_NAMES[p]);
-  return e.includes("mistral") ? `${core.join(", ")}, plus Mistral Le Chat en option` : core.join(", ");
+  return e.includes("mistral") ? `${core.join(", ")}, plus Mistral Vibe en option` : core.join(", ");
 }
 
 export function enginesCount(segment: OfferSegment, tier: OfferTier): number {

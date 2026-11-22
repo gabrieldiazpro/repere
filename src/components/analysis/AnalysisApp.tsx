@@ -25,7 +25,13 @@ const SITE_RE = /^(https?:\/\/)?([a-z0-9àâçéèêëîïôûùüÿñæœ-]+\.)
  * /analyse : formulaire (un champ) → écran vivant branché sur le flux réel → rapport, sans changer de page.
  * Quand l'analyse est enregistrée, l'adresse devient le lien partageable signé (/analyse/<id>?t=<jeton>).
  */
-export function AnalysisApp({ prefill = {}, children }: { prefill?: AnalysisPrefill; children?: React.ReactNode }) {
+export interface EnginesInfo {
+  /** aucune IA configurée : réponses simulées */
+  demo: boolean;
+  engines: { id: string; label: string }[];
+}
+
+export function AnalysisApp({ prefill = {}, engines, children }: { prefill?: AnalysisPrefill; engines?: EnginesInfo; children?: React.ReactNode }) {
   const [stage, setStage] = useState<Stage>({ kind: 'form' });
   const [live, setLive] = useState<LiveState>(initialLive);
   const [elapsed, setElapsed] = useState(0);
@@ -114,7 +120,7 @@ export function AnalysisApp({ prefill = {}, children }: { prefill?: AnalysisPref
       <div ref={topRef} className={s.wrap}>
         {live.cached ? (
           <p className={`${s.alert} mb-6`} data-tone="brand" role="status">
-            Ce site a été analysé il y a moins de 10 minutes : voici ce résultat.{' '}
+            Ce site a été analysé il y a moins de 10 minutes : voici ce résultat (les IA ne sont pas réinterrogées).{' '}
             <button type="button" className={s.linkBtn} onClick={() => lastBody.current && run({ ...lastBody.current, fresh: true })}>
               Relancer une analyse complète
             </button>
@@ -148,7 +154,7 @@ export function AnalysisApp({ prefill = {}, children }: { prefill?: AnalysisPref
           ) : null}
         </div>
       ) : null}
-      <AnalysisForm prefill={prefill} error={formError} onSubmit={run} last={lastBody.current} />
+      <AnalysisForm prefill={prefill} error={formError} onSubmit={run} last={lastBody.current} engines={engines} />
       {/* Explications rendues côté serveur (SEO) : seulement avant l'analyse. */}
       {children}
     </div>
@@ -162,7 +168,9 @@ function AnalysisForm({
   error,
   onSubmit,
   last,
+  engines,
 }: {
+  engines?: EnginesInfo;
   prefill: AnalysisPrefill;
   error: { msg: string; fields?: Record<string, string>; tone?: 'down' | 'warn' } | null;
   onSubmit: (b: StartBody) => void;
@@ -212,11 +220,19 @@ function AnalysisForm({
   return (
     <div className={s.formHero}>
       <div>
-        <h1 className={s.h1}>En 60 secondes, la vérité sur votre visibilité Google et IA</h1>
+        <h1 className={s.h1}>Test gratuit : votre marque est-elle citée par les IA ?</h1>
         <p className={s.lede}>
-          Entrez l’adresse de votre site : notre robot l’explore pour de vrai, page par page, vérifie plus de 180 points SEO et ce que lisent
-          ChatGPT, Gemini et Perplexity, puis vous donne vos 5 priorités.
+          Entrez votre site : nous posons en direct de vraies questions de clients aux IA, et vous voyez qui elles citent, à quelle place, qui
+          passe devant vous et pourquoi. Puis votre site est analysé page par page (SEO et GEO), avec vos premières actions.
         </p>
+        {engines?.engines.length ? (
+          <p className={s.engines}>
+            <span>{engines.demo ? 'Démonstration, réponses simulées de' : 'Interrogées en direct :'}</span>
+            {engines.engines.map((e) => (
+              <b key={e.id}>{e.label}</b>
+            ))}
+          </p>
+        ) : null}
         <form className={s.form} onSubmit={submit} noValidate aria-label="Lancer l’analyse de votre site">
           {error ? (
             <p className={s.alert} data-tone={error.tone ?? 'down'} role="alert">
@@ -255,7 +271,7 @@ function AnalysisForm({
                 required
               />
               <button type="submit" className="ui-btn" data-variant="primary" data-size="lg" style={{ minHeight: 56, borderRadius: 12, fontSize: 16 }}>
-                Analyser mon site
+                Tester ma marque
               </button>
             </div>
             {fields.url ? (
@@ -264,7 +280,7 @@ function AnalysisForm({
               </p>
             ) : (
               <p id="an-url-help" className={s.help}>
-                Gratuit, sans inscription. La marque et la ville sont détectées sur votre site.
+                Gratuit, sans inscription ni carte bancaire, environ une minute. Marque, ville et métier sont détectés sur votre site, et corrigeables.
               </p>
             )}
           </div>
@@ -341,38 +357,41 @@ function AnalysisForm({
       </div>
 
       <aside className={s.reads} aria-labelledby="reads-h">
-        <h2 id="reads-h">Ce que l’analyse lit, pendant que vous regardez</h2>
+        <h2 id="reads-h">Ce qui se passe pendant la minute d’analyse</h2>
         <ol className={s.readsList}>
           <li>
             <span className={s.readsNum}>1</span>
             <span>
-              <b>Votre site, page par page</b>
-              Jusqu’à 60 pages, robots.txt et plan du site compris.
+              <b>Les questions de vos clients, posées aux IA</b>
+              3 à 5 questions, une réponse par IA : cité ou non, à quelle place, qui à votre place, la phrase exacte.
             </span>
           </li>
           <li>
             <span className={s.readsNum}>2</span>
             <span>
-              <b>Ce que Google attend</b>
-              Titres, indexation, liens, images, données structurées, mobile.
+              <b>Pourquoi eux plutôt que vous</b>
+              Les sources que l’IA a lues et ce que le site cité montre que le vôtre ne montre pas.
             </span>
           </li>
           <li>
             <span className={s.readsNum}>3</span>
             <span>
-              <b>Ce que les IA peuvent citer</b>
-              Accès de leurs robots, identité de l’entreprise, passages citables, fraîcheur.
+              <b>Votre site, page par page</b>
+              Jusqu’à 60 pages : ce que Google attend et ce que les IA peuvent citer.
             </span>
           </li>
           <li>
             <span className={s.readsNum}>4</span>
             <span>
-              <b>Les questions de vos clients</b>
-              Posées aux IA : êtes-vous cité, ou vos concurrents ?
+              <b>Vos premières actions</b>
+              Avec celles que Repéré peut préparer pour vous, à valider avant toute publication.
             </span>
           </li>
         </ol>
-        <p className={s.readsFoot}>Notre robot s’appelle RepereBot. Il respecte votre robots.txt et ne lit que des pages publiques.</p>
+        <p className={s.readsFoot}>
+          Une seule mesure ne dit pas tout : nous affichons la marge d’erreur, et le suivi la confirme dans le temps. Notre robot, RepereBot,
+          respecte votre robots.txt et ne lit que des pages publiques.
+        </p>
       </aside>
     </div>
   );

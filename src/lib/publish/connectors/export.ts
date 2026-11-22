@@ -4,6 +4,7 @@
  * L'archive contient aussi l'état « avant » (dossier `avant/`) pour revenir en arrière.
  * La vérification relit ensuite la page publique (src/lib/publish/verify.ts).
  */
+import { MAGENTO_STEPS } from './magento';
 import { tryFetch } from '@/lib/siteaudit/fetch';
 import { buildZip } from '../zip';
 import { KIND_LABEL, PLATFORM_LABEL, type Change, type ChangeSet, type ConnectInput, type PublishConnector, type ResourceRef, type TestResult } from '../types';
@@ -72,7 +73,7 @@ export const WIX_STEPS: Partial<Record<Change['kind'], string>> = {
 };
 
 /** Fichiers de l'export (texte) + archive ZIP. `cms: 'wix'` ajoute le pas à pas dans l'éditeur Wix. */
-export function buildExportBundle(cs: ChangeSet, now: Date = new Date(), opts: { cms?: 'wix' } = {}): { files: { name: string; content: string }[]; zip: Buffer } {
+export function buildExportBundle(cs: ChangeSet, now: Date = new Date(), opts: { cms?: 'wix' | 'magento' } = {}): { files: { name: string; content: string }[]; zip: Buffer } {
   const files: { name: string; content: string }[] = [];
   const steps: string[] = [];
   const changes = cs.changes.filter((c) => c.status !== 'skipped' && c.after !== null);
@@ -115,6 +116,8 @@ export function buildExportBundle(cs: ChangeSet, now: Date = new Date(), opts: {
     );
   });
   if (opts.cms === 'wix') for (const k of [...new Set(changes.map((c) => c.kind))]) if (WIX_STEPS[k]) steps.push(WIX_STEPS[k] as string);
+  // V8 (demande ECOM) : pas à pas Magento.
+  if (opts.cms === 'magento') for (const k of [...new Set(changes.map((c) => c.kind))]) if (MAGENTO_STEPS[k]) steps.push(MAGENTO_STEPS[k] as string);
   const readme = [
     `Repéré — modifications à appliquer : ${cs.title}`,
     `Site : ${cs.site}`,

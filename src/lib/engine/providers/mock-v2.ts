@@ -473,6 +473,11 @@ const INTRO: Record<ProviderId, string> = {
   gemini: 'Plusieurs acteurs se distinguent',
   claude: 'Voici quelques pistes sérieuses',
   mistral: "D'après les résultats de recherche",
+  google_aio: 'Plusieurs acteurs ressortent des résultats',
+  google_ai_mode: 'Voici les options qui ressortent des avis et comparatifs',
+  copilot: "D'après les résultats de recherche",
+  deepseek: 'Voici quelques recommandations',
+  grok: 'Selon les sources consultées',
 };
 
 function segmentReco(input: AuditInput, provider: ProviderId, q: QuerySpec, run: number, seed: string): AskResult {
@@ -571,7 +576,19 @@ function localReco(input: AuditInput, provider: ProviderId, q: QuerySpec, run: n
 }
 
 /** Réponse mock V2 (tous parcours, requêtes de recommandation et de marque). */
+/**
+ * V8 : part simulée des recherches SANS réponse IA affichée (Google n'affiche pas d'aperçu IA partout ; Bing pas
+ * toujours de réponse Copilot). Même page de résultats d'un passage à l'autre (indépendant du passage).
+ */
+const DEMO_ABSENT_RATE: Partial<Record<ProviderId, number>> = { google_aio: 0.35, copilot: 0.45 };
+
+export function mockAbsent(input: AuditInput, provider: ProviderId, q: QuerySpec, seed: string): boolean {
+  const rate = DEMO_ABSENT_RATE[provider];
+  return !!rate && seededRandom(`absent|${seed}|${input.businessName}|${provider}|${q.id}`)() < rate;
+}
+
 export function mockAnswerV2(input: AuditInput, provider: ProviderId, q: QuerySpec, run: number, seed: string): AskResult {
+  if (mockAbsent(input, provider, q, seed)) return { text: '', citations: [], absent: true };
   if (isBrandQuery(q)) return brandAnswer(input, provider, q, run, seed);
   const seg = segmentOf(input);
   if (seg === 'local') return localReco(input, provider, q, run, seed);

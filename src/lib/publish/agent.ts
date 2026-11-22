@@ -108,7 +108,19 @@ async function defaultDeps(): Promise<AgentDeps> {
       const m = await import('@/lib/notify');
       // « email » : canal complet (centre + e-mail selon les préférences d'alerte) ; « app » : centre seulement.
       if (channel === 'email') await m.notify(businessId, n);
-      else await m.addNotification(businessId, n);
+      else {
+        await m.addNotification(businessId, n);
+        // V8 (demande API-PUBLIQUE) : le webhook « proposal.pending » part aussi en mode « app » (cibles abonnées seulement).
+        try {
+          const { extraWebhookEvents } = await import('@/lib/publicapi/webhooks');
+          const { dispatchEvent } = await import('@/lib/integrations');
+          for (const x of await extraWebhookEvents(businessId, n)) {
+            await dispatchEvent(businessId, x.event, { title: x.title, body: x.body, href: x.href, severity: x.severity, data: x.data }, { only: ['webhook'], dedupeKey: `${x.event}:${n.dedupeKey}` });
+          }
+        } catch {
+          /* webhooks indisponibles : la notification dans l'app suffit */
+        }
+      }
     },
   };
 }

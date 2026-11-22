@@ -2,7 +2,8 @@
  * Comparaison Découverte / Essentiel / Accompagné par parcours, tirée de la grille (docs/v2/07-plans-v2.json et
  * décision 2 du contrat V3 pour Découverte). Les prix viennent de la grille au rendu, jamais d'ici.
  */
-import { enginesLabel, frequencyLabel, promptsCount, type OfferTier } from "@/components/site/offer-facts";
+import { enginesLabel, frequencyLabel, offerEntitlements, promptsCount, type OfferTier } from "@/components/site/offer-facts";
+import { MONTHLY_QUOTA } from "@/lib/content/quota";
 
 export type Seg = "local" | "pme" | "ecommerce";
 export type Cell = string | boolean;
@@ -17,6 +18,10 @@ export interface CompareRow {
 const q = (seg: Seg, t: OfferTier) => String(promptsCount(seg, t));
 const freq = (seg: Seg, t: OfferTier) => (t === "decouverte" ? "1 par mois" : frequencyLabel(seg, t));
 const RIVALS: Record<Seg, string> = { local: "3", pme: "5", ecommerce: "5" };
+/** V8 : plafond de contenus par mois (src/lib/content/quota.ts, proposition à valider par le fondateur). */
+const content = (t: "essentiel" | "accompagne") => `${MONTHLY_QUOTA[t]} par mois`;
+/** V8 : API publique lue dans les droits (champ `api`). */
+const api = (seg: Seg, t: OfferTier) => offerEntitlements(seg, t).api;
 
 const DONE: Record<Seg, string> = {
   local: "Fiches Google, Bing et Apple tenues à jour, réponses aux avis, campagne d'avis, 2 annuaires par mois",
@@ -34,6 +39,8 @@ export function compareRows(seg: Seg): CompareRow[] {
     { label: "Sources citées et opportunités", decouverte: "Sur vos 5 questions", essentiel: true, accompagne: true },
     { label: "Tâches de la semaine, textes prêts", decouverte: false, essentiel: true, accompagne: true },
     { label: "Travail fait pour vous", decouverte: false, essentiel: false, accompagne: DONE[seg] },
+    { label: "Contenus rédigés et publiés pour vous, après votre validation", decouverte: "Propositions visibles", essentiel: content("essentiel"), accompagne: content("accompagne") },
+    { label: "API publique, serveur MCP et webhooks", decouverte: api(seg, "decouverte"), essentiel: api(seg, "essentiel"), accompagne: api(seg, "accompagne") },
     { label: "Rapport mensuel", decouverte: false, essentiel: true, accompagne: "Avec point visio" },
     { label: "Engagement", decouverte: "Aucun, gratuit", essentiel: "Aucun", accompagne: "3 mois, puis sans engagement" },
   ];

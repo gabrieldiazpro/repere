@@ -254,7 +254,7 @@ function Barometre({ stats }: { stats: StudyStats | null }) {
           <li>Échantillon auto-sélectionné : les entreprises qui testent leur visibilité ne sont pas représentatives de toutes les entreprises.</li>
           <li>Les réponses des IA changent d&apos;un mois à l&apos;autre : chaque chiffre est daté et doit être lu comme une photographie.</li>
           <li>Gemini avec recherche web ne permet pas d&apos;analyser les sources citées dans les conditions de son API ; le Baromètre ne publie donc pas de sources pour Gemini.</li>
-          <li>Google AI Overviews et AI Mode ne sont pas mesurés directement.</li>
+          <li>À la date de l&apos;étude, Google AI Overviews et AI Mode n&apos;étaient pas mesurés directement (ils le sont depuis, en option).</li>
         </ul>
       </QaSection>
     </>

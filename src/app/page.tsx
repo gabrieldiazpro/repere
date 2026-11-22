@@ -23,6 +23,8 @@ import { FACTS } from "@/components/site/facts";
 import { DigestScreen, HallucinationScreen } from "@/components/site/mockups";
 import { euros, tiersFor } from "@/components/site/plans-v2";
 import { frequencySummary } from "@/components/site/offer-facts";
+import { brandTestEngines } from "@/lib/analysis/aicheck";
+import { aiCoverageCounts } from "@/components/site/ai-coverage";
 import { pageMeta } from "@/lib/seo/meta";
 import { JsonLd } from "@/lib/seo/shell";
 import { GUIDES, guidePath } from "@/lib/seo/guides";
@@ -32,15 +34,23 @@ import { houseOrgExtras, mergeOrg } from "@/lib/seo/house";
 
 const TITLE = "SEO et référencement IA (GEO) des sites pros | Repéré";
 const DESCRIPTION =
-  `Analyse de votre site en 60 s : ${SEO_CHECK_COUNT} contrôles SEO, ce que lisent ChatGPT, Gemini et Perplexity, vos 5 priorités, puis les corrections avec vous.`;
+  `Votre marque est-elle citée par les IA ? Test gratuit sans carte bancaire : qui elles citent à votre place et pourquoi, puis ${SEO_CHECK_COUNT} contrôles SEO de votre site.`;
 
 export const metadata = pageMeta({
   path: "/",
   title: TITLE,
   absoluteTitle: true,
   description: DESCRIPTION,
-  ogTitle: "Google et les IA décident qui vos clients trouvent.",
+  ogTitle: "Votre marque est-elle citée par les IA ?",
 });
+
+/** « Interrogées en direct : ChatGPT, Gemini, Perplexity… » : les IA réellement configurées (test de marque). */
+function heroEngines(): string {
+  const bt = brandTestEngines();
+  if (bt.demo) return "Serveur de démonstration : réponses des IA simulées.";
+  const names = bt.engines.map((e) => e.label);
+  return `Interrogées en direct : ${names.slice(0, 4).join(", ")}${names.length > 4 ? "…" : ""}.`;
+}
 
 /** Le balisage de l'organisation est complété par notre propre module d'exécution (dogfooding), une fois par jour. */
 export const revalidate = 86400;
@@ -79,7 +89,7 @@ const PILLARS = [
     verb: "Agir",
     hint: "Prêt ou appliqué",
     title: "La correction prête, ou appliquée sur votre site",
-    text: "Titres, descriptions, balisage, redirections, réécriture de passages : l'agent prépare, vous validez, il publie sur WordPress, Shopify, Webflow ou PrestaShop, puis vérifie.",
+    text: "Titres, descriptions, balisage, redirections, réécriture de passages : l'agent prépare, vous validez, il publie sur WordPress (et WooCommerce), Shopify, Webflow, PrestaShop, Wix ou Magento, puis vérifie.",
     points: ["Avant / après visible, page par page", "Rien n'est publié sans votre accord", "Chaque changement s'annule en un clic"],
     video: "agir" as const,
     videoTitle: "Les actions de la semaine, déjà rédigées",
@@ -134,7 +144,7 @@ const FAQ: QA[] = [
   },
   {
     q: "Repéré est-il un outil GEO français ?",
-    a: `Oui. Repéré est un service français de référencement SEO et IA (GEO) ; il propose une offre gratuite permanente et des offres dès ${euros(ENTRY_MONTHLY)} par mois. Il ne suit pas directement les aperçus IA (AI Overviews) ni le mode IA de Google : leurs clics sont compris dans la Search Console.`,
+    a: `Oui. Repéré est un service français de référencement SEO et IA (GEO) ; il propose une offre gratuite permanente, sans carte bancaire, et des offres dès ${euros(ENTRY_MONTHLY)} par mois. Il sait mesurer ${aiCoverageCounts().total} IA, dont les aperçus IA (AI Overviews) et le mode IA de Google relevés sur la page de résultats en France ; ${aiCoverageCounts().optional} d'entre elles sont en option, et la méthode de chacune est publiée.`,
   },
   {
     q: "Repéré remplace-t-il Semrush ou Ahrefs ?",
@@ -248,7 +258,7 @@ export default async function HomePage() {
         <section aria-labelledby="hero-title" className="relative overflow-hidden bg-canvas">
           <Parallax className="scope-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_30%,transparent_95%)]" />
           <Container className="relative pb-14 pt-8 sm:pb-20 sm:pt-14">
-            <HomeHero preview={<HeroAnalysisPreview />}>
+            <HomeHero preview={<HeroAnalysisPreview />} engines={heroEngines()}>
               <p className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[0.82rem] font-medium text-ink/80 shadow-[0_0_0_1px_rgba(27,31,46,.08)] sm:text-[0.9rem]">
                 <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
                 SEO et référencement IA des sites professionnels
@@ -257,10 +267,12 @@ export default async function HomePage() {
                 id="hero-title"
                 className="mt-5 text-[2.2rem] font-bold leading-[1.03] tracking-[-0.035em] text-ink sm:mt-6 sm:text-[3.3rem] lg:text-[3.35rem]"
               >
-                Google et les IA décident qui vos clients trouvent.
+                {/* Trait d'union insécable : « est-/elle » ne se coupe pas en fin de ligne. */}
+                Votre marque est‑elle citée par les IA ?
               </h1>
-              <p className="mt-4 max-w-[50ch] text-[1.05rem] text-ink/75 sm:mt-5 sm:text-[1.2rem]">
-                Repéré analyse votre site pour de vrai, vous dit quoi corriger, et le fait avec vous. Commerces, PME, e-commerce.
+              <p className="mt-4 max-w-[52ch] text-[1.05rem] text-ink/75 sm:mt-5 sm:text-[1.2rem]">
+                Nous posons en direct de vraies questions de clients aux IA : vous voyez qui elles citent, à quelle place, qui passe devant vous et
+                pourquoi. Puis votre site est analysé page par page.
               </p>
             </HomeHero>
           </Container>
@@ -544,10 +556,10 @@ export default async function HomePage() {
               Voyez votre site comme Google et les IA le voient.
             </h2>
             <p className="mt-4 max-w-xl text-lg text-on-deep">60 secondes, votre vrai site, vos 5 priorités.</p>
-            <QuickAuditForm segment="local" idPrefix="cta" dark className="mt-8" submitLabel="Analyser mon site" shortLabel="Analyser" />
+            <QuickAuditForm segment="local" idPrefix="cta" dark className="mt-8" submitLabel="Tester ma marque" shortLabel="Tester" />
             <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <Reassure dark items={["Gratuit", "Sans compte ni carte bancaire", "Robot respectueux de votre robots.txt"]} />
-              <Link href="/tarifs?segment=agence" className="inline-flex min-h-11 items-center font-semibold text-white underline underline-offset-4 hover:no-underline">
+              <Reassure dark items={["Gratuit, sans carte bancaire", "Sans compte", "Robot respectueux de votre robots.txt"]} />
+              <Link href="/agences" className="inline-flex min-h-11 items-center font-semibold text-white underline underline-offset-4 hover:no-underline">
                 Vous êtes une agence ? L&apos;offre partenaire
               </Link>
             </div>

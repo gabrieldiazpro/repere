@@ -123,6 +123,12 @@ function ActionDetail({ task, onSet, ent, businessId, demo, impact }: { task: Ex
             <Icon name="send" size={16} /> Faire par l’agent
           </Link>
         )}
+        {/* V8 (AGENT-CONTENU) : pages et mentions préparées par l'agent de contenu. */}
+        {(task.kind === 'content' || task.kind === 'source_outreach' || task.kind === 'directory') && task.status !== 'done' && task.status !== 'skipped' && (
+          <Link href={task.kind === 'content' ? `/app/contenu?tache=${encodeURIComponent(task.id)}` : '/app/contenu/mentions'} className="rp-btn">
+            <Icon name="file" size={16} /> {task.kind === 'content' ? 'Rédiger avec l’agent' : 'Voir le message rédigé'}
+          </Link>
+        )}
         {task.status === 'todo' && (
           <button type="button" className="rp-btn" onClick={() => onSet('in_progress')}>
             Je m’en occupe

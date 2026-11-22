@@ -5,7 +5,8 @@ import type { ModuleId } from '@/lib/analysis/types';
 import s from './analysis.module.css';
 import { ScoreDial } from './ScoreDial';
 import { SiteMap } from './SiteMap';
-import { SEVERITY_LABEL, SEVERITY_TONE, SOURCE_LABEL, clock, hostOf, pathOf, providerLabel, seconds } from './format';
+import { BrandTestLive } from './BrandTest';
+import { SEVERITY_LABEL, SEVERITY_TONE, SOURCE_LABEL, clock, hostOf, pathOf, seconds } from './format';
 import type { LiveState } from './stream';
 
 const STEP_ORDER: { id: ModuleId; label: string }[] = [
@@ -13,7 +14,7 @@ const STEP_ORDER: { id: ModuleId; label: string }[] = [
   { id: 'crawl', label: 'Exploration du site' },
   { id: 'seo', label: 'Audit Google (SEO)' },
   { id: 'geo', label: 'Audit IA (GEO)' },
-  { id: 'ai', label: 'Questions posées aux IA' },
+  { id: 'ai', label: 'Test de marque auprès des IA' },
   { id: 'data', label: 'Vitesse mobile (PageSpeed)' },
 ];
 
@@ -43,7 +44,6 @@ export function LiveAnalysis({
   const d = live.detection;
   const [editing, setEditing] = useState(false);
   const findings = [...live.findings].reverse();
-  const aiPct = live.ai.total ? live.ai.done / live.ai.total : 0;
   return (
     <section aria-labelledby="live-title">
       <div className={s.liveHead}>
@@ -86,6 +86,9 @@ export function LiveAnalysis({
           <div className={s.clockLabel}>temps réel</div>
         </div>
       </div>
+
+      {/* V8 : le test de marque d'abord (questions posées en direct aux IA), l'exploration du site ensuite. */}
+      <BrandTestLive plan={live.brand.plan} test={live.brand.test} skip={live.brand.skip} byProvider={live.ai.byProvider} progress={live.ai} />
 
       <div className={s.liveGrid}>
         <div className={s.scan}>
@@ -146,7 +149,7 @@ export function LiveAnalysis({
         </div>
       </div>
 
-      <div className={s.bottomGrid}>
+      <div className={s.bottomGrid} data-single="">
         <div className={s.panel}>
           <h2 className={s.panelTitle}>Étapes</h2>
           <ol className={s.steps}>
@@ -163,33 +166,6 @@ export function LiveAnalysis({
               );
             })}
           </ol>
-        </div>
-        <div className={s.panel}>
-          <h2 className={s.panelTitle}>Questions posées aux IA</h2>
-          {live.ai.total ? (
-            <>
-              <p className={s.aiLine}>
-                <b>{live.ai.done}</b> réponses reçues sur <b>{live.ai.total}</b>
-                {live.ai.last && live.ai.done < live.ai.total ? `, ${providerLabel(live.ai.last)} répond…` : ''}
-              </p>
-              <div className={s.aiBar} role="progressbar" aria-label="Réponses des IA reçues" aria-valuemin={0} aria-valuemax={live.ai.total} aria-valuenow={live.ai.done}>
-                <div className={s.aiFill} style={{ transform: `scaleX(${aiPct})` }} />
-              </div>
-              <div className={s.chips}>
-                {live.ai.providers.map((p) => (
-                  <span key={p} className={s.chip}>
-                    {providerLabel(p)}
-                  </span>
-                ))}
-              </div>
-              {live.findings.some((f) => f.id === 'ai.quick.mentions' && f.severity === 'info') ? (
-                <p className={`${s.small} mt-2`}>Démonstration : aucune IA n’est branchée sur ce serveur, les réponses sont simulées.</p>
-              ) : null}
-            </>
-          ) : (
-            <p className={s.aiLine}>{live.steps.ai?.status === 'skipped' ? 'Contrôle non lancé pour cette activité.' : 'Préparation des questions de vos clients…'}</p>
-          )}
-          <p className={`${s.small} mt-3`}>Les réponses complètes s’affichent dans le rapport.</p>
         </div>
       </div>
       <p className="mt-6">

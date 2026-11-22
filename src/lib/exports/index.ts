@@ -3,7 +3,7 @@
  * Fonctions pures de mise en lignes (testables) + `buildExport` qui charge les données d'un commerce.
  * Jamais d'e-mail ni de donnée de contact dans un export.
  */
-import type { AuditResult, ProviderId } from '@/lib/engine/types';
+import { ALL_PROVIDERS, PROVIDER_LABELS, type AuditResult, type ProviderId } from '@/lib/engine/types';
 import type { ExecTask } from '@/lib/engine/types-v2';
 import { auditStats } from '@/lib/digest/stats';
 import { listAuditsForBusiness } from '@/lib/db';
@@ -29,7 +29,8 @@ export const EXPORT_LABELS: Record<ExportKind, string> = {
   scores: 'Historique des scores',
 };
 
-const PROVIDER_NAMES: Record<string, string> = { chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', mistral: 'Mistral (Le Chat)', copilot: 'Copilot', other_ai: 'Autres IA' };
+/** Noms des IA : source unique du moteur (PROVIDER_LABELS) ; `other_ai` vient du suivi du trafic. */
+const PROVIDER_NAMES: Record<string, string> = { ...PROVIDER_LABELS, other_ai: 'Autres IA' };
 export const providerName = (p: string) => PROVIDER_NAMES[p] ?? p;
 
 type Audit = AuditResult;
@@ -184,7 +185,8 @@ export function trafficRows(t: AiTrafficSummary): TrafficRow[] {
 // ---------------------------------------------------------------------------
 // Colonnes (libellés français)
 // ---------------------------------------------------------------------------
-const SCORE_PROVIDERS: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude'];
+/** V8 : une colonne de note par IA mesurable (vide quand l'IA ne faisait pas partie de la mesure). */
+const SCORE_PROVIDERS: ProviderId[] = [...ALL_PROVIDERS];
 
 export const COLUMNS = {
   questions: [
@@ -264,7 +266,7 @@ export const COLUMNS = {
     { key: 'date', label: 'Date', value: (r: TrafficRow) => r.date },
     { key: 'total', label: 'Visites totales', value: (r: TrafficRow) => r.total },
     { key: 'ai', label: 'Visites venues des IA', value: (r: TrafficRow) => r.ai },
-    ...ENGINES.map((e) => ({ key: e, label: `Visites ${providerName(e)}`, value: (r: TrafficRow) => r.byEngine[e] ?? 0 })),
+    ...ENGINES.map((e) => ({ key: e, label: `Visites ${e === 'copilot' ? 'Copilot' : providerName(e)}`, value: (r: TrafficRow) => r.byEngine[e] ?? 0 })),
     { key: 'conv', label: 'Conversions venues des IA', value: (r: TrafficRow) => r.conversions },
   ] satisfies CsvColumn<TrafficRow>[],
   scores: [

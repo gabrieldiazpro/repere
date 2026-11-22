@@ -42,6 +42,8 @@ async function allowed(id: string): Promise<Set<string>> {
     for (const p of a.providersUsed) derived.push(Math.round((providerRate(a, p) ?? 0) * 100));
     derived.push(Math.round((s.citations / Math.max(1, s.answers)) * 100));
   }
+  // « absent de N réponses sur M » (écran Produits) : N = réponses de la catégorie − apparitions.
+  for (const p of (c.products ?? []) as { answers?: number; appearances?: number }[]) derived.push((p.answers ?? 0) - (p.appearances ?? 0));
   const t = c.traffic;
   if (t) {
     derived.push(Math.round(t.totals.aiShare * 1000) / 10, Math.round(t.totals.aiShare * 100));
@@ -218,11 +220,13 @@ describe('les 30 questions : chiffres et entités exacts', () => {
     const s = auditStats(c.latest!);
     const a = await ask('demo-pme', THIRTY[14][1]);
     const csv = a.deliverables.find((d) => d.type === 'csv')!.content.split('\n');
-    expect(csv[0]).toBe('rang;acteur;citations;part_de_voix;citations_chatgpt;citations_perplexity;citations_gemini;vous');
+    // V8 : une colonne par IA mesurée (les comptes démo simulent aussi les IA mesurées via les pages de résultats).
+    expect(csv[0]).toBe(['rang', 'acteur', 'citations', 'part_de_voix', ...s.providers.map((p) => `citations_${p}`), 'vous'].join(';'));
+    expect(s.providers.slice(0, 3)).toEqual(['chatgpt', 'perplexity', 'gemini']);
     expect(csv).toHaveLength(s.rows.length + 1);
     for (const line of csv.slice(1)) {
       const [, name, total, , ...rest] = line.split(';');
-      const byIa = rest.slice(0, 3).map(Number);
+      const byIa = rest.slice(0, s.providers.length).map(Number);
       expect(byIa.reduce((x, y) => x + y, 0)).toBe(Number(total));
       expect(s.rows.find((r) => r.name === name)?.mentions).toBe(Number(total));
     }
@@ -247,7 +251,7 @@ describe('les 30 questions : chiffres et entités exacts', () => {
     const v = await ask('demo-ecom', THIRTY[20][1]);
     expect(v.content).toContain(`${k.byEngine.chatgpt!.orders} commandes`);
     const l = await ask('demo-ecom', THIRTY[22][1]);
-    expect(l.content).toMatch(/Lamazuna n’apparaît dans aucune des 48 réponses/);
+    expect(l.content).toMatch(new RegExp(`Lamazuna n’apparaît dans aucune des ${auditStats(c.latest!).answers} réponses`));
     expect(l.content).toContain('Savonnerie Alba');
     expect(l.content).not.toMatch(/Lamazuna (est|a) (présent|cité \d)/);
     const comp = await ask('demo-ecom', THIRTY[24][1]);
@@ -297,7 +301,7 @@ describe('variantes : fautes, tutoiement, composées', () => {
     ['demo', 'Et Atelier Henry ?', 'competitor', (a) => expect(a.content).toMatch(/Par IA \(Atelier Henry contre vous\)/)],
     ['demo', 'Quelle est ma note sur Copilot ?', 'provider_score', (a) => expect(a.content).toMatch(/Copilot n’est pas mesuré/)],
     ['demo-pme', 'Prépare un brief pour la question « alternative à Paylo »', 'content_brief', (a) => expect(a.deliverables[0].content).toMatch(/alternative à Paylo/)],
-    ['demo-pme', 'Rédige un e-mail pour proposer un article au Journal du Net', 'outreach_email', (a) => expect(a.content).toMatch(/Journal du Net/)],
+    ['demo-pme', 'Rédige un e-mail pour proposer un article au Blog du Modérateur', 'outreach_email', (a) => expect(a.content).toMatch(/Blog du Modérateur/)],
     ['demo', 'Écris la description de ma fiche Google', 'gbp_description', (a) => expect(a.deliverables[0].content.length).toBeLessThanOrEqual(750)],
     ['demo-pme', 'Qui progresse le plus vite depuis le début ?', 'fastest_competitor', (a) => expect(a.content).toMatch(/5 juin 2026/)],
     ['demo-ecom', 'combien de commandes via perplexity ?', 'traffic', (a, c) => expect(a.content).toContain(`${c.traffic!.commerce!.byEngine.perplexity!.orders} commandes`)],
@@ -376,7 +380,14 @@ describe('suggestions contextuelles', () => {
     const ecom = suggestionsFor(await ctxOf('demo-ecom'), 'trafic');
     expect(ecom[0]).toBe('Combien de ventes viennent de ChatGPT ?');
     expect(suggestionsFor(await ctxOf('demo'), 'lundi')).toContain('Quelles erreurs les IA disent-elles sur moi ?');
-    expect(suggestionsFor(await ctxOf('demo-pme'), 'concurrents')[0]).toBe('Pourquoi Paylo passe devant moi ?');
+    // Concurrent nommé dérivé des données démo (le plus cité devant vous), pas figé dans le test.
+    const pme = await ctxOf('demo-pme');
+    const st = auditStats(pme.latest!);
+    const me = st.rows.find((r) => r.isMe)?.mentions ?? 0;
+    const ahead = st.rows.filter((r) => !r.isMe && r.mentions > me).map((r) => r.name);
+    const first = suggestionsFor(pme, 'concurrents')[0];
+    expect(first).toMatch(/^Pourquoi .+ passe devant moi \?$/);
+    expect(ahead).toContain(first.replace(/^Pourquoi (.+) passe devant moi \?$/, '$1'));
   });
 });
 

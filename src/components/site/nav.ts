@@ -12,18 +12,20 @@ export type NavGroup = { id: string; label: string; items: readonly NavItem[]; w
 export type LandingSegment = "local" | "pme" | "ecommerce";
 
 export const PRODUCT: readonly NavItem[] = [
-  { href: "/analyse", label: "Analyse gratuite en 60 s", text: "Votre site lu comme Google et les IA le lisent" },
-  { href: "/fonctionnalites", label: "Toutes les fonctionnalités", text: "SEO, GEO, agent, mesure des IA" },
+  { href: "/analyse", label: "Test de marque gratuit", text: "Votre marque est-elle citée par les IA ? Puis votre site analysé" },
+  { href: "/inscription", label: "Créer un compte gratuit", text: "Gratuit, sans carte bancaire" },
+  { href: "/fonctionnalites", label: "Toutes les fonctionnalités", text: "SEO, GEO, agents, mesure de 10 IA" },
   { href: "/fonctionnalites/audit-seo", label: "Audit SEO", text: "Contrôles sourcés, 5 priorités" },
   { href: "/fonctionnalites/positions-et-search-console", label: "Positions et Search Console", text: "Ce que Google vous apporte" },
   { href: "/fonctionnalites/geo-avance", label: "GEO avancé", text: "Être lu, compris et cité par les IA" },
   { href: "/fonctionnalites/agent-de-publication", label: "Agent de publication", text: "Corrections appliquées, avec votre accord" },
+  { href: "/fonctionnalites/agent-de-contenu", label: "Agent de contenu", text: "Pages manquantes rédigées avec vos faits, validées par vous" },
   { href: "/demo", label: "Voir la démo", text: "Vidéos et compte démo, sans inscription" },
   { href: "/fonctionnalites/mesurer", label: "Mesurer", text: "Ce que répondent les IA à vos questions" },
   { href: "/fonctionnalites/comprendre", label: "Comprendre", text: "Sources, erreurs, concurrents devant vous" },
   { href: "/fonctionnalites/agir", label: "Agir", text: "Tâches prêtes ou faites pour vous" },
   { href: "/fonctionnalites/prouver", label: "Prouver", text: "Visites et ventes venues des IA" },
-  { href: "/integrations", label: "Intégrations", text: "WordPress, Shopify, Search Console, GA4" },
+  { href: "/integrations", label: "Intégrations", text: "WordPress, WooCommerce, Shopify, Magento, Wix, Search Console" },
   { href: "/nouveautes", label: "Nouveautés", text: "Ce qui change, daté" },
   { href: "/securite", label: "Sécurité", text: "Vos données et notre robot" },
 ];
@@ -32,7 +34,8 @@ export const SOLUTIONS: readonly NavItem[] = [
   { href: "/local", label: "Commerce local", text: "SEO local et IA : artisans, restaurants, instituts" },
   { href: "/pme", label: "PME et services B2B", text: "SEO B2B et IA : SaaS, cabinets, industrie" },
   { href: "/e-commerce", label: "E-commerce", text: "Fiches produit, facettes, Shopping, IA" },
-  { href: "/tarifs?segment=agence", label: "Agences", text: "Marque blanche et partenariat" },
+  { href: "/outils/simulateur-boutique", label: "Simulateur pour ma boutique", text: "Ce que la visibilité IA peut représenter, en fourchette" },
+  { href: "/agences", label: "Agences", text: "Marque blanche, multi-clients, API et MCP" },
   { href: "/cas-usage", label: "Cas d'usage par métier", text: "Plombiers, restaurants, SaaS, cosmétiques…" },
 ];
 
@@ -56,7 +59,8 @@ export const RESOURCES: readonly NavItem[] = [
   { href: "/aide", label: "Centre d'aide", text: `Bien utiliser Repéré, en ${HELP_ARTICLES.length} réponses` },
   { href: "/questions", label: "Questions fréquentes", text: "Des réponses franches sur le référencement IA" },
   { href: "/geo", label: "Le GEO", text: "Définition et leviers, sources à l'appui" },
-  { href: "/methode", label: "Méthode", text: "Contrôles SEO, règles GEO, marges d'erreur" },
+  { href: "/methode", label: "Méthode", text: "Contrôles SEO, règles GEO, méthode de chaque IA" },
+  { href: "/developpeurs", label: "Développeurs (API, MCP)", text: "API REST, serveur MCP en lecture, webhooks signés" },
   { href: "/comparatif", label: "Comparatif", text: "Semrush, Ahrefs, Peec, Otterly, agences" },
   { href: "/etudes", label: "Études et baromètre", text: "Ce que disent les données publiques" },
   { href: "/glossaire", label: "Glossaire", text: "Les termes du GEO expliqués simplement" },
@@ -116,9 +120,10 @@ export const FOOTER_COLUMNS: readonly { title: string; links: readonly NavItem[]
       { href: "/nouveautes", label: "Nouveautés" },
       { href: "/securite", label: "Sécurité" },
       { href: "/statut", label: "État des services" },
-      { href: "/analyse", label: "Analyse gratuite du site" },
-      { href: "/audit", label: "Test de visibilité IA" },
-      { href: "/inscription", label: "Créer un compte gratuit" },
+      { href: "/analyse", label: "Test de marque gratuit" },
+      { href: "/audit", label: "Test de visibilité IA par nom" },
+      { href: "/inscription", label: "Créer un compte gratuit, sans carte bancaire" },
+      { href: "/fonctionnalites/agent-de-contenu", label: "Agent de contenu" },
     ],
   },
   {

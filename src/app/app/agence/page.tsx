@@ -25,7 +25,7 @@ export default async function AgencePage() {
             lead="Tous vos clients sur une page, rapports à votre marque, accès client pour valider les corrections et exports CSV par client."
             action={{ href: '/app?compte=demo-agence', label: 'Voir la démo agence', icon: 'eye' }}
             secondary={
-              <Link href="/tarifs?segment=agence" className="rp-btn">
+              <Link href="/agences" className="rp-btn">
                 Voir l’offre Agence
               </Link>
             }

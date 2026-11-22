@@ -113,7 +113,7 @@ export async function Footer() {
         <div className="mt-12 space-y-3 border-t border-white/15 pt-6 text-sm">
           <p className="max-w-3xl">
             Repéré est un service indépendant, sans lien avec OpenAI, Google, Microsoft, Perplexity, Anthropic ou Mistral AI. ChatGPT,
-            Gemini, Copilot, Perplexity, Claude et Le Chat sont des marques de leurs propriétaires respectifs. Nous ne promettons
+            Gemini, Copilot, Perplexity, Claude, DeepSeek, Grok, Mistral et Vibe sont des marques de leurs propriétaires respectifs (OpenAI, Google, Microsoft, Perplexity, Anthropic, DeepSeek, xAI, Mistral AI). Nous ne promettons
             aucune position dans une IA : nous garantissons le travail fait et une mesure honnête.
           </p>
           <p>Prix nets : {VAT_NOTICE}.</p>

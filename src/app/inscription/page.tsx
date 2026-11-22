@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { getAudit } from '@/lib/db';
-import { authMode } from '@/lib/auth/config';
+import { authMode, demoAccounts } from '@/lib/auth/config';
 import { tradeOfAudit, type OriginAuditInput } from '@/lib/auth/profile';
 import { SignupForm } from '../connexion/AccountForms';
 import { AuthShell, Notice } from '../connexion/AuthShell';
@@ -11,7 +11,7 @@ import { AuthShell, Notice } from '../connexion/AuthShell';
 export const metadata: Metadata = {
   title: 'Créer un compte gratuit',
   description:
-    'Offre Découverte gratuite et sans limite de durée : analyse et audit SEO + GEO de votre site chaque mois, 5 questions suivies sur ChatGPT, Gemini et Perplexity.',
+    'Offre Découverte gratuite, sans carte bancaire ni limite de durée : votre marque suivie dans les IA (5 questions) et l’audit SEO + GEO du site chaque mois.',
   alternates: { canonical: '/inscription' },
 };
 export const dynamic = 'force-dynamic';
@@ -46,12 +46,15 @@ export default async function InscriptionPage({ searchParams }: { searchParams: 
   const analysis = !audit && analysisId && /^an_[A-Za-z0-9_-]{1,77}$/.test(analysisId) ? analysisId : undefined;
   const clip = (v: string | undefined, n: number) => (v ? v.trim().slice(0, n) : '');
   const site = analysis ? clip(first(sp.site), 200) : '';
+  const safe = (v: string) => (/^[\p{L}\p{N} '’\-&/().,]+$/u.test(v) ? v : '');
+  const analysisToken = analysis ? first(sp.t) : undefined;
   const prefill = {
     name: audit?.input.businessName ?? (analysis ? clip(first(sp.nom), 120) : ''),
     website: audit?.input.website ?? (/^https?:\/\//i.test(site) ? site : ''),
     analysis,
-    trade: same ? tradeOfAudit(origin) || undefined : undefined,
-    city: same ? (originSeg === 'local' ? origin?.city : origin?.market) || undefined : undefined,
+    trade: same ? tradeOfAudit(origin) || undefined : analysis ? safe(clip(first(sp.metier), 80)) || undefined : undefined,
+    city: same ? (originSeg === 'local' ? origin?.city : origin?.market) || undefined : analysis ? safe(clip(first(sp.ville), 80)) || undefined : undefined,
+    analysisToken: analysisToken && /^[A-Za-z0-9_-]{16,100}$/.test(analysisToken) ? analysisToken : undefined,
     district: same && originSeg === 'local' ? origin?.district || undefined : undefined,
     audit: audit ? audit.id : undefined,
     ref: ref && /^[A-Za-z0-9_-]{1,20}$/.test(ref) ? ref : undefined,
@@ -60,7 +63,7 @@ export default async function InscriptionPage({ searchParams }: { searchParams: 
   return (
     <AuthShell
       title="Créer un compte gratuit"
-      intro="Offre Découverte : votre site analysé et audité (SEO + GEO) chaque mois, 5 questions suivies sur ChatGPT, Gemini et Perplexity. Gratuit, sans carte bancaire, sans limite de durée."
+      intro="Offre Découverte : votre marque suivie dans les IA (5 questions), votre site analysé et audité (SEO + GEO) chaque mois. Gratuit, sans carte bancaire, sans limite de durée."
       aside={
         <>
           <p>
@@ -99,15 +102,22 @@ export default async function InscriptionPage({ searchParams }: { searchParams: 
               Votre audit de {prefill.name || 'votre entreprise'} vous attend : utilisez l’adresse e-mail donnée lors de l’audit pour le retrouver dans votre espace, avec le suivi mensuel.
             </Notice>
           )}
+          {demoAccounts() && (
+            <Notice tone="warning">
+              Serveur de démonstration : le compte est créé pour de vrai sur ce serveur, mais aucun e-mail réel n’est envoyé. Le lien de confirmation s’affiche après l’envoi.
+            </Notice>
+          )}
           {prefill.analysis && (
             <Notice tone="info">
-              Votre analyse vous attend : utilisez l’adresse e-mail saisie lors de l’analyse pour la retrouver dans votre espace.
+              {prefill.analysisToken
+                ? 'Votre analyse et votre test de marque seront rattachés à votre espace dès que vous aurez confirmé votre adresse.'
+                : 'Votre analyse vous attend : utilisez l’adresse e-mail saisie lors de l’analyse pour la retrouver dans votre espace.'}
             </Notice>
           )}
           {prefill.suite === 'carte' && (
             <Notice tone="info">Votre carte de score sera publiée dès que vous aurez confirmé votre adresse (celle utilisée pour l’audit).</Notice>
           )}
-          <SignupForm defaultSegment={segment} prefill={prefill} />
+          <SignupForm defaultSegment={segment} prefill={prefill} demo={demoAccounts()} />
         </>
       )}
     </AuthShell>

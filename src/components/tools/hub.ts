@@ -1,11 +1,11 @@
 /** Regroupement des outils pour le hub /outils (sans dépendance client : lisible côté serveur). */
 import type { IconName } from '@/components/app/icons';
 
-/** Date de mise à jour du hub (V6 : 11 outils SEO ajoutés ; V7 : 11 de plus, 31 en tout). */
-export const HUB_UPDATED = '2026-11-15';
+/** Date de mise à jour du hub (V6 : 11 outils SEO ajoutés ; V7 : 11 de plus, 31 en tout ; V8 : simulateur pour boutique, 32). */
+export const HUB_UPDATED = '2026-11-22';
 
 /**
- * Les 31 outils rangés selon le chemin d'une page vers Google et les IA : s'afficher, être indexée, laisser entrer
+ * Les outils rangés selon le chemin d'une page vers Google et les IA : s'afficher, être indexée, laisser entrer
  * les robots d'IA, être comprise, être lue et citée.
  */
 export const HUB_GROUPS: { id: string; title: string; text: string; step: string; icon: IconName; slugs: string[] }[] = [
@@ -49,6 +49,15 @@ export const HUB_GROUPS: { id: string; title: string; text: string; step: string
     text: 'Plan clair, textes lisibles et datés, faits nets, liens sains, avis.',
     slugs: ['structure-titres', 'lisibilite', 'citabilite', 'fraicheur-page', 'fiche-faits-cles', 'analyse-liens', 'comparateur', 'lien-avis-google'],
   },
+  {
+    // V8 (ECOM) : estimer l'enjeu (hors du « chemin d'une page », exclu du schéma de /outils).
+    id: 'estimer',
+    step: 'Estimer l’enjeu',
+    icon: 'trend',
+    title: 'Que représente la visibilité IA pour votre boutique ?',
+    text: 'Vos chiffres, une fourchette sourcée, des hypothèses modifiables.',
+    slugs: ['simulateur-boutique'],
+  },
 ];
 
 export const TOOL_ICON: Record<string, IconName> = {
@@ -58,6 +67,7 @@ export const TOOL_ICON: Record<string, IconName> = {
   'json-ld': 'database',
   'llms-txt': 'file',
   'fiche-produit': 'box',
+  'simulateur-boutique': 'trend',
   citabilite: 'quote',
   comparateur: 'podium',
   'lien-avis-google': 'star',

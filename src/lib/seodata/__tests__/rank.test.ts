@@ -25,6 +25,13 @@ const { putDoc } = await import('@/lib/store');
 const { RECENT } = await import('../searchconsole');
 const jobs = await import('../jobs');
 
+// Cause des échecs « sous charge » : le premier calcul des trois comptes démo (≈ 3,5 s à vide, mis en cache par mois)
+// tombait dans le délai de 5 s d'un test. On le fait une fois ici, hors délai des tests.
+beforeAll(async () => {
+  const { buildDemoWorkspace } = await import('@/lib/demo-v2');
+  for (const seg of ['local', 'pme', 'ecommerce'] as const) buildDemoWorkspace(seg);
+}, 120_000);
+
 let s: FakeServer;
 /** Positions servies par le faux DataForSEO, par mot-clé (modifiables entre deux semaines). */
 let positions: Record<string, number | null> = {};

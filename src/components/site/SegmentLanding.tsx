@@ -73,6 +73,8 @@ export type SegmentLandingProps = {
   related: { href: string; label: string }[];
   /** V5 : le travail SEO + IA propre au parcours (chaque point dit pour quel lecteur il compte). */
   seoGeo?: { title: string; intro: string; items: { reader: "google" | "ia" | "both"; title: string; text: string }[]; guide?: { href: string; label: string } };
+  /** V8 : bloc placé juste après le hero (ex. simulateur pour une boutique). */
+  afterHero?: ReactNode;
 };
 
 const READER: Record<"google" | "ia" | "both", { label: string; cls: string }> = {
@@ -202,6 +204,8 @@ export function SegmentLanding(p: SegmentLandingProps) {
             </div>
           </Container>
         </section>
+
+        {p.afterHero ?? null}
 
         {p.seoGeo ? (
           <section aria-labelledby="seg-seogeo-title" className="border-t border-line/70 bg-white py-20 sm:py-24">

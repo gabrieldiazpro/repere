@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getSession } from '@/lib/auth';
-import { authMode } from '@/lib/auth/config';
+import { authMode, demoAccounts } from '@/lib/auth/config';
 import { safeNext } from '@/lib/auth/cookies';
 import { AcceptInvitation, LoginForm, LogoutButton } from './AccountForms';
 import { AuthShell, Notice } from './AuthShell';
@@ -69,11 +69,16 @@ export default async function ConnexionPage({ searchParams }: { searchParams: Pr
         <Notice tone="warning">Les comptes ne sont pas encore ouverts sur ce serveur : explorez l’application sur un compte de démonstration (lien ci-dessous).</Notice>
       ) : (
         <>
-          {mode === 'local' && (
-            <Notice tone="warning">
-              Compte local de développement : aucun e-mail n’est envoyé, le lien de connexion s’affiche dans la console du serveur et sur cette page.
-            </Notice>
-          )}
+          {mode === 'local' &&
+            (demoAccounts() ? (
+              <Notice tone="warning">
+                Serveur de démonstration : les e-mails de connexion ne sont pas réellement envoyés (ils sont journalisés sur le serveur). Pour essayer, créez un compte : son lien de confirmation s’affiche à l’écran.
+              </Notice>
+            ) : (
+              <Notice tone="warning">
+                Compte local de développement : aucun e-mail n’est envoyé, le lien de connexion s’affiche dans la console du serveur et sur cette page.
+              </Notice>
+            ))}
           <LoginForm next={next} invitation={invitation} defaultEmail={email} />
         </>
       )}

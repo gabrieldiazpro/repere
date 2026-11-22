@@ -36,7 +36,7 @@ async function post(url: string, body: unknown): Promise<{ ok: boolean; data: Re
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-function Sent({ email, devLink, onBack, signup }: { email: string; devLink?: string; onBack: () => void; signup?: boolean }) {
+function Sent({ email, devLink, onBack, signup, demo }: { email: string; devLink?: string; onBack: () => void; signup?: boolean; demo?: boolean }) {
   return (
     <div className="rounded-2xl border border-line bg-white p-6 text-center" role="status">
       <p className="text-lg font-semibold text-ink">Vérifiez votre boîte de réception</p>
@@ -48,8 +48,8 @@ function Sent({ email, devLink, onBack, signup }: { email: string; devLink?: str
       <p className="mt-3 text-sm text-muted">Rien reçu après quelques minutes ? Regardez dans les courriers indésirables, ou recommencez.</p>
       {devLink && (
         <p className="mt-4 rounded-xl bg-warning-bg p-3 text-left text-sm text-warning-ink">
-          Compte local de développement (aucun e-mail n’est envoyé) :{' '}
-          <a className="break-all font-semibold underline" href={devLink}>ouvrir le lien de connexion</a>
+          {demo ? 'Serveur de démonstration : aucun e-mail réel n’est envoyé. Le lien de confirmation, celui que contient l’e-mail :' : 'Compte local de développement (aucun e-mail n’est envoyé) :'}{' '}
+          <a className="break-all font-semibold underline" href={devLink}>{demo ? 'confirmer mon adresse et ouvrir mon espace' : 'ouvrir le lien de connexion'}</a>
         </p>
       )}
       <button type="button" onClick={onBack} className={buttonClasses({ variant: 'ghost', className: 'mt-3' })}>
@@ -157,11 +157,13 @@ export interface SignupPrefill {
   audit?: string;
   /** analyse 60 s d'origine (V5) : rattachée côté serveur si elle a été demandée avec la même adresse */
   analysis?: string;
+  /** V8 : jeton du lien signé de l'analyse (preuve de possession) : l'adresse saisie y est ajoutée avant l'inscription */
+  analysisToken?: string;
   ref?: string;
   suite?: 'carte';
 }
 
-export function SignupForm({ defaultSegment, prefill = {} }: { defaultSegment?: Segment; prefill?: SignupPrefill }) {
+export function SignupForm({ defaultSegment, prefill = {}, demo }: { defaultSegment?: Segment; prefill?: SignupPrefill; demo?: boolean }) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState(prefill.name ?? '');
   const [website, setWebsite] = useState(prefill.website ?? '');
@@ -169,7 +171,7 @@ export function SignupForm({ defaultSegment, prefill = {} }: { defaultSegment?: 
   const [trade, setTrade] = useState(prefill.trade ?? '');
   const [city, setCity] = useState(prefill.city ?? '');
   // Audit d'origine connu : métier et ville affichés en lecture (« Plombier · Paris 11e — Modifier »).
-  const fromAudit = Boolean(prefill.audit && prefill.trade && defaultSegment);
+  const fromAudit = Boolean((prefill.audit || prefill.analysis) && prefill.trade && defaultSegment && (defaultSegment !== 'local' || prefill.city));
   const [editProfile, setEditProfile] = useState(!fromAudit);
   const [consent, setConsent] = useState(false);
   // Déclaration obligatoire : service réservé aux professionnels (CGV, article 4).
@@ -191,6 +193,11 @@ export function SignupForm({ defaultSegment, prefill = {} }: { defaultSegment?: 
     if (!pro) return setError('Repéré est réservé aux professionnels : cochez la case « J’agis pour les besoins de mon activité professionnelle ».');
     if (!consent) return setError('Acceptez les conditions générales pour créer votre compte.');
     setState('sending');
+    // V8 : depuis un rapport (lien signé), l'adresse saisie est ajoutée à l'analyse pour qu'elle soit rattachée à la
+    // confirmation, même si aucun e-mail n'avait été donné au lancement. Jamais bloquant.
+    if (prefill.analysis && prefill.analysisToken) {
+      await post(`/api/v5/analysis/${encodeURIComponent(prefill.analysis)}/claim`, { t: prefill.analysisToken, email: email.trim() });
+    }
     // Parcours changé par rapport à l'audit : le métier saisi vaut pour le nouveau parcours, la ville seulement en local.
     const r = await post('/api/account/signup', {
       email: email.trim(),
@@ -218,7 +225,7 @@ export function SignupForm({ defaultSegment, prefill = {} }: { defaultSegment?: 
     setState('sent');
   }
 
-  if (state === 'sent') return <Sent signup email={email.trim()} devLink={devLink} onBack={() => setState('idle')} />;
+  if (state === 'sent') return <Sent signup demo={demo} email={email.trim()} devLink={devLink} onBack={() => setState('idle')} />;
   return (
     <form onSubmit={submit} className="flex flex-col gap-4 rounded-2xl border border-line bg-white p-6" noValidate>
       <div className="flex flex-col gap-1.5">
@@ -236,7 +243,7 @@ export function SignupForm({ defaultSegment, prefill = {} }: { defaultSegment?: 
       {fromAudit && !editProfile && segment === defaultSegment ? (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-primary-bg p-3 text-sm">
           <span>
-            <span className="block font-semibold text-ink">Repris de votre audit</span>
+            <span className="block font-semibold text-ink">{prefill.analysis ? 'Repris de votre analyse' : 'Repris de votre audit'}</span>
             <span className="text-muted">{profileSummary(segment, trade, city, prefill.district)}</span>
           </span>
           <button type="button" onClick={() => setEditProfile(true)} className="font-semibold text-primary underline">
@@ -275,7 +282,9 @@ export function SignupForm({ defaultSegment, prefill = {} }: { defaultSegment?: 
       <button type="submit" disabled={state === 'sending'} className={buttonClasses({ className: 'w-full' })}>
         {state === 'sending' ? 'Création…' : 'Créer mon compte gratuit'}
       </button>
-      <p className="text-sm text-muted">Sans carte bancaire. Vous recevez un lien pour confirmer votre adresse.</p>
+      <p className="text-sm text-muted">
+        Offre Découverte gratuite, sans carte bancaire. Vous recevez un e-mail pour confirmer votre adresse ; votre espace s’ouvre ensuite avec votre marque déjà suivie{prefill.analysis ? ' et votre analyse rattachée' : ''}.
+      </p>
     </form>
   );
 }

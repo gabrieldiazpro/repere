@@ -20,10 +20,16 @@ export const PROVIDER_LABEL: Record<ProviderId, string> = {
   perplexity: 'Perplexity',
   gemini: 'Gemini',
   claude: 'Claude',
-  mistral: 'Mistral (Le Chat)',
+  mistral: 'Mistral Vibe',
+  google_aio: 'Google AI Overviews',
+  google_ai_mode: 'Google AI Mode',
+  copilot: 'Copilot (Bing)',
+  deepseek: 'DeepSeek',
+  grok: 'Grok',
 };
 
-export const PROVIDER_ORDER: ProviderId[] = ['chatgpt', 'gemini', 'perplexity', 'claude', 'mistral'];
+/** V8 : les IA en option n'apparaissent que si elles ont été mesurées (listes filtrées par les écrans). */
+export const PROVIDER_ORDER: ProviderId[] = ['chatgpt', 'gemini', 'perplexity', 'claude', 'mistral', 'google_aio', 'google_ai_mode', 'copilot', 'deepseek', 'grok'];
 
 export const ENGINE_LABEL: Record<AiEngine, string> = {
   chatgpt: 'ChatGPT',

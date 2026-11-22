@@ -79,13 +79,16 @@ describe('contrôle IA : plafond d’appels', () => {
     expect(buildQuickQuestions('pme', undefined, undefined, 99)).toHaveLength(6);
     expect(buildQuickQuestions('ecommerce', 'thé vert', undefined, 1)).toHaveLength(3);
   });
-  it('questions × 2 exécutions × IA ≤ plafond', () => {
-    for (const cap of [6, 12, 18, 24, 60]) {
-      const p = planCalls(['chatgpt', 'perplexity', 'gemini'], cap);
-      expect(p.questions * 2 * p.providers.length).toBeLessThanOrEqual(cap);
+  it('test de marque : 1 exécution, 3 à 5 questions × IA ≤ plafond, IA retirées d’abord', () => {
+    for (const cap of [3, 6, 12, 18, 24, 60]) {
+      const p = planCalls(['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'], cap);
+      expect(p.questions * p.providers.length).toBeLessThanOrEqual(cap);
       expect(p.questions).toBeGreaterThanOrEqual(3);
+      expect(p.questions).toBeLessThanOrEqual(5);
     }
-    expect(planCalls(['chatgpt'], 5)).toEqual({ providers: [], questions: 0 });
+    expect(planCalls(['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'], 18).providers).toHaveLength(5);
+    expect(planCalls(['chatgpt', 'perplexity', 'gemini'], 18)).toEqual({ providers: ['chatgpt', 'perplexity', 'gemini'], questions: 5 });
+    expect(planCalls(['chatgpt'], 2)).toEqual({ providers: [], questions: 0 });
     expect(planCalls([], 0).providers).toEqual([]); // démo : aucun coût
   });
 });

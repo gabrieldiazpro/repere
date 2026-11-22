@@ -15,12 +15,15 @@ import { accessFinding, accessReport, adaptFinding, type AccessReport } from './
 import { maxAiCallsFromEnv } from './aicheck';
 import { detectSite, homeSignals } from './detect';
 import { resolveModules } from './modules';
+import { siteSignals, pageSignals, type SignalMap } from './signals';
+import { finalizeWhy } from './why';
 import { autoFixesOf, buildVerdict, compareAnalyses, computeScores, mergePriorities } from './prioritize';
 import type {
   AiCheckSummary,
   AnalysisEvent,
   AnalysisEventBody,
   AnalysisInput,
+  BrandTestSkip,
   CrawlSummary,
   DataSummary,
   Detection,
@@ -121,7 +124,7 @@ const LABEL: Record<ModuleId, string> = {
   seo: 'Audit SEO (Google)',
   geo: 'Audit GEO (IA)',
   data: 'Vitesse mobile (PageSpeed)',
-  ai: 'Contrôle rapide auprès des IA',
+  ai: 'Test de marque auprès des IA',
 };
 
 function errMsg(e: unknown): string {
@@ -205,7 +208,18 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
 
   // ---- 2. En parallèle : exploration → SEO + GEO ; PageSpeed ; IA ----
   // Porteur unique (évite le rétrécissement de type des variables affectées dans les branches asynchrones).
-  const out: { crawl: SiteCrawl | null; seo: ModuleReport | null; geo: ModuleReport | null; data?: DataSummary; ai?: AiCheckSummary; perf?: SeoDataPerfData; access?: AccessReport } = {
+  const out: {
+    crawl: SiteCrawl | null;
+    seo: ModuleReport | null;
+    geo: ModuleReport | null;
+    data?: DataSummary;
+    ai?: AiCheckSummary;
+    perf?: SeoDataPerfData;
+    access?: AccessReport;
+    brandSkip?: BrandTestSkip;
+    competitorPages: Map<string, { signals: SignalMap | null; note?: string; finalUrl?: string }>;
+  } = {
+    competitorPages: new Map(),
     crawl: null,
     seo: null,
     geo: null,
@@ -323,10 +337,33 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
           maxCalls: opts.maxAiCalls ?? maxAiCallsFromEnv(),
           signal,
           onProgress: (done, total, provider) => emit({ type: 'ai', done, total, ...(provider ? { provider } : {}) }),
+          onPlan: (plan) => emit({ type: 'brandplan', ...plan }),
+          onSkip: (skip) => {
+            out.brandSkip = skip;
+            emit({ type: 'brandskip', skip });
+          },
         }),
       );
       if (r) {
         out.ai = r;
+        if (r.test) {
+          emit({ type: 'brand', test: r.test });
+          // « Pourquoi lui » : page d'accueil des concurrents repérés dans les réponses (mesure réelle seulement).
+          const sites = r.demo ? [] : [...new Set((r.test.why ?? []).map((w) => w.site?.url).filter((u): u is string => !!u))];
+          if (sites.length && mods.fetchPage) {
+            const fetchPage = mods.fetchPage;
+            await Promise.all(
+              sites.map(async (u) => {
+                try {
+                  const pg = await bounded(Math.min(7_000, left(2_500)), root.signal, (signal) => fetchPage(u, signal));
+                  out.competitorPages.set(u, pg ? { signals: pageSignals(pg.html, detected.city), finalUrl: pg.finalUrl } : { signals: null, note: 'Page refusée à notre robot (robots.txt), injoignable ou non lisible.' });
+                } catch {
+                  out.competitorPages.set(u, { signals: null, note: 'Page non lue dans le temps imparti.' });
+                }
+              }),
+            );
+          }
+        }
         emit({ type: 'score', module: 'ai', score: r.score });
         const cited = r.questions.filter((q) => q.mentioned > 0).length;
         emit({
@@ -335,11 +372,13 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
           id: 'ai.quick.mentions',
           title: r.demo
             ? 'Démonstration : aucune IA configurée, réponses simulées'
-            : `${detected.brand} est cité sur ${cited} question(s) sur ${r.questions.length}`,
+            : r.test
+              ? `${detected.brand} est cité dans ${r.test.overall.cited} réponse${r.test.overall.cited > 1 ? 's' : ''} sur ${r.test.overall.asked}, sur ${r.test.providers.length} IA`
+              : `${detected.brand} est cité sur ${cited} question(s) sur ${r.questions.length}`,
           severity: r.demo ? 'info' : cited === 0 ? 'high' : cited < r.questions.length / 2 ? 'medium' : 'low',
         });
         setStatus('ai', 'ok', Date.now() - ts);
-      } else setStatus('ai', 'skipped', Date.now() - ts, 'activité non couverte ou plafond d’appels nul');
+      } else setStatus('ai', 'skipped', Date.now() - ts, out.brandSkip?.message ?? 'activité non couverte ou plafond d’appels nul');
     } catch (e) {
       setStatus('ai', e instanceof TimeoutError ? 'timeout' : 'failed', Date.now() - ts, errMsg(e));
     }
@@ -349,7 +388,25 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
   root.abort(); // plus aucun appel (payant ou non) après l'assemblage
 
   // ---- 3. Synthèse ----
-  const { seo, geo, data, ai } = out;
+  const { seo, geo, data } = out;
+  // Test de marque : sorti de `ai` (une seule copie dans l'analyse), « pourquoi lui » terminé avec votre exploration.
+  let brandTest: FullAnalysis['brandTest'];
+  let ai = out.ai;
+  if (ai?.test) {
+    const { test, ...rest } = ai;
+    ai = rest;
+    const why = test.why?.length
+      ? finalizeWhy(test.why, {
+          ours: siteSignals(out.crawl, home?.html ?? null, detected.city),
+          competitorPages: out.competitorPages,
+          siteType: detected.siteType,
+          autoFixes: autoFixesOf(seo, geo),
+          demo: test.demo,
+          measuredAt: test.measuredAt,
+        })
+      : [];
+    brandTest = { ...test, why };
+  }
   const access = out.access ?? accessReport(out.crawl, status.crawl?.error);
   const platform = out.crawl?.platform ?? null;
   const scores = computeScores(seo, geo, ai);
@@ -371,6 +428,8 @@ async function orchestrate(input: AnalysisInput, opts: RunAnalysisOptions, ch: C
     geo,
     ...(data ? { data } : {}),
     ...(ai ? { ai } : {}),
+    ...(brandTest ? { brandTest } : {}),
+    ...(out.brandSkip && !brandTest ? { brandSkip: out.brandSkip } : {}),
     verdict: '',
     access,
     scores,

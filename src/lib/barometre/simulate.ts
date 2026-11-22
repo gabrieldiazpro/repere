@@ -23,6 +23,11 @@ const PROVIDER_BIAS: Record<ProviderId, number[]> = {
   gemini: [1, 0.9, 1, 1.2, 0.9, 1, 1.3, 1],
   claude: [1.1, 1, 0.8, 1, 1.2, 0.8, 1, 1.2],
   mistral: [1, 1, 1, 1, 1, 1, 1, 1],
+  google_aio: [1, 1, 1, 1, 1, 1, 1, 1],
+  google_ai_mode: [1, 1, 1, 1, 1, 1, 1, 1],
+  copilot: [1, 1, 1, 1, 1, 1, 1, 1],
+  deepseek: [1, 1, 1, 1, 1, 1, 1, 1],
+  grok: [1, 1, 1, 1, 1, 1, 1, 1],
 };
 
 const SOURCE_DOMAINS = ['annuaire-exemple.example', 'forum-exemple.example', 'comparatif-exemple.example', 'journal-exemple.example', 'avis-exemple.example'];

@@ -115,7 +115,7 @@ describe("données des pages", () => {
   it("fonctionnalités : slugs uniques, limites et étapes présentes", () => {
     const slugs = FEATURES.map((f) => f.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
-    expect(slugs.length).toBe(17);
+    expect(slugs.length).toBe(18);
     for (const f of FEATURES) {
       expect(f.limits.length).toBeGreaterThan(0);
       expect(f.how.length).toBeGreaterThanOrEqual(3);

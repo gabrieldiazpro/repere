@@ -36,6 +36,10 @@ const QUERIES = [
 
 const CHANGELOG = [
   {
+    v: 'Mesure des IA (V8)', date: '22 novembre 2026',
+    txt: '10 IA mesurables : aux quatre IA des offres (ChatGPT, Perplexity, Gemini, Claude) s’ajoutent, en option, les aperçus IA et le mode IA de Google et Copilot dans Bing (relevés sur la page de résultats en France), DeepSeek, Mistral Vibe (ex-Le Chat) et, sur demande, Grok. Méthode et marge d’erreur affichées pour chaque IA ; une recherche sans aperçu IA est comptée à part. Test de marque gratuit : questions posées en direct, une fois à chaque IA activée, « mesure unique, à confirmer dans le temps ». La formule du score est inchangée.',
+  },
+  {
     v: 'Analyse du site (V5)', date: '13 novembre 2026',
     txt: 'Exploration réelle du site par RepereBot, audit SEO en 12 familles (contrôles sourcés Google et web.dev, à jour de 2026), audit GEO en 8 familles avec niveau de preuve par règle, Search Console, PageSpeed et CrUX, positions suivies, agent de publication avec validation, journal et retour arrière. La formule du score de visibilité dans les IA est inchangée.',
   },
@@ -81,6 +85,7 @@ const TOC = [
   { id: 'executions', label: 'Plusieurs exécutions' },
   { id: 'questions-personnalisees', label: 'Vos propres questions' },
   { id: 'ia-suivies', label: 'Les IA suivies' },
+  { id: 'chaque-ia', label: 'Comment chaque IA est mesurée' },
   { id: 'marge-erreur', label: 'La marge d’erreur' },
   { id: 'part-de-voix', label: 'Part de voix' },
   { id: 'pages-citees', label: 'Les pages citées' },
@@ -122,7 +127,7 @@ export default function MethodPage() {
       title="Comment nous analysons votre site et mesurons les IA"
       meta={<Byline published={METHOD_PUBLISHED} updated={PAGE_UPDATED[PATH]} />}
       intro={<p>Version de la méthode : {METHOD_VERSION}. {BRAND} explore d&apos;abord votre site comme Google et les robots des IA le lisent, puis
-        le contrôle (audit SEO et audit GEO, chaque règle avec sa source). Ensuite, il pose à ChatGPT, Gemini, Perplexity et Claude (et, en option, Mistral) les questions qu&apos;un client ou un acheteur poserait,
+        le contrôle (audit SEO et audit GEO, chaque règle avec sa source). Ensuite, il pose à ChatGPT, Gemini, Perplexity et Claude (et, en option, aux aperçus IA et au mode IA de Google, à Copilot, DeepSeek, Mistral Vibe ou Grok) les questions qu&apos;un client ou un acheteur poserait,
         puis regarde si votre entreprise est citée, à quelle place, face à qui, et sur quelles sources les IA s&apos;appuient. Tout est expliqué ici,
         pour que vous puissiez refaire le test vous-même.</p>}
       visual={<ScoreFormula weights={WEIGHTS} />}
@@ -319,7 +324,7 @@ export default function MethodPage() {
         <li>C&apos;est un instantané : les réponses changent selon l&apos;heure, la version du modèle et l&apos;utilisateur.</li>
         <li>Nous interrogeons les IA par les API que leurs éditeurs mettent à disposition ; les réponses peuvent différer de celles de l&apos;application grand public (historique, mémoire, position précise).</li>
         <li>Le score mesure si une IA vous cite, pas la qualité de votre travail ni celle de vos concurrents. Les concurrents affichés sont ceux cités par les IA.</li>
-        <li>Les IA peuvent se tromper (nom, adresse, activité) : c&apos;est ce que la vérification des faits cherche à repérer. Les aperçus IA de Google (les résumés affichés en haut des résultats) et le mode IA de Google ne sont pas mesurés.</li>
+        <li>Les IA peuvent se tromper (nom, adresse, activité) : c&apos;est ce que la vérification des faits cherche à repérer. Les aperçus IA de Google (les résumés affichés en haut des résultats) et son mode IA ne sont mesurés qu&apos;en option, en France, sans compte connecté.</li>
         <li>Gemini est interrogé sans ancrage de recherche : il ne fournit pas de sources. La carte par quartier et l&apos;indice de demande sont des estimations, étiquetées comme telles.</li>
         <li>Le score de citabilité d&apos;une page est une liste de bonnes pratiques : il ne prédit pas une citation.</li>
         <li>Les statistiques par métier et par ville portent sur les établissements audités, pas sur l&apos;ensemble du marché, et ne sont publiées qu&apos;à partir de 5 audits.</li>

@@ -46,6 +46,7 @@ export async function GET(req: Request) {
       cron: Boolean(process.env.CRON_SECRET?.trim()),
       alerts: r.configured.alerts,
       ai: r.configured.ai,
+      aiOptional: r.configured.aiOptional,
     };
   }
   afterResponse(() => runOpsTick());

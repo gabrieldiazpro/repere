@@ -1,6 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, Svg, Path, StyleSheet, Font, renderToBuffer } from '@react-pdf/renderer';
-import type { AuditResult, ActionItem } from '@/lib/engine';
+import { PROVIDER_SHORT, type AuditResult, type ActionItem } from '@/lib/engine';
 import { C, bandFor } from './theme';
 import {
   PROVIDER_LABEL, pct, formatDateFr, providersOf, queryMatrix, byProvider, isDirectory,
@@ -381,44 +381,60 @@ function Page4({ r, v2 }: { r: ReportResult; v2: V2 }) {
     return { q, row, hits };
   }).sort((a, b) => a.hits - b.hits);
   const queriesCited = r.queries.filter((q) => Array.from(matrix.get(q.id)?.values() ?? []).some((c) => c.mentioned)).length;
-  const colW = Math.min(70, Math.floor(200 / Math.max(1, providers.length)));
+  const many = providers.length > 5;
+  const colW = many ? Math.max(30, Math.floor(270 / providers.length)) : Math.min(70, Math.floor(200 / Math.max(1, providers.length)));
   const p = v2.perception;
   const pc = (x: number) => Math.round(x * 100);
   const nRuns = r.mentions.length ? Math.max(...r.mentions.map((m) => m.run)) + (r.mentions.some((m) => m.run === 0) ? 1 : 0) : 0;
   const provs = providers.map((pp) => PROVIDER_LABEL[pp]).join(', ');
+  const serpNote = providers.some((pp) => pp === 'google_aio' || pp === 'google_ai_mode' || pp === 'copilot')
+    ? ' Aperçus IA et AI Mode de Google, Copilot dans Bing : relevés sur les pages de résultats en France, en français (fournisseur DataForSEO) ; une recherche sans aperçu IA est comptée à part.'
+    : '';
   return (
     <Page size="A4" style={s.page}>
       <Watermark r={r} />
       <Top r={r} />
       <Text style={s.h2}>LES IA, UNE PAR UNE</Text>
-      {providers.map((pp) => {
-        const sc = r.subScores[pp];
-        const b = byProvider(r, pp);
-        const band = bandFor(sc ?? 0);
-        return (
-          <View key={pp} style={[s.row, { marginBottom: 5 }]}>
-            <Text style={[s.bold, { width: 70 }]}>{PROVIDER_LABEL[pp]}</Text>
-            <View style={{ width: 140, marginRight: 8 }}><Bar value={sc ?? 0} color={band.color} h={8} /></View>
-            <Text style={[s.bold, { width: 28, textAlign: 'right' }]}>{sc == null ? '-' : String(Math.round(sc))}</Text>
-            <Text style={{ marginLeft: 10, flexGrow: 1 }}>{`cité ${b.cited}/${b.total} · rang moyen ${b.avgRank == null ? 'aucun' : String(b.avgRank).replace('.', ',')}`}</Text>
-          </View>
-        );
-      })}
+      {/* V8 : au-delà de 5 IA, deux colonnes compactes (la page tient sur une feuille). */}
+      <View style={many ? { flexDirection: 'row', flexWrap: 'wrap' } : {}}>
+        {providers.map((pp) => {
+          const sc = r.subScores[pp];
+          const b = byProvider(r, pp);
+          const band = bandFor(sc ?? 0);
+          return many ? (
+            <View key={pp} style={[s.row, { width: '50%', marginBottom: 4, paddingRight: 8 }]}>
+              <Text style={[s.bold, { width: 78, fontSize: 8.5 }]}>{PROVIDER_LABEL[pp]}</Text>
+              <View style={{ width: 60, marginRight: 6 }}><Bar value={sc ?? 0} color={band.color} h={6} /></View>
+              <Text style={[s.bold, { width: 20, textAlign: 'right', fontSize: 8.5 }]}>{sc == null ? '-' : String(Math.round(sc))}</Text>
+              <Text style={{ marginLeft: 6, flexGrow: 1, fontSize: 8 }}>{`cité ${b.cited}/${b.total}`}</Text>
+            </View>
+          ) : (
+            <View key={pp} style={[s.row, { marginBottom: 5 }]}>
+              <Text style={[s.bold, { width: 70 }]}>{PROVIDER_LABEL[pp]}</Text>
+              <View style={{ width: 140, marginRight: 8 }}><Bar value={sc ?? 0} color={band.color} h={8} /></View>
+              <Text style={[s.bold, { width: 28, textAlign: 'right' }]}>{sc == null ? '-' : String(Math.round(sc))}</Text>
+              <Text style={{ marginLeft: 10, flexGrow: 1 }}>{`cité ${b.cited}/${b.total} · rang moyen ${b.avgRank == null ? 'aucun' : String(b.avgRank).replace('.', ',')}`}</Text>
+            </View>
+          );
+        })}
+      </View>
 
       <View style={s.rule} />
       <View style={s.section}>
         <Text style={s.h2}>QUESTION PAR QUESTION</Text>
         <View style={[s.row, { paddingBottom: 3, borderBottomWidth: 1, borderBottomColor: C.line }]}>
           <Text style={[s.small, { flexGrow: 1 }]}>Requête</Text>
-          {providers.map((pp) => <Text key={pp} style={[s.small, s.bold, { width: colW, textAlign: 'center' }]}>{PROVIDER_LABEL[pp]}</Text>)}
+          {providers.map((pp) => <Text key={pp} style={[s.small, s.bold, { width: colW, textAlign: 'center', ...(many ? { fontSize: 7 } : {}) }]}>{many ? PROVIDER_SHORT[pp] : PROVIDER_LABEL[pp]}</Text>)}
         </View>
         {qs.map(({ q, row }) => (
           <View key={q.id} style={[s.row, { paddingVertical: 2.5, borderBottomWidth: 0.5, borderBottomColor: C.line }]} wrap={false}>
             <Text style={{ flexGrow: 1, flexShrink: 1, paddingRight: 6 }}>{q.text.slice(0, 70)}</Text>
             {providers.map((pp) => {
               const c = row?.get(pp);
-              const txt = !c ? 'non testé' : c.mentioned ? `cité${c.bestRank ? ` n°${c.bestRank}` : ''}${c.n > 1 ? ` ${c.k}/${c.n}` : ''}` : 'absent';
-              return <Text key={pp} style={{ width: colW, textAlign: 'center', fontSize: 8.5, fontFamily: c?.mentioned ? FB : F, color: !c ? C.muted : c.mentioned ? C.successInk : C.dangerInk }}>{txt}</Text>;
+              const txt = many
+                ? !c ? '-' : c.mentioned ? (c.bestRank ? `n°${c.bestRank}` : 'cité') : 'absent'
+                : !c ? 'non testé' : c.mentioned ? `cité${c.bestRank ? ` n°${c.bestRank}` : ''}${c.n > 1 ? ` ${c.k}/${c.n}` : ''}` : 'absent';
+              return <Text key={pp} style={{ width: colW, textAlign: 'center', fontSize: many ? 7.5 : 8.5, fontFamily: c?.mentioned ? FB : F, color: !c ? C.muted : c.mentioned ? C.successInk : C.dangerInk }}>{txt}</Text>;
             })}
           </View>
         ))}
@@ -452,8 +468,8 @@ function Page4({ r, v2 }: { r: ReportResult; v2: V2 }) {
         <Text style={s.h2}>MÉTHODE ET LIMITES</Text>
         <Text>{`Nous avons posé ${r.queries.length} questions types${provs ? ` à ${provs}` : ''}${nRuns > 1 ? `, ${nRuns} fois chacune` : ''}, le ${formatDateFr(r.measuredAt || r.createdAt)}. Le score reflète la fréquence et la position de la citation. Le rang compte les citations de chaque acteur nommé. Niveau de confiance : ${r.confidence}. Marge d'erreur : ${v2.summary.margin.long}`}</Text>
         <Text style={{ marginTop: 3, color: C.muted, fontSize: 8 }}>
-          Les réponses des IA varient d'une fois à l'autre : ce score est un instantané, pas une vérité. Il n'évalue pas la qualité de votre travail ni celle de vos concurrents, cités par les IA sans que nous les ayons évalués. Les IA peuvent se tromper. Gemini : pas de sources disponibles via API. Rapport produit avec l'aide de l'intelligence artificielle ; il ne constitue pas un conseil professionnel et aucun résultat n'est garanti.
-          {r.demo ? ' Données de démonstration : exemples simulés, pas une mesure réelle.' : ''} Repéré n'est affilié ni à OpenAI, ni à Google, ni à Perplexity, ni à Anthropic.
+          Les réponses des IA varient d'une fois à l'autre : ce score est un instantané, pas une vérité. Il n'évalue pas la qualité de votre travail ni celle de vos concurrents, cités par les IA sans que nous les ayons évalués. Les IA peuvent se tromper. Gemini : pas de sources disponibles via API.{serpNote} Rapport produit avec l'aide de l'intelligence artificielle ; il ne constitue pas un conseil professionnel et aucun résultat n'est garanti.
+          {r.demo ? ' Données de démonstration : exemples simulés, pas une mesure réelle.' : ''} Repéré n'est affilié ni à OpenAI, ni à Google, ni à Perplexity, ni à Anthropic{providers.some((pp) => pp === 'copilot') ? ', ni à Microsoft' : ''}{providers.includes('mistral') ? ', ni à Mistral AI' : ''}{providers.includes('deepseek') ? ', ni à DeepSeek' : ''}{providers.includes('grok') ? ', ni à xAI' : ''}.
         </Text>
       </View>
 

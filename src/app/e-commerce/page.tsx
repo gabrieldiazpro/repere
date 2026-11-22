@@ -5,6 +5,9 @@ import { FACTS } from "@/components/site/facts";
 import { DemoClip } from "@/components/site/DemoClip";
 import { ProveScene } from "@/components/motion/scenes/live";
 import { VAT_NOTICE, euros, planLink, tiersFor } from "@/components/site/plans-v2";
+import Link from "next/link";
+import { Container } from "@/components/ui/Container";
+import { buttonClasses } from "@/components/ui/Button";
 import { pageMeta } from "@/lib/seo/meta";
 import { enginesLabel, frequencyAdverb, promptsCount } from "@/components/site/offer-facts";
 
@@ -28,7 +31,7 @@ export default async function EcommercePage() {
     <SegmentLanding
       seo={{ title: TITLE, description: DESCRIPTION }}
       brief={[
-        { label: "Pour qui", value: "Marques et boutiques en ligne sur Shopify, WooCommerce ou PrestaShop." },
+        { label: "Pour qui", value: "Marques et boutiques en ligne sur Shopify, WooCommerce, PrestaShop, Magento / Adobe Commerce ou Wix. Adobe Commerce en mode SaaS : pas encore ; redirections, robots.txt et llms.txt préparés avec un pas à pas." },
         { label: "Ce que nous mesurons", value: `${promptsCount("ecommerce", "essentiel")} à ${promptsCount("ecommerce", "accompagne")} requêtes produit (« meilleur », « alternative à », budget), posées ${frequencyAdverb("ecommerce", "essentiel")} à ${enginesLabel("ecommerce", "essentiel")} (Essentiel) ; ${enginesLabel("ecommerce", "accompagne")} en Accompagné. Vos produits apparaissent-ils, face à quelles marques, sur quelles sources ?` },
         { label: "Prix", value: `Test gratuit sur 10 requêtes. Audit catalogue ${deepP}. Essentiel ${ess}/mois sans engagement. Accompagné ${acc}/mois, 3 mois minimum : nous faisons le travail. ${VAT_NOTICE}.` },
         { label: "Travail fait (Accompagné)", value: "20 fiches produit réécrites par mois, un guide d'achat, le balisage Product, Offer et FAQ, le flux Merchant vérifié et 3 démarches vers les comparatifs. Rien n'est publié sans votre accord." },
@@ -65,7 +68,30 @@ export default async function EcommercePage() {
       secondaryCta={
         deep ? { label: `Audit catalogue approfondi (${euros(deep.priceCents)})`, href: planLink(deep) } : undefined
       }
-      reassure={["Gratuit", "Shopify, WooCommerce, PrestaShop", "5 priorités à la fin"]}
+      reassure={["Gratuit, sans carte bancaire", "Shopify", "WooCommerce", "PrestaShop", "Magento / Adobe Commerce", "Wix"]}
+      afterHero={
+        <section aria-labelledby="ecom-sim-title" className="border-t border-line/70 bg-white py-14 sm:py-16">
+          <Container>
+            <div className="flex flex-col gap-6 rounded-3xl bg-canvas p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+              <div className="max-w-2xl">
+                <h2 id="ecom-sim-title" className="text-[1.6rem] font-bold leading-tight sm:text-[2rem]">
+                  Que représente la visibilité IA pour votre boutique ?
+                </h2>
+                <p className="mt-3 text-[1.02rem] text-ink/75">
+                  Entrez vos chiffres : une fourchette basse, médiane et haute, chaque hypothèse sourcée et modifiable. Une estimation, pas une promesse.
+                </p>
+              </div>
+              <Link href="/outils/simulateur-boutique" className={buttonClasses({ size: "lg", className: "lift shrink-0" })}>
+                Faire la simulation
+              </Link>
+            </div>
+            <p className="mt-4 text-[0.88rem] text-muted">
+              Plateformes prises en charge par l&apos;agent : Shopify, WooCommerce, PrestaShop, Magento / Adobe Commerce et Wix. Adobe Commerce en mode SaaS : pas encore ;
+              redirections, robots.txt et llms.txt préparés avec un pas à pas.
+            </p>
+          </Container>
+        </section>
+      }
       queriesTitle="Les requêtes produit que nous testons"
       queries={[
         { intent: "Le meilleur", items: ["Meilleure crème solaire bio pour le visage", "Meilleur shampoing solide pour cheveux secs", "Quelle gourde isotherme pour le vélo ?"] },
@@ -117,7 +143,8 @@ export default async function EcommercePage() {
         { q: "Vous touchez à ma boutique ?", a: "Via une application ou un accès collaborateur limité, uniquement sur les fiches et le balisage. Chaque modification est validée par vous et réversible." },
         { q: "Et les avis ?", a: "Nous vous aidons à en demander à vos vrais acheteurs, avec votre outil d'avis. Jamais d'avis achetés ou rédigés par nous." },
         { q: "Mes produits seront-ils dans ChatGPT Shopping ?", a: "Nous vérifions que votre boutique remplit les conditions techniques et que vos fiches sont lisibles. L'affichage, lui, dépend des IA : nous mesurons, nous ne promettons pas." },
-        { q: "C'est rentable ?", a: "Vous le voyez vous-même : le rapport montre les visites et, quand vos outils le permettent, les commandes venues des IA." },
+        { q: "C'est rentable ?", a: "Vous le voyez vous-même : le rapport montre les visites et, quand vos outils le permettent, les commandes venues des IA. Le simulateur gratuit (Simulateur pour ma boutique, dans les outils gratuits) en donne une première fourchette à partir de vos chiffres." },
+        { q: "Magento ou Adobe Commerce, c'est pris en charge ?", a: "Oui pour Magento et Adobe Commerce installé chez vous : titres, descriptions, textes des fiches et des catégories, textes alternatifs des images, après votre validation. Redirections, robots.txt et llms.txt sont préparés avec un pas à pas. Adobe Commerce en mode SaaS : pas encore." },
       ]}
       finalTitle="Votre catalogue est‑il lisible par Google et par les IA ? Réponse en 60 secondes."
     />

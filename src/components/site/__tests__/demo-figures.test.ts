@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { buildDemoWorkspace } from "@/lib/demo-v2";
 import { auditStats, mentionRateOf, shareOfVoiceOf } from "@/lib/digest/stats";
 import {
@@ -16,6 +16,12 @@ import {
 
 const SEGS = ["local", "pme", "ecommerce"] as const;
 const statsOf = (seg: (typeof SEGS)[number]) => auditStats(buildDemoWorkspace(seg).audits.at(-1)!);
+
+// Cause des échecs « sous charge » : le premier calcul des comptes démo (≈ 3,5 s à vide, mis en cache par mois) se
+// faisait dans le premier test, avec son délai de 5 s. Il est fait une fois ici, hors délai des tests.
+beforeAll(() => {
+  for (const seg of SEGS) buildDemoWorkspace(seg);
+}, 120_000);
 
 describe("le site montre les chiffres des comptes démo (B9, amélioration 13)", () => {
   it("rang, taux de mention et part de voix = auditStats du compte", () => {

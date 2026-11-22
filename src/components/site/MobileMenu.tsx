@@ -72,8 +72,8 @@ export function MobileMenu({ groups, links, resources, cta }: { groups: readonly
         {(open || shown) && (
         <nav aria-label="Navigation mobile" className="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6">
           <div className="grid grid-cols-2 gap-2">
-            <Link href={cta} onClick={close} className={buttonClasses({ size: "md", className: "w-full" })}>
-              Analyse gratuite
+            <Link href={cta} onClick={close} className={buttonClasses({ size: "md", className: "w-full whitespace-nowrap !px-3" })}>
+              Tester ma marque
             </Link>
             <Link href={DEMO_HREF} onClick={close} className={buttonClasses({ size: "md", variant: "secondary", className: "w-full" })}>
               Voir la démo
@@ -122,7 +122,12 @@ export function MobileMenu({ groups, links, resources, cta }: { groups: readonly
               </li>
             ))}
           </ul>
-          <p className="mt-4 px-1 text-[0.9rem] text-muted">Offre Découverte gratuite, sans carte bancaire.</p>
+          <p className="mt-4 px-1 text-[0.9rem] text-muted">
+            <Link href="/inscription" onClick={close} className="font-semibold text-primary underline underline-offset-4">
+              Créer un compte gratuit
+            </Link>{" "}
+            : gratuit, sans carte bancaire.
+          </p>
         </nav>
         )}
       </div>

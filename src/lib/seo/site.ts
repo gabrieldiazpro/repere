@@ -176,13 +176,13 @@ export const SAME_AS: string[] = [
  * À mettre à jour à la main quand le contenu de la page change (pas à chaque build).
  */
 export const PAGE_UPDATED = {
-  '/': '2026-11-13',
+  '/': '2026-11-22',
   '/local': '2026-11-13',
   '/pme': '2026-11-13',
-  '/e-commerce': '2026-11-13',
+  '/e-commerce': '2026-11-22',
   '/audit': '2026-11-15',
-  '/tarifs': '2026-11-13',
-  '/methode': '2026-11-13',
+  '/tarifs': '2026-11-22',
+  '/methode': '2026-11-22',
   '/guides': '2026-11-15',
   '/visibilite-ia': '2026-11-15',
   '/visibilite-ia/pme': '2026-11-09',
@@ -191,15 +191,18 @@ export const PAGE_UPDATED = {
   '/geo': '2026-11-09',
   '/glossaire': '2026-11-15',
   '/questions': '2026-11-15',
-  '/comparatif': '2026-11-13',
+  '/comparatif': '2026-11-22',
   '/etudes': '2026-11-15',
-  '/cgv': '2026-11-09',
+  '/cgv': '2026-11-22',
   '/mentions-legales': '2026-11-09',
   '/confidentialite': '2026-11-09',
   // V6 : pages livrées par LANCEMENT et OPS (15 nov. 2026).
   '/pilotes': '2026-11-15',
   '/presse': '2026-11-15',
   '/statut': '2026-11-15',
+  // V8 (22 nov. 2026) : page agences, documentation développeurs.
+  '/agences': '2026-11-22',
+  '/developpeurs': '2026-11-22',
 } as const satisfies Record<string, string>;
 
 export type StaticPath = keyof typeof PAGE_UPDATED;

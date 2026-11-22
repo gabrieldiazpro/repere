@@ -127,17 +127,17 @@ export const CELLS: Record<ColumnId, Record<FeatureId, string>> = {
   repere: {
     questions: 'Découverte : 5. Local : 20 à 30. PME et e-commerce : 50 à 100, selon l’offre. Questions personnalisables.',
     frequence: 'Mensuelle (Découverte, Local), hebdomadaire (PME, e-commerce). Chaque question est répétée ; marge d’erreur affichée.',
-    ia: 'ChatGPT, Perplexity, Gemini, Claude ; Mistral (Le Chat) en option. 3 IA en Découverte. Pas de suivi des AI Overviews ni de l’AI Mode.',
+    ia: '10 IA mesurables : ChatGPT, Perplexity, Gemini, Claude dans les offres ; aperçus IA (AI Overviews) et AI Mode de Google, Copilot (Bing), DeepSeek, Mistral Vibe en option, Grok sur demande. 3 IA en Découverte. Méthode et marge affichées pour chaque IA.',
     sources: 'Oui, page par page pour ChatGPT, Perplexity et Claude, classées par opportunité. Pas pour Gemini (limite de ses conditions d’utilisation).',
     faits: 'Oui : fiche de vérité ; chaque affirmation contredite devient une tâche de correction.',
-    execution: 'Agent de publication : corrections appliquées sur WordPress, Shopify, Webflow ou PrestaShop après votre validation, annulables ; export pour les autres sites. Accompagné : nous pilotons le travail.',
+    execution: 'Agent de publication : corrections appliquées sur WordPress (et WooCommerce), Shopify, Webflow, PrestaShop, Wix ou Magento après votre validation, annulables ; export pour les autres sites. Agent de contenu : pages manquantes rédigées avec vos seuls faits, en brouillon chez vous, mesurées à J+30 et J+90 ; mentions à obtenir plutôt qu’échange de liens. Accompagné : nous pilotons le travail.',
     trafic: 'Script sans cookie et lecture de Google Analytics 4. Un plancher mesuré, jamais un total.',
     audit: 'Exploration réelle du site (60 pages en analyse gratuite, 500 à 2 000 selon l’offre), 185 contrôles SEO et audit GEO en 8 familles avec niveau de preuve.',
     seo: '185 contrôles SEO en 12 familles, adaptés au type de site ; pas d’index de liens propre (liens entrants via un fournisseur de données).',
     positions: 'Search Console (16 mois), PageSpeed et CrUX ; 20 à 300 mots-clés suivis chaque semaine selon l’offre (fournisseur DataForSEO).',
     gratuit: 'Analyse du site en 60 secondes sans compte ; offre Découverte permanente (1 marque, 5 questions, 1 mesure par mois, 3 IA) et outils gratuits.',
     prix: '0 € (Découverte). Essentiel dès 29 €/mois (local), 79 € (e-commerce), 99 € (PME). Accompagné dès 99 €/mois.',
-    integrations: 'Search Console, PageSpeed, Bing Webmaster Tools ; publication WordPress, Shopify, Webflow, PrestaShop ; exports CSV, lien de partage, Slack, webhook signé. Pas de Looker Studio ni de serveur MCP.',
+    integrations: 'Search Console, PageSpeed, Bing Webmaster Tools ; publication WordPress, WooCommerce, Shopify, Webflow, PrestaShop, Wix, Magento ; exports CSV, lien de partage, Slack, webhooks signés ; API REST publique et serveur MCP en lecture (Accompagné et Agence). Pas de Looker Studio.',
     langue: 'Français natif, vocabulaire sans jargon.',
     cible: 'TPE, PME, commerces locaux, e-commerces.',
     engagement: 'Essentiel sans engagement ; Accompagné : 3 mois minimum.',
@@ -373,15 +373,15 @@ export const COMPETITORS: Competitor[] = [
     strengths: [
       'Plus de questions suivies dans les offres publiques : 50, 150 ou 350, contre 50 à 100 chez Repéré (offres PME et e-commerce) [@peec].',
       'Intégrations plus étendues : API dès l’offre Pro, serveur MCP dans toutes les offres, Looker Studio avec l’offre Advanced [@peec].',
-      'Suivi de plusieurs pays (jusqu’à 3 avec l’offre Pro) et des AI Overviews et de l’AI Mode de Google, que Repéré ne mesure pas [@peec].',
+      'Suivi de plusieurs pays (jusqu’à 3 avec l’offre Pro), AI Overviews et AI Mode de Google compris dans le choix des moteurs ; chez Repéré, ils sont en option et mesurés en France seulement [@peec].',
       'Un agent conversationnel et des actions avec mesure d’impact, lancés le 23 octobre 2026 [@peecAgent].',
       'Une note publique (G2 : 4,7/5 sur 21 avis) que Repéré n’a pas encore [@g2Peec].',
     ],
     priceStatus: 'Prix lus sur la page officielle de l’éditeur le 9 novembre 2026 ; en dollars, non convertis.',
     chooseThem: [
       'Votre équipe marketing a le temps d’exploiter un tableau de bord chaque semaine.',
-      'Vous voulez suivre plus de 100 questions, plusieurs pays ou les AI Overviews de Google.',
-      'Vous avez besoin d’API, de MCP ou de Looker Studio pour vos rapports.',
+      'Vous voulez suivre plus de 100 questions ou plusieurs pays.',
+      'Vous avez besoin de Looker Studio pour vos rapports, ou d’une API dès l’offre d’entrée.',
       'Vous êtes une agence et voulez des projets de démonstration pour vos prospects.',
     ],
     chooseUs: [
@@ -391,8 +391,8 @@ export const COMPETITORS: Competitor[] = [
       'Vous voulez vérifier ce que les IA affirment sur votre entreprise, avec votre fiche de vérité.',
     ],
     ourLimits: [
-      'Repéré suit 4 IA (ChatGPT, Perplexity, Gemini, Claude), plus Mistral en option : pas les AI Overviews ni l’AI Mode.',
-      'Pas d’API publique, de serveur MCP ni de Looker Studio à ce jour.',
+      'Repéré inclut 4 IA dans ses offres (ChatGPT, Perplexity, Gemini, Claude) ; aperçus IA et AI Mode de Google, Copilot, DeepSeek et Mistral Vibe sont en option, mesurés en France seulement.',
+      'API publique et serveur MCP réservés aux offres Accompagné et Agence ; pas de Looker Studio.',
     ],
     faq: [
       {
@@ -419,7 +419,7 @@ export const COMPETITORS: Competitor[] = [
     strengths: [
       'Prix d’entrée en dollars proche du nôtre (29 $ pour 15 questions) avec suivi quotidien [@otterlyHelp].',
       'Un audit GEO intégré : accès d’une vingtaine de robots d’IA, rendu statique ou dynamique, données structurées [@seVisibleOtterly].',
-      'Les AI Overviews font partie des moteurs inclus, ce que Repéré ne mesure pas [@otterlyHelp].',
+      'Les AI Overviews font partie des moteurs inclus, alors qu’ils sont en option chez Repéré [@otterlyHelp].',
       'Espaces de travail multiples, membres illimités, Looker Studio, API et MCP dès l’offre Standard [@otterlyHelp].',
       'Une note publique (G2 : 4,7/5 sur 54 avis) [@g2Otterly].',
     ],
@@ -428,7 +428,7 @@ export const COMPETITORS: Competitor[] = [
     chooseThem: [
       'Vous voulez un suivi quotidien et un audit GEO de vos pages dans le même outil.',
       'Vous gérez plusieurs marques ou clients (espaces de travail).',
-      'Vous voulez suivre les AI Overviews de Google.',
+      'Vous voulez les AI Overviews de Google compris dès l’offre d’entrée.',
       'Vous acceptez de payer les moteurs additionnels à la carte.',
     ],
     chooseUs: [
@@ -439,7 +439,7 @@ export const COMPETITORS: Competitor[] = [
     ],
     ourLimits: [
       'Notre audit vérifie l’accès des principaux robots de recherche des IA (robots.txt, en-têtes, réponses servies à notre robot) ; il ne teste pas le pare-feu robot par robot.',
-      'Pas de suivi quotidien en Local ni de suivi des AI Overviews.',
+      'Pas de suivi quotidien en Local ; aperçus IA de Google en option seulement.',
     ],
     faq: [
       {
@@ -464,7 +464,7 @@ export const COMPETITORS: Competitor[] = [
     intro:
       'Profound propose un essai gratuit de 7 jours et une offre payante sur devis. Les offres Starter à 99 $ et Growth à 399 $, publiées en juin 2026, ont été retirées le 21 septembre 2026 selon une source tierce.',
     strengths: [
-      'Jusqu’à neuf moteurs en Enterprise, dont les AI Overviews et l’AI Mode de Google, que Repéré ne mesure pas [@profound].',
+      'Jusqu’à neuf moteurs en Enterprise, dont les AI Overviews et l’AI Mode de Google (en option chez Repéré) [@profound].',
       'Analyse des visites des robots d’IA à partir des journaux serveur ou du CDN, avec domaines illimités [@profound].',
       'Des fonctions d’entreprise : SSO et SAML, API, historique complet, SOC 2 [@profound].',
       'Des références clients déclarées (un tiers du Fortune 100) et 1 133 avis G2 (4,5/5) [@profoundHome][@g2Profound].',
@@ -474,7 +474,7 @@ export const COMPETITORS: Competitor[] = [
     chooseThem: [
       'Vous êtes une grande entreprise ou une marque multi-pays.',
       'Vous exigez SSO, SOC 2, API et un interlocuteur dédié.',
-      'Vous voulez suivre neuf moteurs, dont les AI Overviews.',
+      'Vous visez un contrat Enterprise sur neuf moteurs et plusieurs pays.',
       'Votre budget se compte en milliers d’euros par mois.',
     ],
     chooseUs: [
@@ -510,7 +510,7 @@ export const COMPETITORS: Competitor[] = [
     intro:
       'Meteoria affiche des prix à partir de 75 € par mois pour 25 prompts, jusqu’à 420 € et un palier Enterprise d’environ 700 €. Il suit trois moteurs choisis parmi sept. Les prix ci-dessous viennent d’un annuaire, la page tarifs de l’éditeur n’ayant pas pu être lue.',
     strengths: [
-      'Plus de moteurs différents au choix, dont les AI Overviews, l’AI Mode, Copilot et Grok, que Repéré ne suit pas [@lfdn].',
+      'Les AI Overviews, l’AI Mode, Copilot et Grok au choix dans l’offre, alors qu’ils sont en option ou sur demande chez Repéré [@lfdn].',
       'Suivi quotidien et cartographie des sous-requêtes générées par les IA [@bdmMeteoria].',
       'Connexion à Google Analytics et Matomo dès l’offre Starter ; API, MCP et SSO en Enterprise [@lfdn][@bdmMeteoria].',
       'Un éditeur français avec une feuille de route annoncée (copilote, alertes en temps réel) [@bdmMeteoria].',
@@ -519,7 +519,7 @@ export const COMPETITORS: Competitor[] = [
       'Non vérifié sur le site de l’éditeur (inaccessible lors du relevé). Prix de l’annuaire La Fabrique du Net, relevés le 6 octobre 2026 ; HT ou TTC non précisé.',
     chooseThem: [
       'Vous voulez un suivi quotidien de quelques questions avec un éditeur français.',
-      'Vous voulez suivre les AI Overviews ou l’AI Mode de Google.',
+      'Vous voulez les AI Overviews ou l’AI Mode de Google comptés dans votre offre.',
       'Vous utilisez Matomo ou Google Analytics et voulez les relier à l’outil.',
       'Vous avez une équipe qui exploite le tableau de bord.',
     ],
@@ -530,7 +530,7 @@ export const COMPETITORS: Competitor[] = [
       'Vous voulez déléguer les corrections à l’offre Accompagné.',
     ],
     ourLimits: [
-      'Repéré ne suit pas les AI Overviews, l’AI Mode, Copilot ni Grok.',
+      'Chez Repéré, les AI Overviews, l’AI Mode, Copilot et Grok sont en option ou sur demande, pas compris dans les offres à ce jour.',
       'Pas d’intégration Matomo ; Google Analytics 4 en lecture seulement.',
     ],
     faq: [
@@ -652,7 +652,7 @@ export const COMPETITORS: Competitor[] = [
     strengths: [
       'Une base de mots-clés, de concurrents et de liens que Repéré n’a pas : recherche de mots-clés, analyse de domaines concurrents, publicité [@docketSemrush].',
       'Un audit technique qui explore jusqu’à 100 000 pages par audit dès l’offre Pro, 1 000 000 en Business, contre 2 000 pages au plus chez Repéré [@docketSemrush].',
-      'Un suivi quotidien de prompts dans ChatGPT et l’AI Mode de Google, que Repéré ne mesure pas pour l’AI Mode [@semrushAiKb].',
+      'Un suivi quotidien de prompts dans ChatGPT et l’AI Mode de Google ; chez Repéré, l’AI Mode est mesuré en option, au rythme de l’offre [@semrushAiKb].',
       'Une gamme d’outils annexes (contenu, réseaux sociaux, génération de prospects) en options [@semrushAi].',
     ],
     priceStatus: 'Prix de l’AI Visibility Toolkit lus sur la page officielle le 13 novembre 2026 ; prix des offres SEO et de Semrush One relevés auprès de sources tierces (à vérifier sur la page officielle avant tout achat).',
@@ -671,7 +671,7 @@ export const COMPETITORS: Competitor[] = [
     ourLimits: [
       'Repéré n’a pas d’index de mots-clés ni de liens propre : les positions et liens viennent d’un fournisseur de données, dans des limites par offre.',
       'Repéré explore au plus 2 000 pages par analyse.',
-      'Repéré ne mesure pas l’AI Mode ni les aperçus IA de Google ; la Search Console en compte les clics.',
+      'Chez Repéré, l’AI Mode et les aperçus IA de Google sont mesurés en option (relevés en France), pas compris dans les offres à ce jour ; la Search Console en compte les clics.',
     ],
     faq: [
       { q: 'Repéré remplace-t-il Semrush ?', a: 'Pour un spécialiste SEO, non : Semrush est plus complet sur les mots-clés, les concurrents et la publicité. Pour un dirigeant qui veut un site sain, des priorités claires, la mesure des IA et des corrections faites, Repéré couvre l’essentiel pour moins cher.' },

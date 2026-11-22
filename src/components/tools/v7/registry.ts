@@ -298,7 +298,7 @@ export const V7_TOOLS: (ToolDef & { slug: V7Slug })[] = [
     bridge: 'Une information datée se cite avec confiance. L’analyse complète vérifie la fraîcheur de toutes vos pages.',
     howItWorks: [
       'Nous lisons le HTML de la page et y cherchons les dates : texte visible, blocs JSON-LD (datePublished, dateModified), balises article:modified_time et <time>.',
-      'Nous ajoutons l’en-tête HTTP Last-Modified et repérons les signes de page figée : « © 2021 » en pied de page, « tarifs 2024 » dans le texte.',
+      'Nous ajoutons l’en-tête HTTP Last-Modified et repérons les signes de page figée : « © 2021 » en pied de page, des tarifs datés d’une année passée dans le texte.',
       'Nous comparons ces dates entre elles et à aujourd’hui : date future, dates qui se contredisent, page sans date.',
     ],
     reading: [

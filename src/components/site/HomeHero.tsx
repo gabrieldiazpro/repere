@@ -15,11 +15,11 @@ const TABS: { seg: Seg; label: string; short: string }[] = [
 
 /**
  * Hero de l'accueil V5. `children` = H1 et sous-titre, rendus côté serveur (le H1 est l'élément LCP, jamais animé).
- * Un seul appel principal : « Analyser mon site » → /analyse?site=… (formulaire QuickAuditForm, branché par ANALYSE-UI :
+ * Un seul appel principal : « Tester ma marque » (V8) → /analyse?site=… (formulaire QuickAuditForm, branché par ANALYSE-UI :
  * une adresse part vers l'analyse 60 s, un simple nom vers le test de visibilité IA). Le type de site adapte l'exemple
  * et transmet `segment` à l'analyse. `preview` = aperçu d'analyse rendu côté serveur.
  */
-export function HomeHero({ children, preview }: { children: ReactNode; preview?: ReactNode }) {
+export function HomeHero({ children, preview, engines }: { children: ReactNode; preview?: ReactNode; /** « Interrogées en direct : … » (brandTestEngines, côté serveur) */ engines?: string }) {
   const [seg, setSeg] = useState<Seg>("local");
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const idx = TABS.findIndex((t) => t.seg === seg);
@@ -40,7 +40,7 @@ export function HomeHero({ children, preview }: { children: ReactNode; preview?:
       <div>
         {children}
 
-        <QuickAuditForm segment={seg} idPrefix="hero" className="mt-7" submitLabel="Analyser mon site" shortLabel="Analyser" />
+        <QuickAuditForm segment={seg} idPrefix="hero" className="mt-7" submitLabel="Tester ma marque" shortLabel="Tester" />
         <div className="mt-3 flex max-w-xl flex-wrap items-center gap-x-3 gap-y-2">
           <p id="hero-parcours" className="text-[0.85rem] text-muted">
             Votre site :
@@ -71,7 +71,9 @@ export function HomeHero({ children, preview }: { children: ReactNode; preview?:
             ))}
           </div>
         </div>
-        <p className="mt-3 max-w-xl text-[0.88rem] text-muted">Gratuit, sans compte ni carte bancaire. Notre robot respecte votre robots.txt.</p>
+        <p className="mt-3 max-w-xl text-[0.88rem] text-muted">
+          <strong className="font-semibold text-ink/80">Gratuit, sans carte bancaire.</strong> {engines ? `${engines} ` : ""}Notre robot respecte votre robots.txt.
+        </p>
 
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-[0.95rem]">
           <Link href="/demo" className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary underline-offset-4 hover:underline">

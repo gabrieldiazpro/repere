@@ -683,6 +683,8 @@ export function detectMention(
   opts: DetectOptions = {},
 ): MentionResult {
   const base = { provider: answer.provider, queryId: answer.queryId, run: answer.run };
+  // V8 : aucune réponse IA affichée (aperçu IA absent) : sans recommandation, hors dénominateur.
+  if (answer.absent && !answer.error) return { ...base, mentioned: false, rank: null, competitors: [], snippet: NO_REC_SNIPPET, noRec: true };
   if (answer.error || !answer.text) return { ...base, mentioned: false, rank: null, competitors: [] };
   const v = opts.variants ?? buildVariants(input);
   const geo = opts.geo ?? geoContext(input);

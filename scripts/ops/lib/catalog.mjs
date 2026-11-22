@@ -158,6 +158,14 @@ export const CATALOG = [
   { name: 'GEMINI_API_KEY', group: 'IA', required: false, ai: true, sensitive: true, where: 'https://aistudio.google.com/apikey', check: (v) => (/^(AIza[0-9A-Za-z_-]{35}|AQ\.[0-9A-Za-z_.-]{20,})$/.test(v) ? null : warn('format inhabituel (AIza… ou AQ.…)')) },
   { name: 'ANTHROPIC_API_KEY', group: 'IA', required: false, ai: true, sensitive: true, where: 'https://platform.claude.com/settings/keys', check: (v) => (/^sk-ant-/.test(v) ? null : err('doit commencer par sk-ant-')) },
   { name: 'MISTRAL_API_KEY', group: 'IA', required: false, ai: true, sensitive: true, where: 'https://console.mistral.ai/api-keys (moyen de paiement requis)', check: (v) => (/^[A-Za-z0-9]{32}$/.test(v) ? null : warn('format inhabituel (32 caractères attendus)')) },
+  // V8 : IA en option (chacune désactivée tant que sa variable est vide)
+  { name: 'DEEPSEEK_API_KEY', group: 'IA', required: false, ai: true, sensitive: true, where: 'https://platform.deepseek.com/api_keys (crédit prépayé requis)', check: (v) => (/^sk-[A-Za-z0-9]{16,}$/.test(v) ? null : warn('format inhabituel (sk-… attendu)')) },
+  { name: 'XAI_API_KEY', group: 'IA', required: false, ai: true, sensitive: true, where: 'https://console.x.ai (Grok, facultatif : peu utilisé en France)', check: (v) => (/^xai-[A-Za-z0-9]{16,}$/.test(v) ? null : warn('format inhabituel (xai-… attendu)')) },
+  {
+    name: 'AUDIT_SERP_ENGINES', group: 'IA', required: false, sensitive: false,
+    where: 'google_aio,google_ai_mode,copilot (ou all) — relevés via DataForSEO, identifiants de l’étape 14',
+    check: (v, env) => (!/^(all|((google_aio|google_ai_mode|copilot)(,\s*)?)+)$/.test(v.trim()) ? warn('valeurs attendues : google_aio, google_ai_mode, copilot ou all') : env?.DATAFORSEO_LOGIN && env?.DATAFORSEO_PASSWORD ? null : warn('DATAFORSEO_LOGIN / DATAFORSEO_PASSWORD manquants : rien ne sera relevé')),
+  },
   {
     name: 'GOOGLE_PLACES_KEY', group: 'Google', required: false, sensitive: true,
     where: 'https://console.cloud.google.com/apis/credentials (API Places (New) activée : https://console.cloud.google.com/apis/library/places.googleapis.com)',

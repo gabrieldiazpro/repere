@@ -1,6 +1,7 @@
 import type { Platform, PublishConnector } from '../types';
 import { exportConnector } from './export';
 import { gbpConnector } from './gbp';
+import { magentoConnector } from './magento';
 import { prestashopConnector } from './prestashop';
 import { shopifyConnector } from './shopify';
 import { webflowConnector } from './webflow';
@@ -13,6 +14,7 @@ export const CONNECTORS: Record<Platform, PublishConnector> = {
   webflow: webflowConnector,
   prestashop: prestashopConnector,
   wix: wixConnector,
+  magento: magentoConnector,
   export: exportConnector,
   gbp: gbpConnector,
 };
@@ -22,4 +24,4 @@ export function connectorFor(platform: Platform): PublishConnector {
 }
 
 export { buildExportBundle } from './export';
-export { exportConnector, gbpConnector, prestashopConnector, shopifyConnector, webflowConnector, wixConnector, wordpressConnector };
+export { exportConnector, gbpConnector, magentoConnector, prestashopConnector, shopifyConnector, webflowConnector, wixConnector, wordpressConnector };

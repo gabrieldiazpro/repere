@@ -59,6 +59,7 @@ const AGIR: NavGroup = {
   items: [
     { href: '/app/actions', label: 'Centre d’actions', short: 'Agir', sub: 'Quoi faire, dans quel ordre, avec l’effet mesuré', icon: 'check', badge: 'tasks', key: 'a', also: ['/app/taches', '/app/plan'] },
     { href: '/app/agent', label: 'Agent', sub: 'Les corrections faites pour vous, après votre accord', icon: 'send' },
+    { href: '/app/contenu', label: 'Contenus', sub: 'Les pages qui vous manquent, rédigées avec vos faits', icon: 'file' },
     { href: '/app/validation', label: 'À valider', sub: 'Les corrections de l’agent qui attendent votre accord', icon: 'check' },
     { href: '/app/pages', label: 'Pages', sub: 'Vos pages prêtes à être citées', icon: 'file', key: 'p' },
     { href: '/app/technique', label: 'Technique', sub: 'Robots, données structurées, rendu', icon: 'bolt', key: 't' },

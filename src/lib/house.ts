@@ -38,7 +38,7 @@ export const HOUSE_BUSINESS: BusinessRecord = {
 export const HOUSE_FACTS: Partial<Record<BrandFactField, string>> = {
   site: 'repere-ia.fr',
   services:
-    "Analyse réelle du site en 60 secondes (jusqu'à 60 pages sans compte), 185 contrôles SEO et audit GEO, mesure de ce que répondent ChatGPT, Gemini, Perplexity et Claude avec marge d'erreur, vérification de l'exactitude des faits, suivi des positions Google et de la Search Console, agent qui applique les corrections sur WordPress, Shopify, Webflow ou PrestaShop après validation, offre Agence en marque blanche",
+    "Analyse réelle du site en 60 secondes (jusqu'à 60 pages sans compte), 185 contrôles SEO et audit GEO, mesure de ce que répondent jusqu'à 10 IA (ChatGPT, Gemini, Perplexity, Claude, aperçus IA et AI Mode de Google, Copilot, DeepSeek, Mistral Vibe, Grok) avec marge d'erreur, vérification de l'exactitude des faits, suivi des positions Google et de la Search Console, agent qui applique les corrections sur WordPress (et WooCommerce), Shopify, Webflow, PrestaShop, Wix ou Magento après validation, agent de contenu qui rédige les pages manquantes à partir de vos seuls faits (brouillon chez vous, validation humaine), API publique et serveur MCP, offre Agence en marque blanche",
   prix: "Découverte gratuite, sans carte bancaire ; Essentiel 29 € par mois (commerce local), 79 € par mois (e-commerce), 99 € par mois (PME) ; Accompagné dès 99 € par mois ; Agence 149 € par mois ; TVA non applicable, art. 293 B du CGI",
   clients: 'TPE, PME, commerces locaux, e-commerces et agences en France',
   zone: 'France entière',

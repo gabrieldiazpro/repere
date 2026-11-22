@@ -118,8 +118,12 @@ export const ENGINE_LABEL: Record<EngineName | AiEngine, string> = {
   perplexity: 'Perplexity',
   gemini: 'Gemini',
   claude: 'Claude',
-  mistral: 'Mistral (Le Chat)',
+  mistral: 'Mistral Vibe',
   copilot: 'Copilot',
+  google_aio: 'Google AI Overviews',
+  google_ai_mode: 'Google AI Mode',
+  deepseek: 'DeepSeek',
+  grok: 'Grok',
   other_ai: 'autres IA',
 };
 
@@ -127,12 +131,19 @@ export const ENGINE_LABEL: Record<EngineName | AiEngine, string> = {
 export function providersIn(question: string): EngineName[] {
   const q = correctTypos(question);
   const out: EngineName[] = [];
+  // V8 : aperçus IA et AI Mode de Google (avant Gemini : « aperçu IA de Google » ne désigne pas Gemini).
+  const aio = /\bai overviews?\b|\baper[cç]us? (ia|de l ia|de l'ia)\b/.test(q);
+  const aiMode = /\bai mode\b|\bmode ia\b/.test(q);
+  if (aio) out.push('google_aio');
+  if (aiMode) out.push('google_ai_mode');
   if (/\bchatgpt\b|\bopenai\b/.test(q)) out.push('chatgpt');
   if (/\bperplexity\b/.test(q)) out.push('perplexity');
-  if (/\bgemini\b/.test(q) || (/\bgoogle\b/.test(q) && /\b(ia|gemini|assistant)\b/.test(q) && !/fiche google|google business|avis google/.test(q))) out.push('gemini');
+  if (/\bgemini\b/.test(q) || (!aio && !aiMode && /\bgoogle\b/.test(q) && /\b(ia|gemini|assistant)\b/.test(q) && !/fiche google|google business|avis google/.test(q))) out.push('gemini');
   if (/\bclaude\b|\banthropic\b/.test(q)) out.push('claude');
-  if (/\bmistral\b/.test(q)) out.push('mistral');
+  if (/\bmistral\b|\bvibe\b/.test(q)) out.push('mistral');
   if (/\bcopilot\b|\bbing chat\b/.test(q)) out.push('copilot');
+  if (/\bdeepseek\b/.test(q)) out.push('deepseek');
+  if (/\bgrok\b/.test(q)) out.push('grok');
   return out;
 }
 

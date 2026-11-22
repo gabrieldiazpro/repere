@@ -34,7 +34,7 @@ const Body = z.union([
       field: z.enum(FIELDS),
       expected: z.string().min(1).max(500),
       stated: z.string().min(1).max(500),
-      provider: z.enum(['chatgpt', 'perplexity', 'gemini', 'claude']),
+      provider: z.enum(['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral', 'google_aio', 'google_ai_mode', 'copilot', 'deepseek', 'grok']),
       quote: z.string().max(1000).optional(),
       severity: z.enum(['haute', 'moyenne', 'basse']).optional(),
     }),

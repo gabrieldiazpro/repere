@@ -12,6 +12,7 @@ import { marginText } from '@/components/app/mesure/derive';
 import { loadMesure } from '@/components/app/mesure/server';
 import { crossLink, hrefWith, str, type RawSearch } from '@/components/app/mesure/params';
 import { Verdict, V4Empty } from '@/components/app/v4/Verdict';
+import { EngineMethods } from '@/components/app/mesure/EngineMethods';
 import { AskCopilot, DeltaPts, ExplainChange, ExportLink, MesureBar, PeriodNote } from '@/components/app/mesure/ui';
 
 export const metadata = { title: 'Ce que disent les IA' };
@@ -178,6 +179,7 @@ export default async function IaPage({ searchParams }: { searchParams: Promise<R
               })}
             </ul>
             <p className="mt-3 text-[12px] text-[var(--muted)]">Touchez une IA pour filtrer les verbatims et la grille. Gemini répond sans sources : il compte pour la perception, pas pour les pages citées.</p>
+            <EngineMethods engines={a.engines} />
           </Panel>
         </div>
 

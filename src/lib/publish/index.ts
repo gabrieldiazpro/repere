@@ -35,5 +35,6 @@ export {
   verifyChangeSet,
   revertChangeSet,
   exportChangeSet,
+  createRewriteChangeSet,
 } from './service';
 export { demoChangeSets } from './demo';

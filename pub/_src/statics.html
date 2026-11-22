@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Visuels Repéré</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  body { width: 1080px; }
+  .ad { position: relative; width: 1080px; height: 1080px; overflow: hidden; padding: 64px 72px; display: flex; flex-direction: column; }
+  .ad.p { height: 1350px; }
+  .ad.light { background: var(--canvas); color: var(--ink); }
+  .ad.light::before { display: none; }
+  .head { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+  .light .brand { color: var(--ink); }
+  .h1 { font: 700 70px/1.04 var(--display); letter-spacing: -.025em; margin-top: 44px; position: relative; z-index: 2; }
+  .h1.l { font-size: 84px; }
+  .sub { font: 500 34px/1.32 var(--sans); color: var(--on-deep); margin-top: 22px; position: relative; z-index: 2; }
+  .light .sub { color: var(--muted); }
+  .body { flex: 1; position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; padding: 30px 0; }
+  .foot { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .cta { background: #fff; color: var(--primary); font: 700 36px/1 var(--sans); padding: 26px 38px; border-radius: 999px; box-shadow: 0 14px 40px rgba(0,0,0,.3); white-space: nowrap; }
+  .cta b { color: var(--accent); }
+  .light .cta { background: var(--primary); color: #fff; box-shadow: 0 14px 40px rgba(55,48,163,.3); }
+  .url { font: 600 28px/1.25 var(--sans); color: var(--on-deep); text-align: right; }
+  .light .url { color: var(--muted); }
+  .legal { font: 500 20px/1.35 var(--sans); color: var(--on-deep); margin-top: 18px; position: relative; z-index: 2; opacity: .9; }
+  .light .legal { color: var(--muted); }
+  .card { background: #fff; color: var(--ink); border-radius: 28px; box-shadow: 0 24px 70px rgba(10,8,40,.35); }
+  .light .card { box-shadow: 0 18px 50px rgba(27,31,46,.10); border: 1px solid var(--line); }
+  .k { font: 700 22px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .mk { background-image: linear-gradient(var(--accent), var(--accent)); background-repeat: no-repeat; background-size: 100% .13em; background-position: 0 96%; }
+  .q { color: var(--accent-soft); }
+  .ok { color: var(--success); } .ko { color: var(--danger); }
+  .stamp { position: absolute; z-index: 6; transform: rotate(-6deg); border: 5px solid var(--accent); color: #5B3A06; background: var(--accent-soft); font: 800 30px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; padding: 14px 22px; border-radius: 14px; }
+  /* avant / après */
+  .ba { display: grid; gap: 22px; }
+  .ba .row { padding: 30px 34px; border-radius: 24px; }
+  .ba .before { background: var(--danger-bg); border: 2px solid #F3C4C4; }
+  .ba .after { background: var(--success-bg); border: 2px solid #B6E0C4; }
+  .ba .lab { font: 700 24px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 16px; display: flex; gap: 12px; align-items: center; }
+  .ba .before .lab { color: var(--danger-ink); } .ba .after .lab { color: var(--success-ink); }
+  .serp .t { font: 500 38px/1.25 var(--sans); color: #1a0dab; }
+  .serp .u { font: 400 24px/1.3 var(--sans); color: #4d5156; margin-bottom: 6px; }
+  .serp .d { font: 400 26px/1.4 var(--sans); color: #4d5156; margin-top: 8px; }
+  .strike { text-decoration: line-through; text-decoration-thickness: 3px; color: #9b1c1c; }
+  /* réponses IA */
+  .ai { display: flex; gap: 22px; align-items: flex-start; padding: 26px 30px; }
+  .ai + .ai { border-top: 1px solid var(--line); }
+  .bubble { flex: none; width: 64px; height: 64px; border-radius: 18px; background: var(--primary-bg); display: grid; place-items: center; }
+  .bubble svg { width: 36px; height: 36px; }
+  .ai .n { font: 700 30px/1.1 var(--sans); }
+  .ai .r { font: 400 26px/1.38 var(--sans); color: var(--muted); margin-top: 8px; }
+  .badge { display: inline-flex; gap: 8px; align-items: center; font: 700 22px/1 var(--sans); padding: 10px 14px; border-radius: 999px; margin-left: auto; white-space: nowrap; }
+  .badge.ok { background: var(--success-bg); color: var(--success-ink); }
+  .badge.ko { background: var(--danger-bg); color: var(--danger-ink); }
+  .badge.wa { background: var(--warning-bg); color: var(--warning-ink); }
+  .stat3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .stat3 .card { padding: 40px 28px; text-align: center; }
+  .stat3 .v { font: 700 112px/1 var(--display); color: var(--primary); letter-spacing: -.03em; }
+  .stat3 .l { font: 600 28px/1.25 var(--sans); color: var(--muted); margin-top: 14px; }
+  .shot { position: relative; overflow: hidden; border-radius: 26px; background: #fff; box-shadow: 0 0 0 8px #0E0B33, 0 0 0 10px rgba(255,255,255,.14), 0 30px 90px rgba(0,0,0,.5); }
+  .shot img { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .bars .b { display: grid; grid-template-columns: 56px 1fr 90px; gap: 18px; align-items: center; padding: 9px 0; font: 600 30px/1 var(--sans); }
+  .bars .b .rk { color: var(--muted); font-weight: 700; }
+  .bars .track { height: 18px; border-radius: 9px; background: #E7E9F1; position: relative; margin-top: 12px; }
+  .bars .track i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 9px; background: #A3A9BC; }
+  .bars .me .track i { background: var(--primary); }
+  .bars .me { color: var(--primary); }
+  .bars .pc { text-align: right; color: var(--muted); }
+  .funnel { display: grid; gap: 8px; }
+  .funnel .st { display: flex; align-items: center; gap: 26px; padding: 18px 32px; }
+  .funnel .v { font: 700 64px/1 var(--display); color: var(--primary); min-width: 250px; letter-spacing: -.02em; }
+  .funnel .l { font: 600 30px/1.25 var(--sans); }
+  .funnel .s { font: 400 23px/1.3 var(--sans); color: var(--muted); margin-top: 6px; }
+  .arrow { text-align: center; color: var(--accent); font: 700 32px/1 var(--sans); }
+  .score { display: flex; align-items: center; gap: 30px; }
+  .gauge { width: 240px; height: 240px; position: relative; }
+  .gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .gauge .num { position: absolute; inset: 0; display: grid; place-items: center; font: 700 96px/1 var(--display); color: var(--ink); }
+  .gauge .num small { display: block; font: 600 24px/1 var(--sans); color: var(--muted); text-align: center; margin-top: 6px; }
+  .chk { display: grid; gap: 14px; font: 600 30px/1.25 var(--sans); }
+  .chk div { display: flex; gap: 18px; align-items: center; }
+  .chk .i { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font: 800 26px/1 var(--sans); }
+  .chk .y .i { background: var(--success-bg); color: var(--success-ink); }
+  .chk .n .i { background: var(--danger-bg); color: var(--danger-ink); }
+  .input { display: flex; gap: 0; background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 50px rgba(0,0,0,.3); }
+  .input .f { flex: 1; padding: 30px 32px; font: 500 36px/1 var(--sans); color: var(--ink); }
+  .input .f span { display: inline-block; width: 3px; height: 40px; background: var(--primary); vertical-align: -8px; margin-left: 4px; }
+  .input .b { background: var(--primary); color: #fff; font: 700 32px/1 var(--sans); padding: 30px 34px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const LOGO = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="14" fill="#3730A3"/><g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M17 26V19a2 2 0 0 1 2-2h7"/><path d="M38 17h7a2 2 0 0 1 2 2v7"/><path d="M47 38v7a2 2 0 0 1-2 2h-7"/><path d="M26 47h-7a2 2 0 0 1-2-2v-7"/></g><circle cx="32" cy="32" r="7" fill="#F5A524"/></svg>';
+// Picto générique d'assistant IA (bulle) — jamais de logo officiel.
+const BUB = '<svg viewBox="0 0 24 24" fill="none" stroke="#3730A3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>';
+const brand = '<div class="brand">' + LOGO + '<span>Repéré</span></div>';
+const pill = (t) => `<span class="demo-pill"><i></i>${t}</span>`;
+const legalAI = 'Repéré est indépendant : sans lien avec OpenAI, Google, Anthropic ou Perplexity, dont les noms sont des marques de leurs propriétaires. Aucun résultat garanti.';
+const foot = (cta, url) => `<div class="foot"><div class="cta">${cta} <b>→</b></div><div class="url">${url}</div></div>`;
+const shot = (still, w, h, sx, sy, scale) => `<div class="shot" style="width:${w}px;height:${h}px"><img src="footage/stills/${still}.png" style="width:720px;transform:translate(${-sx * scale}px,${-sy * scale}px) scale(${scale})"></div>`;
+const gauge = (v, color, label) => { const c = 2 * Math.PI * 100; return `<div class="gauge"><svg viewBox="0 0 240 240"><circle cx="120" cy="120" r="100" stroke="#E7E9F1" stroke-width="22" fill="none"/><circle cx="120" cy="120" r="100" stroke="${color}" stroke-width="22" fill="none" stroke-linecap="round" stroke-dasharray="${c * v / 100} ${c}"/></svg><div class="num"><div>${v}<small>${label}</small></div></div></div>`; };
+
+const V = {
+  // ——— 1080×1080 ———
+  's1-avant-apres-titre': { cls: 'light', html: `
+    <div class="head">${brand}${pill('Exemple fictif')}</div>
+    <div class="h1">Votre page dans Google dit‑elle <span class="mk">ce que vous faites&nbsp;?</span></div>
+    <div class="body"><div class="ba">
+      <div class="row before"><div class="lab">✕ Avant</div><div class="serp"><div class="u">plomberie-martin.fr</div><div class="t"><span class="strike">Accueil</span> – Plomberie Martin</div><div class="d">Bienvenue sur notre site.</div></div></div>
+      <div class="row after"><div class="lab">✓ Après, préparé par Repéré, validé par vous</div><div class="serp"><div class="u">plomberie-martin.fr</div><div class="t">Plombier à Paris 11e, dépannage et chauffe-eau | Plomberie Martin</div><div class="d">Plombier à Paris 11e depuis 2009 : fuites, débouchage, chauffe-eau…</div></div></div>
+    </div></div>
+    ${foot('Analyser mon site', 'Gratuit · 60 s<br>repere-ia.fr')}
+    <div class="legal">Entreprise fictive (compte de démonstration). Aperçu simplifié. Aucune position garantie.</div>` },
+
+  's2-test-de-marque': { cls: 'bg-deep dots', html: `
+    <div class="head">${brand}${pill('Démo · entreprise fictive')}</div>
+    <div class="h1"><span class="q">« Quel est le meilleur plombier à Paris 11e&nbsp;? »</span></div>
+    <div class="sub">Votre nom est-il dans la réponse ?</div>
+    <div class="body"><div class="card">
+      <div class="ai"><div class="bubble">${BUB}</div><div><div class="n">Perplexity</div><div class="r">« Plomberie Martin : artisan sérieux… »</div></div><span class="badge ok">✓ Rang 1</span></div>
+      <div class="ai"><div class="bubble">${BUB}</div><div><div class="n">ChatGPT</div><div class="r">« 2. Plomberie Martin – artisan sérieux… »</div></div><span class="badge ok">✓ Rang 2</span></div>
+      <div class="ai"><div class="bubble">${BUB}</div><div><div class="n">Gemini</div><div class="r">Cite cinq autres artisans du quartier.</div></div><span class="badge ko">✕ Absent</span></div>
+    </div></div>
+    ${foot('Test gratuit', '60 s · sans carte<br>repere-ia.fr')}
+    <div class="legal">${legalAI}</div>` },
+
+  's3-gratuit-60s': { cls: 'bg-deep dots', html: `
+    <div class="head">${brand}</div>
+    <div class="h1 l">Votre site passé au crible, <span class="mk">Google et IA.</span></div>
+    <div class="sub">Plus de 180 points SEO, ce que lisent ChatGPT, Gemini et Perplexity, puis vos 5 priorités.</div>
+    <div class="body"><div class="stat3">
+      <div class="card"><div class="v">60 s</div><div class="l">pour le diagnostic</div></div>
+      <div class="card"><div class="v">0 €</div><div class="l">aucune carte demandée</div></div>
+      <div class="card"><div class="v">5</div><div class="l">priorités expliquées</div></div>
+    </div></div>
+    ${foot('Analyser mon site', 'Sans inscription<br>repere-ia.fr')}
+    <div class="legal">${legalAI}</div>` },
+
+  's4-agent-valide': { cls: 'bg-deep dots', html: `
+    <div class="head">${brand}${pill('Démo simulée')}</div>
+    <div class="h1 l">On fait le travail.<br><span class="mk">Vous dites oui.</span></div>
+    <div class="body" style="flex-direction:row;align-items:center;gap:40px">
+      ${shot('agent-liste', 450, 520, 0, 100, 0.65)}
+      <div class="chk" style="color:#fff;flex:1">
+        <div class="y"><span class="i">1</span>L'agent repère ce qui bloque</div>
+        <div class="y"><span class="i">2</span>Il prépare la correction</div>
+        <div class="y"><span class="i">3</span>Vous relisez et validez</div>
+        <div class="y"><span class="i">4</span>Il publie, vérifie, et tout s'annule</div>
+      </div>
+    </div>
+    ${foot('Tester mon site', 'Dès 29 €/mois<br>repere-ia.fr')}
+    <div class="legal">Capture du compte de démonstration (site fictif). WordPress, Shopify, Webflow, PrestaShop. Aucun résultat garanti.</div>` },
+
+  's5-erreur-ia': { cls: 'light', html: `
+    <div class="head">${brand}${pill('Exemple fictif')}</div>
+    <div class="h1">Une IA peut donner <span class="mk">de faux horaires</span> pour votre commerce.</div>
+    <div class="body"><div class="card" style="padding:40px 44px">
+      <div class="k">Ce que dit Gemini</div>
+      <div style="font:600 40px/1.3 var(--sans);margin:16px 0 30px" class="ko">« Du lundi au samedi de 8 h à 20 h. »</div>
+      <div class="k">La bonne information</div>
+      <div style="font:600 40px/1.3 var(--sans);margin-top:16px" class="ok">Lundi–vendredi 8 h–19 h, samedi 9 h–13 h.</div>
+      <div style="margin-top:30px;padding-top:26px;border-top:1px solid var(--line);font:500 28px/1.35 var(--sans);color:var(--muted)">Repéré vérifie chaque fait et prépare le texte qui corrige.</div>
+    </div></div>
+    ${foot('Vérifier mon commerce', 'Gratuit · 60 s<br>repere-ia.fr')}
+    <div class="legal">Plomberie Martin est une entreprise fictive (démo). ${legalAI}</div>` },
+
+  's6-simulation-boutique': { cls: 'bg-deep dots', html: `
+    <div class="head">${brand}${pill('Exemple fictif · boutique de démo')}</div>
+    <div class="h1">Ce que les IA apportent à une boutique, <span class="mk">mesuré.</span></div>
+    <div class="body"><div class="funnel">
+      <div class="card st"><div class="v">235</div><div><div class="l">visites venues des IA</div><div class="s">ChatGPT, Perplexity, Gemini, Claude · 30 jours</div></div></div>
+      <div class="arrow">↓</div>
+      <div class="card st"><div class="v">19</div><div><div class="l">commandes</div><div class="s">attribuées à la visite d'arrivée</div></div></div>
+      <div class="arrow">↓</div>
+      <div class="card st"><div class="v">771 €</div><div><div class="l">de chiffre d'affaires</div><div class="s">un plancher : une partie n'est pas traçable</div></div></div>
+    </div></div>
+    ${foot('Simulation pour ma boutique', 'Gratuit<br>repere-ia.fr')}
+    <div class="legal">Chiffres du compte de démonstration (boutique fictive), pas un résultat client. Aucun résultat garanti.</div>` },
+
+  's7-agences': { cls: 'light', html: `
+    <div class="head">${brand}${pill('Démo · agence fictive')}</div>
+    <div class="h1">La visibilité IA de vos clients, <span class="mk">à votre marque.</span></div>
+    <div class="body"><div class="card" style="padding:34px 40px">
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:22px"><div style="width:64px;height:64px;border-radius:16px;background:#0F766E;color:#fff;display:grid;place-items:center;font:800 26px/1 var(--sans)">AE</div><div><div style="font:700 32px/1.1 var(--sans)">Agence Exemple</div><div style="font:500 22px/1.3 var(--sans);color:var(--muted)">Rapports, liens et e-mails à votre marque, sans mention de Repéré</div></div></div>
+      ${[['Maison Sora', 'E-commerce · Lyon', 36, 35], ['Paysia', 'PME · Paris', 47, 60], ['Plomberie Martin', 'Local · Paris 11e', 61, 55]].map(([n, s, ia, g]) => `<div style="display:grid;grid-template-columns:1fr 130px 130px;align-items:center;padding:18px 0;border-top:1px solid var(--line)"><div><div style="font:700 30px/1.1 var(--sans)">${n}</div><div style="font:500 22px/1.3 var(--sans);color:var(--muted)">${s}</div></div><div style="text-align:right"><div class="k" style="font-size:17px">IA</div><div style="font:700 40px/1 var(--display)">${ia}</div></div><div style="text-align:right"><div class="k" style="font-size:17px">Google</div><div style="font:700 40px/1 var(--display)">${g}</div></div></div>`).join('')}
+    </div></div>
+    ${foot('Devenir partenaire', '0 € pour commencer<br>Agence 149 €/mois')}
+    <div class="legal">Clients et scores fictifs (compte de démonstration). ${legalAI}</div>` },
+
+  's8-pme-concurrents': { cls: 'bg-deep dots', html: `
+    <div class="head">${brand}${pill('Démo · entreprises fictives')}</div>
+    <div class="h1">Qui les IA citent-elles <span class="mk">à votre place&nbsp;?</span></div>
+    <div class="sub">Question suivie : « logiciel de paie PME »</div>
+    <div class="body"><div class="card bars" style="padding:26px 40px">
+      ${[['1er', 'Paylo', 17], ['2e', 'Netpaie', 15], ['3e', 'Salaria', 12], ['4e', 'Clairpaie', 11], ['7e', 'Paysia (vous)', 8]].map(([r, n, p]) => `<div class="b ${n.includes('vous') ? 'me' : ''}"><span class="rk">${r}</span><div>${n}<div class="track"><i style="width:${p / 17 * 100}%"></i></div></div><span class="pc">${p} %</span></div>`).join('')}
+    </div></div>
+    ${foot('Voir qui est cité', 'Gratuit · 60 s<br>repere-ia.fr')}
+    <div class="legal">Part de voix : citations mesurées sur 48 réponses (démo). ${legalAI}</div>` },
+
+  // ——— 1080×1350 ———
+  'p1-avant-apres-score': { cls: 'light', p: true, html: `
+    <div class="head">${brand}${pill('Exemple fictif')}</div>
+    <div class="h1">Avant / après : <span class="mk">mesuré, avec la marge d'erreur.</span></div>
+    <div class="sub">Plomberie Martin (fictive) · score de visibilité dans les IA</div>
+    <div class="body">
+      <div class="stamp" style="right:40px;top:30px">Exemple fictif</div>
+      <div class="card" style="padding:44px 40px;display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;text-align:center">
+        <div><div class="k">Mesure précédente</div><div style="display:flex;justify-content:center;margin-top:20px">${gauge(52, '#B45309', 'sur 100')}</div></div>
+        <div style="font:700 60px/1 var(--sans);color:var(--accent)">→</div>
+        <div><div class="k">Mesure du 5 nov.</div><div style="display:flex;justify-content:center;margin-top:20px">${gauge(61, '#15803D', 'sur 100')}</div></div>
+      </div>
+      <div class="card" style="padding:30px 40px;margin-top:22px;font:500 28px/1.4 var(--sans)">
+        <b>+9 points, marge ± 7 :</b> « variation probable, proche de la marge d'erreur ». Repéré le dit, plutôt que de crier victoire.
+        <div style="margin-top:16px;color:var(--muted);font-size:24px">Entre les deux, 2 actions faites : page « fiche officielle + FAQ » publiée, accès des robots d'IA vérifié.</div>
+      </div>
+    </div>
+    ${foot('Mesurer mon site', 'Gratuit · 60 s<br>repere-ia.fr')}
+    <div class="legal">Données du compte de démonstration, pas un résultat client. Aucune progression garantie.</div>` },
+
+  'p2-test-de-marque': { cls: 'bg-deep dots', p: true, html: `
+    <div class="head">${brand}${pill('Démo · entreprise fictive')}</div>
+    <div class="h1">Votre marque est-elle <span class="mk">citée par les IA&nbsp;?</span></div>
+    <div class="sub">Tapez son nom. Repéré pose les questions de vos clients à chaque IA.</div>
+    <div class="body">
+      <div class="input"><div class="f">Paysia<span></span></div><div class="b">Tester</div></div>
+      <div class="card" style="margin-top:34px">
+        <div class="ai"><div class="bubble">${BUB}</div><div><div class="n">ChatGPT</div><div class="r">« … 3. Paysia – alternative française appréciée… »</div></div><span class="badge ok">✓ Rang 3</span></div>
+        <div class="ai"><div class="bubble">${BUB}</div><div><div class="n">Gemini</div><div class="r">Cite Paysia parmi les acteurs qui se distinguent.</div></div><span class="badge ok">✓ Rang 2</span></div>
+        <div class="ai"><div class="bubble">${BUB}</div><div><div class="n">Perplexity</div><div class="r">Cite Netpaie, Clairpaie et Lumipaie.</div></div><span class="badge ko">✕ Absente</span></div>
+      </div>
+    </div>
+    ${foot('Tester ma marque', 'Gratuit · 60 s<br>repere-ia.fr')}
+    <div class="legal">Paysia et ses concurrents sont fictifs (démo). ${legalAI}</div>` },
+
+  'p3-agent-corrige': { cls: 'bg-deep dots', p: true, html: `
+    <div class="head">${brand}${pill('Démo simulée · site fictif')}</div>
+    <div class="h1">L'agent corrige. <span class="mk">Vous validez.</span></div>
+    <div class="sub">Avant / après mot pour mot, publié seulement avec votre accord, annulable.</div>
+    <div class="body" style="align-items:center">${shot('agent-apres', 860, 640, 0, 640, 1.19)}</div>
+    ${foot('Tester mon site gratuitement', 'Dès 29 €/mois<br>repere-ia.fr')}
+    <div class="legal">Capture réelle du compte de démonstration (site fictif). Aucun résultat garanti.</div>` },
+
+  'p4-ecommerce-trafic': { cls: 'bg-deep dots', p: true, html: `
+    <div class="head">${brand}${pill('Démo · boutique fictive')}</div>
+    <div class="h1">ChatGPT vous envoie-t-il <span class="mk">des clients&nbsp;?</span></div>
+    <div class="sub">Visites, commandes et chiffre d'affaires venus de chaque IA, avec la marge d'erreur.</div>
+    <div class="body" style="align-items:center">${shot('trafic-ecom', 860, 640, 0, 170, 1.19)}</div>
+    ${foot('Diagnostic gratuit', '60 s · sans carte<br>repere-ia.fr')}
+    <div class="legal">Capture réelle du compte de démonstration : boutique et chiffres fictifs. ${legalAI}</div>` },
+};
+
+const v = new URLSearchParams(location.search).get('v');
+const d = V[v];
+document.getElementById('root').innerHTML = `<div class="ad ${d.p ? 'p' : ''} ${d.cls}">${d.html}</div>`;
+window.LIST = Object.keys(V);
+Promise.all([...document.images].map((i) => i.decode().catch(() => {}))).then(() => document.fonts.ready).then(() => { window.READY = true; });
+</script>
+</body>
+</html>

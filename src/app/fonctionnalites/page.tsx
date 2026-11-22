@@ -16,6 +16,7 @@ const SOCLE_ICON: Record<string, IconName> = {
   performance: "bolt",
   "geo-avance": "compass",
   "agent-de-publication": "send",
+  "agent-de-contenu": "file",
   barometres: "podium",
 };
 const MODULE_ICON: Record<string, IconName> = {

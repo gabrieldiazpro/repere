@@ -3,7 +3,8 @@
  * Il ENFILE une tâche `audit.scheduled` (balayage sans effet de bord, rejouable) qui sélectionne les commerces dont la fréquence
  * de l'offre est échue (mensuelle, hebdomadaire…) et enfile un `audit.run` par commerce (dédoublonné par période).
  * V5 : enfile aussi `analysis.scheduled` (réanalyses dues) et, si BAROMETRE_ENABLED=1, `barometre.run` (une fois par mois) ;
- * relève le tableau de ROI des données payantes (src/lib/roi/report.ts).
+ * relève le tableau de ROI des données payantes (src/lib/roi/report.ts). V8 : complète les mesures J+30 / J+90 des
+ * contenus publiés (src/lib/content/scheduled.ts).
  * Puis il fait tourner le worker avec le budget restant (utile sur Vercel Hobby, où le worker n'a qu'un cron par jour).
  */
 import { NextResponse } from 'next/server';
@@ -40,6 +41,13 @@ export async function GET(req: Request) {
     } catch (e) {
       captureError(e, { event: 'cron.roi_snapshot_failed' });
     }
+    // V8 : mesures J+30 / J+90 des contenus publiés par l'agent de contenu (lecture des mesures existantes, aucun appel IA).
+    let contentEffects: Record<string, number> | null = null;
+    try {
+      contentEffects = await (await import('@/lib/content/scheduled')).sweepContentEffects(now);
+    } catch (e) {
+      captureError(e, { event: 'cron.content_effects_failed' });
+    }
     const worker = await runWorker();
     // Compte rendu par commerce (sans base, la file mémoire a déjà tout exécuté pendant `enqueue`).
     const sweep = await getJob(id);
@@ -60,6 +68,7 @@ export async function GET(req: Request) {
     const body = {
       sweepJobId: id,
       v5,
+      contentEffects,
       sweepStatus: sweep?.status ?? 'queued',
       due: ids.length,
       processed: outcomes.filter((o) => o.status === 'done' || o.status === 'dead').length,

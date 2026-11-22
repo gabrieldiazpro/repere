@@ -30,7 +30,7 @@ const PROVIDERS: Record<string, string> = {
   gemini: 'Gemini',
   claude: 'Claude',
   anthropic: 'Claude',
-  mistral: 'Le Chat',
+  mistral: 'Mistral Vibe',
   copilot: 'Copilot',
 };
 export const providerLabel = (p: string) => PROVIDERS[p.toLowerCase()] ?? p;
@@ -125,9 +125,19 @@ export function sortedSections(r: FullAnalysis['seo']) {
 }
 
 /** Lien d'inscription qui rattache l'analyse (et pré-remplit site, nom, parcours). */
-export function signupHref(a: FullAnalysis): string {
+/**
+ * Lien d'inscription depuis le rapport : parcours, analyse, site, marque, métier et ville détectés (affichage ;
+ * le serveur revérifie). `shareUrl` (lien signé) : son jeton prouve la possession du rapport et permet de rattacher
+ * l'analyse même sans e-mail saisi au lancement (V8).
+ */
+export function signupHref(a: FullAnalysis, shareUrl?: string | null): string {
   const q = new URLSearchParams({ parcours: a.detected.siteType, analyse: a.id, site: a.crawl?.finalOrigin ?? a.input.url });
   if (a.detected.brand) q.set('nom', a.detected.brand);
+  if (a.detected.activity) q.set('metier', a.detected.activity);
+  const city = a.input.city || a.detected.city;
+  if (city) q.set('ville', city);
+  const t = shareUrl ? /[?&]t=([A-Za-z0-9_-]+)/.exec(shareUrl)?.[1] : undefined;
+  if (t) q.set('t', t);
   return `/inscription?${q.toString()}`;
 }
 

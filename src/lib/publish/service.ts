@@ -11,6 +11,7 @@
  * - retour arrière par changement, uniquement si la valeur actuelle est encore celle que Repéré a écrite.
  * Comptes démo : lecture seule (ChangeSets d'exemple, aucune écriture).
  */
+import crypto from 'node:crypto';
 import { ANNOTATIONS, cleanLabel, type Annotation } from '@/lib/annotations';
 import { isDemoBusinessId } from '@/lib/demo-v2';
 import { enqueue } from '@/lib/jobs';
@@ -178,6 +179,56 @@ export async function createChangeSets(businessId: string, findings: Finding[], 
     out.push(cs);
   }
   return { changeSets: out, skipped: plan.skipped };
+}
+
+/**
+ * V8 (AGENT-CONTENU) : réécriture complète d'une page existante, préparée et validée dans /app/contenu, confiée au
+ * cycle normal de l'agent (proposition → lecture de l'état réel → validation → application → relecture → retour
+ * arrière). Un seul changement `rewrite` en `set` sur le corps de la page.
+ */
+export async function createRewriteChangeSet(
+  businessId: string,
+  input: { platform: Platform; site: string; url: string; title: string; value: string; rationale: string; originId: string },
+  actor: Actor,
+  now = new Date(),
+): Promise<ChangeSet> {
+  assertNotDemo(businessId);
+  const open = await listChangeSets(businessId, { status: OPEN });
+  const dup = open.find((o) => o.origin.findingId === input.originId && o.platform === input.platform);
+  if (dup) return dup;
+  const id = `cs_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
+  const cs: ChangeSet = {
+    id,
+    businessId,
+    platform: input.platform,
+    site: input.site,
+    title: input.title.slice(0, 160),
+    origin: { findingId: input.originId, findingTitle: 'Contenu réécrit (agent de contenu)', severity: 'medium' },
+    changes: [
+      {
+        id: `${id}_1`,
+        kind: 'rewrite',
+        target: { url: input.url },
+        patch: { op: 'set', value: input.value },
+        before: null,
+        beforeSource: 'none',
+        after: input.value,
+        rationale: input.rationale.slice(0, 500),
+        risk: 'medium',
+        generatedBy: 'user',
+        status: 'pending',
+      },
+    ],
+    risk: 'medium',
+    status: 'draft',
+    createdAt: now.toISOString(),
+    createdBy: actor,
+    version: 0,
+    updatedAt: now.toISOString(),
+  };
+  await putDoc<ChangeSet>(CHANGESETS, cs.id, cs, businessId);
+  await appendJournal(businessId, cs.id, actor, 'created', { detail: `Réécriture de ${input.url} · ${PLATFORM_LABEL[input.platform]} · ${input.originId}` }, now);
+  return cs;
 }
 
 // ---------------------------------------------------------------------------
@@ -525,6 +576,7 @@ export async function revertChangeSet(businessId: string, id: string, actor: Act
 export async function exportChangeSet(businessId: string, id: string): Promise<{ filename: string; zip: Buffer; files: { name: string; content: string }[] }> {
   const cs = await mustGet(businessId, id);
   if (cs.status === 'draft') throw new PublishError(409, 'Proposez d’abord ces modifications.');
-  const b = buildExportBundle(cs, new Date(), { cms: (await getConnection(businessId, 'wix')) ? 'wix' : undefined });
+  const cms = (await getConnection(businessId, 'wix')) ? 'wix' : (await getConnection(businessId, 'magento')) ? 'magento' : undefined;
+  const b = buildExportBundle(cs, new Date(), { cms });
   return { filename: `repere-${cs.id}.zip`, ...b };
 }

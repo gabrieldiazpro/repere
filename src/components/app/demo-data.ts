@@ -4,7 +4,7 @@
  * ou échoue. Déterministes, réalistes, toujours étiquetées « démo ». Les concurrents sont fictifs.
  * Base : createMockAudit (moteur), enrichie des champs AuditResultV2Ext.
  */
-import { createMockAudit, type AuditInput, type AuditResult, type CompetitorStat, type MentionResult, type ProviderId, type QuerySpec } from '@/lib/engine';
+import { createMockAudit, PROVIDER_LABELS, type AuditInput, type AuditResult, type CompetitorStat, type MentionResult, type ProviderId, type QuerySpec } from '@/lib/engine';
 import type {
   AiEngine,
   AiTrafficDay,
@@ -449,7 +449,7 @@ const CATEGORY_ACTION: Record<SourceCategory, { action: (l: string) => string; h
 };
 
 function providerList(ps: ProviderId[]) {
-  const names = ps.map((p) => ({ chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', mistral: 'Mistral (Le Chat)' })[p]);
+  const names = ps.map((p) => PROVIDER_LABELS[p]);
   return names.length > 1 ? `${names.slice(0, -1).join(', ')} et ${names.at(-1)}` : names[0];
 }
 

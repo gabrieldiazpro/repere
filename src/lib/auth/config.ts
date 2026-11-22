@@ -4,6 +4,11 @@
  * - 'local'    : sans Supabase, hors production (ou AUTH_LOCAL_ACCOUNTS=1) → « compte local de développement »,
  *                lien magique affiché dans la console, session signée HMAC ;
  * - 'off'      : production sans Supabase → aucune connexion possible (jamais d'accès ouvert, A12 de docs/v3/10).
+ *
+ * V8 (inscription libre) : un serveur de DÉMONSTRATION assumé (`DEMO_MODE=1`, hors Vercel, sans Supabase) passe en
+ * 'local' : l'inscription Découverte fonctionne de bout en bout (comptes du store, e-mails journalisés, lien de
+ * confirmation montré à l'écran pour une création de compte seulement, étiqueté « démonstration »). La vraie
+ * production refuse DEMO_MODE (scripts/ops/check-env.mjs).
  */
 export type AuthMode = 'supabase' | 'local' | 'off';
 
@@ -29,7 +34,23 @@ export function authMode(): AuthMode {
   if (!isProduction()) return 'local';
   // Dépannage sur machine dédiée uniquement : jamais sur Vercel (liens magiques dans les journaux, F1 de securite-v3).
   if (process.env.AUTH_LOCAL_ACCOUNTS === '1' && !process.env.VERCEL) return 'local';
+  if (isDemoServer()) return 'local';
   return 'off';
+}
+
+const on = (v: string | undefined) => ['1', 'true', 'on', 'yes'].includes((v ?? '').trim().toLowerCase());
+
+/** Serveur de démonstration assumé : DEMO_MODE=1, sans Supabase, hors Vercel. */
+export function isDemoServer(): boolean {
+  return on(process.env.DEMO_MODE) && !process.env.VERCEL && !(supabaseUrl() && serviceRoleKey());
+}
+
+/**
+ * Comptes de démonstration : mode local en production (build) sur un serveur DEMO_MODE. Les liens de confirmation
+ * d'une création de compte y sont montrés à l'écran (aucune boîte de réception), jamais ceux d'une connexion.
+ */
+export function demoAccounts(): boolean {
+  return authMode() === 'local' && isProduction() && isDemoServer();
 }
 
 /**

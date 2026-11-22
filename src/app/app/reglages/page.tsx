@@ -15,6 +15,7 @@ import { connectionStatus } from '@/lib/ecommerce';
 import { listPrompts } from '@/lib/prompts';
 import { getBusinessRecord } from '@/lib/db';
 import { getEntitlements, TIER_NAMES } from '@/lib/entitlements';
+import { paidExtraEngines } from '@/lib/engine/providers';
 import { VAT_NOTICE } from '@/lib/plans';
 import { ga4Enabled, getConnection as ga4Connection } from '@/lib/tracking/ga4';
 
@@ -27,6 +28,7 @@ const SECTIONS = [
   { id: 'alertes', label: 'Alertes' },
   { id: 'rapports', label: 'Rapports planifiés' },
   { id: 'integrations', label: 'Intégrations' },
+  { id: 'api', label: 'API et MCP' },
   { id: 'partage', label: 'Partage et marque blanche' },
   { id: 'croissance', label: 'Badge, carte, parrainage' },
   { id: 'donnees', label: 'Données' },
@@ -70,7 +72,7 @@ export default async function ReglagesPage() {
     getBusinessRecord(id).catch(() => null),
   ]);
   // Démo : toutes les IA sont ouvertes pour la visite. Sinon : seules celles de l'offre sont cochées.
-  const engines = engineAccess(ent, ws.segment, (b) => getEntitlements(b), { essentiel: TIER_NAMES.essentiel, accompagne: TIER_NAMES.accompagne });
+  const engines = engineAccess(ent, ws.segment, (b) => getEntitlements(b), { essentiel: TIER_NAMES.essentiel, accompagne: TIER_NAMES.accompagne }, { extras: paidExtraEngines() });
   const paid = ent.tier === 'essentiel' || ent.tier === 'accompagne' || ent.tier === 'agence';
   const isOwner = role === 'owner';
   const isAdmin = role === 'owner' || role === 'admin';
@@ -194,15 +196,24 @@ export default async function ReglagesPage() {
                     <li key={x.id} className="flex flex-wrap items-center gap-2 text-[14px]">
                       <input type="checkbox" checked={x.included} disabled readOnly aria-label={`${PROVIDER_LABEL[x.id]} : ${x.included ? 'suivie' : 'non incluse'}`} className="h-4 w-4 accent-[var(--primary)]" />
                       <span className={x.included ? 'font-medium' : 'text-[var(--muted)]'}>{PROVIDER_LABEL[x.id]}</span>
-                      {!x.included && (
-                        <Link href="/tarifs?depuis=reglages" className="rp-chip !text-[12px]">
-                          <Icon name="lock" size={12} /> {x.unlock ? `Avec ${x.unlock}` : 'Voir les tarifs'}
-                        </Link>
+                      {x.extraActive ? (
+                        <span className="rp-chip rp-chip-success !text-[12px]">Mesurée en plus, en option</span>
+                      ) : x.optional ? (
+                        <span className="rp-chip !text-[12px]">En option</span>
+                      ) : (
+                        !x.included && (
+                          <Link href="/tarifs?depuis=reglages" className="rp-chip !text-[12px]">
+                            <Icon name="lock" size={12} /> {x.unlock ? `Avec ${x.unlock}` : 'Voir les tarifs'}
+                          </Link>
+                        )
                       )}
                     </li>
                   ))}
                 </ul>
-                <p className="mt-1 text-[12px] text-[var(--muted)]">Mistral n’est interrogé que lorsque son accès est activé sur la plateforme. Les aperçus IA de Google ne sont pas suivis : pas d’accès officiel.</p>
+                <p className="mt-1 text-[12px] text-[var(--muted)]">
+                  Les IA « en option » (aperçus IA et AI Mode de Google, Copilot dans Bing, DeepSeek, Grok, et Mistral Vibe hors offres qui l’annoncent) ne sont interrogées que lorsque la plateforme les active ; aucune n’est jamais simulée.{' '}
+                  <Link href="/app/ia" className="rp-link">Comment chaque IA est mesurée</Link>
+                </p>
                 <ul className="mt-4 grid gap-1.5 text-[14px] sm:grid-cols-2">
                   {[
                     ['Actions avec livrables', ent.execution],
@@ -210,6 +221,7 @@ export default async function ReglagesPage() {
                     ['Liens de partage', ent.shareLinks],
                     ['Intégrations (Slack, webhook, GA4)', ent.integrations],
                     ['Marque blanche', ent.whiteLabel],
+                    ['API publique, serveur MCP et webhooks', ent.api],
                     [`Copilote : ${ent.copilotDaily} questions par jour`, true],
                   ].map(([label, ok]) => (
                     <li key={String(label)} className="flex items-center gap-2">
@@ -325,6 +337,16 @@ export default async function ReglagesPage() {
                       )}
                     </li>
                   )}
+                  <li id="api" className="flex scroll-mt-20 flex-wrap items-center gap-3 px-3 py-3">
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[14px] font-semibold">API publique et serveur MCP</span>
+                      <span className="block text-[12px] text-[var(--muted)]">Clés d’accès, API REST, serveur MCP en lecture (Claude, ChatGPT…) et webhooks signés.</span>
+                    </span>
+                    <Status ok={ent.api ? true : null}>{ent.api ? (ws.demo ? 'Démo' : 'Inclus') : 'Accompagné ou Agence'}</Status>
+                    <Link href="/app/reglages/api" className="rp-btn rp-btn-sm">
+                      {ent.api ? 'Gérer les clés' : 'Voir'}
+                    </Link>
+                  </li>
                 </ul>
                 <p className="mb-2 text-[14px] font-semibold">Slack et webhook</p>
                 <Verrou ent={ent} feature="integrations" titre="Slack et webhook">

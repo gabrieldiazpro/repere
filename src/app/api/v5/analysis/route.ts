@@ -3,7 +3,8 @@
  *
  * Corps : { url, pro: true, brand?, siteType?, city?, email?, hp? }
  * - `pro` obligatoire (service réservé aux professionnels, comme l'audit gratuit).
- * - Limites : IP (heure + jour), domaine analysé (heure), plafonds globaux ; cache 10 min par domaine.
+ * - Limites : IP (heure + jour), domaine analysé (heure + jour), plafonds globaux ; cache 10 min par domaine (analyse
+ *   complète) et 24 h pour le test de marque (src/lib/analysis/aiguard.ts : aucune IA réinterrogée, plafond quotidien).
  * - Anti-SSRF : l'adresse est validée ici (forme) puis à chaque requête par le crawl (DNS, IP, redirections).
  * - Aucune clé d'IA côté client ; plafond d'appels IA par analyse (ANALYSIS_MAX_AI_CALLS).
  * Lignes émises : les `AnalysisEvent` de runFullAnalysis, puis { type: 'saved', id, url, token, emailed? } (lien signé ;
@@ -25,7 +26,7 @@ import {
   type FullAnalysis,
 } from '@/lib/analysis';
 import { emailHash } from '@/lib/analysis/store';
-import { sendAnalysisReportEmail } from '@/lib/email';
+import { sendAnalysisEmail } from '@/lib/analysis/mail';
 import { recordAttribution, sanitizeAttribution } from '@/lib/roi/attribution';
 
 export const runtime = 'nodejs';
@@ -40,6 +41,7 @@ const limits = () => ({
   ipHour: num('ANALYSIS_RATE_LIMIT_PER_HOUR', 6),
   ipDay: num('ANALYSIS_RATE_LIMIT_PER_DAY', 15),
   domainHour: num('ANALYSIS_PER_DOMAIN_PER_HOUR', 4),
+  domainDay: num('ANALYSIS_PER_DOMAIN_PER_DAY', 12),
   globalHour: num('ANALYSIS_GLOBAL_PER_HOUR', 120),
   globalDay: num('ANALYSIS_GLOBAL_PER_DAY', 600),
 });
@@ -77,19 +79,8 @@ async function mailReport(email: string | undefined, a: FullAnalysis, url: strin
   try {
     const rl = await rateLimit('analysis-email-d', emailHash(email), 3, DAY_MS, { failClosed: true });
     if (!rl.ok) return 'skipped';
-    const r = await sendAnalysisReportEmail(
-      email,
-      {
-        brand: a.detected.brand || a.input.brand || a.crawl?.finalOrigin || a.input.url,
-        url: a.crawl?.finalOrigin || a.input.url,
-        verdict: a.verdict,
-        scores: a.scores,
-        priorities: a.priorities,
-        demo: a.demo,
-        partial: a.partial,
-      },
-      url,
-    );
+    // V8 : test de marque en tête de l'e-mail (cité ou non, par IA, fourchette), puis le site.
+    const r = await sendAnalysisEmail(email, a, url);
     return r.status === 'sent' || r.status === 'logged' ? 'sent' : 'skipped';
   } catch (e) {
     console.error('[api/v5/analysis] envoi du rapport impossible', e);
@@ -156,6 +147,8 @@ export async function POST(req: Request): Promise<Response> {
 
   const dl = await rateLimit('analysis-domain-h', domain, L.domainHour, HOUR_MS, { failClosed: true });
   if (!dl.ok) return tooMany('Ce site a déjà été analysé plusieurs fois dans l’heure. Réessayez plus tard.', dl.retryAfter);
+  const dd = await rateLimit('analysis-domain-d', domain, L.domainDay, DAY_MS, { failClosed: true });
+  if (!dd.ok) return tooMany('Ce site a déjà été analysé de nombreuses fois aujourd’hui. Réessayez demain.', dd.retryAfter);
   const gh = await rateLimit('analysis-global-h', 'all', L.globalHour, HOUR_MS, { failClosed: true });
   const gd = gh.ok ? await rateLimit('analysis-global-d', 'all', L.globalDay, DAY_MS, { failClosed: true }) : gh;
   if (!gh.ok || !gd.ok) return json({ error: 'Beaucoup d’analyses en ce moment. Réessayez dans une heure.' }, 503, { 'Retry-After': '3600' });

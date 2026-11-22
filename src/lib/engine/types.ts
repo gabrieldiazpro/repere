@@ -8,19 +8,51 @@ import type { AuditResultV3Ext, CustomQuery } from './types-v3';
 
 /** IA historiques (toujours présentes dans `subScores`). */
 export type CoreProviderId = 'chatgpt' | 'perplexity' | 'gemini' | 'claude';
-/** V3 (ajout additif) : Mistral (Le Chat), en option avec MISTRAL_API_KEY. */
-export type ProviderId = CoreProviderId | 'mistral';
+/**
+ * IA en option, chacune derrière sa variable (désactivée si non configurée) :
+ * - V3 : Mistral (assistant renommé « Vibe » le 28 mai 2026, ex-Le Chat), MISTRAL_API_KEY ;
+ * - V8 : DeepSeek (DEEPSEEK_API_KEY), Grok (XAI_API_KEY), et via les résultats de recherche relevés par DataForSEO
+ *   (DATAFORSEO_LOGIN/PASSWORD + AUDIT_SERP_ENGINES) : aperçus IA de Google (AI Overviews), Google AI Mode,
+ *   Copilot dans la recherche Bing. Méthode de mesure de chaque IA : `PROVIDER_METHODS` (providers/methods.ts).
+ */
+export type ExtendedProviderId = 'deepseek' | 'google_aio' | 'google_ai_mode' | 'copilot' | 'grok';
+export type ProviderId = CoreProviderId | 'mistral' | ExtendedProviderId;
 
 export const CORE_PROVIDERS: CoreProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude'];
-export const ALL_PROVIDERS: ProviderId[] = [...CORE_PROVIDERS, 'mistral'];
+/** V8 : IA ajoutées (ordre d'affichage). */
+export const EXTENDED_PROVIDERS: ExtendedProviderId[] = ['google_aio', 'google_ai_mode', 'copilot', 'deepseek', 'grok'];
+export const ALL_PROVIDERS: ProviderId[] = [...CORE_PROVIDERS, 'mistral', ...EXTENDED_PROVIDERS];
 
-/** Libellés des IA (source unique dans le moteur). */
+export function isProviderId(x: unknown): x is ProviderId {
+  return typeof x === 'string' && (ALL_PROVIDERS as string[]).includes(x);
+}
+
+/** Libellés des IA (source unique dans le moteur). Noms en texte, jamais de logos officiels. */
 export const PROVIDER_LABELS: Record<ProviderId, string> = {
   chatgpt: 'ChatGPT',
   perplexity: 'Perplexity',
   gemini: 'Gemini',
   claude: 'Claude',
-  mistral: 'Mistral (Le Chat)',
+  mistral: 'Mistral Vibe',
+  google_aio: 'Google AI Overviews',
+  google_ai_mode: 'Google AI Mode',
+  copilot: 'Copilot (Bing)',
+  deepseek: 'DeepSeek',
+  grok: 'Grok',
+};
+
+/** Libellés courts (pastilles, colonnes étroites). */
+export const PROVIDER_SHORT: Record<ProviderId, string> = {
+  chatgpt: 'ChatGPT',
+  perplexity: 'Perplexity',
+  gemini: 'Gemini',
+  claude: 'Claude',
+  mistral: 'Mistral',
+  google_aio: 'AI Overviews',
+  google_ai_mode: 'AI Mode',
+  copilot: 'Copilot',
+  deepseek: 'DeepSeek',
+  grok: 'Grok',
 };
 
 /** Entrée d'audit. V2 : champs de parcours (segment, catégorie, concurrents connus…), tous optionnels. */
@@ -95,6 +127,11 @@ export interface ProviderAnswer {
   at?: string;
   /** V2 (optionnel) : sources structurées (titre, extrait, position) ; `citations` reste rempli pour la V1 */
   sources?: RawSource[];
+  /**
+   * V8 (optionnel) : aucune réponse IA affichée pour cette recherche (ex. Google n'a pas montré d'aperçu IA).
+   * Mesure valide, pas une erreur : comptée « sans recommandation » (hors dénominateur) et dans le taux d'affichage.
+   */
+  absent?: boolean;
 }
 
 export interface MentionResult {
@@ -164,8 +201,8 @@ export interface AuditResult extends AuditResultV2Ext, AuditResultV3Ext {
   input: AuditInput;
   createdAt: string;
   score: number;
-  /** clés historiques toujours présentes ; `mistral` seulement si Mistral fait partie de l'audit */
-  subScores: Record<CoreProviderId, number | null> & { mistral?: number | null };
+  /** clés historiques toujours présentes ; les IA en option seulement si elles font partie de l'audit */
+  subScores: Record<CoreProviderId, number | null> & Partial<Record<Exclude<ProviderId, CoreProviderId>, number | null>>;
   mentionRate: number;
   avgRank: number | null;
   shareOfVoice: number;
@@ -184,6 +221,46 @@ export interface AuditResult extends AuditResultV2Ext, AuditResultV3Ext {
   topActions: ActionItem[];
   /** optionnel : détails de calcul */
   details?: ScoreDetails;
+  /** V8 (optionnel) : comment chaque IA a été mesurée (modèle, date, recherche web, pays, échantillons, marge) */
+  engines?: EngineMeasure[];
+}
+
+/**
+ * V8 : fiche de mesure d'une IA dans un audit — ce qui diffère d'une IA à l'autre, exposé tel quel à l'interface.
+ * Marge : intervalle de Wilson à 90 % sur le taux de mention de cette IA (mêmes réponses valides que le score).
+ */
+export interface EngineMeasure {
+  provider: ProviderId;
+  label: string;
+  /** 'api' = API officielle de l'éditeur ; 'serp' = page de résultats relevée par un fournisseur de SERP */
+  via: 'api' | 'serp';
+  /** éditeur de l'API ou fournisseur de SERP (« OpenAI », « DataForSEO ») */
+  vendor: string;
+  model: string;
+  measuredAt: string;
+  /** la réponse s'appuie sur une recherche web en direct */
+  webSearch: boolean;
+  country: string;
+  language: string;
+  device?: 'mobile' | 'desktop';
+  /** passages par question de recommandation (échantillons) */
+  runsPerQuestion: number;
+  questions: number;
+  /** réponses obtenues (hors erreurs) */
+  answers: number;
+  /** réponses retenues pour le score (hors erreurs, hors « sans recommandation ») */
+  valid: number;
+  errors: number;
+  /** recherches où une réponse IA était affichée (aperçus IA, Copilot) : shown sur total */
+  displayed?: { shown: number; total: number };
+  mentionRate: number | null;
+  mentionLow: number | null;
+  mentionHigh: number | null;
+  /** demi-largeur de l'intervalle, en points de pourcentage */
+  marginPts: number | null;
+  demo: boolean;
+  /** phrase à afficher telle quelle (« Mesuré via les résultats Google en France, sur mobile… ») */
+  note: string;
 }
 
 export interface AuditProgress {

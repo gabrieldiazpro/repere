@@ -4,7 +4,7 @@
  * sinon `auditGeo` pur), SEO-DATA `GooglePerfProvider` (PageSpeed + CrUX, mobile) — tous réels. Les audits reçoivent
  * le crawl COMPLET (HTML compris) : `publicCrawl()` ne s'applique qu'à ce qui sort vers le client.
  */
-import { runQuickAiCheck } from './aicheck';
+import { guardedBrandTest } from './aiguard';
 import type { AnalysisModules, PagespeedResult, RunAnalysisOptions } from './types';
 
 /** Délai maximal d'un appel IA de GEO-OPT dans l'analyse publique (sous-questions, réécritures). */
@@ -35,6 +35,19 @@ export async function measureHomePerf(url: string, signal?: AbortSignal): Promis
   };
 }
 
+/**
+ * Page d'accueil d'un concurrent (V8, « pourquoi lui ») : UNE page, même récupérateur que l'exploration (anti-SSRF,
+ * robots.txt respecté, redirections suivies), 1,5 Mo au plus. null si refusée, injoignable ou non HTML.
+ */
+export async function fetchHomePage(url: string, signal: AbortSignal, timeoutMs = 6_000): Promise<{ finalUrl: string; html: string } | null> {
+  const [{ CrawlFetcher, decodeBody }, { looksBinary }] = await Promise.all([import('@/lib/crawl/fetcher'), import('@/lib/siteaudit/fetch')]);
+  const f = new CrawlFetcher({ deadline: Date.now() + timeoutMs, signal });
+  const r = await f.fetch(url, { followTo: () => true, soft: 'meta+js', maxBytes: 1_500_000 });
+  if (r.errorCode) return null;
+  const type = r.headers['content-type'] || 'text/html';
+  return r.status > 0 && r.status < 400 && /html/i.test(type) && !looksBinary(r.body) ? { finalUrl: r.finalUrl, html: decodeBody(r.body, type) } : null;
+}
+
 export function defaultModules(): AnalysisModules {
   return {
     async crawl(url, opts) {
@@ -56,7 +69,17 @@ export function defaultModules(): AnalysisModules {
       }
     },
     pagespeed: (url, signal) => measureHomePerf(url, signal),
-    aiCheck: (ctx) => runQuickAiCheck(ctx),
+    aiCheck: async (ctx) => {
+      const { analysisDomain } = await import('./run');
+      let domain = ctx.url;
+      try {
+        domain = analysisDomain(ctx.url);
+      } catch {
+        /* adresse déjà validée en amont */
+      }
+      return guardedBrandTest(ctx, domain);
+    },
+    fetchPage: (url, signal) => fetchHomePage(url, signal),
   };
 }
 

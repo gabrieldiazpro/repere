@@ -139,11 +139,14 @@ export function benchmarkOf(r: ReportResult): BenchmarkPosition & { derived: boo
 /* Phrase choc                                                         */
 /* ------------------------------------------------------------------ */
 
-const PROVIDER_LABEL: Record<ProviderId, string> = { chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', mistral: 'Mistral (Le Chat)' };
+const PROVIDER_LABEL: Record<ProviderId, string> = {
+  chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', mistral: 'Mistral Vibe',
+  google_aio: 'Google AI Overviews', google_ai_mode: 'Google AI Mode', copilot: 'Copilot (Bing)', deepseek: 'DeepSeek', grok: 'Grok',
+};
 
 export function shockLine(r: ReportResult): string {
   const name = r.input.businessName;
-  const order: ProviderId[] = ['chatgpt', 'gemini', 'perplexity', 'claude', 'mistral'];
+  const order: ProviderId[] = ['chatgpt', 'gemini', 'perplexity', 'claude', 'mistral', 'google_aio', 'google_ai_mode', 'copilot', 'deepseek', 'grok'];
   const qText = (id: string) => r.queries.find((q) => q.id === id)?.text ?? '';
   const misses = (r.mentions ?? [])
     .filter((m) => !m.mentioned && m.competitors.some((c) => !isPlatformName(c)))

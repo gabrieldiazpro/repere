@@ -150,7 +150,7 @@ describe('cohérence des chiffres des comptes démo', () => {
         expect([m.low, m.high], `${id} ${a.id}`).toEqual([a.range!.low, a.range!.high]);
       }
     }
-  });
+  }, 20_000); // construit les 3 espaces démo (V8 : jusqu’à 8 IA simulées par compte)
 });
 
 describe('copilote', () => {

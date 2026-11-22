@@ -47,6 +47,8 @@ export interface Entitlements {
   recrawl: CrawlRights;
   /** V6 — fonctions agences (src/lib/agency) : réservées à l'offre Agence (la démo les montre en lecture seule) */
   agency: AgencyLimits;
+  /** V8 — API publique REST, serveur MCP en lecture et webhooks (src/lib/publicapi) : Accompagné, Agence, démo */
+  api: boolean;
 }
 
 /** V6 — fonctions agences. Toutes fausses / nulles hors offre Agence. */
@@ -89,6 +91,13 @@ export interface PublishLimits {
   changeSetsPerMonth: number;
 }
 
+/** V8 — niveaux qui ouvrent l'API publique (« réservée aux offres Accompagné et Agence » ; la démo la montre). */
+export const API_TIERS: readonly EntitlementTier[] = ['accompagne', 'agence', 'demo'];
+
+export function apiLimitFor(tier: EntitlementTier): boolean {
+  return API_TIERS.includes(tier);
+}
+
 /** Analyse publique sans compte (route /api/v5/analysis) : mêmes chiffres que Découverte. */
 export const PUBLIC_ANALYSIS_MAX_PAGES = 60;
 
@@ -105,9 +114,9 @@ const V5: Record<EntitlementTier, { analysis: AnalysisLimits; publish: PublishLi
   demo: { analysis: { maxPages: 2_000, crawlBudgetMs: 600_000, reanalysis: 'none' }, publish: { apply: true, changeSetsPerMonth: 100 } },
 };
 
-function v5Limits(tier: EntitlementTier, segment: Segment): Pick<Entitlements, 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency'> {
+function v5Limits(tier: EntitlementTier, segment: Segment): Pick<Entitlements, 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency' | 'api'> {
   const v = V5[tier];
-  return { analysis: { ...v.analysis }, seoData: seoDataLimitsFor({ tier }, segment), publish: { ...v.publish }, recrawl: { ...crawlRights(tier) }, agency: agencyLimitsFor(tier) };
+  return { analysis: { ...v.analysis }, seoData: seoDataLimitsFor({ tier }, segment), publish: { ...v.publish }, recrawl: { ...crawlRights(tier) }, agency: agencyLimitsFor(tier), api: apiLimitFor(tier) };
 }
 
 const BASE3: ProviderId[] = ['chatgpt', 'perplexity', 'gemini'];
@@ -115,7 +124,7 @@ const BASE4: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude'];
 /** Mistral n'est réellement interrogé que si MISTRAL_API_KEY est fourni (moteur). */
 const ALL: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'];
 
-type Row = Omit<Entitlements, 'planId' | 'tier' | 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency'>;
+type Row = Omit<Entitlements, 'planId' | 'tier' | 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency' | 'api'>;
 
 const DECOUVERTE: Row = {
   prompts: 5, engines: BASE3, frequency: 'monthly', execution: false, seats: 1, brands: 1,
@@ -207,6 +216,7 @@ const UNLOCKED_BY: Partial<Record<keyof Entitlements, string>> = {
   shareLinks: 'Essentiel',
   integrations: 'Essentiel (PME, E-commerce) ou Accompagné',
   whiteLabel: 'Agence',
+  api: 'Accompagné ou Agence',
 };
 
 /**

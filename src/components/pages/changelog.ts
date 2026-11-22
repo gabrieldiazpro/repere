@@ -133,7 +133,7 @@ export const CHANGELOG: readonly ChangeEntry[] = [
 export const UPCOMING: readonly { title: string; text: string }[] = [
   { title: "Visite guidée du compte démo", text: "Une visite pas à pas des écrans, directement dans l'application." },
   { title: "Outils gratuits", text: "Robots des IA, citabilité d'une page, générateur JSON-LD, lien d'avis Google et d'autres, sans inscription." },
-  { title: "Mistral (Le Chat)", text: "Une cinquième IA suivie, en option." },
+  { title: "Mistral (Le Chat, devenu Vibe)", text: "Une cinquième IA suivie, en option." },
   { title: "Connecteur Shopify", text: "Les ventes venues des IA lues directement dans votre boutique." },
   { title: "Offre agence", text: "Marque blanche et exécution à prix revendeur ; liste d'attente ouverte." },
 ];

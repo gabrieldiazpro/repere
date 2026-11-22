@@ -1,7 +1,8 @@
 import type { AuditResult, ProviderId } from '@/lib/engine';
 
 export const PROVIDER_LABEL: Record<ProviderId, string> = {
-  chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', mistral: 'Mistral (Le Chat)',
+  chatgpt: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', claude: 'Claude', mistral: 'Mistral Vibe',
+  google_aio: 'Google AI Overviews', google_ai_mode: 'Google AI Mode', copilot: 'Copilot (Bing)', deepseek: 'DeepSeek', grok: 'Grok',
 };
 
 /** Accepte une part en fraction (0-1) ou en pourcentage (0-100). */

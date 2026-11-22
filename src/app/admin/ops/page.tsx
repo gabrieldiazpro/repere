@@ -135,7 +135,7 @@ export default async function OpsPage({ searchParams }: { searchParams: Promise<
         {h ? (
           <ul className="ui-small mt-3 space-y-1" style={muted}>
             <li>Base : {h.detail.db.backend === 'supabase' ? `Supabase${h.detail.db.ms !== undefined ? `, ${h.detail.db.ms} ms` : ''}` : 'mémoire (démo)'}{h.detail.db.error ? ` — ${h.detail.db.error}` : ''}</li>
-            <li>IA configurées : {h.configured.aiCount ? Object.entries(h.configured.ai).filter(([, v]) => v).map(([k]) => k).join(', ') : 'aucune (audits simulés)'} · Stripe {h.configured.stripe ? 'oui' : 'non'} · Resend {h.configured.resend ? 'oui' : 'non'} · Sentry {h.configured.sentry ? 'oui' : 'non'}</li>
+            <li>IA configurées : {h.configured.aiCount ? Object.entries(h.configured.ai).filter(([, v]) => v).map(([k]) => k).join(', ') : 'aucune (audits simulés)'} · IA en option : {Object.entries(h.configured.aiOptional ?? {}).filter(([, v]) => v).map(([k]) => k).join(', ') || 'aucune'} · Stripe {h.configured.stripe ? 'oui' : 'non'} · Resend {h.configured.resend ? 'oui' : 'non'} · Sentry {h.configured.sentry ? 'oui' : 'non'}</li>
             {h.detail.env.errors.map((e) => <li key={e} style={{ color: 'var(--tone-down)' }}>{e}</li>)}
             {h.detail.env.warnings.slice(0, 6).map((w) => <li key={w}>{w}</li>)}
           </ul>

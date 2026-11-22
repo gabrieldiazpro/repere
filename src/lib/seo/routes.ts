@@ -73,14 +73,14 @@ export function literalChildren(parent: string, root: string | null = appDir()):
 
 /** Pages sans paramètre, dans l'ordre d'affichage. Les pages dynamiques ou conditionnelles sont traitées à part. */
 const STATIC_CANDIDATES: RouteEntry[] = [
-  { path: '/analyse', label: 'Analyse SEO et IA gratuite du site', note: 'exploration réelle, audit SEO et GEO, 5 priorités, en 60 secondes', section: 'produit' },
+  { path: '/analyse', label: 'Test de marque gratuit, puis analyse SEO et IA du site', note: 'votre marque est-elle citée par les IA : questions posées en direct, qui est cité à votre place et pourquoi, puis audit SEO et GEO, 5 priorités', section: 'produit' },
   { path: '/demo', label: 'Démo guidée', note: 'le produit en vidéo et en démo interactive, sur trois comptes d’exemple', section: 'produit' },
   { path: '/nouveautes', label: 'Nouveautés', note: 'journal des évolutions du produit', section: 'produit' },
   { path: '/securite', label: 'Sécurité et données', note: 'hébergement, accès, sous-traitants, conservation', section: 'produit' },
-  { path: '/integrations', label: 'Intégrations', note: 'Google Analytics 4, Shopify, Slack, webhook, exports', section: 'produit' },
+  { path: '/integrations', label: 'Intégrations', note: 'WordPress, WooCommerce, Shopify, Webflow, PrestaShop, Wix, Magento, Google Analytics 4, Slack, webhook, exports, API et MCP', section: 'produit' },
   { path: '/aide', label: 'Centre d’aide', section: 'produit' },
   { path: '/contact', label: 'Contact', section: 'produit' },
-  { path: '/inscription', label: 'Créer un compte gratuit (offre Découverte)', note: '1 marque, 5 questions suivies, 1 mesure par mois, 3 IA', section: 'produit' },
+  { path: '/inscription', label: 'Créer un compte gratuit (offre Découverte)', note: 'sans carte bancaire : 1 marque, 5 questions suivies, 1 mesure par mois, 3 IA', section: 'produit' },
   { path: '/badge', label: 'Badge « Visibilité IA mesurée »', note: 'badge daté, avec sa mention de limites', section: 'communaute' },
   { path: '/parrainage', label: 'Parrainage', section: 'communaute' },
   { path: '/methode/robot', label: 'RepereBot, notre robot', note: 'user agent, ce qu’il lit, comment le bloquer', section: 'reference' },

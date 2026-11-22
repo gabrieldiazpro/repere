@@ -395,7 +395,7 @@ export const GUIDES_V3: Guide[] = [
       {
         h2: 'Ce que vous pouvez faire gratuitement',
         paras: [
-          'Vous pouvez commencer à la main : posez vos cinq questions à ChatGPT, Perplexity, Gemini et Claude, trois fois chacune, dans des conversations neuves, et notez dans un tableur qui est cité. C’est lent et approximatif, mais cela suffit pour comprendre le principe. Le test gratuit de Repéré fait la même chose sur 8 à 10 questions types, et l’offre Découverte suit 5 de vos questions une fois par mois sur trois IA. Ni l’un ni l’autre ne couvre les aperçus IA de Google, dont aucune interface fiable ne permet la mesure.',
+          'Vous pouvez commencer à la main : posez vos cinq questions à ChatGPT, Perplexity, Gemini et Claude, trois fois chacune, dans des conversations neuves, et notez dans un tableur qui est cité. C’est lent et approximatif, mais cela suffit pour comprendre le principe. Le test gratuit de Repéré fait la même chose sur 8 à 10 questions types, et l’offre Découverte suit 5 de vos questions une fois par mois sur trois IA. Les aperçus IA de Google se mesurent à part, en relevant la page de résultats : Repéré le propose en option.',
         ],
       },
     ],

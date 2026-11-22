@@ -277,9 +277,9 @@ describe('route POST /outils/api/[outil]', () => {
 });
 
 describe('catalogue et exemples', () => {
-  it('31 outils, slugs uniques, contenu complet, lien vers /analyse, tous rangés dans le hub', () => {
-    expect(TOOLS).toHaveLength(31);
-    expect(new Set(TOOLS.map((t) => t.slug)).size).toBe(31);
+  it('32 outils, slugs uniques, contenu complet, lien vers /analyse, tous rangés dans le hub', () => {
+    expect(TOOLS).toHaveLength(32);
+    expect(new Set(TOOLS.map((t) => t.slug)).size).toBe(32);
     const grouped = HUB_GROUPS.flatMap((g) => g.slugs);
     expect(new Set(grouped)).toEqual(new Set(TOOLS.map((t) => t.slug)));
     for (const t of V6_TOOLS) {

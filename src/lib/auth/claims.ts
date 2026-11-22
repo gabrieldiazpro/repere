@@ -117,6 +117,8 @@ export interface AnalysisSignupDefaults {
   website: string;
   trade?: string;
   city?: string;
+  /** V8 : questions du test de marque (reprises comme questions suivies : la marque arrive déjà suivie) */
+  questions?: { id: string; text: string }[];
 }
 
 export async function analysisSignupDefaults(id: string | undefined, email: string): Promise<AnalysisSignupDefaults | null> {
@@ -138,6 +140,7 @@ export async function analysisSignupDefaults(id: string | undefined, email: stri
       website,
       ...(a.detected.activity ? { trade: a.detected.activity.slice(0, 80) } : {}),
       ...((a.input.city || a.detected.city) ? { city: (a.input.city || a.detected.city)!.slice(0, 80) } : {}),
+      ...(a.brandTest?.questions.length ? { questions: a.brandTest.questions.map((q) => ({ id: q.id, text: q.text })) } : {}),
     };
   } catch {
     return null;
@@ -185,7 +188,10 @@ export async function createOwnedBusiness(
     // Supabase : createBusiness n'ajoute pas l'adhésion (mode mémoire : oui, idempotent).
     await addMembership(b.id, session.userId, 'owner', session.email);
     // Questions de l'audit d'origine reprises (dans la limite de l'offre) quand le parcours est le même.
-    if (!b.needsSetup) await enqueueOnboardingAudit(b.id, profile.fromOrigin && origin ? { queries: origin.queries } : undefined);
+    // V8 : sinon, celles du test de marque de l'analyse d'origine (même parcours) : la marque arrive déjà suivie, avec
+    // les questions qu'elle vient de voir (et la mesure rattachée comme premier point quand elle était réelle).
+    const fromTest = fromAnalysis?.questions?.length && segment === fromAnalysis.segment ? fromAnalysis.questions.map((q) => ({ id: q.id, text: q.text, kind: 'reco' as const, intent: 'best' as const })) : null;
+    if (!b.needsSetup) await enqueueOnboardingAudit(b.id, profile.fromOrigin && origin ? { queries: origin.queries } : fromTest ? { queries: fromTest } : undefined);
     return b;
   });
 }

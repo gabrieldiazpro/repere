@@ -6,6 +6,7 @@
  * - JSON-LD, FAQ, réécriture : `content.raw` de la page (avant/après = contenu complet, exact et réversible).
  */
 import { basicAuth, normalizeSiteUrl, parseJson, requestJson, statusError } from '../http';
+import { looksLikeProduct, wooEnabled, wooLocate, wooProbe, wooRead, wooWrite } from './woocommerce'; // V8 ECOM : produits WooCommerce
 import { PublishError, type Change, type ChangeKind, type ConnectInput, type ConnectorContext, type PublishConnector, type ResourceRef, type TestResult } from '../types';
 
 type SeoPlugin = 'yoast' | 'rankmath' | 'none';
@@ -113,14 +114,15 @@ export const wordpressConnector: PublishConnector = {
     if (canEdit) capabilities.push('rewrite');
     // Un bloc <script> dans le contenu n'est conservé qu'avec la capacité unfiltered_html.
     if (canEdit && caps.unfiltered_html) capabilities.push('jsonld', 'faq');
+    const woo = canEdit && (await wooProbe(ctx, ns)); // V8 ECOM : produits WooCommerce (mêmes capacités que les pages)
     const missingMeta = plugin !== 'none' && !capabilities.includes('meta.title');
     return {
       ok: canEdit,
       detail: canEdit
-        ? `Connecté à « ${root.name ?? 'WordPress'} »${plugin !== 'none' ? ` (extension ${plugin === 'yoast' ? 'Yoast SEO' : 'Rank Math'})` : ''}.${missingMeta ? ' Les champs SEO ne sont pas exposés à l’API : installez l’extension d’aide indiquée pour que Repéré puisse les modifier.' : ''}`
+        ? `Connecté à « ${root.name ?? 'WordPress'} »${plugin !== 'none' ? ` (extension ${plugin === 'yoast' ? 'Yoast SEO' : 'Rank Math'})` : ''}.${missingMeta ? ' Les champs SEO ne sont pas exposés à l’API : installez l’extension d’aide indiquée pour que Repéré puisse les modifier.' : ''}${woo ? ' Produits WooCommerce pris en charge.' : ''}`
         : 'Cet utilisateur ne peut pas modifier les pages : choisissez un compte Éditeur ou Administrateur.',
       capabilities,
-      info: { seoPlugin: plugin, siteName: String(root.name ?? '') },
+      info: { seoPlugin: plugin, siteName: String(root.name ?? ''), woocommerce: woo ? '1' : '0' },
     };
   },
 
@@ -134,6 +136,10 @@ export const wordpressConnector: PublishConnector = {
       const hit = list.find((m) => mediaStem(m.source_url ?? '') === stem);
       if (!hit) throw new PublishError(404, 'Image introuvable dans la médiathèque WordPress.', 'not_found');
       return { type: 'media', id: String(hit.id) };
+    }
+    if (wooEnabled(ctx) && looksLikeProduct(url)) {
+      const prod = await wooLocate(ctx, url, normPath);
+      if (prod) return prod;
     }
     const want = normPath(url);
     const slug = (() => {
@@ -149,6 +155,10 @@ export const wordpressConnector: PublishConnector = {
       const hit = list.find((p) => p.link && normPath(p.link) === want) ?? (slug && list.length === 1 ? list[0] : undefined);
       if (hit) return { type, id: String(hit.id) };
     }
+    if (wooEnabled(ctx)) {
+      const prod = await wooLocate(ctx, url, normPath);
+      if (prod) return prod;
+    }
     throw new PublishError(404, 'Page introuvable dans WordPress (adresse modifiée ou page générée par une extension).', 'not_found');
   },
 
@@ -158,6 +168,7 @@ export const wordpressConnector: PublishConnector = {
       const m = await get<{ alt_text?: string }>(ctx, `/wp/v2/media/${encodeURIComponent(ref.id ?? '')}?context=edit`, 'Lecture de l’image');
       return m.alt_text ?? '';
     }
+    if (ref.type === 'product') return wooRead(ctx, ref, CONTENT_KINDS.includes(change.kind) ? null : metaKey(ctx, change.kind));
     const p = await loadPost(ctx, ref);
     if (CONTENT_KINDS.includes(change.kind)) return p.content?.raw ?? '';
     const key = metaKey(ctx, change.kind);
@@ -180,6 +191,10 @@ async function write(ctx: ConnectorContext, change: Change, value: string): Prom
   const ref = await wordpressConnector.locate(ctx, change);
   if (change.kind === 'image.alt') {
     await post(ctx, `/wp/v2/media/${encodeURIComponent(ref.id ?? '')}`, { alt_text: value }, 'Mise à jour de l’image');
+    return;
+  }
+  if (ref.type === 'product') {
+    await wooWrite(ctx, ref, CONTENT_KINDS.includes(change.kind) ? null : metaKey(ctx, change.kind), value);
     return;
   }
   if (CONTENT_KINDS.includes(change.kind)) {

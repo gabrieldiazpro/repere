@@ -2,7 +2,7 @@
  * ANALYSE-UI — lecture du flux NDJSON de POST /api/v5/analysis et état de l'écran « analyse en cours ».
  * Pur (aucune dépendance React) : testé dans __tests__/stream.test.ts.
  */
-import type { AnalysisEvent, Detection, FullAnalysis, ModuleId, ModuleStatus } from '@/lib/analysis/types';
+import type { AnalysisEvent, BrandTest, BrandTestSkip, Detection, FullAnalysis, ModuleId, ModuleStatus } from '@/lib/analysis/types';
 import type { Severity } from '@/lib/crawl/types';
 import type { Attribution } from '@/lib/roi/core';
 import { currentAttribution } from '@/lib/roi/landing';
@@ -32,7 +32,9 @@ export interface LiveState {
   crawl: { fetched: number; queued: number; phase: string; current?: string; urls: string[] };
   findings: LiveFinding[];
   scores: { seo?: number; geo?: number; ai?: number };
-  ai: { done: number; total: number; providers: string[]; last?: string };
+  ai: { done: number; total: number; providers: string[]; last?: string; /** réponses reçues par IA (identifiant) */ byProvider: Record<string, number> };
+  /** V8 : test de marque (questions et IA annoncées, puis le tableau complet) */
+  brand: { plan?: { demo: boolean; questions: { id: string; text: string }[]; providers: { id: string; label: string }[] }; test?: BrandTest; skip?: BrandTestSkip };
   analysis?: FullAnalysis;
   saved?: { id: string; token: string };
   cached?: { at: string };
@@ -44,7 +46,7 @@ export interface LiveState {
 export const MAX_MAP_URLS = 160;
 
 export function initialLive(): LiveState {
-  return { phase: 'running', steps: {}, crawl: { fetched: 0, queued: 0, phase: 'robots', urls: [] }, findings: [], scores: {}, ai: { done: 0, total: 0, providers: [] }, t: 0 };
+  return { phase: 'running', steps: {}, crawl: { fetched: 0, queued: 0, phase: 'robots', urls: [] }, findings: [], scores: {}, ai: { done: 0, total: 0, providers: [], byProvider: {} }, brand: {}, t: 0 };
 }
 
 const addUrl = (urls: string[], u: string | undefined) => (u && !urls.includes(u) && urls.length < MAX_MAP_URLS ? [...urls, u] : urls);
@@ -68,12 +70,24 @@ export function reduceLive(s: LiveState, e: RouteLine): LiveState {
       return {
         ...s,
         t,
-        ai: { done: e.done, total: e.total, last: e.provider ?? s.ai.last, providers: e.provider && !s.ai.providers.includes(e.provider) ? [...s.ai.providers, e.provider] : s.ai.providers },
+        ai: {
+          done: e.done,
+          total: e.total,
+          last: e.provider ?? s.ai.last,
+          providers: e.provider && !s.ai.providers.includes(e.provider) ? [...s.ai.providers, e.provider] : s.ai.providers,
+          byProvider: e.provider ? { ...s.ai.byProvider, [e.provider]: (s.ai.byProvider[e.provider] ?? 0) + 1 } : s.ai.byProvider,
+        },
       };
+    case 'brandplan':
+      return { ...s, t, brand: { ...s.brand, plan: { demo: e.demo, questions: e.questions, providers: e.providers } } };
+    case 'brand':
+      return { ...s, t, brand: { ...s.brand, test: e.test } };
+    case 'brandskip':
+      return { ...s, t, brand: { ...s.brand, skip: e.skip } };
     case 'score':
       return { ...s, t, scores: { ...s.scores, [e.module]: e.score } };
     case 'result':
-      return { ...s, t, analysis: e.analysis, phase: 'done' };
+      return { ...s, t, analysis: e.analysis, phase: 'done', brand: { ...s.brand, ...(e.analysis.brandTest ? { test: e.analysis.brandTest } : {}) } };
     case 'saved':
       return { ...s, saved: { id: e.id, token: e.token } };
     case 'cached':

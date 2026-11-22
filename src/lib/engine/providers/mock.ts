@@ -96,6 +96,11 @@ const INTROS: Record<ProviderId, string[]> = {
   gemini: ['Voici des options intéressantes', 'Plusieurs adresses sont recommandées', 'Voici ce que je peux vous proposer'],
   claude: ['Voici quelques pistes', 'Plusieurs adresses semblent fiables', 'Voici une courte sélection'],
   mistral: ['Voici quelques adresses recommandées', "D'après les résultats de recherche", 'Plusieurs professionnels sont bien notés'],
+  google_aio: ['Plusieurs professionnels sont bien notés dans le secteur', 'Voici des options souvent citées', 'Les adresses les mieux notées'],
+  google_ai_mode: ['Voici plusieurs options selon les avis en ligne', 'Plusieurs adresses ressortent', 'Voici une sélection'],
+  copilot: ['Voici quelques options bien notées', "D'après les résultats de recherche", 'Plusieurs adresses reviennent souvent'],
+  deepseek: ['Voici quelques recommandations', 'Selon les informations trouvées', 'Plusieurs options sont possibles'],
+  grok: ['Voici quelques options', 'Selon les sources consultées', 'Plusieurs adresses sont citées'],
 };
 
 const OUTROS = [

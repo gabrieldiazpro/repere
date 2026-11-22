@@ -46,7 +46,8 @@ describe('catalogue', () => {
 describe('coûts', () => {
   afterEach(() => vi.unstubAllEnvs());
   it('la table recopie exactement les coûts déclarés par les fournisseurs du moteur', () => {
-    for (const k of ['OPENAI_API_KEY', 'PERPLEXITY_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY', 'MISTRAL_API_KEY']) vi.stubEnv(k, 'cle-de-test');
+    for (const k of ['OPENAI_API_KEY', 'PERPLEXITY_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY', 'MISTRAL_API_KEY', 'DEEPSEEK_API_KEY', 'XAI_API_KEY', 'DATAFORSEO_LOGIN', 'DATAFORSEO_PASSWORD']) vi.stubEnv(k, 'cle-de-test');
+    vi.stubEnv('AUDIT_SERP_ENGINES', 'all');
     vi.stubEnv('AUDIT_EXTRACTOR', '');
     for (const id of ALL_PROVIDERS) expect(createRealProvider(id)!.costPerCallEur).toBeCloseTo(COST_PER_CALL_EUR[id], 10);
     expect(getExtractor()!.costPerCallEur).toBeCloseTo(EXTRACT_COST_EUR, 10);

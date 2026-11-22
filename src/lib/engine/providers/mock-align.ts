@@ -169,6 +169,11 @@ export const PROVIDER_CITATION_PROFILE: Record<ProviderId, ProviderCitationProfi
   gemini: { factor: 0.75, favored: /proximit|acheter|urgence/i },
   claude: { factor: 0.9, favored: /meilleur|comparati/i },
   mistral: { factor: 0.85, favored: /marque|prix|proximit/i },
+  google_aio: { factor: 0.95, favored: /proximit|acheter|urgence|prix/i },
+  google_ai_mode: { factor: 1.05, favored: /comparati|meilleur|proximit/i },
+  copilot: { factor: 0.9, favored: /comparati|prix|services/i },
+  deepseek: { factor: 0.7, favored: /marque|comparati/i },
+  grok: { factor: 0.6, favored: /avis|marque/i },
 };
 
 function hash01(str: string): number {

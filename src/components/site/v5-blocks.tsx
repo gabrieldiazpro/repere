@@ -274,7 +274,7 @@ export function ChecksMap() {
 /* L'agent de publication                                              */
 /* ------------------------------------------------------------------ */
 
-export const PUBLISH_PLATFORMS = ["WordPress", "Shopify", "Webflow", "PrestaShop"] as const;
+export const PUBLISH_PLATFORMS = ["WordPress et WooCommerce", "Shopify", "Webflow", "PrestaShop", "Wix", "Magento"] as const;
 
 const AGENT_STEPS: { title: string; text: string }[] = [
   { title: "Préparé", text: "Titres, descriptions, textes alternatifs, balisage, redirections : l’agent rédige à partir de votre site, sans inventer de chiffre." },
@@ -308,7 +308,7 @@ export function AgentFlow({ dark = false }: { dark?: boolean }) {
 export const FAMILY_COMPARE: { label: string; seo: string; geo: string; us: string }[] = [
   { label: "Pour qui", seo: "Experts SEO et agences", geo: "Équipes marketing", us: "Dirigeants, commerçants, équipes sans expert" },
   { label: "Audit technique du site", seo: "Très complet", geo: "Accès des robots d’IA, parfois", us: `${SEO_CHECK_COUNT} contrôles SEO et ${GEO_SECTIONS.length} familles GEO, en français` },
-  { label: "Réponses des IA", seo: "Module en option, souvent en supplément", geo: "Le cœur de l’offre", us: "4 à 5 IA, questions répétées, marge d’erreur affichée" },
+  { label: "Réponses des IA", seo: "Module en option, souvent en supplément", geo: "Le cœur de l’offre", us: "3 à 5 IA selon l’offre, jusqu’à 10 en option, questions répétées, marge d’erreur affichée" },
   { label: "Positions et Search Console", seo: "Oui", geo: "Rarement", us: "Oui : Search Console, PageSpeed, positions suivies" },
   { label: "Corrections", seo: "À faire vous-même", geo: "Recommandations, parfois un agent", us: "Prêtes à copier, ou appliquées sur votre site après validation" },
   { label: "Prix d’entrée", seo: "Environ 130 à 140 $/mois", geo: "29 à 95 $/mois", us: "0 €, puis dès 29 €/mois" },

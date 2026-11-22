@@ -21,6 +21,24 @@ export const AI_KEYS = {
 } as const;
 export type AiName = keyof typeof AI_KEYS;
 
+/**
+ * V8 : IA en option (src/lib/engine/providers) — configurées si leur clé est posée ; les relevés Google / Bing demandent
+ * en plus AUDIT_SERP_ENGINES (liste ou all) et les identifiants DataForSEO. Comptées à part (jamais dans aiCount).
+ */
+export type OptionalAiName = 'deepseek' | 'grok' | 'google_aio' | 'google_ai_mode' | 'copilot';
+export function optionalAiConfigured(env: Record<string, string | undefined>): Record<OptionalAiName, boolean> {
+  const serpList = (env.AUDIT_SERP_ENGINES ?? '').trim().toLowerCase();
+  const dfs = has(env, 'DATAFORSEO_LOGIN') && has(env, 'DATAFORSEO_PASSWORD');
+  const serp = (id: string) => dfs && (serpList === 'all' || serpList.split(/[\s,;]+/).includes(id));
+  return {
+    deepseek: has(env, 'DEEPSEEK_API_KEY'),
+    grok: has(env, 'XAI_API_KEY'),
+    google_aio: serp('google_aio'),
+    google_ai_mode: serp('google_ai_mode'),
+    copilot: serp('copilot'),
+  };
+}
+
 export interface DbProbe {
   level: Level;
   backend: 'supabase' | 'memory';
@@ -42,7 +60,7 @@ export interface HealthReport {
   time: string;
   checks: { db: Level; env: Level; jobs: Level; cron: Level };
   cron: { lastWorkerAt: string | null; ageMin: number | null; ok: boolean | null };
-  configured: { ai: Record<AiName, boolean>; aiCount: number; stripe: boolean; resend: boolean; sentry: boolean; alerts: boolean };
+  configured: { ai: Record<AiName, boolean>; aiCount: number; aiOptional: Record<OptionalAiName, boolean>; stripe: boolean; resend: boolean; sentry: boolean; alerts: boolean };
   /** Détails réservés aux appels authentifiés. */
   detail: {
     db: DbProbe;
@@ -82,6 +100,7 @@ export function computeHealth(i: HealthInput): HealthReport {
     configured: {
       ai,
       aiCount: Object.values(ai).filter(Boolean).length,
+      aiOptional: optionalAiConfigured(i.env),
       stripe: has(i.env, 'STRIPE_SECRET_KEY') && has(i.env, 'STRIPE_WEBHOOK_SECRET'),
       resend: has(i.env, 'RESEND_API_KEY'),
       sentry: has(i.env, 'SENTRY_DSN'),

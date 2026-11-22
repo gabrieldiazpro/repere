@@ -316,7 +316,9 @@ export const SOFTWARE_FEATURES: string[] = [
   'Search Console, PageSpeed Insights et CrUX connectés ; positions Google suivies chaque semaine',
   'Mesure des réponses de ChatGPT, Perplexity, Gemini et Claude (Mistral en option), avec marge d’erreur',
   'Sources citées par les IA, vérification des faits, part de voix face aux concurrents',
-  'Agent de publication : corrections appliquées sur WordPress, Shopify, Webflow ou PrestaShop après validation, journalisées et annulables',
+  'Agent de publication : corrections appliquées sur WordPress (et WooCommerce), Shopify, Webflow, PrestaShop, Wix ou Magento après validation, journalisées et annulables',
+  'Agent de contenu : pages manquantes rédigées avec vos seuls faits, créées en brouillon chez vous, publiées après validation',
+  'API REST publique, serveur MCP en lecture et webhooks signés',
   'Baromètres mensuels de la visibilité dans les IA par métier et par ville, publiés seulement après une mesure réelle',
 ];
 

@@ -31,7 +31,12 @@ export const PROVIDER_LABEL: Record<ProviderId, string> = {
   perplexity: 'Perplexity',
   gemini: 'Gemini',
   claude: 'Claude',
-  mistral: 'Mistral (Le Chat)',
+  mistral: 'Mistral Vibe',
+  google_aio: 'Google AI Overviews',
+  google_ai_mode: 'Google AI Mode',
+  copilot: 'Copilot (Bing)',
+  deepseek: 'DeepSeek',
+  grok: 'Grok',
 };
 
 export interface DetectOptions {

@@ -181,7 +181,7 @@ function Liens({ r, rate }: { r: RoiReport['liens']; rate: number }) {
         Coût = ce que les liens AJOUTENT à la facture DataForSEO du mois : max(engagement, autres appels + liens) − autres appels.
       </p>
       <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Figure label="Coût du mois (mesuré)" value={eur(r.costEur)} note={`liens ${r.spentBacklinksUsd.toFixed(2).replace('.', ',')} $ · autres appels ${r.spentOtherUsd.toFixed(2).replace('.', ',')} $`} />
+        <Figure label="Coût du mois (mesuré)" value={eur(r.costEur)} note={`liens ${r.spentBacklinksUsd.toFixed(2).replace('.', ',')} $ · autres appels ${r.spentOtherUsd.toFixed(2).replace('.', ',')} $, dont relevés d’IA (aperçus IA, AI Mode, Copilot) ${(r.spentSerpAiUsd ?? 0).toFixed(2).replace('.', ',')} $`} />
         <Figure label="MRR des offres avec l’onglet" value={eur(r.mrrEur)} note={Object.entries(r.byTier).map(([t, x]) => `${t === 'accompagne' ? 'Accompagné' : 'Agence'} : ${x.count} (${eur(x.mrrEur)})`).join(' · ') || 'aucun abonné'} />
         <Figure label="Ratio revenu / coût" value={ratioText(r.ratio)} note={r.ratio === null ? 'aucun coût ce mois-ci' : 'couverture : MRR de ces offres / coût'} />
         <Figure label="Usage réel de l’onglet (mois)" value={`${int(r.activeSubscribers)} / ${int(r.subscribers)}`} note={`abonnés qui l’ont ouvert · ${int(r.usage.views)} affichage${r.usage.views > 1 ? 's' : ''} au total`} />

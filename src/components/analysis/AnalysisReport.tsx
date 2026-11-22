@@ -11,6 +11,7 @@ import { Typewriter } from '@/components/motion/Typewriter';
 import { useInView } from '@/components/motion/useInView';
 import s from './analysis.module.css';
 import { ScoreDial } from './ScoreDial';
+import { BrandTestReport } from './BrandTest';
 import {
   SEVERITY_LABEL,
   SEVERITY_TONE,
@@ -51,7 +52,7 @@ export function AnalysisReport({
   const host = hostOf(a.crawl?.finalOrigin ?? a.input.url);
   const H = headingLevel;
   const fixable = a.autoFixes.length;
-  const signup = signupHref(a);
+  const signup = signupHref(a, shareUrl);
   const down = problem?.kind === 'unreachable';
   const rerunHref = `/analyse?site=${encodeURIComponent(a.crawl?.finalOrigin ?? a.input.url)}`;
   // État d'accès au site (ROBUSTESSE, V6) : encadré dès que l'accès n'est pas simplement « ok ».
@@ -85,6 +86,13 @@ export function AnalysisReport({
           {fixable ? <StatusBadge tone="brand">{fixable} corrections que Repéré peut faire pour vous</StatusBadge> : null}
         </div>
       </header>
+
+      {/* V8 : le test de marque en tête (cité ou non par chaque IA, pourquoi eux, premières actions), le site ensuite. */}
+      <BrandTestReport test={a.brandTest} skip={a.brandSkip} signupHref={down ? undefined : signup} />
+
+      {a.brandTest || a.brandSkip ? (
+        <h2 className={`${s.h2} mt-12`}>Votre site, lu page par page</h2>
+      ) : null}
 
       {accessBox ? <AccessBox access={accessBox} onRerun={onRerun} rerunHref={rerunHref} /> : problem ? <ProblemBox problem={problem} onRerun={onRerun} rerunHref={rerunHref} /> : null}
 
@@ -120,10 +128,10 @@ export function AnalysisReport({
       {down ? null : (
       <div className={`${s.ctaBar} ${s.noPrint}`}>
         <Link href={signup} className="ui-btn" data-variant="primary" data-size="lg">
-          Corriger avec Repéré
+          Suivre ma marque gratuitement
         </Link>
         <ShareActions shareUrl={shareUrl} host={host} />
-        <p className={s.ctaNote}>Espace gratuit, sans carte bancaire : votre site y est réanalysé chaque mois, et rien n’est publié sans votre accord.</p>
+        <p className={s.ctaNote}>Offre Découverte gratuite, sans carte bancaire : votre marque reste suivie sur ces questions, votre site est réanalysé chaque mois, et rien n’est publié sans votre accord.</p>
       </div>
       )}
 
@@ -176,7 +184,7 @@ export function AnalysisReport({
         </section>
       ) : null}
 
-      {a.ai ? <AiSection ai={a.ai} brand={a.detected.brand} /> : null}
+      {a.ai && !a.brandTest ? <AiSection ai={a.ai} brand={a.detected.brand} /> : null}
 
       <Performance a={a} />
 

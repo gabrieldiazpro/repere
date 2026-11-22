@@ -28,6 +28,8 @@ const PLATFORM = new Set(['NODE_ENV', 'NEXT_PHASE', 'NEXT_RUNTIME', 'VITEST', 'C
 const isPlatform = (k) => PLATFORM.has(k) || k.startsWith('VERCEL_') || k === 'VERCEL' || k.startsWith('npm_') || k.startsWith('__NEXT');
 /** Lues uniquement par les scripts de scripts/ops (pas par l'application). */
 const SCRIPT_ONLY = new Set(['DATABASE_URL', 'BACKUP_PASSPHRASE']); // BACKUP_PASSPHRASE : scripts/ops/sauvegarde.mjs (OPS V6)
+/** Noms écrits dans des exemples de documentation (curl de /developpeurs), jamais lus par l'application. */
+const DOC_EXAMPLES = new Set(['REPERE_API_KEY']);
 
 const PATTERNS = [
   /process\.env\.([A-Z][A-Z0-9_]*)/g,
@@ -239,7 +241,7 @@ async function main() {
   const documented = await documentedVariables();
   // STRIPE_PRICE_<PLANID> est construit dynamiquement : les variables documentées de cette famille sont « lues ».
   const dynamicFamilies = ['STRIPE_PRICE_'];
-  const missing = [...used.keys()].filter((k) => !documented.has(k)).sort();
+  const missing = [...used.keys()].filter((k) => !documented.has(k) && !DOC_EXAMPLES.has(k)).sort();
   const unused = [...documented].filter((k) => !used.has(k) && !SCRIPT_ONLY.has(k) && !dynamicFamilies.some((f) => k.startsWith(f))).sort();
   if (argv.includes('--json')) {
     console.log(JSON.stringify({ used: used.size, documented: documented.size, missing, unused }, null, 2));

@@ -7,6 +7,8 @@ import { buttonClasses } from "@/components/ui/Button";
 import { PricingExplorer } from "@/components/site/PricingExplorer";
 import { Faq, SectionTitle, type QA } from "@/components/site/blocks";
 import { PriceTable } from "@/components/site/PriceTable";
+import { AiCoverageTable } from "@/components/site/AiStrip";
+import { aiCoverageCounts } from "@/components/site/ai-coverage";
 import { euros, fromPrice, tiersFor, VAT_NOTICE, type SiteSegment } from "@/components/site/plans-v2";
 import { pageMeta } from "@/lib/seo/meta";
 import { JsonLd } from "@/lib/seo/shell";
@@ -138,7 +140,15 @@ const FAQ: QA[] = [
     a: `Non. Les prix affichés sont les prix à payer : ${VAT_NOTICE}. Aucune TVA n'est ajoutée et votre facture le mentionne. Pour une entreprise assujettie, cela veut aussi dire qu'il n'y a pas de TVA à récupérer sur nos factures : le prix affiché est votre coût final.`,
   },
   {
-    q: "Comment se passe le paiement ?",
+    q: "Puis-je brancher Repéré dans Claude ou ChatGPT ?",
+    a: "Oui, avec l'offre Accompagné ou Agence : serveur MCP en lecture, clé créée dans Réglages › API. L'API REST et les webhooks signés sont inclus dans les mêmes offres ; la documentation est publique sur la page Développeurs.",
+  },
+  {
+    q: "Quelles IA sont comprises dans le prix ?",
+    a: "Celles écrites dans chaque offre : ChatGPT, Gemini et Perplexity partout, Claude selon l'offre, Mistral Vibe en option en Accompagné PME et e-commerce. Les aperçus IA et le mode IA de Google, Copilot et DeepSeek sont mesurables en option, sans être comptés dans les offres à ce jour ; Grok sur demande. Le tableau « Les IA mesurables » ci-dessus donne la méthode de chacune.",
+  },
+  {
+    q: "Comment se passe le paiement ?",
     a: "Par carte bancaire via Stripe. Nous ne voyons ni ne stockons vos données de carte. Vos factures sont envoyées par e-mail et téléchargeables dans votre espace.",
   },
   {
@@ -212,6 +222,19 @@ export default async function TarifsPage({ searchParams }: { searchParams: Promi
               Comment nous mesurons : <Link href="/methode" className="font-semibold text-primary underline underline-offset-4">la méthode</Link>.
               Repéré face aux outils et aux agences : <Link href="/comparatif" className="font-semibold text-primary underline underline-offset-4">le comparatif</Link>.
             </p>
+          </Container>
+        </section>
+
+        <section id="ia-mesurables" aria-labelledby="ia-mesurables-title" className="scroll-mt-20 bg-canvas pb-20 sm:pb-24">
+          <Container>
+            <SectionTitle
+              id="ia-mesurables-title"
+              title={`Les ${aiCoverageCounts().total} IA mesurables, et celles comprises dans votre offre`}
+              intro="Chaque offre dit combien d'IA elle inclut. Les autres sont mesurables en option : interrogées seulement si elles sont activées, jamais simulées, avec la même marge d'erreur."
+            />
+            <div className="mt-8">
+              <AiCoverageTable />
+            </div>
           </Container>
         </section>
 

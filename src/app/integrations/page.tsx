@@ -5,15 +5,15 @@ import { HubDiagram } from "@/components/pages/v4/HubDiagram";
 import { Icon } from "@/components/app/icons";
 
 /** Libellés courts pour le schéma. */
-const SHORT: Record<string, string> = { script: "Script de mesure", exports: "Exports CSV", ga4: "Google Analytics 4" };
+const SHORT: Record<string, string> = { script: "Script de mesure", exports: "Exports CSV", ga4: "Google Analytics 4", publication: "Publication", api: "API et MCP" };
 import { pageMeta } from "@/lib/seo/meta";
 import { breadcrumbListLd, graph, webPageLd } from "@/lib/seo/jsonld";
 
 const PATH = "/integrations";
-const TITLE = "Intégrations : WordPress, Google Analytics, Slack, webhook, Shopify";
+const TITLE = "Intégrations : WordPress, WooCommerce, Shopify, Magento, API et MCP";
 const DESCRIPTION =
-  "Les outils que Repéré connecte, avec leur état réel : disponible ou en préparation. WordPress, script sans cookie, Google Analytics 4, Slack, webhook, exports, Shopify.";
-const UPDATED = "2026-11-09";
+  "Les outils que Repéré connecte, avec leur état réel : WordPress, WooCommerce, Shopify, Magento, Wix, Google Analytics 4, Slack, webhooks, exports, API et MCP.";
+const UPDATED = "2026-11-22";
 
 export const metadata = pageMeta({ path: PATH, title: "Intégrations", description: DESCRIPTION });
 
@@ -69,6 +69,22 @@ function integrations(): Integration[] {
       what: "Chaque vue exportable en CSV ; le rapport partageable par un lien révocable, avec expiration.",
       how: "Bouton « Exporter » ou « Partager » sur chaque écran (offres Essentiel et Accompagné).",
       href: { label: "Rapports et partage", url: "/fonctionnalites/rapports-et-partage" },
+    },
+    {
+      id: "publication",
+      name: "Publication sur votre site",
+      status: "disponible",
+      what: "L'agent applique les corrections et crée les contenus que vous validez sur WordPress (et WooCommerce), Shopify, Webflow, PrestaShop, Wix et Magento / Adobe Commerce.",
+      how: "Connexion par accès limité (mot de passe d'application, application, jeton ou clé de webservice) depuis l'agent. Adobe Commerce en mode SaaS : pas encore ; export prêt à déposer pour les autres sites.",
+      href: { label: "L'agent de publication", url: "/fonctionnalites/agent-de-publication" },
+    },
+    {
+      id: "api",
+      name: "API et MCP",
+      status: "disponible",
+      what: "API REST en lecture (et quelques écritures), serveur MCP en lecture pour brancher Repéré dans Claude ou ChatGPT, webhooks signés.",
+      how: "Clé créée dans Réglages › API (offres Accompagné et Agence) ; documentation publique, avec une clé de démonstration.",
+      href: { label: "La documentation développeurs", url: "/developpeurs" },
     },
     {
       id: "shopify",

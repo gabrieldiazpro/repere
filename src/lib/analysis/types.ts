@@ -57,6 +57,105 @@ export interface AiCheckSummary {
   calls: number;
   topCompetitors: string[];
   note: string;
+  /** V8 : détail du test de marque (question × IA), déplacé dans `FullAnalysis.brandTest` à la synthèse. */
+  test?: BrandTest;
+}
+
+/* ------------------------------------------------------------------ */
+/* V8 — test de marque (« Votre marque est-elle citée par les IA ? »)  */
+/* ------------------------------------------------------------------ */
+
+/** Réponse d'une IA à une question : cité ou non, à quelle place, qui à la place, la phrase, les sources lues. */
+export interface BrandTestCell {
+  provider: string;
+  label: string;
+  /** cited : la marque est nommée ; not_cited : d'autres le sont ; no_reco : aucune recommandation ; error : pas de réponse */
+  status: 'cited' | 'not_cited' | 'no_reco' | 'error';
+  /** place parmi les recommandations (1 = première), si citée */
+  rank: number | null;
+  /** cités à la place (ou avant vous), dans l'ordre de la réponse, 3 au plus */
+  instead: string[];
+  /** phrase extraite de la réponse (la vôtre si vous êtes cité, sinon celle du premier cité) */
+  excerpt?: string;
+  /** sources consultées ou citées par l'IA pour cette réponse (5 au plus) */
+  sources: { url: string; domain: string; title?: string }[];
+  /** modèle interrogé (traçabilité) */
+  model?: string;
+}
+
+export interface BrandTestQuestion {
+  id: string;
+  text: string;
+  cells: BrandTestCell[];
+}
+
+/** Taux de citation avec sa fourchette (intervalle de Wilson à 90 %). */
+export interface CitationRate {
+  cited: number;
+  asked: number;
+  rate: number;
+  low: number;
+  high: number;
+}
+
+export interface BrandTestProvider extends CitationRate {
+  id: string;
+  label: string;
+}
+
+/** Signal lisible sur une page d'accueil (données structurées, avis, FAQ…) — src/lib/analysis/signals.ts. */
+export type SiteSignalId = 'entity' | 'rating' | 'faq' | 'address' | 'phone' | 'hours' | 'city' | 'prices' | 'sameas' | 'content';
+
+export interface WhyAction {
+  title: string;
+  how: string;
+  /** repere : Repéré prépare la correction (vous validez) ; vous : à faire de votre côté (Repéré vous guide) */
+  by: 'repere' | 'vous';
+  /** d'où vient l'action (écart de site, source manquante) */
+  from: SiteSignalId | 'source';
+}
+
+/** « Pourquoi lui ? » pour une question où un concurrent est cité et pas vous. */
+export interface CompetitorWhy {
+  questionId: string;
+  question: string;
+  competitor: string;
+  /** IA qui l'ont cité sur cette question */
+  providers: string[];
+  /** site du concurrent repéré dans les réponses (ou null), et s'il a pu être lu */
+  site: { url: string; read: boolean; note?: string } | null;
+  /** sources lues par les IA pour ces réponses ; le concurrent / vous y êtes-vous nommés (titre ou extrait) ? */
+  sources: { domain: string; url: string; title?: string; category: string; categoryLabel: string; them: boolean; you: boolean }[];
+  /** éléments relevés chez lui (page d'accueil) et absents de votre site (pages lues) */
+  gaps: { id: SiteSignalId; label: string; evidence?: string }[];
+  /** éléments que vous avez et lui non (honnêteté : ce n'est pas tout noir) */
+  strengths: { id: SiteSignalId; label: string }[];
+  actions: WhyAction[];
+  /** sur quoi repose la comparaison */
+  basis: string;
+}
+
+export interface BrandTest {
+  version: 1;
+  demo: boolean;
+  measuredAt: string;
+  brand: string;
+  questions: BrandTestQuestion[];
+  providers: BrandTestProvider[];
+  /** IA connues de Repéré mais non configurées sur ce serveur (transparence) */
+  notConfigured: string[];
+  overall: CitationRate;
+  /** pour chaque question où un concurrent est cité à votre place (3 au plus) */
+  why?: CompetitorWhy[];
+  /** résultat repris d'un test de moins de 24 h (aucune IA réinterrogée) */
+  reused?: { at: string };
+  note: string;
+}
+
+/** Test de marque non lancé : raison lisible (plafond de coûts, limite du jour…). */
+export interface BrandTestSkip {
+  reason: 'cost_cap' | 'domain_limit' | 'regulated' | 'no_budget';
+  message: string;
 }
 
 export interface CrawlSummary {
@@ -102,6 +201,10 @@ export interface FullAnalysis {
   geo: ModuleReport | null;
   data?: DataSummary;
   ai?: AiCheckSummary;
+  /** V8 : test de marque en tête du rapport (questions × IA, pourquoi eux, premières actions). */
+  brandTest?: BrandTest;
+  /** V8 : test de marque non lancé, et pourquoi. */
+  brandSkip?: BrandTestSkip;
   verdict: string;
   /**
    * ROBUSTESSE (V6) : ce que notre robot a pu lire (état explicite, message en français, marche à suivre adaptée à la
@@ -148,6 +251,9 @@ export type AnalysisEvent = EvBase &
     | { type: 'crawl'; fetched: number; queued: number; phase: string; currentUrl?: string; /** pages lues depuis l'événement précédent (≤ 20, pour la carte en direct) */ urls?: string[] }
     | { type: 'finding'; source: 'seo' | 'geo' | 'ai'; id: string; title: string; severity: Severity }
     | { type: 'ai'; done: number; total: number; provider?: string }
+    | { type: 'brandplan'; demo: boolean; questions: { id: string; text: string }[]; providers: { id: string; label: string }[] }
+    | { type: 'brand'; test: BrandTest }
+    | { type: 'brandskip'; skip: BrandTestSkip }
     | { type: 'score'; module: 'seo' | 'geo' | 'ai'; score: number }
     | { type: 'result'; analysis: FullAnalysis }
     | { type: 'error'; message: string }
@@ -171,6 +277,10 @@ export interface AiCheckContext {
   /** enregistrer l'audit moteur (défaut true) */
   save?: boolean;
   onProgress?: (done: number, total: number, provider?: string) => void;
+  /** V8 : questions et IA du test de marque, annoncées avant les appels */
+  onPlan?: (plan: { demo: boolean; questions: { id: string; text: string }[]; providers: { id: string; label: string }[] }) => void;
+  /** V8 : test non lancé (plafond, limite du jour) */
+  onSkip?: (skip: BrandTestSkip) => void;
 }
 
 /** Résultat du module PageSpeed : résumé public + mesure brute SEO-DATA (transmise à l'audit SEO, jamais stockée). */
@@ -184,6 +294,8 @@ export interface AnalysisModules {
   /** null = SEO-DATA non configuré (on le dit, sans inventer). */
   pagespeed(url: string, signal: AbortSignal): Promise<PagespeedResult | DataSummary['pagespeed'] | null>;
   aiCheck(ctx: AiCheckContext): Promise<AiCheckSummary | null>;
+  /** V8 : lit la page d'accueil des concurrents cités (1 page chacun, robots.txt respecté) ; null = non lu */
+  fetchPage?(url: string, signal: AbortSignal): Promise<{ finalUrl: string; html: string } | null>;
   /** modules encore provisoires (adaptateurs ANALYSE-60S en attendant le vrai module) */
   provisional?: Partial<Record<ModuleId, boolean>>;
 }

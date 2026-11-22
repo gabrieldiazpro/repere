@@ -94,6 +94,17 @@ export const EnvSchema = z.object({
   GOOGLE_PLACES_KEY: str(),
   GEMINI_GROUNDING: z.enum(['on', 'off']).optional().catch(undefined),
   AUDIT_PROVIDERS: str(),
+  // V8 : IA en option (chacune désactivée si non configurée)
+  DEEPSEEK_API_KEY: str(),
+  DEEPSEEK_MODEL: str(),
+  XAI_API_KEY: str(),
+  XAI_MODEL: str(),
+  AUDIT_SERP_ENGINES: str(),
+  AUDIT_PAID_EXTRA_ENGINES: str(),
+  /** V8 FINALE : « offre » = budget d'une mesure payante calé sur le volume de l'offre (docs/v8/economie-offres.md) */
+  AUDIT_BUDGET_PAID_MODE: str(),
+  AUDIT_BUDGET_PAID_MAX_EUR: num(25),
+  AUDIT_SERP_DEVICE: z.enum(['mobile', 'desktop']).optional().catch(undefined),
 
   // Questions suivies, croissance (agents QUESTIONS, CROISSANCE)
   PROMPTS_SITE_FETCH: z.enum(['on', 'off']).optional().catch(undefined),
@@ -140,6 +151,16 @@ export const EnvSchema = z.object({
   ANALYSIS_GLOBAL_PER_DAY: num(600),
   /** 0 = pas d'envoi du lien du rapport à l'e-mail saisi (défaut : envoyé) */
   ANALYSIS_EMAIL_REPORT: z.enum(['0', '1']).optional().catch(undefined),
+  // V8 — test de marque (src/lib/analysis/aiguard.ts) et route d'analyse
+  ANALYSIS_BRAND_CACHE_HOURS: num(24),
+  ANALYSIS_AI_PER_DOMAIN_PER_DAY: num(3),
+  ANALYSIS_AI_DAILY_CAP_EUR: num(5),
+  ANALYSIS_PER_DOMAIN_PER_DAY: num(12),
+  // V8 — agent de contenu : off = modèles structurés seulement
+  CONTENT_WRITER: z.enum(['on', 'off']).optional().catch(undefined),
+  // V8 — API publique et MCP
+  PUBLIC_API_KEY_PEPPER: str(),
+  PUBLIC_MCP_ALLOWED_ORIGINS: str(),
   // GEO-OPT : off = aucune IA dans le module (gabarits et règles seulement)
   GEO_LLM: z.enum(['on', 'off']).optional().catch(undefined),
   // SEO-DATA : sans clé, chaque source est « non configurée » (rien n'est estimé)
@@ -274,7 +295,8 @@ export function validateEnv(source: Source = process.env): EnvReport {
 
   if (production && explicitDemo) warnings.push('DEMO_MODE=1 en production : données simulées, aucun paiement réel.');
   if (production && v('STRIPE_SECRET_KEY')(source)?.startsWith('sk_test_')) warnings.push('STRIPE_SECRET_KEY est une clé de test en production.');
-  const ai = ['OPENAI_API_KEY', 'PERPLEXITY_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY', 'MISTRAL_API_KEY'].filter((k) => v(k)(source));
+  const ai = ['OPENAI_API_KEY', 'PERPLEXITY_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY', 'MISTRAL_API_KEY', 'DEEPSEEK_API_KEY', 'XAI_API_KEY'].filter((k) => v(k)(source));
+  if (v('AUDIT_SERP_ENGINES')(source) && !(v('DATAFORSEO_LOGIN')(source) && v('DATAFORSEO_PASSWORD')(source))) warnings.push('AUDIT_SERP_ENGINES sans DATAFORSEO_LOGIN / DATAFORSEO_PASSWORD : aperçus IA, AI Mode et Copilot non mesurés.');
   if (mode !== 'demo' && ai.length === 0) warnings.push('Aucune clé IA : les audits sont simulés (étiquetés « démo »).');
   if (production && !v('SENTRY_DSN')(source)) warnings.push('SENTRY_DSN absent : les erreurs ne sont que dans les logs et /admin/ops.');
   if (v('ALERT_EMAIL')(source) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('ALERT_EMAIL')(source) ?? '')) warnings.push('ALERT_EMAIL mal formée : alertes e-mail désactivées.');

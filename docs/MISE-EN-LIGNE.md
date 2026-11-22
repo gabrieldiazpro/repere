@@ -25,6 +25,7 @@ pas développeur : chaque étape dit **ce que vous cliquez**, **ce que vous coll
 | 4 | Vercel (hébergement) et domaine | 20 min | importer le projet | le domaine affiche le site |
 | 5 | Stripe (paiement) | 20 min | `node scripts/ops/stripe-setup.mjs --live` | « Valeurs écrites dans .env.production.local » |
 | 6 | Clés des IA | 20 min | coller les clés | `--liste` les montre ✓ |
+| 6 bis | IA en option (V8, facultatif) | 15 min | `DEEPSEEK_API_KEY`, `AUDIT_SERP_ENGINES` (+ DataForSEO de l'étape 14), `AUDIT_PAID_EXTRA_ENGINES` | `--liste` les montre ✓ |
 | 7 | Identité légale | 10 min | coller vos informations officielles | `check-env --prod` n'en signale plus |
 | 8 | Contrôle complet | 2 min | `node scripts/ops/check-env.mjs --prod` | « ✓ PRÊT » |
 | 9 | Envoyer les variables à Vercel | 10 min | `node scripts/ops/secrets.mjs --vercel-fichier` | redéploiement terminé |
@@ -190,11 +191,54 @@ fournisseur, fixez un **plafond de dépense mensuel** : c'est votre premier post
 | `GEMINI_API_KEY` (Gemini) | https://aistudio.google.com/apikey | `AIza…` ou `AQ.…` |
 | `PERPLEXITY_API_KEY` | https://console.perplexity.ai/project/keys | `pplx-…` |
 | `ANTHROPIC_API_KEY` (Claude, offres Essentiel PME/e-commerce et Accompagné) | https://platform.claude.com/settings/keys | `sk-ant-…` |
-| `MISTRAL_API_KEY` (offres Accompagné PME/e-commerce) | https://console.mistral.ai/api-keys (moyen de paiement requis) | 32 caractères |
+| `MISTRAL_API_KEY` (Mistral Vibe, ex-Le Chat ; offres Accompagné PME/e-commerce) | https://console.mistral.ai/api-keys (moyen de paiement requis) | 32 caractères |
 
 Facultatif : `SENTRY_DSN` (suivi des erreurs, offre gratuite, https://sentry.io › projet › Client Keys).
 
 **Vérifier** : `node scripts/ops/secrets.mjs --liste` montre ✓ devant ces clés.
+
+## 6 bis. Les IA en option : aperçus IA et AI Mode de Google, Copilot, DeepSeek, Grok (V8, facultatif)
+
+Chaque IA est **désactivée tant que sa variable est vide** : elle n'est alors ni interrogée ni simulée pour un vrai client
+(elle disparaît simplement de la mesure). Les comptes démo les montrent avec des données de démonstration étiquetées.
+Les offres (plans.ts) n'annoncent pas encore ces IA (décision 3 du contrat V3, à revoir par le fondateur) : pour les ajouter
+aux mesures **payantes** de tous les abonnés, listez-les dans `AUDIT_PAID_EXTRA_ENGINES` (ex.
+`google_aio,google_ai_mode,copilot,deepseek`, ou `all`) ; seules les IA configurées sont prises. L'audit gratuit reste à 3 IA.
+
+| IA | Comment elle est mesurée (affiché tel quel dans l'app) | Variables |
+|---|---|---|
+| **Google AI Overviews** | Aperçu IA de la page de résultats Google, relevé en France, en français, sur mobile (`AUDIT_SERP_DEVICE=desktop` pour l'ordinateur), via DataForSEO. Pas d'aperçu affiché = compté à part, jamais comme un oubli. | `DATAFORSEO_LOGIN`, `DATAFORSEO_PASSWORD` (étape 14) + `AUDIT_SERP_ENGINES` contenant `google_aio` |
+| **Google AI Mode** | Réponse du mode IA de Google, relevée en France, en français, via DataForSEO (sans compte Google connecté). | idem + `google_ai_mode` |
+| **Copilot (Bing)** | Réponse Copilot affichée dans la recherche Bing, en France, sur ordinateur, via DataForSEO. **Ce n'est pas l'application Copilot** (aucune API publique) : c'est dit dans l'app. | idem + `copilot` |
+| **DeepSeek** | API officielle DeepSeek, modèle `deepseek-flash`, outil `deepseek_web_search` (réponses avec citations). L'API ne prend pas de position : la ville est dans la question. | `DEEPSEEK_API_KEY` (https://platform.deepseek.com/api_keys, crédit prépayé) ; `DEEPSEEK_MODEL` facultatif |
+| **Grok** | API officielle xAI (Responses), outil `web_search`. Peu utilisé en France : à n'activer que si vos clients le demandent. | `XAI_API_KEY` (https://console.x.ai) ; `XAI_MODEL` facultatif (défaut `grok-4.3`) |
+
+Exemple : `AUDIT_SERP_ENGINES=google_aio,google_ai_mode,copilot` (ou `all`). Chez DataForSEO et DeepSeek, fixez un
+**plafond de dépense** comme pour les autres IA.
+
+**Coût estimé** (pire cas, tarifs officiels relevés le 22 nov. 2026, 1 $ = 0,92 €) — compté dans `details.estimatedCostEur`
+de chaque audit, donc dans le compteur « Audits (IA) » du plafond journalier `OPS_DAILY_COST_CAP_EUR` (/admin/ops) ; pas
+dans le plafond mensuel SEO de chaque compte (pas de double compte). Chaque réponse ajoute ≈ 0,0003 € d'extraction des
+noms (extracteur OpenAI). Une mesure payante = chaque question posée 3 fois.
+
+| IA | Par réponse | Par client et par mois, Accompagné PME / e-commerce (100 questions × 3 passages × 4,33 semaines ≈ 1 300 réponses) | Agence (par marque : 50 questions, chaque semaine ≈ 650 réponses) |
+|---|---|---|---|
+| Google AI Overviews | 0,0037 € (0,002 $ + 0,002 $ de chargement asynchrone, remboursé quand aucun aperçu n'est affiché) | ≈ 5,2 € | ≈ 2,6 € |
+| Google AI Mode | 0,0037 € (0,004 $ en Live) | ≈ 5,2 € | ≈ 2,6 € |
+| Copilot (Bing) | 0,0018 € (0,002 $ en Live) | ≈ 2,8 € | ≈ 1,4 € |
+| DeepSeek | ≤ 0,0092 € (recherches non facturées à part depuis le 18 nov. 2026 ; ≈ 20 000 jetons d'entrée à 0,30 $/M + 1 500 de sortie à 1,20 $/M, heure pleine) | ≤ 12,3 € (souvent moitié moins) | ≤ 6,2 € |
+| Grok | ≤ 0,032 € (web_search 5 $ / 1 000 appels, jusqu'à 3 recherches, + jetons grok-4.3 à 1,25 $ / 2,50 $ par million) | ≈ 42 € | ≈ 21 € |
+
+À retenir : les trois IA relevées par DataForSEO coûtent ≈ 13 € par client Accompagné et par mois ; DeepSeek au plus 12 € ;
+Grok est cher pour une audience faible en France, d'où sa désactivation par défaut.
+
+**Budget par audit** : le garde-fou `AUDIT_BUDGET_PAID_EUR` (défaut 2,50 € local, 2,70 € PME / e-commerce) retire des
+passages quand l'estimation le dépasse — c'est déjà le cas avec 100 questions sur les 5 IA historiques (≈ 25 € par mesure
+complète). Fixez-le d'après l'offre (ex. 30 € pour Accompagné PME avec les IA en option) après vérification des factures ;
+sinon les dernières questions sont mesurées sur moins d'IA (le nombre de passages sautés est dans `details.skippedForBudget`).
+
+**Vérifier** : `node scripts/ops/secrets.mjs --liste` montre ✓ devant `DEEPSEEK_API_KEY` / `AUDIT_SERP_ENGINES` ; dans
+l'app, /app/ia › « Comment chaque IA est mesurée » liste la méthode, le modèle, les échantillons et la marge de chaque IA.
 
 ## 7. L'identité légale (10 min)
 
@@ -614,6 +658,18 @@ manque de temps, il est simplement sauté (et le rapport reste exact).
 | Alerte « Plafond de coût » chaque jour | plafond trop bas pour l'activité réelle | relever `OPS_DAILY_COST_CAP_EUR` après vérification des factures |
 
 ## Sources vérifiées le 13 novembre 2026
+
+IA en option (étape 6 bis, relevé le 22 novembre 2026) : [DeepSeek, outils web (deepseek_web_search, annotations
+url_citation)](https://api-docs.deepseek.com/guides/web_tools), [DeepSeek, tarifs (deepseek-flash, recherche non facturée à
+part depuis le 18 nov. 2026)](https://api-docs.deepseek.com/quick_start/pricing), [DeepSeek, Search & Fetch](https://api-docs.deepseek.com/guides/search),
+[xAI, outil web_search](https://docs.x.ai/developers/tools/web-search), [xAI, citations](https://docs.x.ai/developers/tools/citations),
+[xAI, tarifs](https://docs.x.ai/developers/pricing), [DataForSEO, Google AI Mode (endpoints)](https://docs.dataforseo.com/v3/serp/google/ai_mode/overview/)
+et [tarif](https://dataforseo.com/pricing/serp/google-ai-mode-serp-api), [DataForSEO, Google Organic Live Advanced
+(élément ai_overview, load_async_ai_overview +0,002 $)](https://docs.dataforseo.com/v3/serp/google/organic/live/advanced/),
+[DataForSEO, aperçus IA et AI Mode](https://dataforseo.com/help-center/parse-google-ai-overviews-ai-mode), [DataForSEO,
+Copilot dans Bing SERP API](https://dataforseo.com/help-center/explaining-the-copilot-search-serp-feature-in-bing-serp-api)
+et [tarif Bing](https://dataforseo.com/apis/serp-api/bing-serp-api), [Mistral : Le Chat devient Vibe (28 mai 2026)](https://mistral.ai/fr/news/vibe-agent/).
+
 
 - Supabase : [clés d'API](https://supabase.com/docs/guides/api/api-keys), [connexion à la base](https://supabase.com/docs/guides/database/connecting-to-postgres), [SMTP Resend pour Supabase](https://www.resend.com/docs/send-with-supabase-smtp)
 - Stripe : [clés d'API](https://docs.stripe.com/keys), [configurations du portail client](https://docs.stripe.com/api/customer_portal/configurations)

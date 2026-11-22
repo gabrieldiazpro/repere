@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Card, h2Class } from '@/lib/seo/shell';
 import { CITABILITY_RULES, CITABILITY_TOTAL } from './rules';
+import { AiCoverageTable } from '@/components/site/AiStrip';
+import { aiCoverageCounts } from '@/components/site/ai-coverage';
 
 const DEMAND_ROWS = [
   ['Intention', 'recommandation, proximité : +2 ; avis, urgence, prix, où acheter : +1 ; comparatif, alternative, service précis : 0 ; question sur une marque nommée : −1'],
@@ -35,10 +37,28 @@ export function MethodV3Sections() {
 
       <h2 id="ia-suivies" className={h2Class}>Les IA suivies</h2>
       <p className="leading-relaxed">
-        ChatGPT, Perplexity, Gemini et Claude, et, en option, <strong>Mistral (Le Chat)</strong>. Le nombre d&apos;IA dépend de l&apos;offre : 3 en Découverte, 3 ou 4 en Essentiel, 4 ou 5 en Accompagné.
-        Mistral est interrogé par son interface de conversation avec recherche web ; il n&apos;est suivi que sur les offres qui l&apos;incluent, car chaque appel avec recherche web a un coût.
-        Il alimente le pilier Sources, car l&apos;API renvoie les adresses des pages utilisées. Les adresses sont celles que l&apos;API fournit, pas une reconstitution.
+        Repéré sait mesurer {aiCoverageCounts().total} IA. Les offres en incluent {aiCoverageCounts().inOffers} : ChatGPT, Perplexity, Gemini et Claude ; le nombre d&apos;IA dépend de l&apos;offre (3 en Découverte, 3 ou 4 en Essentiel, 4 ou 5 en Accompagné).
+        Les autres sont <strong>en option</strong> : Mistral Vibe (ex-Le Chat, renommé le 28 mai 2026), les aperçus IA (AI Overviews) et le mode IA (AI Mode) de Google, Copilot dans Bing et DeepSeek ; Grok est disponible sur demande.
+        Une IA en option n&apos;est interrogée que si la plateforme l&apos;a activée ; elle n&apos;est jamais simulée pour un vrai client, et elle n&apos;est comptée dans le « nombre d&apos;IA » d&apos;une offre que si la page Tarifs l&apos;annonce.
+        Les adresses de sources sont celles que l&apos;API ou la page de résultats fournit, pas une reconstitution.
       </p>
+
+      <h2 id="chaque-ia" className={h2Class}>Comment chaque IA est mesurée</h2>
+      <p className="leading-relaxed">
+        Deux familles de mesure, dites clairement. Les <strong>API officielles</strong> des éditeurs (ChatGPT, Perplexity, Gemini, Claude, Mistral Vibe, DeepSeek, Grok), avec leur outil de recherche web quand il existe :
+        c&apos;est proche de ce que voit un utilisateur, sans être identique (modèle, consignes et personnalisation diffèrent). Et, pour les IA sans API grand public, le <strong>relevé de la page de résultats</strong>{' '}
+        telle qu&apos;elle s&apos;affiche en France (aperçus IA et AI Mode de Google, Copilot dans Bing), par un fournisseur de pages de résultats (DataForSEO).
+      </p>
+      <ul className="mt-3 list-disc space-y-2 pl-6 leading-relaxed">
+        <li>Pays France, langue français ; aperçus IA relevés sur mobile par défaut, Copilot sur ordinateur.</li>
+        <li>Chaque question est posée 2 fois au test gratuit et 3 fois en suivi, à chaque IA ; la marge d&apos;erreur (à 90 %) est calculée IA par IA.</li>
+        <li>Une recherche sans aperçu IA est comptée à part, jamais comme un oubli : Google n&apos;en affiche pas pour toutes les recherches.</li>
+        <li>Copilot, c&apos;est la réponse Copilot affichée dans la recherche Bing, pas l&apos;application Copilot (qui n&apos;a pas d&apos;API publique).</li>
+        <li>Le relevé se fait sans compte Google ni Microsoft : la personnalisation d&apos;un utilisateur connecté n&apos;est pas reproduite.</li>
+      </ul>
+      <div className="mt-5">
+        <AiCoverageTable />
+      </div>
 
       <h2 id="marge-erreur" className={h2Class}>La marge d’erreur, indicateur par indicateur</h2>
       <p className="leading-relaxed">
@@ -157,9 +177,9 @@ export function MethodV3Sections() {
 
       <h2 id="ai-overviews" className={h2Class}>Ce que nous ne mesurons pas</h2>
       <p className="leading-relaxed">
-        Les <strong>aperçus IA de Google (AI Overviews) et le mode IA de Google (AI Mode) ne sont pas suivis</strong> : Google ne propose pas d’interface fiable pour les interroger, et nous préférons
-        ne rien afficher plutôt qu’un chiffre approximatif. Votre présence dans l’index de Google (Googlebot) reste un prérequis, et l’audit « prêt pour les IA » la vérifie. Les concurrents qui les suivent
-        le font avec leurs propres méthodes ; voir <Link href="/comparatif" className="underline">le comparatif</Link>.
+        Nous ne voyons pas ce qu&apos;une IA répond à une personne précise (historique, mémoire, compte connecté) : nous mesurons une tendance sur des questions types. Les applications
+        mobiles des IA et l&apos;application Copilot n&apos;ont pas d&apos;interface de mesure : seules leurs API ou leurs réponses dans les pages de résultats le sont. Les aperçus IA de Google ne sont relevés
+        qu&apos;en France et en option ; votre présence dans l&apos;index de Google (Googlebot) reste un prérequis, que l&apos;audit « prêt pour les IA » vérifie. Voir aussi <Link href="/comparatif" className="underline">le comparatif</Link>.
       </p>
       <Card className="mt-4">
         <p className="text-sm" style={{ color: 'var(--muted)' }}>

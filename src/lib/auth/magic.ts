@@ -9,11 +9,11 @@
  */
 import { appUrl } from '@/lib/email';
 import { getDoc, putDoc } from '@/lib/store';
-import { authMode, isProduction } from './config';
+import { authMode, demoAccounts, isProduction } from './config';
 import { COOKIES, cookieOptions, parseCookieHeader, randomToken, safeNext, signValue, verifyValue, type CookieWrite } from './cookies';
 import { localSessionCookies, supabaseSessionCookies, type Session } from './session';
 import * as sbAuth from './supabase';
-import { markLocalConfirmed, normEmail } from './users';
+import { findUser, markLocalConfirmed, normEmail } from './users';
 
 export const CALLBACK_PATH = '/connexion/callback';
 const LOCAL_LINK_TTL_SEC = 30 * 60;
@@ -33,6 +33,12 @@ function callbackUrl(params: LinkParams, extra: Record<string, string> = {}): st
   if (params.claim) u.searchParams.set('claim', params.claim);
   if (params.invite) u.searchParams.set('invite', params.invite);
   return u.toString();
+}
+
+/** Le paramètre `claim` est-il un jeton d'inscription Découverte signé ? (sans dépendre de claims.ts) */
+function isSignupClaim(claim: string | null | undefined): boolean {
+  const c = verifyValue<{ k?: string }>(claim ?? null);
+  return !!c && c.k === 'signup';
 }
 
 interface LocalMagicPayload {
@@ -72,7 +78,19 @@ export async function startBrowserLogin(email: string, params: LinkParams = {}):
   if (mode === 'off') return { ok: false, cookies: [], error: 'unavailable' };
   if (mode === 'local') {
     const link = localLink(e, params, LOCAL_LINK_TTL_SEC);
-    return { ok: true, cookies: [], link, devLink: isProduction() ? undefined : link };
+    // V8 : création de compte (jeton d'inscription signé) → e-mail de confirmation, comme en production.
+    const signup = isSignupClaim(params.claim);
+    try {
+      const { sendLoginLinkEmail } = await import('./mail');
+      await sendLoginLinkEmail(e, { url: link, signup });
+    } catch (err) {
+      console.warn('[auth:local] e-mail de lien non envoyé', err instanceof Error ? err.message : err);
+    }
+    // Lien montré à l'écran : en développement ; sur un serveur de démonstration, seulement pour créer un compte
+    // pas encore confirmé (jamais pour se connecter à un compte existant : pas de prise de compte par son adresse).
+    let reveal = !isProduction();
+    if (!reveal && demoAccounts() && signup) reveal = !(await findUser(e).catch(() => null))?.confirmed;
+    return { ok: true, cookies: [], link, devLink: reveal ? link : undefined };
   }
   const { verifier, error } = await sbAuth.sendOtpPkce(e, callbackUrl(params));
   if (error) return { ok: false, cookies: [], error };

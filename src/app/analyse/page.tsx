@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { AnalysisApp } from '@/components/analysis/AnalysisApp';
+import { brandTestEngines } from '@/lib/analysis/aicheck';
 import { resolveAnalysisPrefill } from '@/components/analysis/prefill';
 import s from '@/components/analysis/analysis.module.css';
 import { BRAND, abs } from '@/lib/seo/site';
@@ -10,12 +11,13 @@ import { SOFTWARE_ID, breadcrumbListLd, graph, orgRef, pageIds, webPageLd } from
 import { JsonLd } from '@/lib/seo/shell';
 
 const PATH = '/analyse';
-const TITLE = 'Analyse SEO et IA gratuite de votre site en 60 s';
+const TITLE = 'Test gratuit : votre marque est-elle citée par les IA ?';
 const DESC =
-  'Repéré explore votre site pour de vrai : plus de 180 points SEO, ce que lisent ChatGPT, Gemini et Perplexity, et vos 5 priorités. Gratuit, pour les pros.';
+  'Vraies questions de clients posées en direct aux IA : êtes-vous cité, à quelle place, qui l’est à votre place et pourquoi. Puis l’analyse SEO et GEO du site.';
 
 export const metadata: Metadata = {
-  title: TITLE,
+  // Titre absolu : avec « | Repéré », il dépassait 60 caractères (coupé dans Google).
+  title: { absolute: TITLE },
   description: DESC,
   alternates: { canonical: abs(PATH) },
   openGraph: { title: TITLE, description: DESC, url: abs(PATH), type: 'website', locale: 'fr_FR', siteName: BRAND, images: [{ url: abs('/opengraph-image'), width: 1200, height: 630, alt: `${BRAND} — analyse SEO et IA` }] },
@@ -24,9 +26,9 @@ export const metadata: Metadata = {
 
 /** Étapes visibles sur la page ET dans le JSON-LD HowTo (mêmes textes). */
 const STEPS = [
-  { name: 'Entrez l’adresse de votre site', text: 'Un seul champ : la marque et la ville sont détectées sur votre site, et vous pouvez les corriger.' },
-  { name: 'Suivez l’exploration en direct', text: 'Notre robot RepereBot lit jusqu’à 60 pages en respectant votre robots.txt ; les premiers constats et les scores Google et IA s’affichent au fil de l’eau.' },
-  { name: 'Lisez vos 5 priorités', text: 'Un verdict en une phrase, trois scores, et les 5 corrections qui comptent le plus, avec pourquoi et quoi faire.' },
+  { name: 'Entrez l’adresse de votre site', text: 'Un seul champ : la marque, la ville et le métier sont détectés sur votre site, et vous pouvez les corriger.' },
+  { name: 'Voyez les IA répondre en direct', text: 'Nous posons 3 à 5 questions de clients à chaque IA configurée : cité ou non, à quelle place, qui l’est à votre place, la phrase exacte et les sources lues, avec la marge d’erreur.' },
+  { name: 'Comprenez pourquoi, puis agissez', text: 'Pour chaque concurrent cité à votre place : ce que l’IA a lu et ce que son site montre que le vôtre ne montre pas. Puis l’analyse de votre site (jusqu’à 60 pages) et vos premières actions.' },
 ];
 
 const ld = graph([
@@ -57,7 +59,7 @@ const ld = graph([
   {
     '@type': 'HowTo',
     '@id': `${pageIds(PATH).url}#howto`,
-    name: 'Analyser la visibilité de son site sur Google et dans les IA',
+    name: 'Savoir si sa marque est citée par les IA, et pourquoi',
     description: DESC,
     inLanguage: 'fr-FR',
     totalTime: 'PT1M',
@@ -75,7 +77,7 @@ export default async function AnalysePage({ searchParams }: { searchParams: Prom
       <JsonLd data={ld} />
       <Header />
       <main id="contenu" style={{ background: 'var(--color-canvas)' }}>
-        <AnalysisApp prefill={prefill}>
+        <AnalysisApp prefill={prefill} engines={brandTestEngines()}>
         <section className={s.section} aria-labelledby="comment-h">
           <h2 id="comment-h" className={s.h2}>
             Comment se passe l’analyse

@@ -13,6 +13,8 @@ const AGENCY_FUNCTIONS = [
   "Rapports à votre nom, logo et couleur, envoyés depuis votre domaine",
   "Votre client valide les corrections, vous les appliquez",
   "Exports CSV par client",
+  "API publique, serveur MCP et webhooks",
+  "Contenus rédigés : 6 par mois et par client, après validation",
 ];
 import { euros, planLink, plansFor, tiersFor, type SitePlan, type SiteSegment } from "./plans-v2";
 
@@ -43,7 +45,7 @@ export const DETAILS: Record<Exclude<SiteSegment, "agence">, Row[]> = {
   ],
   pme: [
     { label: "Questions d'acheteurs suivies", v: ["10", "50", "50, chaque semaine", "100, chaque semaine"] },
-    { label: "IA couvertes", v: ["ChatGPT, Gemini, Perplexity", "3 IA, plusieurs passages", "4 IA : ChatGPT, Gemini, Perplexity, Claude", "4 IA, plus Mistral Le Chat en option"] },
+    { label: "IA couvertes", v: ["ChatGPT, Gemini, Perplexity", "3 IA, plusieurs passages", "4 IA : ChatGPT, Gemini, Perplexity, Claude", "4 IA, plus Mistral Vibe en option"] },
     { label: "Concurrents", v: ["3 cités", "5", "5", "5"] },
     { label: "Sources que lisent les IA", v: ["Les 5 premières", "Toutes", "Classées par opportunité", "Classées par opportunité"] },
     { label: "Pourquoi eux, pas vous", v: [false, true, true, true] },
@@ -56,7 +58,7 @@ export const DETAILS: Record<Exclude<SiteSegment, "agence">, Row[]> = {
   ],
   ecommerce: [
     { label: "Requêtes produit suivies", v: ["10", "50", "50, chaque semaine", "100, chaque semaine"] },
-    { label: "IA couvertes", v: ["ChatGPT, Gemini, Perplexity", "3 IA, plusieurs passages", "4 IA : ChatGPT, Gemini, Perplexity, Claude", "4 IA, plus Mistral Le Chat en option"] },
+    { label: "IA couvertes", v: ["ChatGPT, Gemini, Perplexity", "3 IA, plusieurs passages", "4 IA : ChatGPT, Gemini, Perplexity, Claude", "4 IA, plus Mistral Vibe en option"] },
     { label: "Marques concurrentes", v: ["Citées à votre place", "5", "5", "5"] },
     { label: "Sources que lisent les IA", v: ["5 sources", "Toutes", "Comparatifs, Reddit, marketplaces", "Comparatifs, Reddit, marketplaces"] },
     { label: "Audit du balisage et du flux", v: [false, true, true, true] },

@@ -2,7 +2,26 @@
 import type { ProviderId, RawSource } from '../types';
 import { env, sleep } from '../util';
 
-export type Vendor = 'openai' | 'perplexity' | 'gemini' | 'anthropic' | 'mistral';
+export type Vendor = 'openai' | 'perplexity' | 'gemini' | 'anthropic' | 'mistral' | 'deepseek' | 'xai' | 'dataforseo';
+
+/**
+ * V8 : URL de base des nouveaux fournisseurs. Remplaçables par le code seulement (tests sur faux serveurs locaux),
+ * jamais par l'environnement (pas de redirection des clés vers un hôte arbitraire).
+ */
+export const DEFAULT_ENGINE_ENDPOINTS = {
+  deepseek: 'https://api.deepseek.com',
+  xai: 'https://api.x.ai/v1',
+  dataforseo: 'https://api.dataforseo.com/v3',
+} as const;
+export type EngineEndpoints = { -readonly [K in keyof typeof DEFAULT_ENGINE_ENDPOINTS]: string };
+let endpointOverride: Partial<EngineEndpoints> = {};
+export function engineEndpoints(): EngineEndpoints {
+  return { ...DEFAULT_ENGINE_ENDPOINTS, ...endpointOverride };
+}
+/** Tests : pointe les fournisseurs V8 vers un faux serveur local (null = valeurs officielles). */
+export function setEngineEndpoints(o: Partial<EngineEndpoints> | null): void {
+  endpointOverride = o ? { ...o } : {};
+}
 
 export class ProviderError extends Error {
   constructor(
@@ -19,6 +38,8 @@ export class ProviderError extends Error {
 export interface AskContext {
   city?: string;
   country?: string;
+  /** V8 : langue de la question (défaut 'fr') */
+  language?: string;
   queryId: string;
   run: number;
 }
@@ -26,6 +47,8 @@ export interface AskContext {
 export interface AskResult {
   text: string;
   citations: string[];
+  /** V8 : aucune réponse IA affichée pour cette recherche (aperçu IA absent) — mesure valide, pas une erreur */
+  absent?: boolean;
   /** V2 : sources structurées (titre, extrait, position dans le texte) */
   sources?: RawSource[];
 }

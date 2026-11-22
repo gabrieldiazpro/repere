@@ -118,6 +118,28 @@ export const GUIDES: PlatformGuide[] = [
     guided: ['image.alt', 'faq', 'rewrite'],
   },
   {
+    // V8 (agent ECOM) : connecteur src/lib/publish/connectors/magento.ts, sources dans docs/v8/magento.md.
+    id: 'magento',
+    monogram: 'M',
+    pitch: 'Titres et descriptions des produits, catégories et pages, textes des images produit, textes produits.',
+    steps: [
+      { text: 'Dans l’administration Magento ou Adobe Commerce, ouvrez', path: 'Système > Extensions > Intégrations' },
+      { text: 'Cliquez sur « Ajouter une intégration », nommez-la « Repéré », puis dans l’onglet « API » choisissez « Personnalisé » et cochez', path: 'Catalogue > Inventaire > Produits · Catégories · Contenu > Éléments > Pages' },
+      { text: 'Enregistrez, cliquez sur « Activer » puis « Autoriser » : copiez les quatre jetons affichés (clé client, secret client, jeton d’accès, secret du jeton d’accès).' },
+    ],
+    tip: 'Rien à changer dans la configuration : Repéré signe chaque appel avec les quatre jetons. Redirections, robots.txt et llms.txt ne s’écrivent pas par l’API standard de Magento : l’agent les prépare avec un pas à pas. Adobe Commerce en mode SaaS (Cloud Service) n’est pas encore pris en charge.',
+    fields: [
+      { name: 'siteUrl', group: 'config', label: 'Adresse de la boutique', placeholder: 'https://www.votre-boutique.fr', type: 'url', pattern: /^https:\/\/[^\s/]+\.[^\s]+$/i, error: 'Adresse en https requise.' },
+      { name: 'consumerKey', group: 'credentials', label: 'Clé client', placeholder: '32 caractères', type: 'password', pattern: /^[a-z0-9]{32}$/i, error: 'La clé fait 32 caractères.' },
+      { name: 'consumerSecret', group: 'credentials', label: 'Secret client', placeholder: '32 caractères', type: 'password', pattern: /^[a-z0-9]{32}$/i, error: 'Le secret fait 32 caractères.' },
+      { name: 'accessToken', group: 'credentials', label: 'Jeton d’accès', placeholder: '32 caractères', type: 'password', pattern: /^[a-z0-9]{32}$/i, error: 'Le jeton fait 32 caractères.' },
+      { name: 'accessTokenSecret', group: 'credentials', label: 'Secret du jeton d’accès', placeholder: '32 caractères', type: 'password', pattern: /^[a-z0-9]{32}$/i, error: 'Le secret fait 32 caractères.' },
+      { name: 'storeCode', group: 'config', label: 'Code de la vue de magasin', placeholder: 'default', optional: true, help: 'Facultatif : la vue de magasin que voient vos visiteurs (Magasins > Tous les magasins).', pattern: /^[a-z0-9_]{0,32}$/i, error: 'Lettres, chiffres et _ (ex. default).' },
+    ],
+    can: ['meta.title', 'meta.description', 'image.alt', 'rewrite'],
+    guided: ['redirect', 'robots.txt', 'llms.txt', 'jsonld', 'faq'],
+  },
+  {
     id: 'gbp',
     monogram: 'G',
     pitch: 'Description et horaires de votre fiche Google.',

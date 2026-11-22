@@ -14,6 +14,8 @@ import { MotionRoot } from '@/components/motion/MotionRoot';
 import { AiBubble, StepPath } from '@/components/pages/v4/diagrams';
 import { Icon, type IconName } from '@/components/app/icons';
 
+/** Étapes du chemin d'une page (le groupe « estimer », simulateur V8, n'en fait pas partie). */
+const PATH_GROUPS = HUB_GROUPS.filter((g) => g.id !== 'estimer');
 const PATH = '/outils';
 const TITLE = 'Outils SEO et IA gratuits, sans inscription';
 const DESCRIPTION =
@@ -61,9 +63,9 @@ export default function OutilsHub() {
               </p>
             </div>
             <StepPath
-              label={`Le chemin d’une page vers Google et les IA, en ${HUB_GROUPS.length} étapes`}
+              label={`Le chemin d’une page vers Google et les IA, en ${PATH_GROUPS.length} étapes`}
               start={{ icon: 'globe', text: 'Votre site' }}
-              steps={HUB_GROUPS.map((g) => ({
+              steps={PATH_GROUPS.map((g) => ({
                 href: `#${g.id}`,
                 icon: g.icon,
                 title: g.step,

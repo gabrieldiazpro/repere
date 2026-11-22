@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { JsonLd } from '@/lib/seo/shell';
 import { ChoiceCards, EditorialFrame } from '@/components/pages/v4/Editorial';
 import { Counter } from '@/components/motion/Counter';
+import { AiCoverageTable } from '@/components/site/AiStrip';
 import {
   Byline,
   QaSection,
@@ -41,8 +42,8 @@ const SEO_ROWS: FeatureId[] = ['audit', 'seo', 'positions', 'ia', 'questions', '
 
 /** Où un concurrent est meilleur que Repéré : dit sans détour. */
 const BETTER_ELSEWHERE = [
-  'Couverture des IA : Peec, Otterly, Profound, Meteoria et Qwairy suivent les AI Overviews ou l’AI Mode de Google ; Repéré ne les mesure pas, faute d’interface propre pour le faire.',
-  'Intégrations : API, serveur MCP et Looker Studio existent chez plusieurs concurrents, pas chez Repéré.',
+  'Couverture des IA dans le prix : chez Peec, Otterly, Profound, Meteoria et Qwairy, les AI Overviews ou l’AI Mode de Google peuvent faire partie de l’offre ; chez Repéré, ils sont mesurés en option, en France seulement.',
+  'Intégrations : Looker Studio existe chez plusieurs concurrents, pas chez Repéré ; l’API et le serveur MCP de Repéré sont réservés aux offres Accompagné et Agence.',
   'SEO avancé : Semrush et Ahrefs ont des index de mots-clés et de liens que Repéré n’a pas ; Screaming Frog explore des sites bien plus grands.',
   'Volume : au-delà de 100 questions suivies ou de plusieurs pays, un outil spécialisé est plus adapté.',
   'Preuves publiques : Peec, Otterly, Profound et Qwairy ont des notes et des avis publics ; Repéré n’en a pas encore, et n’en invente pas.',
@@ -95,12 +96,13 @@ const FAQ: QA[] = [
   },
   {
     q: 'Repéré suit-il les AI Overviews de Google ?',
-    a: "Non. Nous ne mesurons pas les AI Overviews ni l'AI Mode de Google, faute d'interface propre pour le faire de façon fiable. Repéré suit ChatGPT, Perplexity, Gemini et Claude, avec Mistral en option.",
+    a: "Oui, en option : les aperçus IA (AI Overviews) et l'AI Mode de Google sont relevés sur la page de résultats en France, en français ; une recherche sans aperçu IA est comptée à part, jamais comme un oubli. Les offres incluent ChatGPT, Perplexity, Gemini et Claude ; Copilot, DeepSeek et Mistral Vibe sont aussi en option, Grok sur demande. La méthode de chaque IA est publiée sur la page Méthode.",
   },
 ];
 
 const TOC = [
   { id: 'resume', label: 'Quelle option choisir, en une phrase ?' },
+  { id: 'ia-couvertes', label: 'Quelles IA sont mesurées ?' },
   { id: 'fonctions', label: 'Fonctionnalité par fonctionnalité' },
   { id: 'suites-seo', label: 'Repéré face à Semrush, Ahrefs et Screaming Frog' },
   { id: 'prix', label: 'Combien coûtent les outils, les agences et Repéré ?' },
@@ -172,6 +174,21 @@ export default function ComparatifPage() {
           q="Quelle option choisir, en une phrase ?"
           answer="Choisir en une phrase : une suite SEO ou un outil de mesure montre le problème, une agence le traite sur devis, Repéré analyse, mesure et corrige pour un prix de logiciel."
         />
+
+      <QaSection
+        id="ia-couvertes"
+        q="Quelles IA Repéré mesure-t-il, et comment ?"
+        answer="Les 7 IA qu'on attend d'un outil sérieux (ChatGPT, Gemini, Perplexity, aperçus IA et AI Mode de Google, Claude, DeepSeek), plus Copilot et Mistral Vibe ; avec la marge d'erreur de chaque mesure et la méthode affichée pour chaque IA."
+      >
+        <p className="leading-relaxed">
+          Les offres incluent ChatGPT, Perplexity, Gemini et Claude (selon l&apos;offre) ; les autres IA sont en option, interrogées seulement si elles sont activées, jamais simulées, et Grok est disponible sur demande.
+          Un test gratuit qui répond seulement « cité ou non » ne dit pas quoi faire. Le test de marque gratuit de Repéré ajoute, pour chaque question et chaque IA, la phrase exacte, la place, les sources lues,
+          qui est cité à votre place et pourquoi, puis trois actions, avec la marge d&apos;erreur et la mention « mesure unique, à confirmer dans le temps ». <Link href="/analyse" className="underline underline-offset-2">Tester ma marque</Link>
+        </p>
+        <div className="mt-5">
+          <AiCoverageTable />
+        </div>
+      </QaSection>
 
       <QaSection
         id="fonctions"

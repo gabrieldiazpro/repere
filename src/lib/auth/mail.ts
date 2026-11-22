@@ -68,3 +68,26 @@ export async function sendInvitationEmail(
     tags: [{ name: 'type', value: 'team_invite' }],
   });
 }
+
+/**
+ * V8 : lien de connexion ou de confirmation envoyé par NOS e-mails (mode local et serveur de démonstration ; avec
+ * Supabase, c'est Supabase qui l'envoie). Sans RESEND_API_KEY, l'e-mail est journalisé.
+ */
+export async function sendLoginLinkEmail(to: string, args: { url: string; signup: boolean }): Promise<SendEmailResult> {
+  const paragraphs = args.signup
+    ? [
+        'Bonjour,',
+        `Merci pour votre inscription à l’offre Découverte de ${BRAND} (gratuite, sans carte bancaire).`,
+        'Confirmez votre adresse en cliquant sur le bouton ci-dessous : votre espace s’ouvre avec votre marque déjà suivie et, si vous venez d’une analyse, votre rapport rattaché.',
+      ]
+    : ['Bonjour,', `Voici votre lien de connexion à ${BRAND}. Pas de mot de passe : cliquez simplement sur le bouton.`];
+  const note = 'Ce lien est personnel, à usage unique et valable 30 minutes. Si vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail : rien ne sera créé.';
+  return sendEmail({
+    to,
+    subject: args.signup ? `Confirmez votre adresse pour ouvrir votre espace ${BRAND}` : `Votre lien de connexion ${BRAND}`,
+    kind: 'transactional',
+    html: html(args.signup ? 'Confirmez votre adresse' : 'Votre lien de connexion', paragraphs, { label: args.signup ? 'Confirmer et ouvrir mon espace' : 'Me connecter', url: args.url }, note),
+    text: `${paragraphs.join('\n\n')}\n\n${args.signup ? 'Confirmer et ouvrir mon espace' : 'Me connecter'} : ${args.url}\n\n${note}`,
+    tags: [{ name: 'type', value: args.signup ? 'signup_confirm' : 'login_link' }],
+  });
+}
