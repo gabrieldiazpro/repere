@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import styles from './report.module.css';
+import { currentAttribution } from '@/lib/roi/landing';
+import { partnerCodeOf } from '@/lib/roi/core';
 
 export function CheckoutButton({
   planId,
@@ -31,7 +33,8 @@ export function CheckoutButton({
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, auditId }),
+        // Lien partenaire (?ref=) : origine gardée en mémoire de l'onglet, sans cookie (V9).
+        body: JSON.stringify({ planId, auditId, ref: partnerCodeOf(currentAttribution()) ?? undefined }),
       });
       const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
       if (!res.ok || !data.url) throw new Error(data.error || 'checkout');

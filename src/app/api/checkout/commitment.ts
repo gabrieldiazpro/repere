@@ -8,7 +8,7 @@
 import type Stripe from 'stripe';
 import { appUrl } from '@/lib/email';
 import { commitmentCheckoutTerms, getPlan, type PlanId } from '@/lib/plans';
-import { CheckoutConfigError, PRO_DECLARATION, PRO_SUBMIT_NOTE, getStripe, priceEnvName, priceIdForPlan, proDeclarationMetadata } from '@/lib/stripe';
+import { CheckoutConfigError, PRO_DECLARATION, PRO_SUBMIT_NOTE, getStripe, partnerRefMetadata, priceEnvName, priceIdForPlan, proDeclarationMetadata } from '@/lib/stripe';
 
 export interface CommitmentCheckoutArgs {
   planId: PlanId;
@@ -19,6 +19,8 @@ export interface CommitmentCheckoutArgs {
   customerId?: string;
   /** horodatage serveur de la case « je suis un professionnel » (si envoyée) */
   proDeclaredAt?: string;
+  /** V9 : code partenaire validé (`?ref=`) */
+  partnerRef?: string;
 }
 
 /** Paramètres de session Stripe (pur, testable). */
@@ -32,7 +34,7 @@ export function commitmentSessionParams(
   if (!terms) throw new CheckoutConfigError('Offre sans engagement.');
   const plan = getPlan(args.planId);
   const taxRates = process.env.STRIPE_TAX_RATE_ID ? [process.env.STRIPE_TAX_RATE_ID] : undefined;
-  const metadata: Record<string, string> = { app: 'auditia', plan_id: args.planId, ...terms.metadata, ...proDeclarationMetadata(args.proDeclaredAt) };
+  const metadata: Record<string, string> = { app: 'auditia', plan_id: args.planId, ...terms.metadata, ...proDeclarationMetadata(args.proDeclaredAt), ...partnerRefMetadata(args.partnerRef) };
   if (args.auditId) metadata.audit_id = args.auditId;
   if (args.businessId) metadata.business_id = args.businessId;
   return {

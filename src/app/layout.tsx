@@ -65,6 +65,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" className={`${bricolage.variable} ${inter.variable}`}>
+      <head>
+        {/* V9 : flux RSS de la veille, découvrable depuis toutes les pages. */}
+        <link rel="alternate" type="application/rss+xml" title="Veille Google et IA" href="/veille/rss.xml" />
+      </head>
       <body className="min-h-dvh antialiased">
         <a
           href="#contenu"

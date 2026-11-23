@@ -4,6 +4,7 @@ import { VAT_NOTICE } from "./plans-v2";
 import { FOOTER_COLUMNS } from "./nav";
 import { BRAND, CONTACT_EMAIL, DESCRIPTOR, HOUSE_PAGE_PATH, SAME_AS_LINKS, TAGLINE } from "@/lib/seo/site";
 import { housePageLive, rankingLive } from "@/lib/seo/house";
+import { NewsletterForm } from "@/lib/newsletter/ui/NewsletterForm";
 
 type Col = { title: string; links: { href: string; label: string }[] };
 
@@ -15,6 +16,8 @@ const columns: Col[] = [
       { href: "/a-propos", label: "À propos" },
       { href: "/pilotes", label: "Entreprises pilotes" },
       { href: "/presse", label: "Presse" },
+      { href: "/partenaires", label: "Partenaires" },
+      { href: "/rendez-vous", label: "Réserver une démo" },
       { href: "/contact", label: "Contact" },
       { href: "/aide", label: "Centre d'aide" },
       { href: "/connexion", label: "Connexion" },
@@ -73,6 +76,16 @@ export async function Footer() {
               </a>
               . Réponse sous 48 h ouvrées, en français.
             </p>
+            <div className="mt-6">
+              <p className="font-display text-base font-semibold text-white">La lettre mensuelle</p>
+              <p className="mt-1 text-[0.92rem]">
+                Ce qui change chez Google et les IA, une fois par mois.{" "}
+                <Link href="/veille" className="text-white underline underline-offset-4">
+                  Voir la veille
+                </Link>
+              </p>
+              <NewsletterForm source="site" compact title={null} text={null} stacked dark />
+            </div>
             {SAME_AS_LINKS.length > 0 && (
               <nav aria-label="Nous suivre" className="mt-5">
                 <p className="font-display text-base font-semibold text-white">Nous suivre</p>

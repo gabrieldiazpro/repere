@@ -63,6 +63,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <a href={exportHref} className="ui-btn" data-variant={open > 0 ? 'ghost' : undefined}>Exporter en CSV</a>
           <a href="/admin/roi" className="ui-btn" data-variant="ghost">ROI des données payantes</a>
           <a href="/admin/ops" className="ui-btn" data-variant="ghost">Supervision</a>
+          <a href="/admin/newsletter" className="ui-btn" data-variant="ghost">Lettre mensuelle</a>
+          <a href="/admin/partenaires" className="ui-btn" data-variant="ghost">Partenaires</a>
+          <a href="/admin/partenaires/rendez-vous" className="ui-btn" data-variant="ghost">Demandes de démo</a>
         </div>
       </div>
       <dl className="ui-cascade mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">

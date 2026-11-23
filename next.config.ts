@@ -81,9 +81,18 @@ const nextConfig: NextConfig = {
     // L'ancienne adresse du robot (anciens user agents) pointe vers la page de référence.
     return [{ source: "/robot", destination: "/methode/robot", permanent: true }];
   },
+  // Fiche officielle (V9, FICHE-OFFICIELLE) : version Markdown /p/<slug>.md servie par /p/<slug>/fiche.md.
+  async rewrites() {
+    return { beforeFiles: [{ source: "/p/:slug([a-z0-9-]{2,60})\\.md", destination: "/p/:slug/fiche.md" }], afterFiles: [], fallback: [] };
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      // Encart de la fiche officielle : intégrable en iframe sur le site du client (HTML statique, sans script).
+      {
+        source: "/encart/:path*",
+        headers: cspDisabled ? [] : [{ key: cspKey, value: buildCsp({ frameAncestors: "*" }) }],
+      },
       { source: "/admin/:path*", headers: [{ key: "Referrer-Policy", value: "no-referrer" }, { key: "Cache-Control", value: "no-store" }] },
       { source: "/api/:path*", headers: [{ key: "Cache-Control", value: "no-store" }] },
       // Aperçu du digest affiché dans /app/reglages (iframe de même origine).

@@ -1,0 +1,78 @@
+/* Écran /app/fiche (V9, fiche officielle). Jetons de l'app : clair et sombre. */
+.rp-app .fo { display: flex; flex-direction: column; gap: 16px; }
+.rp-app .fo-confirm {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px;
+  padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface);
+}
+.rp-app .fo-confirm-title { margin: 0; font-size: 17px; font-weight: 650; }
+.rp-app .fo-confirm-sub { margin: 2px 0 0; font-size: 13.5px; color: var(--muted); }
+.rp-app .fo-meta { font-size: 12px; color: var(--muted); display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; }
+.rp-app .fo-ok { display: inline-flex; align-items: center; gap: 3px; color: var(--success-ink); font-weight: 600; }
+.rp-app .fo-todo { color: var(--warning-ink); font-weight: 600; }
+.rp-app .fo-help { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); }
+.rp-app .fo-err { margin: 4px 0 0; font-size: 12.5px; color: var(--danger-ink); font-weight: 600; grid-column: 1 / -1; }
+.rp-app .fo-note { margin: 14px 0 0; font-size: 12px; color: var(--muted); }
+.rp-app .fo-h3 { margin: 0 0 8px; font-size: 14px; font-weight: 650; }
+
+.rp-app .fo-alerts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.rp-app .fo-alerts > li { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.rp-app .fo-alerts > li.is-high { border-color: var(--danger-line); background: var(--danger-bg); }
+.rp-app .fo-alert-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 14px; }
+.rp-app .fo-compare { display: grid; gap: 6px 16px; margin: 10px 0 0; font-size: 13.5px; }
+@media (min-width: 640px) { .rp-app .fo-compare { grid-template-columns: 1fr 1fr; } }
+.rp-app .fo-compare dt { color: var(--muted); font-size: 12px; }
+.rp-app .fo-compare dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.rp-app .fo-found { color: var(--danger-ink); }
+.rp-app .fo-fix { margin: 8px 0 0; font-size: 13px; }
+.rp-app .fo-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.rp-app .fo-sugg { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hair); }
+.rp-app .fo-sugg ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rp-app .fo-sugg li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 13.5px; overflow-wrap: anywhere; }
+
+.rp-app .fo-grid { display: grid; gap: 16px; }
+@media (min-width: 1100px) { .rp-app .fo-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; gap: 20px; } }
+.rp-app .fo-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.rp-app .fo-group { border: 0; margin: 0 0 18px; padding: 0 0 14px; border-bottom: 1px solid var(--hair); min-width: 0; }
+.rp-app .fo-group legend { font-size: 13px; font-weight: 700; color: var(--muted); padding: 0; margin-bottom: 8px; }
+.rp-app .fo-field { margin-bottom: 12px; min-width: 0; }
+.rp-app .fo-field-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 10px; margin-bottom: 4px; }
+.rp-app .fo-field-head label, .rp-app .fo-label { font-size: 13.5px; font-weight: 600; }
+.rp-app .fo-field .rp-input { width: 100%; }
+.rp-app .fo-field textarea.rp-input { resize: vertical; min-height: 64px; }
+.rp-app .fo-rows { list-style: none; margin: 6px 0 8px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rp-app .fo-rows li { display: grid; gap: 6px; align-items: center; }
+.rp-app .fo-rows .rp-input { min-width: 0; }
+.rp-app .fo-row-svc { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto; }
+.rp-app .fo-row-cred { grid-template-columns: minmax(0, 1.4fr) minmax(0, .8fr) minmax(0, 1.4fr) auto; }
+.rp-app .fo-rows li.fo-row-exc { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 8px; border-bottom: 1px dashed var(--hair); }
+.rp-app .fo-row-exc > input:first-child { flex: 1 1 100%; }
+.rp-app .fo-row-exc > input[type='date'] { flex: 1 1 140px; }
+.rp-app .fo-row-exc > select { flex: 0 0 110px; }
+.rp-app .fo-row-exc > input[type='time'] { flex: 1 1 96px; }
+.rp-app .fo-row-exc > .fo-err { flex: 1 1 100%; }
+.rp-app .fo-row-url { grid-template-columns: minmax(0, 1fr) auto; }
+@media (max-width: 639px) {
+  .rp-app .fo-row-svc, .rp-app .fo-row-cred { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .rp-app .fo-row-svc > :first-child, .rp-app .fo-row-cred > :first-child { grid-column: 1 / -1; }
+}
+.rp-app .fo-more { margin: 4px 0 12px; }
+.rp-app .fo-more summary { display: flex; align-items: center; gap: 6px; min-height: 36px; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.rp-app .fo-more[open] summary { margin-bottom: 8px; }
+.rp-app .fo-savebar {
+  position: sticky; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  margin: 0 -4px; padding: 12px 4px; background: var(--surface); border-top: 1px solid var(--hair);
+}
+
+.rp-app .fo-preview {
+  max-height: 360px; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; position: relative;
+  -webkit-mask-image: linear-gradient(#000 75%, transparent); mask-image: linear-gradient(#000 75%, transparent);
+}
+.rp-app .fo-preview .pf { font-size: 13px; }
+.rp-app .fo-preview .pf-head { padding: 1rem 0 .9rem; }
+.rp-app .fo-preview .pf-head h1 { font-size: 1.5rem; }
+.rp-app .fo-preview .pf-foot { display: none; }
+.rp-app .fo-switch { display: flex; align-items: flex-start; gap: 12px; margin-top: 14px; font-size: 13.5px; }
+.rp-app .fo-switch > span { display: flex; flex-direction: column; }
+.rp-app .fo-embed-preview { padding: 12px; border-radius: 12px; background: var(--bg); border: 1px dashed var(--line); overflow-wrap: anywhere; }
+.rp-app .fo-code { margin: 8px 0; max-height: 180px; overflow: auto; white-space: pre-wrap; word-break: break-all; font-size: 12px; }
+.rp-app .fo-export { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 0; border-top: 1px solid var(--hair); font-size: 13.5px; font-weight: 600; }

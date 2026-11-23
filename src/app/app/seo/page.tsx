@@ -171,6 +171,11 @@ export default async function SeoOverviewPage() {
           {latest && fixes.length > 0 && (
             <Surface title="Les 5 corrections qui comptent le plus" id="seo-top" elevation="raised" aside={<Link href="/app/seo/technique" className="rp-link">Tout l’audit</Link>}>
               <FixList fixes={fixes} />
+              <p className="mt-3">
+                <Link className="ui-btn" data-size="sm" href="/app/scenarios">
+                  Et si je corrigeais ces points ? Simuler <Icon name="chevron" size={14} />
+                </Link>
+              </p>
               <p className="ui-caption mt-3">Ordre : gravité × effet attendu ÷ effort. « Repéré peut le faire » : l’agent prépare la modification, vous la validez avant toute publication.</p>
             </Surface>
           )}

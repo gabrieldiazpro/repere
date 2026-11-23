@@ -41,6 +41,8 @@ export interface FeatureSection {
   text: string;
   points: string[];
   visual?: VisualId;
+  /** Lien affiché sous les points (ex. un exemple en démo). */
+  link?: { href: string; label: string };
 }
 
 export interface Feature {
@@ -294,6 +296,67 @@ const SOCLE: Feature[] = [
     ],
     related: ["agent-de-publication", "geo-avance", "comprendre"],
     plans: "Propositions visibles en Découverte ; contenus créés chez vous en Essentiel, Accompagné et Agence, dans la limite du plafond de l'offre.",
+  },
+  {
+    slug: "fiche-officielle",
+    kind: "socle",
+    name: "Fiche officielle",
+    summary: "Vos informations vérifiées en un seul endroit : horaires, prix « à partir de », labels, paiement, langues, liens officiels. Datées et sourcées.",
+    title: "Une fiche officielle que Google et les IA peuvent croire",
+    seoTitle: "Fiche officielle vérifiée : vos faits pour les IA",
+    description: "Horaires, prix, labels, paiement, liens officiels : une seule source de faits datés et vérifiés, publiée sur une page sobre et dans un encart pour votre site.",
+    lead: "Quand votre site, votre fiche Google et une IA ne disent pas la même chose, personne ne sait qui croire. La fiche officielle rassemble vos faits en un seul endroit, chacun daté, sourcé et vérifié par vous.",
+    problem: {
+      title: "Des informations contradictoires d'un endroit à l'autre",
+      text: "Horaires changés sur le site mais pas sur Google, ancien tarif repris par une IA, label expiré : chaque écart fait douter vos clients, et les IA reprennent souvent la version la plus ancienne ou la plus répandue.",
+    },
+    visual: "verite",
+    visualCaption: "Une réponse d'IA comparée à vos faits vérifiés (compte démo).",
+    how: [
+      { title: "Une seule source de faits", text: "Horaires et exceptions, prix « à partir de », labels avec leur numéro et le lien de vérification, moyens de paiement, langues parlées, liens officiels. Chaque fait porte sa date, sa source et la mention « vérifié par vous »." },
+      { title: "Une page publique sobre", text: "Votre fiche est publiée sur une page simple, avec le balisage schema.org exact, une version Markdown et un llms.txt lisibles par les IA. Elle n'est indexée que si vous l'activez." },
+      { title: "Un encart pour votre site", text: "L'encart « Faits vérifiés » se pose sur votre site : un script de moins de 5 Ko, sans cookie ni traceur, ou un cadre, ou du HTML à copier." },
+      { title: "Des alertes et un rappel", text: "Repéré vous signale quand votre site, votre fiche Google ou une IA dit autre chose que votre fiche, et vous rappelle de la confirmer tous les 90 jours." },
+    ],
+    sections: [
+      { id: "exemple", title: "Un exemple", text: "La page d'une entreprise fictive du compte démo montre le rendu. Elle est étiquetée démo, non indexée et sans balisage.", points: ["Faits datés et sourcés", "Version Markdown et llms.txt", "Encart « Faits vérifiés » à poser sur votre site"], link: { href: "/p/plomberie-martin", label: "Voir la fiche d'exemple (démo)" } },
+    ],
+    limits: [
+      "Aucune garantie qu'une IA reprenne une information, ni dans quel délai.",
+      "La page publique n'est indexée par les moteurs que si l'entreprise l'active.",
+      "Seuls les faits saisis ou confirmés par vous sont publiés ; un fait non confirmé reste privé.",
+    ],
+    related: ["comprendre", "geo-avance", "agent-de-contenu"],
+    plans: "Dans tous les espaces Repéré. La page publique et l'encart reprennent uniquement les faits que vous avez confirmés.",
+  },
+  {
+    slug: "scenarios",
+    kind: "socle",
+    name: "Scénarios",
+    summary: "Et si je corrigeais ces points ? L'effet sur nos contrôles, calculé en rejouant l'audit sur une copie de votre site. Jamais un gain promis.",
+    title: "Scénarios : et si je corrigeais ces points ?",
+    seoTitle: "Scénarios : l'effet de vos corrections, simulé",
+    description: "Choisissez des corrections : Repéré les applique à une copie de votre dernière exploration et relance les mêmes contrôles. Effet mesuré, aucun gain promis.",
+    lead: "Avant de corriger, voyez ce qui change. Repéré applique les corrections choisies à une copie de votre dernière exploration, puis relance exactement les mêmes contrôles que l'audit.",
+    problem: {
+      title: "Difficile de choisir par où commencer",
+      text: "Une liste de constats ne dit pas lesquels pèsent le plus. Les scénarios comparent plusieurs choix sur les mêmes contrôles, sans formule à part.",
+    },
+    visual: "seo-audit",
+    visualCaption: "L'audit dont les contrôles sont rejoués par les scénarios.",
+    how: [
+      { title: "Trois scénarios prêts", text: "Les corrections qui pèsent le plus, celles que Repéré peut faire seul, et celles qui tiennent en 30 minutes ; ou votre propre sélection." },
+      { title: "Rejoué sur une copie", text: "Les corrections sont appliquées à une copie de votre dernière exploration, puis l'audit est relancé. Votre site n'est pas modifié." },
+      { title: "Comparaison côte à côte", text: "Jusqu'à trois scénarios comparés, section par section, avec les corrections exclues et la raison de chaque exclusion." },
+      { title: "Lancement et suivi", text: "Un scénario lancé devient des brouillons pour l'agent de publication et des tâches, à valider. La prochaine exploration compare le prévu au mesuré." },
+    ],
+    limits: [
+      "Le score mesure l'état de votre site selon nos contrôles : il ne prédit ni vos positions Google ni vos citations par les IA.",
+      "Aucun chiffre de trafic ni de chiffre d'affaires n'est estimé.",
+      "Certaines corrections ne peuvent pas être rejouées (pages rendues en JavaScript, contenus à écrire) : elles sont exclues et signalées.",
+    ],
+    related: ["audit-seo", "agent-de-publication", "geo-avance"],
+    plans: "Simulation disponible dès la première exploration de votre site ; l'application des corrections suit les limites de votre offre.",
   },
   {
     slug: "barometres",
@@ -715,4 +778,4 @@ export const HUB_ANCHORS: readonly { id: string; label: string; href: string }[]
   { id: "copilote", label: "Copilote", href: featurePath("copilote") },
 ];
 
-export const FEATURES_UPDATED = "2026-11-13";
+export const FEATURES_UPDATED = "2026-11-23";

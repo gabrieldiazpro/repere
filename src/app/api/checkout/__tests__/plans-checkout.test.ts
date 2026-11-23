@@ -69,6 +69,12 @@ describe('checkout Accompagné', () => {
     expect(withBox.subscription_data?.metadata).toMatchObject({ pro_declared_at: '2026-11-13T10:00:00.000Z' });
     expect(() => commitmentSessionParams({ planId: 'pme_essentiel_month' }, 'price_1', 'https://x')).toThrow();
   });
+  it('lien partenaire (V9) : code validé repris en metadata, jamais sans code', () => {
+    const p = commitmentSessionParams({ planId: 'pme_accompagne_month', partnerRef: 'agence-dupont' }, 'price_123', 'https://repere.test', new Date('2026-11-09T10:00:00Z'));
+    expect(p.metadata).toMatchObject({ partner_ref: 'agence-dupont' });
+    expect(p.subscription_data?.metadata).toMatchObject({ partner_ref: 'agence-dupont' });
+    expect(commitmentSessionParams({ planId: 'pme_accompagne_month' }, 'price_123', 'https://repere.test').metadata).not.toHaveProperty('partner_ref');
+  });
   it('POST /api/checkout sans Stripe : redirection démo, agence refusée', async () => {
     const post = (body: unknown) => route.POST(new Request('http://localhost/api/checkout', { method: 'POST', headers: { 'content-type': 'application/json', 'x-forwarded-for': '10.7.7.7' }, body: JSON.stringify(body) }));
     const ok = await post({ planId: 'local_accompagne_month' });

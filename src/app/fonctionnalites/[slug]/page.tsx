@@ -135,6 +135,13 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
                           </li>
                         ))}
                       </ul>
+                      {s.link ? (
+                        <p className="mt-5">
+                          <Link href={s.link.href} className="font-semibold text-primary underline underline-offset-4 hover:no-underline">
+                            {s.link.label}
+                          </Link>
+                        </p>
+                      ) : null}
                     </div>
                     {s.visual ? (
                       <div className="min-w-0">

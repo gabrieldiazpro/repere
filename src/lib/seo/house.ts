@@ -63,7 +63,11 @@ async function checkHousePage(): Promise<boolean> {
     const id = await withTimeout(findBusinessIdBySlug(HOUSE_PAGE_PATH.split('/').pop()!), 2500);
     if (!id) return false;
     const ctx = await withTimeout(loadExecContext(id), 2500);
-    return !!ctx && !ctx.demo && ctx.settings.published !== false;
+    if (!ctx || ctx.demo || ctx.settings.published === false) return false;
+    // V9 : la fiche officielle n'est indexable que sur accord (vrai par défaut pour le compte maison).
+    const { loadPublicFicheByBusiness } = await import('@/lib/execution/fiche');
+    const fiche = await withTimeout(loadPublicFicheByBusiness(id), 2500);
+    return !!fiche?.indexable;
   } catch {
     return false;
   }

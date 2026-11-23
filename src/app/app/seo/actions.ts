@@ -52,6 +52,13 @@ export async function relancerExploration(): Promise<CrawlResult> {
     const at = new Date().toISOString();
     const run: SeoRun = { id: `${id}:${at}`, businessId: id, at, demo: false, url: crawl.startUrl, pagesCrawled: crawl.pages.length, truncated: crawl.truncated, durationMs: crawl.durationMs, seo: r.seo, geo: r.geo, pages: r.pages, trigger: 'manual' };
     await putDoc(RUN_COLLECTION, run.id, run, id);
+    // Simulateur de scénarios (V9) : l'exploration complète est conservée pour rejouer exactement les contrôles.
+    try {
+      const { saveSnapshot } = await import('@/lib/scenarios/store');
+      await saveSnapshot(id, run.id, at, crawl, perf);
+    } catch {
+      /* sans instantané, /app/scenarios demandera une nouvelle exploration */
+    }
     // Agent de publication : brouillons de corrections à valider (réglages du client ; jamais d'application ici).
     try {
       const { runPublishAgent } = await import('@/lib/publish/agent');

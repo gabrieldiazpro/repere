@@ -118,9 +118,12 @@ function Tier({
   recommended,
   first,
   forWhom,
+  demoHref,
 }: {
   plan: SitePlan;
   index: number;
+  /** V9 : second appel « Réserver une démo » (Accompagné), à côté de l'appel principal, jamais à sa place */
+  demoHref?: string;
   sub?: string;
   note?: string;
   recommended?: boolean;
@@ -163,6 +166,15 @@ function Tier({
         >
           {free ? "Lancer le test gratuit" : plan.cta}
         </Link>
+        {demoHref ? (
+          <Link href={demoHref} className={
+              recommended
+                ? "mt-2 inline-flex min-h-12 w-full items-center justify-center rounded-xl px-5 py-2.5 font-semibold text-white ring-1 ring-inset ring-white/45 transition-colors hover:bg-white/10"
+                : buttonClasses({ variant: "secondary", className: "mt-2 w-full" })
+            }>
+            Réserver une démo
+          </Link>
+        ) : null}
         <p className={`mt-3 text-center text-[0.85rem] xl:min-h-[2.6rem] ${note ? "" : "hidden xl:block"} ${recommended ? "text-on-deep" : "text-muted"}`}>{note ?? ""}</p>
       </div>
     </article>
@@ -238,6 +250,7 @@ function SegmentTiers({ segment, billing }: { segment: Exclude<SiteSegment, "age
             forWhom={FOR_WHOM[segment]}
             // Local : sur mobile, Essentiel (29 €) reste avant Accompagné ; ailleurs l'offre recommandée passe en tête.
             first={segment !== "local"}
+            demoHref={`/rendez-vous?offre=accompagne&segment=${segment}`}
             sub="3 mois minimum, puis mensuel sans engagement"
             note="Places limitées chaque mois : nous faisons le travail nous-mêmes."
           />
@@ -347,6 +360,11 @@ function AgencyTiers({ billing }: { billing: Billing }) {
                 </li>
               ))}
             </ul>
+            <div className="mt-auto pt-6">
+              <Link href="/partenaires#candidature" className={buttonClasses({ variant: "secondary", className: "w-full" })}>
+                {partner.cta || "Devenir partenaire"}
+              </Link>
+            </div>
           </article>
         ) : null}
         {agency ? (
@@ -362,6 +380,11 @@ function AgencyTiers({ billing }: { billing: Billing }) {
                 </li>
               ))}
             </ul>
+            <div className="mt-auto pt-6">
+              <Link href="/rendez-vous?offre=agence" className={buttonClasses({ variant: "light", className: "w-full" })}>
+                Réserver une démo
+              </Link>
+            </div>
           </article>
         ) : null}
         <article className="flex flex-col rounded-2xl bg-white p-6 shadow-[0_0_0_1px_rgba(27,31,46,.09)]">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { QuickAuditForm } from "@/components/motion/QuickAuditForm";
+import { buttonClasses } from "@/components/ui/Button";
 import { DemoEntry } from "./DemoEntry";
 
 type Seg = "local" | "pme" | "ecommerce";
@@ -76,6 +77,9 @@ export function HomeHero({ children, preview, engines }: { children: ReactNode; 
         </p>
 
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-[0.95rem]">
+          <Link href={`/rendez-vous?offre=accompagne&segment=${seg}`} className={buttonClasses({ size: "sm", variant: "secondary" })}>
+            Réserver une démo
+          </Link>
           <Link href="/demo" className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary underline-offset-4 hover:underline">
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor">
               <path d="M4.5 2.8v10.4L13 8z" />

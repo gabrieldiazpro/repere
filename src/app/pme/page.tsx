@@ -43,6 +43,7 @@ export default function PmePage() {
         { href: "/geo", label: "Qu'est-ce que le GEO (référencement IA) ?" },
       ]}
       segment="pme"
+      demoHref="/rendez-vous?offre=accompagne&segment=pme"
       eyebrow="SEO B2B et référencement IA pour PME et entreprises de services"
       title="Vos acheteurs comparent sur Google et dans les IA. Soyez dans la short-list."
       subtitle="« Meilleur logiciel de paie pour PME », « cabinet de recrutement tech à Paris », « alternative à votre concurrent » : les acheteurs B2B posent ces questions aux IA avant de vous appeler. Repéré analyse votre site, suit vos positions et vos citations, et fait le travail avec vous."

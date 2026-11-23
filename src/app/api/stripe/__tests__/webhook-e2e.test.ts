@@ -243,6 +243,24 @@ describe('webhook Stripe entrant (route réelle, événements signés)', () => {
     expect((await sub()).status).toBe('active');
   });
 
+  it('achat direct avec lien partenaire (V9) : origine de l’espace et premier paiement attribués, sans cookie', async () => {
+    const email = `partenaire-${crypto.randomUUID().slice(0, 8)}@exemple.fr`;
+    const r = await deliver(
+      event('checkout.session.completed', {
+        id: 'cs_e2e_ref', object: 'checkout.session', mode: 'payment', payment_status: 'paid', created: NOW,
+        customer: 'cus_e2e_ref', invoice: 'in_e2e_ref_1', amount_total: 17880, currency: 'eur', total_details: { amount_tax: 2980 },
+        customer_details: { email }, metadata: { app: 'auditia', plan_id: 'local_audit_deep', partner_ref: 'agence-test' },
+      }),
+    );
+    expect(r.status).toBe(200);
+    const s = (await listSubscriptionsByCustomer('cus_e2e_ref'))[0];
+    expect(s?.businessId).toBeTruthy();
+    const { getAttribution, partnerCodeOf } = await import('@/lib/roi/attribution');
+    expect(partnerCodeOf((await getAttribution('business', s.businessId!))?.attribution)).toBe('agence-test');
+    const { listPartnerPayments } = await import('@/lib/partners/payments');
+    expect((await listPartnerPayments()).find((p) => p.invoiceId === 'in_e2e_ref_1')).toMatchObject({ partnerCode: 'agence-test', amountPaidCents: 17880, amountExclTaxCents: 14900 });
+  });
+
   it('événement inconnu → 200 sans effet', async () => {
     const subsBefore = JSON.stringify(await listSubscriptionsByCustomer(CUSTOMER));
     const bizBefore = JSON.stringify(await getBusinessRecord(businessId));

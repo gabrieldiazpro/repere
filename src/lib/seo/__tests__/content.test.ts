@@ -148,7 +148,7 @@ describe('routes du sitemap et de llms.txt', () => {
     for (const t of TOOL_REGISTRY) expect(tools).toContain(`/outils/${t.slug}`);
     expect(tools.length).toBeGreaterThanOrEqual(TOOL_REGISTRY.length);
     expect(new Set(tools).size).toBe(tools.length);
-    expect(paths.filter((p) => p.startsWith('/fonctionnalites/'))).toHaveLength(18);
+    expect(paths.filter((p) => p.startsWith('/fonctionnalites/'))).toHaveLength(20);
     expect(paths.filter((p) => p.startsWith('/cas-usage/'))).toHaveLength(6);
     expect(paths.filter((p) => p.startsWith('/aide/')).length).toBeGreaterThan(0);
     for (const noindex of ['/classement', '/carte', '/r', '/connexion', '/bienvenue']) expect(paths).not.toContain(noindex);

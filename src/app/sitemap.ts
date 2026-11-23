@@ -9,6 +9,7 @@ import { NEW_ROUTES_UPDATED, v3Routes } from '@/lib/seo/routes';
 import { buildRanking, listRankingPairs } from '@/lib/growth/ranking';
 import { publishedEntries } from '@/lib/barometre/public';
 import { TARGET_QUESTIONS, targetQuestionPath } from '@/app/questions/_lib/target-questions';
+import { VEILLE_ENTRIES, veillePath } from '@/lib/veille';
 
 /** Le sitemap se régénère une fois par jour (pages métier × ville qui deviennent indexables). */
 export const revalidate = 86400;
@@ -22,13 +23,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const NOINDEX: StaticPath[] = ['/cgv', '/mentions-legales', '/confidentialite', ...(ENTITY_READY ? [] : (['/a-propos'] as StaticPath[]))];
   const entries: MetadataRoute.Sitemap = (Object.keys(PAGE_UPDATED) as StaticPath[])
     .filter((p) => !NOINDEX.includes(p))
-    .map((p) => ({ url: abs(p), lastModified: PAGE_UPDATED[p] }));
+    .map((p) => ({ url: abs(p), lastModified: PAGE_UPDATED[p], ...(p === '/veille' ? { changeFrequency: 'weekly' as const } : {}) }));
 
   for (const t of TRADES) entries.push({ url: abs(tradePath(t)), lastModified: TRADE_PAGES_UPDATED });
   for (const g of GUIDES) entries.push({ url: abs(guidePath(g)), lastModified: g.updated });
   for (const s of STUDIES) entries.push({ url: abs(studyPath(s)), lastModified: s.updated });
   // Réponses aux questions posées aux IA (GEO-MARQUE, V6).
   for (const x of TARGET_QUESTIONS) entries.push({ url: abs(targetQuestionPath(x)), lastModified: x.updated });
+  // Veille (V9) : une URL par fiche datée (jamais /ressources/guide-2027/lire ni /pdf, liens personnels en noindex).
+  for (const e of VEILLE_ENTRIES) entries.push({ url: abs(veillePath(e)), lastModified: e.updated });
 
   // Pages V3 (outils, fonctionnalités, démo, comparatifs par concurrent…) : seulement celles dont le dossier existe
   // (vérifié avec fs) et qui ne sont pas en noindex.

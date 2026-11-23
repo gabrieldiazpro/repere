@@ -6,6 +6,7 @@ import { createCommitmentCheckoutUrl } from './commitment';
 import { HOUR_MS, getClientIp, rateLimit } from '@/lib/ratelimit';
 import { HttpError, getSession, requireBusiness } from '@/lib/auth';
 import { isDemoBusinessId } from '@/lib/demo-v2';
+import { partnerRefOf } from '@/lib/roi/core';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,6 +22,8 @@ const Body = z.object({
   businessId: z.preprocess(emptyToUndef, z.string().max(100).optional()),
   // Case « j'agis pour mon activité professionnelle » cochée sur notre site (facultatif : la page Stripe la redemande).
   pro: z.boolean().optional(),
+  // V9 : code partenaire (`?ref=`) lu en mémoire de l'onglet, sans cookie ; ignoré s'il est invalide.
+  ref: z.unknown().optional(),
 });
 
 export async function POST(req: Request) {
@@ -43,13 +46,15 @@ export async function POST(req: Request) {
   try {
     // businessId : jamais cru sur parole (E1). Seul le propriétaire connecté de cet espace peut le désigner ; il est alors
     // écrit dans la metadata Stripe par NOTRE serveur et relu par le webhook (montée en gamme, 2ᵉ achat).
-    const args: { planId: PlanId; auditId?: string; email?: string; businessId?: string; customerId?: string; proDeclaredAt?: string } = {
+    const args: { planId: PlanId; auditId?: string; email?: string; businessId?: string; customerId?: string; proDeclaredAt?: string; partnerRef?: string } = {
       planId: parsed.data.planId,
       auditId: parsed.data.auditId,
       email: parsed.data.email,
       // Horodatage SERVEUR (jamais celui du client) : preuve de la déclaration, reprise en metadata Stripe.
       ...(parsed.data.pro === true ? { proDeclaredAt: new Date().toISOString() } : {}),
     };
+    const partnerRef = partnerRefOf(parsed.data.ref);
+    if (partnerRef) args.partnerRef = partnerRef;
     const session = await getSession(req);
     if (parsed.data.businessId && !isDemoBusinessId(parsed.data.businessId)) {
       // Sans session propriétaire : identifiant ignoré (jamais d'erreur qui révèlerait l'existence de l'espace).

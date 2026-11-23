@@ -20,6 +20,8 @@ export const PRODUCT: readonly NavItem[] = [
   { href: "/fonctionnalites/geo-avance", label: "GEO avancé", text: "Être lu, compris et cité par les IA" },
   { href: "/fonctionnalites/agent-de-publication", label: "Agent de publication", text: "Corrections appliquées, avec votre accord" },
   { href: "/fonctionnalites/agent-de-contenu", label: "Agent de contenu", text: "Pages manquantes rédigées avec vos faits, validées par vous" },
+  { href: "/fonctionnalites/fiche-officielle", label: "Fiche officielle", text: "Vos faits vérifiés, pour Google, les IA et votre site" },
+  { href: "/fonctionnalites/scenarios", label: "Scénarios", text: "L'effet de vos corrections sur nos contrôles, avant de les faire" },
   { href: "/demo", label: "Voir la démo", text: "Vidéos et compte démo, sans inscription" },
   { href: "/fonctionnalites/mesurer", label: "Mesurer", text: "Ce que répondent les IA à vos questions" },
   { href: "/fonctionnalites/comprendre", label: "Comprendre", text: "Sources, erreurs, concurrents devant vous" },
@@ -36,6 +38,7 @@ export const SOLUTIONS: readonly NavItem[] = [
   { href: "/e-commerce", label: "E-commerce", text: "Fiches produit, facettes, Shopping, IA" },
   { href: "/outils/simulateur-boutique", label: "Simulateur pour ma boutique", text: "Ce que la visibilité IA peut représenter, en fourchette" },
   { href: "/agences", label: "Agences", text: "Marque blanche, multi-clients, API et MCP" },
+  { href: "/partenaires", label: "Programme partenaires", text: "Agences, experts-comptables, fédérations, formateurs" },
   { href: "/cas-usage", label: "Cas d'usage par métier", text: "Plombiers, restaurants, SaaS, cosmétiques…" },
 ];
 
@@ -56,6 +59,8 @@ export const TOOLS: readonly NavItem[] = [
 
 export const RESOURCES: readonly NavItem[] = [
   { href: "/guides", label: "Guides pratiques", text: "SEO + GEO, SEO local, Search Console, IA" },
+  { href: "/veille", label: "Veille Google et IA", text: "Ce qui change chez Google et les IA, daté et sourcé" },
+  { href: "/ressources/guide-2027", label: "Guide 2027 (gratuit)", text: "Le guide complet, à lire en ligne ou en PDF" },
   { href: "/aide", label: "Centre d'aide", text: `Bien utiliser Repéré, en ${HELP_ARTICLES.length} réponses` },
   { href: "/questions", label: "Questions fréquentes", text: "Des réponses franches sur le référencement IA" },
   { href: "/geo", label: "Le GEO", text: "Définition et leviers, sources à l'appui" },
@@ -124,6 +129,8 @@ export const FOOTER_COLUMNS: readonly { title: string; links: readonly NavItem[]
       { href: "/audit", label: "Test de visibilité IA par nom" },
       { href: "/inscription", label: "Créer un compte gratuit, sans carte bancaire" },
       { href: "/fonctionnalites/agent-de-contenu", label: "Agent de contenu" },
+      { href: "/fonctionnalites/fiche-officielle", label: "Fiche officielle" },
+      { href: "/fonctionnalites/scenarios", label: "Scénarios" },
     ],
   },
   {
@@ -144,6 +151,9 @@ export const FOOTER_COLUMNS: readonly { title: string; links: readonly NavItem[]
     links: [
       ...RESOURCES.filter((r) => r.href !== "/a-propos" && r.href !== "/pilotes").map(({ href, label }) => ({ href, label })),
       { href: "/methode/robot", label: "Notre robot" },
+      { href: "/ressources", label: "Ressources gratuites" },
+      { href: "/veille/lettre", label: "Lettre mensuelle" },
+      { href: "/veille/rss.xml", label: "Flux RSS de la veille" },
     ],
   },
   {

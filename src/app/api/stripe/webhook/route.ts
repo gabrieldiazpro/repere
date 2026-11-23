@@ -155,6 +155,7 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session, stripe: Str
     await updateBusiness(businessId, patch);
     // Audit approfondi acheté seul : 1 mois d'Essentiel offert, sans carte (idempotent, @/lib/entitlements).
     await grantAuditOffer(businessId, planId, new Date((session.created ?? Date.now() / 1000) * 1000));
+    await recordPurchaseOrigin(session, businessId, auditId);
   } else {
     console.warn('[webhook] paiement sans e-mail : commerce non créé', session.id);
   }
@@ -169,6 +170,37 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session, stripe: Str
     });
     // Plan d'action (PDF) : e-mail dédié avec le lien de téléchargement.
     if (includesActionPlan(planId)) await sendPurchaseConfirmationEmail(email, { planId, businessId, auditId });
+  }
+}
+
+/**
+ * V9 : origine d'un espace créé par un achat direct (sans inscription) : celle de l'audit d'origine si elle est connue,
+ * sinon le lien partenaire (`partner_ref`, posé par NOTRE serveur dans /api/checkout). Première origine seulement, sans
+ * cookie. Le premier paiement est aussi compté pour le partenaire ici (même facture que `invoice.paid`, idempotent),
+ * au cas où `invoice.paid` arriverait avant cette session. Jamais bloquant.
+ */
+async function recordPurchaseOrigin(session: Stripe.Checkout.Session, businessId: string, auditId: string | null) {
+  try {
+    const { recordSignupAttribution, partnerRefOf, PARTNER_UTM } = await import('@/lib/roi/attribution');
+    const ref = partnerRefOf(session.metadata?.partner_ref);
+    const attribution = ref ? { utmSource: PARTNER_UTM.source, utmMedium: PARTNER_UTM.medium, utmCampaign: ref } : null;
+    await recordSignupAttribution(businessId, { audit: auditId ?? undefined, attribution });
+    const invoiceId = idOf(session.invoice as string | { id: string } | null);
+    const paid = session.amount_total ?? 0;
+    if (invoiceId && paid > 0) {
+      const { recordPartnerPayment, exclTax } = await import('@/lib/partners/payments');
+      await recordPartnerPayment({
+        invoiceId,
+        businessId,
+        subscriptionId: idOf(session.subscription),
+        amountPaidCents: paid,
+        amountExclTaxCents: exclTax({ amountPaid: paid, tax: session.total_details?.amount_tax }),
+        currency: session.currency ?? 'eur',
+        paidAt: new Date((session.created ?? Date.now() / 1000) * 1000).toISOString(),
+      });
+    }
+  } catch (e) {
+    console.error('[webhook] origine de l’achat non enregistrée', businessId, e);
   }
 }
 
@@ -278,6 +310,23 @@ async function onInvoicePaid(invoice: Stripe.Invoice) {
   const subs = await listSubscriptionsByCustomer(customerId);
   const sub = subs.find((s) => s.stripeSubscriptionId === subId && s.businessId) ?? subs.find((s) => s.businessId);
   if (!sub?.businessId) return;
+  try {
+    // V9 : paiement d'un client apporté par un partenaire (?ref=) → base de commission (@/lib/partners, idempotent).
+    const { recordPartnerPayment, exclTax } = await import('@/lib/partners/payments');
+    const inv = invoice as unknown as { id?: string; total_excluding_tax?: number | null; tax?: number | null; currency?: string; status_transitions?: { paid_at?: number | null } };
+    const paidAt = inv.status_transitions?.paid_at ? new Date(inv.status_transitions.paid_at * 1000).toISOString() : null;
+    await recordPartnerPayment({
+      invoiceId: String(inv.id ?? ''),
+      businessId: sub.businessId,
+      subscriptionId: subId,
+      amountPaidCents: invoice.amount_paid,
+      amountExclTaxCents: exclTax({ amountPaid: invoice.amount_paid, totalExcludingTax: inv.total_excluding_tax, tax: inv.tax }),
+      currency: inv.currency ?? 'eur',
+      paidAt,
+    });
+  } catch (e) {
+    console.error('[webhook] paiement partenaire non enregistré', sub.businessId, e);
+  }
   try {
     const { onReferredFirstPayment } = await import('@/lib/growth');
     await onReferredFirstPayment({ refereeBusinessId: sub.businessId, refereeSubscriptionId: subId, amountPaidCents: invoice.amount_paid });

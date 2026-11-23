@@ -247,3 +247,25 @@ describe('mesure d’effet', () => {
     expect(snapshot(d, { at: 'x', gsc: { topQueries: [{ key: 'Plombier Lyon', impressions: 10, clicks: 1, position: 7.25 }] } }).gsc?.position).toBe(7.3);
   });
 });
+
+describe('fiche officielle → agent de contenu (V9)', () => {
+  const official = {
+    about: { title: 'À propos de Plomberie Martin', markdown: 'Plombier chauffagiste à Lyon depuis 2009.\n\nInformations vérifiées : [fiche officielle de Plomberie Martin](https://repere.test/p/plomberie-martin).\n' },
+    contact: { title: 'Contacter Plomberie Martin', markdown: '- Téléphone : [04 78 00 00 00](tel:0478000000)\n\nVérifié par l’entreprise. [Fiche officielle](https://repere.test/p/plomberie-martin).\n' },
+  };
+  it('« À propos » et « Contact » partent des faits vérifiés de la fiche ; brouillon à valider', async () => {
+    const a = await buildDraft(op({ pageType: 'a-propos', title: 'À propos', target: 'À propos' }), { ...ctx, writer: null, official });
+    expect(a.title).toBe('À propos de Plomberie Martin');
+    expect(a.body).toContain('depuis 2009');
+    expect(a.body).toContain('fiche officielle');
+    expect(a.status).toBe('draft');
+    expect(a.writerNote).toMatch(/fiche officielle/);
+    const c = await buildDraft(op({ pageType: 'contact', title: 'Contact', target: 'Contact' }), { ...ctx, writer: null, official });
+    expect(c.body).toContain('Téléphone');
+  });
+  it('les autres types de page gardent le modèle', async () => {
+    const t = await buildDraft(op(), { ...ctx, writer: null, official });
+    expect(t.body).not.toContain('depuis 2009');
+    expect(t.writerNote ?? '').not.toMatch(/fiche officielle/);
+  });
+});

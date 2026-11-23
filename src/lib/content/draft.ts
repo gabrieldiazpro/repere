@@ -52,6 +52,22 @@ export interface DraftContext {
   writer?: ContentWriter | null;
   demo?: boolean;
   id?: string;
+  /**
+   * V9 : blocs « À propos » et « Contact » exportés de la fiche officielle (faits vérifiés par le client). Quand ils
+   * existent, ils servent de squelette aux pages de ce type à la place du modèle ; la validation humaine est inchangée.
+   */
+  official?: OfficialBlocks;
+}
+
+export interface OfficialBlocks {
+  about?: { title: string; markdown: string };
+  contact?: { title: string; markdown: string };
+}
+
+/** Bloc de la fiche officielle pour ce type de page (seulement « À propos » et « Contact »). */
+export function officialBlockFor(pageType: string, official?: OfficialBlocks): { title: string; markdown: string } | undefined {
+  const b = pageType === 'a-propos' ? official?.about : pageType === 'contact' ? official?.contact : undefined;
+  return b && b.markdown.trim() ? b : undefined;
 }
 
 const SYSTEM = [
@@ -112,9 +128,17 @@ export async function buildDraft(op: ContentOpportunity, ctx: DraftContext): Pro
     existingText: isRewrite ? ctx.existing!.text : undefined,
     now,
   });
+  // Fiche officielle : ses faits vérifiés remplacent le modèle pour « À propos » et « Contact ».
+  const official = officialBlockFor(op.pageType, ctx.official);
+  if (official) {
+    tpl.body = official.markdown.trim() + '\n';
+    if (!isRewrite) tpl.title = official.title;
+  }
   let body = tpl.body;
   let writer: ContentDraft['writer'] = 'modele';
-  let writerNote: string | undefined = ctx.writer ? undefined : 'Rédaction IA désactivée ou non configurée : modèle structuré, uniquement avec vos faits.';
+  let writerNote: string | undefined = official
+    ? 'Texte repris de votre fiche officielle (faits vérifiés par vous). Relisez-le avant de valider.'
+    : ctx.writer ? undefined : 'Rédaction IA désactivée ou non configurée : modèle structuré, uniquement avec vos faits.';
   if (ctx.writer) {
     try {
       const raw = await ctx.writer.rewrite({
@@ -122,7 +146,7 @@ export async function buildDraft(op: ContentOpportunity, ctx: DraftContext): Pro
         user: JSON.stringify({ ENTREPRISE: ctx.name, VILLE: ctx.city ?? null, SUJET: op.target, FAITS: Object.fromEntries(Object.entries(ctx.facts).map(([k, v]) => [k, v?.value])), EXTRAIT: (ctx.voiceSample ?? '').slice(0, 1500), SQUELETTE: tpl.body }),
       });
       const candidate = String((JSON.parse(raw) as { body?: unknown }).body ?? '').trim();
-      const verdict = acceptRewrite(candidate, tpl.body, [factSource(ctx.facts, [ctx.name, ctx.city, op.target, ctx.existing?.text, tpl.title, ...links.map((l) => l.anchor), ...sources.map((s) => s.title)])]);
+      const verdict = acceptRewrite(candidate, tpl.body, [factSource(ctx.facts, [ctx.name, ctx.city, op.target, ctx.existing?.text, tpl.title, official?.markdown, ...links.map((l) => l.anchor), ...sources.map((s) => s.title)])]);
       if (verdict.ok) {
         body = candidate;
         writer = 'ia';

@@ -99,7 +99,7 @@ const FAQ: QA[] = [
   },
   {
     q: "Comment fonctionne le partenariat sans abonnement ?",
-    a: "Un lien partenaire personnel et 30 % de commission pendant 12 mois sur chaque client apporté, sans abonnement. Votre client souscrit lui-même son offre.",
+    a: "Un lien partenaire personnel et 30 % de commission pendant 12 mois sur chaque client apporté, sans abonnement. Votre client souscrit lui-même son offre. Détail et candidature : /partenaires.",
   },
 ];
 
@@ -160,13 +160,16 @@ export default function AgencesPage() {
                   Vos clients veulent savoir si les IA les citent. Repéré mesure, prépare les corrections et les contenus, et les fait valider par vos clients ;
                   vous présentez le travail à votre nom, sur un tableau de bord multi-clients, avec l&apos;API et le serveur MCP pour vos propres outils.
                 </p>
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                   <DemoEntry account="demo-agence" className={buttonClasses({ size: "lg", className: "lift cursor-pointer" })}>
                     Voir la démo agence
                   </DemoEntry>
                   <a href="#liste-attente" className={buttonClasses({ size: "lg", variant: "secondary" })}>
                     {open ? "Ouvrir un compte agence" : "Rejoindre la liste d’attente"}
                   </a>
+                  <Link href="/rendez-vous?offre=agence" className={buttonClasses({ size: "lg", variant: "secondary" })}>
+                    Réserver une démo
+                  </Link>
                 </div>
                 <Reassure className="mt-5" items={reassure} />
                 {!open ? (
@@ -281,6 +284,11 @@ export default function AgencesPage() {
                       </li>
                     ))}
                   </ul>
+                  <div className="mt-auto pt-6">
+                    <Link href="/partenaires#agences" className={buttonClasses({ variant: "secondary", className: "w-full" })}>
+                      Devenir partenaire
+                    </Link>
+                  </div>
                 </article>
               ) : null}
               {month ? (
@@ -299,6 +307,11 @@ export default function AgencesPage() {
                       </li>
                     ))}
                   </ul>
+                  <div className="mt-auto pt-6">
+                    <Link href="/rendez-vous?offre=agence" className={buttonClasses({ variant: "light", className: "w-full" })}>
+                      Réserver une démo
+                    </Link>
+                  </div>
                 </article>
               ) : null}
               <article className="flex flex-col rounded-2xl bg-canvas p-6">

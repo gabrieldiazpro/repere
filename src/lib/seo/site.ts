@@ -176,12 +176,12 @@ export const SAME_AS: string[] = [
  * À mettre à jour à la main quand le contenu de la page change (pas à chaque build).
  */
 export const PAGE_UPDATED = {
-  '/': '2026-11-22',
+  '/': '2026-11-23',
   '/local': '2026-11-13',
-  '/pme': '2026-11-13',
+  '/pme': '2026-11-23',
   '/e-commerce': '2026-11-22',
   '/audit': '2026-11-15',
-  '/tarifs': '2026-11-22',
+  '/tarifs': '2026-11-23',
   '/methode': '2026-11-22',
   '/guides': '2026-11-15',
   '/visibilite-ia': '2026-11-15',
@@ -201,8 +201,15 @@ export const PAGE_UPDATED = {
   '/presse': '2026-11-15',
   '/statut': '2026-11-15',
   // V8 (22 nov. 2026) : page agences, documentation développeurs.
-  '/agences': '2026-11-22',
+  '/agences': '2026-11-23',
   '/developpeurs': '2026-11-22',
+  // V9 (23 nov. 2026) : partenaires, réserver une démo, veille et lettre, ressources (guide 2027).
+  '/partenaires': '2026-11-23',
+  '/rendez-vous': '2026-11-23',
+  '/veille': '2026-11-23',
+  '/veille/lettre': '2026-11-23',
+  '/ressources': '2026-11-23',
+  '/ressources/guide-2027': '2026-11-23',
 } as const satisfies Record<string, string>;
 
 export type StaticPath = keyof typeof PAGE_UPDATED;

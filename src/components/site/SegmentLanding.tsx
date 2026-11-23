@@ -48,6 +48,8 @@ export type SegmentLandingProps = {
   subtitle: string;
   primaryCta: string;
   secondaryCta?: { label: string; href: string };
+  /** V9 : lien « Réserver une démo » (/rendez-vous…) affiché à côté de l'appel principal, jamais à sa place */
+  demoHref?: string;
   reassure: string[];
   /** V2 : réponse statique du hero. V3 : la scène animée du parcours (HeroScene) la remplace ; conservé pour compatibilité. */
   hero?: HeroAnswerData;
@@ -179,6 +181,11 @@ export function SegmentLanding(p: SegmentLandingProps) {
                 <QuickAuditForm segment={p.segment} idPrefix="seg-hero" submitLabel={p.primaryCta} className="mt-7" />
                 <Reassure className="mt-4" items={p.reassure} />
                 <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1">
+                  {p.demoHref ? (
+                    <Link href={p.demoHref} className={buttonClasses({ size: "sm", variant: "secondary" })}>
+                      Réserver une démo
+                    </Link>
+                  ) : null}
                   {p.secondaryCta ? (
                     <Link href={p.secondaryCta.href} className="inline-flex min-h-11 items-center font-semibold text-primary underline-offset-4 hover:underline">
                       {p.secondaryCta.label}

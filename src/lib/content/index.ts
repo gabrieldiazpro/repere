@@ -14,7 +14,7 @@ export { detectOpportunities, guessPageType, PAGE_TYPE_LABEL, MIN_GSC_IMPRESSION
 export { parseBody, bodyToHtml, bodyToText, todosOf, slugify, wordsOf, TODO_TEST, TODO_SPLIT, todo } from './markdown';
 export { buildTemplate } from './templates';
 export { citabilityOf, cannibalization, internalLinks, buildJsonLd, publicSourcesFor, structureChecks, faqPairs, type SitePage } from './checks';
-export { buildDraft, finalizeDraft, acceptRewrite, defaultContentWriter, writerFromExtractor, type ContentWriter, type DraftContext } from './draft';
+export { buildDraft, finalizeDraft, acceptRewrite, defaultContentWriter, writerFromExtractor, type ContentWriter, type DraftContext, officialBlockFor, type OfficialBlocks } from './draft';
 export { MONTHLY_QUOTA, QUOTA_NOTE, quotaView, usedThisMonth, type QuotaView } from './quota';
 export { mentionTargets } from './mentions';
 export { snapshot, startEffect, refreshEffect, compareEffect, EFFECT_DAYS, type EffectInputs, type EffectDelta } from './effect';

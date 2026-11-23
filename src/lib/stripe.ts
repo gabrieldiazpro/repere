@@ -44,6 +44,13 @@ export interface CheckoutArgs {
   customerId?: string;
   /** horodatage serveur de la case « je suis un professionnel » cochée sur notre site (si envoyée) */
   proDeclaredAt?: string;
+  /** V9 : code partenaire (`?ref=`), déjà validé par /api/checkout ; relu par le webhook pour l'attribution */
+  partnerRef?: string;
+}
+
+/** Metadata Stripe du lien partenaire (vide sans code). */
+export function partnerRefMetadata(ref?: string): Record<string, string> {
+  return ref ? { partner_ref: ref } : {};
 }
 
 export class CheckoutConfigError extends Error {}
@@ -82,7 +89,7 @@ export async function createCheckoutUrl(args: CheckoutArgs): Promise<string> {
   if (!price) throw new CheckoutConfigError(`Prix Stripe non configuré : ${priceEnvName(args.planId)}`);
   const taxRates = process.env.STRIPE_TAX_RATE_ID ? [process.env.STRIPE_TAX_RATE_ID] : undefined;
 
-  const metadata: Record<string, string> = { app: 'auditia', plan_id: args.planId, ...proDeclarationMetadata(args.proDeclaredAt) };
+  const metadata: Record<string, string> = { app: 'auditia', plan_id: args.planId, ...proDeclarationMetadata(args.proDeclaredAt), ...partnerRefMetadata(args.partnerRef) };
   if (args.auditId) metadata.audit_id = args.auditId;
   if (args.businessId) metadata.business_id = args.businessId;
 

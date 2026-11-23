@@ -8,6 +8,7 @@ import { CATEGORIES, SEGMENTS, categoryPath } from '@/lib/seo/segments';
 import { TARGET_QUESTIONS, targetQuestionPath } from '@/app/questions/_lib/target-questions';
 import { TRADES, PRIORITY_TRADES, tradePath } from '@/lib/seo';
 import { STUDIES, studyPath } from '@/lib/studies';
+import { sortedEntries, veillePath } from '@/lib/veille';
 import { BRAND, CONTACT_EMAIL, ENTITY_READY, LEGAL, ONE_LINER, PAGE_UPDATED, abs } from '@/lib/seo/site';
 import { euros, tiersFor, VAT_NOTICE } from '@/components/site/plans-v2';
 import { v3Routes, type RouteEntry } from '@/lib/seo/routes';
@@ -78,6 +79,16 @@ export async function GET() {
     link('Agences', '/agences', 'offre Agence : marque blanche, tableau de bord multi-clients, validation par le client, API et MCP ; partenariat sans abonnement'),
     link('Agent de contenu', '/fonctionnalites/agent-de-contenu', 'pages manquantes proposées sur preuves, rédigées avec les seuls faits du client, créées en brouillon chez lui, publiées après validation, mesurées à J+30 et J+90 ; pas d’échange de liens ni de production de masse'),
     link('Développeurs', '/developpeurs', 'API REST (OpenAPI 3.1 sur /api/public/v1/openapi.json), serveur MCP en lecture (/api/mcp), webhooks signés'),
+    link('Fiche officielle', '/fonctionnalites/fiche-officielle', 'faits de l’entreprise datés, sourcés et vérifiés par elle : page publique (schema.org, Markdown, llms.txt), encart pour son site, alertes d’écarts, rappel tous les 90 jours'),
+    link('Programme partenaires', '/partenaires', 'agences, plateformes compatibles, experts-comptables, CCI, fédérations, écoles et formateurs ; candidature en ligne'),
+    link('Réserver une démo', '/rendez-vous', 'démonstration des offres Accompagné et Agence, réponse sous un jour ouvré'),
+    '',
+    '## Veille',
+    link('Veille Google et IA', '/veille', 'fiches datées et sourcées sur Google et les IA : ce qui change, pour qui, et ce qu’il faut faire'),
+    ...sortedEntries().map((e) => link(e.title, veillePath(e), `mis à jour le ${e.updated}`)),
+    link('Flux RSS de la veille', '/veille/rss.xml'),
+    link('Lettre mensuelle', '/veille/lettre', 'une fois par mois, double opt-in, désinscription en un clic'),
+    link('Guide 2027 (gratuit)', '/ressources/guide-2027', 'guide complet SEO et IA, à lire en ligne ou en PDF contre une adresse e-mail'),
     '',
     ...(routes.some((r) => r.section === 'outils')
       ? ['## Outils gratuits', 'Outils sans inscription, sans fournisseur de données payant : ils lisent le HTML, les en-têtes, le robots.txt et le sitemap d’une page publique avec le robot déclaré RepereBot.', ...routeLines('outils', routes), '']

@@ -26,6 +26,7 @@ import {
 } from '@/lib/content';
 import { getFacts, getSettings, listDismissed, listDrafts, listMentionTracking, refreshEffects } from '@/lib/content/service';
 import type { EntitlementTier } from '@/lib/entitlements';
+import type { OfficialBlocks } from '@/lib/content';
 import { listConnections } from '@/lib/publish/connections';
 import { canCreate } from '@/lib/publish/pages';
 import type { Platform } from '@/lib/publish/types';
@@ -100,6 +101,28 @@ async function roleOf(businessId: string): Promise<ViewerRole> {
   }
 }
 
+/**
+ * V9 : blocs « À propos » et « Contact » de la fiche officielle (export de l'agent de publication), repris comme
+ * squelette des pages de ce type. Seulement s'ils contiennent des faits (pas la seule ligne de source).
+ */
+async function officialBlocks(businessId: string): Promise<OfficialBlocks | null> {
+  try {
+    const { loadPublicFicheByBusiness, publicationExport } = await import('@/lib/execution/fiche');
+    const p = await loadPublicFicheByBusiness(businessId);
+    if (!p) return null;
+    const ex = publicationExport(p.view, p.name, p.pageUrl, null);
+    // Markdown restreint de l'agent : pas de gras.
+    const plain = (md: string) => md.replace(/\*\*([^*]+)\*\*/g, '$1');
+    const substantial = (md: string) => md.split('\n').filter((l) => l.trim()).length > 1;
+    const out: OfficialBlocks = {};
+    if (substantial(ex.about.markdown)) out.about = { title: ex.about.title, markdown: plain(ex.about.markdown) };
+    if (/^- /m.test(ex.contact.markdown)) out.contact = { title: ex.contact.title, markdown: plain(ex.contact.markdown) };
+    return out.about || out.contact ? out : null;
+  } catch {
+    return null;
+  }
+}
+
 export const loadContentContext = cache(async (): Promise<ContentContext> => {
   const ws = await loadWorkspace();
   const businessId = ws.business.id;
@@ -128,7 +151,8 @@ export const loadContentContext = cache(async (): Promise<ContentContext> => {
 
   const stored = ws.demo ? null : await safe(getFacts(businessId), null);
   const facts = mergeFacts(stored?.facts ?? {}, (ws.facts.facts ?? {}) as Record<string, string>, stored?.updatedAt);
-  const draftCtx: ContentContext['draftCtx'] = { name: ws.business.name, site, segment, city, facts, pages, urls: latest?.sources?.urls, voiceSample, demo: ws.demo };
+  const official = await officialBlocks(businessId);
+  const draftCtx: ContentContext['draftCtx'] = { name: ws.business.name, site, segment, city, facts, pages, urls: latest?.sources?.urls, voiceSample, demo: ws.demo, ...(official ? { official } : {}) };
   const effectInputs: ContentContext['effectInputs'] = { audit: audit ? { measuredAt: audit.measuredAt, mentions: audit.mentions } : null, gsc };
   const sources = { audit: audit?.measuredAt ?? null, gsc: gsc?.updatedAt ?? null, crawl: run?.at ?? null, gscConnected: !!gsc };
 

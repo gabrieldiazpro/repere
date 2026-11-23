@@ -631,6 +631,28 @@ Chromium est installé localement (pas Vercel), `CRAWL_RENDER=on` suffit : Repé
 `CRAWL_RENDER_CHROME=/chemin/vers/chrome`. Le rendu se fait toujours dans le budget de 60 secondes de l'analyse : s'il
 manque de temps, il est simplement sauté (et le rapport reste exact).
 
+## Partenaires et « Réserver une démo » (V9, facultatif, 10 min)
+
+Les deux pages fonctionnent sans rien configurer : les candidatures (/partenaires) et les demandes de démo (/rendez-vous)
+sont enregistrées, visibles dans **/admin/partenaires** et **/admin/partenaires/rendez-vous**, et vous êtes prévenu par
+e-mail (Resend, section 3). Le demandeur d'une démo reçoit une réponse automatique : « nous revenons vers vous sous
+1 jour ouvré » ; tenez ce délai.
+
+1. Destinataires (facultatif) : `PARTNERS_NOTIFY_EMAIL` et `MEETINGS_NOTIFY_EMAIL`. Vides : `PILOTS_NOTIFY_EMAIL`, puis
+   `EMAIL_REPLY_TO`, puis l'adresse de contact.
+2. Agenda en ligne (facultatif, gratuit) : créez un compte sur https://cal.com (offre gratuite pour une personne :
+   types de rendez-vous et réservations illimités, plusieurs agendas connectés ; vérifié sur https://cal.com/pricing
+   le 23 novembre 2026). Connectez votre agenda, créez un type « Démo Repéré, 30 min » (lundi–vendredi, 9 h–12 h et
+   14 h–18 h, lien de visio automatique), puis copiez son lien public dans `NEXT_PUBLIC_BOOKING_URL`
+   (https uniquement). Redéployez : la page /rendez-vous affiche alors « Ouvrir l'agenda » au-dessus du formulaire.
+   Tout outil équivalent avec un lien public https convient (Calendly, prise de rendez-vous Google Agenda…).
+3. Partenaires : à l'acceptation d'une candidature, l'admin attribue un code (`?ref=code`) et les conditions proposées
+   pour la famille (modifiables). Les commissions sont calculées sur les factures Stripe payées reçues par le webhook
+   (événement `invoice.paid`, déjà requis en section 5) ; **aucun versement automatique** : vous payez sur facture du
+   partenaire, puis saisissez le versement dans l'admin. Vérifiez les remboursements dans Stripe avant de verser.
+
+**Vérifier** : envoyez une demande test depuis /rendez-vous ; l'e-mail arrive et la demande apparaît dans l'admin.
+
 ## Après l'ouverture
 
 - **Chaque mise à jour de l'application** : `node scripts/ops/migrate.mjs`, puis `node scripts/ops/check-env.mjs --prod`

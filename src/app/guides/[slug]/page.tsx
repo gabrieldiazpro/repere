@@ -9,6 +9,7 @@ import { pageMeta } from '@/lib/seo/meta';
 import { Byline } from '@/lib/seo/editorial';
 import { articleLd, breadcrumbListLd, faqPageLd, graph, webPageLd } from '@/lib/seo/jsonld';
 import { GuideFigure } from '@/components/pages/guide-figures';
+import { NewsletterForm } from '@/lib/newsletter/ui/NewsletterForm';
 import { GUIDE_V6_FIGURES } from '@/lib/seo/guides-v6';
 import { GUIDE_V7_FIGURES } from '@/lib/seo/guides-v7';
 import fs from 'node:fs';
@@ -153,6 +154,13 @@ export default async function GuidePage({ params }: Props) {
         </section>
       ) : null}
 
+      <div className="mt-12">
+        <NewsletterForm source="guide" />
+        <p className="mt-3 text-sm">
+          Ce qui a changé récemment : <Link href="/veille" className="underline" style={{ color: 'var(--primary)' }}>la veille Google et IA</Link>, datée et sourcée.
+        </p>
+      </div>
+
       <div className="mt-12 rounded-2xl p-6 sm:p-8" style={{ background: 'var(--primary-bg)' }}>
         <p className="mb-3 text-lg font-semibold">{g.cta.text}</p>
         <CtaLink href={g.cta.href}>{g.cta.label}</CtaLink>
@@ -182,6 +190,7 @@ export default async function GuidePage({ params }: Props) {
         <li><Link href="/visibilite-ia" className="underline" style={{ color: 'var(--primary)' }}>Visibilité IA par métier, secteur et catégorie</Link></li>
         <li><Link href="/geo" className="underline" style={{ color: 'var(--primary)' }}>Qu&apos;est-ce que le GEO (référencement IA) ?</Link></li>
         <li><Link href="/glossaire" className="underline" style={{ color: 'var(--primary)' }}>Glossaire du référencement IA</Link></li>
+        <li><Link href="/veille" className="underline" style={{ color: 'var(--primary)' }}>Ce qui a changé récemment : la veille Google et IA</Link></li>
         {g.slug !== 'seo-geo-sites-pros-2026' ? (
           <li><Link href="/guides/seo-geo-sites-pros-2026" className="underline" style={{ color: 'var(--primary)' }}>Le guide SEO + GEO pour les sites pros en 2026</Link></li>
         ) : null}

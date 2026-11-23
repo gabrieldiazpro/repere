@@ -75,13 +75,33 @@ export function attributionFromLocation(input: { href: string; referrer?: string
   const q = u.searchParams;
   const ref = host(input.referrer ?? '');
   const self = host(input.selfHost ?? u.hostname);
+  // V9 (partenaires) : lien partenaire `?ref=<code>` (minuscules, tirets ; pas un code de parrainage REP-…) lu comme
+  // une campagne « partenaire », sauf si de vrais UTM sont déjà présents (src/lib/partners/codes.ts).
+  const partner = !q.get('utm_source') ? partnerRefOf(q.get('ref')) : undefined;
   return sanitizeAttribution({
-    utmSource: q.get('utm_source') ?? undefined,
-    utmMedium: q.get('utm_medium') ?? undefined,
-    utmCampaign: q.get('utm_campaign') ?? undefined,
+    utmSource: partner ? PARTNER_UTM.source : (q.get('utm_source') ?? undefined),
+    utmMedium: partner ? PARTNER_UTM.medium : (q.get('utm_medium') ?? undefined),
+    utmCampaign: partner ?? q.get('utm_campaign') ?? undefined,
     landing: u.pathname,
     referrerHost: ref && ref !== self ? ref : undefined,
   });
+}
+
+/** Lien partenaire (V9) : `?ref=<code>` → utm_source = utm_medium = « partenaire », utm_campaign = code. */
+export const PARTNER_UTM = { source: 'partenaire', medium: 'partenaire' } as const;
+const PARTNER_REF_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** Code partenaire valide (3 à 30 caractères, minuscules, chiffres, tirets ; jamais un code de parrainage « rep-… »). */
+export function partnerRefOf(v: unknown): string | undefined {
+  if (typeof v !== 'string') return undefined;
+  const c = v.trim();
+  return c.length >= 3 && c.length <= 30 && PARTNER_REF_RE.test(c) && !c.startsWith('rep-') ? c : undefined;
+}
+
+/** Code partenaire d'une origine enregistrée, ou null. */
+export function partnerCodeOf(a: Attribution | null | undefined): string | null {
+  if (!a || a.utmMedium !== PARTNER_UTM.medium) return null;
+  return partnerRefOf(a.utmCampaign) ?? null;
 }
 
 /** Paramètres UTM des liens sortant d'un baromètre (vers l'audit, l'analyse ou l'inscription). */
