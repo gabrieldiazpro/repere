@@ -95,6 +95,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      // Déploiement de démonstration ou de préproduction (SITE_NOINDEX=1) : rien n'est indexé par les moteurs,
+      // pour ne pas concurrencer le futur domaine officiel. À retirer au lancement.
+      ...(process.env.SITE_NOINDEX === "1"
+        ? [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]
+        : []),
       // Encart de la fiche officielle : intégrable en iframe sur le site du client (HTML statique, sans script).
       {
         source: "/encart/:path*",
