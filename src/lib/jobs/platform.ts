@@ -3,7 +3,7 @@
  */
 import type { Business } from '@/lib/db';
 import type { ProviderId } from '@/lib/engine';
-import { getEntitlements } from '@/lib/entitlements';
+import { getEntitlements, withOfferOptions, type OfferOptions } from '@/lib/entitlements';
 
 export type Frequency = 'monthly' | 'weekly' | 'daily';
 
@@ -11,11 +11,17 @@ export interface SchedulingEntitlements {
   tier: 'decouverte' | 'essentiel' | 'accompagne' | 'agence' | 'demo';
   frequency: Frequency;
   engines: ProviderId[];
+  /** V10 : passages par mesure (3 au mois, 2 à la semaine) */
+  runs: number;
 }
 
-export function entitlementsFor(business: Pick<Business, 'id' | 'plan' | 'segment' | 'planId'> & { isActive?: boolean }): SchedulingEntitlements {
-  const e = getEntitlements(business);
-  return { tier: e.tier, frequency: e.frequency, engines: e.engines };
+/** Droits de planification ; `options` : options payantes de l'espace (Copilot/DeepSeek, client Agence hebdomadaire). */
+export function entitlementsFor(
+  business: Pick<Business, 'id' | 'plan' | 'segment' | 'planId'> & { isActive?: boolean },
+  options?: OfferOptions | null,
+): SchedulingEntitlements {
+  const e = withOfferOptions(getEntitlements(business), options);
+  return { tier: e.tier, frequency: e.frequency, engines: e.engines, runs: e.runs };
 }
 
 /** Écart minimal entre deux mesures planifiées. */

@@ -6,6 +6,7 @@ import { BrandMark } from '@/components/app/agence/BrandMark';
 import { Portfolio } from '@/components/app/agence/Portfolio';
 import { loadAgency, loadPortfolio } from '@/components/app/agence/server';
 import { portfolioSummary } from '@/lib/agency/portfolio';
+import { AGENCY_INCLUDED_CLIENTS, AGENCY_MAX_CLIENTS, formatPrice, getAddon } from '@/lib/plans';
 
 export const metadata = { title: 'Tous mes clients' };
 export const maxDuration = 60;
@@ -38,7 +39,7 @@ export default async function AgencePage() {
   const s = portfolioSummary(clients);
   const demo = agency.mode === 'demo';
   const p = agency.profile;
-  const max = agency.ctx?.maxClients ?? 20;
+  const max = agency.ctx?.maxClients ?? AGENCY_MAX_CLIENTS;
   const title =
     s.needAttention > 0
       ? `${pl(s.needAttention, 'client demande', 'clients demandent')} votre attention`
@@ -51,7 +52,12 @@ export default async function AgencePage() {
     <>
       <PageHeader
         title="Tous mes clients"
-        meta={<>{pl(clients.length, 'client', 'clients')} sur {max} inclus dans l’offre Agence{demo ? ' · démo' : ''}</>}
+        meta={
+          <>
+            {pl(clients.length, 'client', 'clients')} · {AGENCY_INCLUDED_CLIENTS} inclus dans l’offre Agence, +{formatPrice(getAddon('agency_extra_client').priceCents)}/mois par client au-delà (jusqu’à {max})
+            {demo ? ' · démo, agence fictive' : ''}
+          </>
+        }
       />
       <div className="rp-page flex flex-col gap-4" style={{ ['--ag-color' as string]: p?.color }}>
         <div className="ag-brand">

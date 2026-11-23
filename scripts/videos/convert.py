@@ -9,7 +9,7 @@ for id in (sys.argv[3].split(',') if len(sys.argv)>3 else ['hero','mesurer','com
     m=d['marks']; poster=m[0]['t']+2.5
     subprocess.run(['ffmpeg','-y','-loglevel','error','-ss',str(poster),'-i',f"{out}/{id}.mp4",'-frames:v','1','-q:v','4',f"{out}/{id}.jpg"],check=True)
     dur=float(subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',f"{out}/{id}.mp4"],capture_output=True,text=True).stdout)
-    v="WEBVTT\n"
+    v="WEBVTT\n\n00:00:00.000 --> 00:00:02.500\nDémonstration : entreprises fictives\n"
     for i,k in enumerate(m):
         end=m[i+1]['t'] if i+1<len(m) else dur
         v+=f"\n{ts(k['t'])} --> {ts(end)}\n{k['caption']}\n"

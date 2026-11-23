@@ -255,7 +255,7 @@ const GUIDES_V2: Guide[] = [
       { label: 'RGPD (règlement UE 2016/679), article 16 : droit de rectification', url: 'https://eur-lex.europa.eu/eli/reg/2016/679/oj' },
       { label: 'Google, contenu généré par IA et règles anti-spam (scaled content abuse)', url: 'https://developers.google.com/search/docs/fundamentals/using-gen-ai-content' },
     ],
-    cta: { text: 'Voyez ce que disent les assistants sur votre entreprise et ce qui est faux.', href: '/audit', label: 'Lancer mon test gratuit' },
+    cta: { text: 'Voyez ce que disent les assistants sur votre entreprise et ce qui est faux.', href: '/analyse', label: 'Lancer mon test de marque gratuit' },
     related: ['apparaitre-dans-chatgpt-pme', 'avis-clients-ia', 'trafic-chatgpt-ga4'],
   },
 
@@ -456,7 +456,7 @@ const GUIDES_V2: Guide[] = [
       { label: 'Légifrance, décret 2017-1436 (article L111-7-2 du Code de la consommation)', url: 'https://www.legifrance.gouv.fr/jorf/id/JORFARTI000035720943' },
       { label: 'DPO Consulting, AI Act et Digital Omnibus', url: 'https://www.dpo-consulting.com/fr-fr/blog/ai-act-ce-que-le-digital-omnibus-change-reellement-pour-les-entreprises-', note: 'Source secondaire : à vérifier sur EUR-Lex.' },
     ],
-    cta: { text: 'Voyez quelles plateformes d\'avis les assistants citent pour votre métier.', href: '/audit', label: 'Lancer mon test gratuit' },
+    cta: { text: 'Voyez quelles plateformes d\'avis les assistants citent pour votre métier.', href: '/analyse', label: 'Lancer mon test de marque gratuit' },
     related: ['apparaitre-dans-chatgpt-pme', 'ia-disent-des-choses-fausses', 'trafic-chatgpt-ga4'],
   },
 ];

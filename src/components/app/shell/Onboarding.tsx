@@ -246,7 +246,7 @@ function SiteStep({ headRef, businessId, businessName, website, demo, value: v, 
     e.preventDefault();
     const url = normaliserSite(v);
     if (!url) {
-      setErr('Indiquez l’adresse de votre site, par exemple plomberie-martin.fr.');
+      setErr('Indiquez l’adresse de votre site, par exemple www.votre-site.fr.');
       return;
     }
     setErr('');

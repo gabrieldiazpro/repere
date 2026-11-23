@@ -29,7 +29,7 @@ export interface DnsRecord {
 }
 
 export interface SenderDomain {
-  /** domaine d'envoi, ex. agence-exemple.fr (ou un sous-domaine : rapports.agence-exemple.fr) */
+  /** domaine d'envoi, ex. agence-exemple.example (ou un sous-domaine : rapports.agence-exemple.example) */
   name: string;
   /** partie locale de l'adresse : rapports@… */
   localPart: string;

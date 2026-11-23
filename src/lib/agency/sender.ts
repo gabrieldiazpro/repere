@@ -2,7 +2,7 @@
  * Expéditeur des e-mails de l'agence (V6).
  *
  * - Domaine VÉRIFIÉ chez le fournisseur d'envoi (enregistrements SPF / DKIM posés par l'agence) :
- *   « Agence Exemple <rapports@agence-exemple.fr> », réponse à l'adresse de l'agence.
+ *   « Agence Exemple <rapports@agence-exemple.example> », réponse à l'adresse de l'agence.
  * - Sinon : le nom affiché devient celui de l'agence, l'adresse reste celle de Repéré (EMAIL_FROM). On ne fait JAMAIS
  *   partir un e-mail d'un domaine non vérifié (il serait rejeté ou classé en indésirable, et ce serait de l'usurpation).
  * - Vérification : API « domains » de Resend si RESEND_API_KEY est défini ; sans clé, l'écran l'explique (statut
@@ -104,7 +104,7 @@ export const NO_PROVIDER_MESSAGE =
 /** Enregistre (ou relance) un domaine d'envoi. `api` null : statut `unavailable`, aucun appel. */
 export async function registerDomain(input: { domain: unknown; localPart?: unknown }, prev: SenderDomain | null, api: DomainApi | null, now: Date = new Date()): Promise<SenderDomain> {
   const name = normalizeDomain(input.domain);
-  if (!name) throw new Error('Domaine invalide : indiquez par exemple agence-exemple.fr ou rapports.agence-exemple.fr.');
+  if (!name) throw new Error('Domaine invalide : indiquez par exemple agence-exemple.example ou rapports.agence-exemple.example.');
   const localPart = normalizeLocalPart(input.localPart);
   if (!api) return { name, localPart, status: 'unavailable', providerId: null, records: [], checkedAt: now.toISOString(), error: null };
   try {

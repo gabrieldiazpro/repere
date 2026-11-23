@@ -23,7 +23,7 @@ export const OFFRE_REQUISE: Record<VerrouFeature, string> = {
   shareLinks: 'Essentiel',
   whiteLabel: 'Agence',
   integrations: 'Essentiel (PME, E-commerce) ou Accompagné',
-  weekly: 'Essentiel (PME, E-commerce) ou Accompagné',
+  weekly: 'Accompagné',
   daily: 'sur devis',
   claude: 'Essentiel (PME, E-commerce) ou Accompagné',
   mistral: 'Accompagné (PME, E-commerce)',

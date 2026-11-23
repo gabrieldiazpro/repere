@@ -7,5 +7,5 @@ export const contentType = 'image/png';
 
 export default function Image() {
   const from = fromPrice('local');
-  return ogCard(`Tarifs : test gratuit, Essentiel dès ${from ? euros(from) : '29 €'}/mois, le travail inclus`, 'Tarifs');
+  return ogCard(`Tarifs : Découverte gratuite, Essentiel dès ${from ? euros(from) : '29 €'}/mois, le travail inclus`, 'Tarifs');
 }

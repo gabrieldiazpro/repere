@@ -2,11 +2,12 @@
  * Programme partenaires (V9) : familles de partenaires, ce que chacun gagne, ce que nous attendons, comment ça marche.
  * Pur (aucun import serveur) : lu par la page publique /partenaires, le formulaire et l'admin.
  *
- * Les conditions chiffrées sont des PROPOSITIONS à valider par le fondateur (docs/v9/progress/PARTENAIRES.md). La
- * commission des agences reprend celle déjà publiée sur /agences et /tarifs (offre « Partenaire » : 30 % pendant
- * 12 mois) pour ne pas afficher deux chiffres différents. Chaque partenaire accepté reçoit SES conditions par écrit ;
- * l'admin peut les ajuster partenaire par partenaire (taux, durée).
+ * V10 : conditions DÉCIDÉES (docs/v10/DECISIONS.md, décision 8 ; table dans ./terms.ts) : agences 30 %, prescripteurs
+ * et formateurs 20 % pendant 12 mois, CCI et chambres : atelier gratuit à la place, versement trimestriel sur facture,
+ * remboursements déduits. Chaque partenaire accepté reçoit SES conditions par écrit (contrat :
+ * docs/v10/contrat-partenaire.md, à faire relire par un avocat) ; l'admin peut les ajuster partenaire par partenaire.
  */
+import { COMMISSION_BY_FAMILY, PAYOUT_RULES } from './terms';
 
 export const PARTNER_FAMILIES = ['agence', 'plateforme', 'prescripteur', 'formation'] as const;
 export type PartnerFamily = (typeof PARTNER_FAMILIES)[number];
@@ -54,9 +55,9 @@ export const FAMILIES: Record<PartnerFamily, FamilyInfo> = {
     how: [
       'Vous posez votre candidature ; le fondateur vous répond sous 5 jours ouvrés.',
       'Accord écrit : conditions, lien de parrainage, accès à la démo agence.',
-      'Vos clients s’inscrivent par votre lien ; la commission est calculée sur leurs paiements réels et versée sur facture.',
+      'Vos clients s’inscrivent par votre lien ; la commission est calculée sur leurs paiements réels, remboursements déduits, et versée chaque trimestre sur facture.',
     ],
-    commission: { rate: 0.3, months: 12 },
+    commission: COMMISSION_BY_FAMILY.agence,
   },
   plateforme: {
     id: 'plateforme',
@@ -77,7 +78,7 @@ export const FAMILIES: Record<PartnerFamily, FamilyInfo> = {
       'Repéré est aujourd’hui compatible avec ces outils grâce à leurs API publiques, sans accord officiel.',
       'Un partenariat officiel n’est annoncé qu’une fois signé, avec l’accord écrit de la plateforme.',
     ],
-    commission: null,
+    commission: COMMISSION_BY_FAMILY.plateforme,
   },
   prescripteur: {
     id: 'prescripteur',
@@ -85,8 +86,8 @@ export const FAMILIES: Record<PartnerFamily, FamilyInfo> = {
     short: 'Prescripteur',
     who: 'Experts-comptables, CCI, chambres de métiers, fédérations et associations professionnelles qui conseillent des entreprises.',
     gains: [
-      '20 % des paiements hors taxes de chaque entreprise apportée, pendant ses 12 premiers mois.',
-      'Si votre statut exclut toute commission (établissement public, fédération) : un atelier gratuit pour vos adhérents, en ligne ou sur place.',
+      '20 % des paiements hors taxes de chaque entreprise apportée, pendant ses 12 premiers mois (experts-comptables, fédérations, associations).',
+      'CCI et chambres de métiers : un atelier gratuit pour vos adhérents, en ligne ou sur place, à la place de la commission.',
       'Le baromètre de visibilité de votre territoire ou de votre métier, quand il est mesuré.',
     ],
     expect: [
@@ -94,11 +95,11 @@ export const FAMILIES: Record<PartnerFamily, FamilyInfo> = {
       'Nous dire ce que vos adhérents ou clients en pensent, en bien comme en mal.',
     ],
     how: [
-      'Vous posez votre candidature ; nous convenons ensemble de la forme : commission, atelier, ou les deux.',
+      'Vous posez votre candidature ; experts-comptables et fédérations reçoivent la commission, CCI et chambres l’atelier.',
       'Vous recevez un lien de parrainage à partager dans vos lettres, réunions ou rendez-vous clients.',
-      'Vous suivez les inscriptions apportées ; la commission éventuelle est versée sur facture.',
+      'Vous suivez les inscriptions apportées ; la commission éventuelle est versée chaque trimestre sur facture.',
     ],
-    commission: { rate: 0.2, months: 12 },
+    commission: COMMISSION_BY_FAMILY.prescripteur,
   },
   formation: {
     id: 'formation',
@@ -119,7 +120,7 @@ export const FAMILIES: Record<PartnerFamily, FamilyInfo> = {
       'Nous vous ouvrons les supports et l’espace de démonstration.',
       'Si vous recommandez Repéré à des entreprises, votre lien de parrainage suit les inscriptions.',
     ],
-    commission: { rate: 0.2, months: 12 },
+    commission: COMMISSION_BY_FAMILY.formation,
   },
 };
 
@@ -134,8 +135,7 @@ export const COMPATIBILITY_NOTE =
   'Compatible signifie que Repéré se connecte à ces outils par leurs interfaces publiques. Ce ne sont pas des partenaires officiels : aucun accord n’est signé avec leurs éditeurs, qui ne recommandent pas Repéré. Les marques citées appartiennent à leurs propriétaires.';
 
 /** Ce sur quoi la commission est calculée (affiché sur la page et dans l'admin). */
-export const COMMISSION_BASIS =
-  'Sur les paiements réellement encaissés par Stripe, hors taxes, hors remboursements ; versée sur facture, jamais automatiquement.';
+export const COMMISSION_BASIS = PAYOUT_RULES.text;
 
 export const pct = (rate: number) => `${Math.round(rate * 1000) / 10} %`.replace('.', ',');
 

@@ -33,8 +33,9 @@ export function AppFrame({
         <span className="truncate font-semibold">{account}</span>
         <span aria-hidden="true" className="text-line">/</span>
         <span className="truncate text-muted">{path}</span>
-        <span className="ml-auto shrink-0 rounded-full bg-warning-bg px-2 py-0.5 text-[0.72rem] font-semibold text-warning-ink">
-          Démo
+        {/* V10 (décision 14) : les comptes démo portent la mention « entreprise fictive » partout où ils apparaissent. */}
+        <span className="ml-auto shrink-0 whitespace-nowrap rounded-full bg-warning-bg px-2 py-0.5 text-[0.72rem] font-semibold text-warning-ink">
+          Démo · entreprise fictive
         </span>
       </div>
       <div className="p-4 sm:p-5">{children}</div>

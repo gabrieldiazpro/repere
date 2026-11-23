@@ -129,9 +129,9 @@ describe("scènes", () => {
 
 describe("formulaire du hero", () => {
   it("distingue un site d'un nom", () => {
-    expect(looksLikeSite("paysia.fr")).toBe(true);
-    expect(looksLikeSite("https://www.maisonsora.fr/produits")).toBe(true);
-    expect(looksLikeSite("www.plomberie-martin.fr")).toBe(true);
+    expect(looksLikeSite("paysia.example")).toBe(true);
+    expect(looksLikeSite("https://www.maison-sora.example/produits")).toBe(true);
+    expect(looksLikeSite("www.plomberie-martin.example")).toBe(true);
     expect(looksLikeSite("Plomberie Martin")).toBe(false);
     expect(looksLikeSite("Paysia")).toBe(false);
     expect(looksLikeSite("")).toBe(false);

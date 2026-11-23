@@ -3,8 +3,8 @@ import { brandFromTitle, nameFromDomain, prefillFromSignals, segmentFromTypes } 
 
 describe('pré-remplissage depuis le site', () => {
   it('déduit un nom lisible de l’adresse', () => {
-    expect(nameFromDomain('maison-sora.fr')).toBe('Maison Sora');
-    expect(nameFromDomain('https://www.plomberie-martin.fr/contact')).toBe('Plomberie Martin');
+    expect(nameFromDomain('maison-sora.example')).toBe('Maison Sora');
+    expect(nameFromDomain('https://www.plomberie-martin.example/contact')).toBe('Plomberie Martin');
     expect(nameFromDomain('paysia.co.uk')).toBe('Paysia');
     expect(nameFromDomain('pas une url')).toBeNull();
     expect(nameFromDomain('')).toBeNull();
@@ -26,14 +26,14 @@ describe('pré-remplissage depuis le site', () => {
   });
 
   it('combine les signaux sans rien inventer', () => {
-    expect(prefillFromSignals('plomberie-martin.fr', null)).toEqual({ businessName: 'Plomberie Martin', from: 'adresse' });
+    expect(prefillFromSignals('plomberie-martin.example', null)).toEqual({ businessName: 'Plomberie Martin', from: 'adresse' });
     expect(prefillFromSignals('x.fr', { title: 'Accueil', jsonLdNames: ['Plomberie Martin'], jsonLdTypes: ['Plumber'] })).toEqual({
       businessName: 'Plomberie Martin',
       segment: 'local',
       category: 'plombier',
       from: 'site',
     });
-    const p = prefillFromSignals('paysia.fr', { title: 'Paysia | La paie simple', jsonLdTypes: [] });
+    const p = prefillFromSignals('paysia.example', { title: 'Paysia | La paie simple', jsonLdTypes: [] });
     expect(p.businessName).toBe('Paysia');
     expect(p.category).toBeUndefined();
   });

@@ -46,7 +46,7 @@ beforeAll(() => {
 const catalog: Catalog = {
   businessId: 'b1',
   brand: 'Maison Sora',
-  website: 'maison-sora.fr',
+  website: 'maison-sora.example',
   updatedAt: '2026-01-01T00:00:00Z',
   products: [
     { id: 'onde', name: 'Shampoing solide « Onde »', category: 'shampoing solide', price: 12.9, aliases: ['Onde'], variants: [{ name: '75 g', price: 12.9 }, { name: 'Lot de 2', price: 23.9 }], rating: { value: 4.7, count: 214 }, source: 'manual', updatedAt: '' },
@@ -165,7 +165,7 @@ describe('démo Maison Sora (demo-ecom)', () => {
   });
 
   it('classe les sources : marque, marketplace, revendeur, comparatif', () => {
-    const r = buildRetailerReport(audit, { businessId: 'demo-ecom', brand: 'Maison Sora', website: 'maison-sora.fr', demo: true });
+    const r = buildRetailerReport(audit, { businessId: 'demo-ecom', brand: 'Maison Sora', website: 'maison-sora.example', demo: true });
     expect(r.citations).toBeGreaterThan(0);
     expect(r.answersWithSources).toBeGreaterThan(0);
     expect(r.thirdPartyShare).toBeGreaterThanOrEqual(0);
@@ -175,7 +175,7 @@ describe('démo Maison Sora (demo-ecom)', () => {
     expect(r.notes.join(' ')).toMatch(/gemini/i);
     expect(classifyEcomUrl('https://www.amazon.fr/s?k=x', { brand: 'Maison Sora' }).kind).toBe('marketplace');
     expect(classifyEcomUrl('https://www.sephora.fr/shop/x', { brand: 'Maison Sora' }).kind).toBe('retailer');
-    expect(classifyEcomUrl('https://maison-sora.fr/products/onde', { brand: 'Maison Sora', website: 'maison-sora.fr' }).kind).toBe('brand');
+    expect(classifyEcomUrl('https://maison-sora.example/products/onde', { brand: 'Maison Sora', website: 'maison-sora.example' }).kind).toBe('brand');
     expect(classifyEcomUrl('https://www.idealo.fr/prechcat.html', { brand: 'Maison Sora' }).kind).toBe('comparison');
   });
 
@@ -323,7 +323,7 @@ describe('connecteur Shopify', () => {
 describe('livrables', () => {
   const p = demoCatalog().products[0];
   it('JSON-LD Product complet (GTIN, offre agrégée, note réelle)', () => {
-    const j = buildProductJsonLd(p, { brand: 'Maison Sora', website: 'maison-sora.fr' });
+    const j = buildProductJsonLd(p, { brand: 'Maison Sora', website: 'maison-sora.example' });
     expect(j).toMatchObject({ '@type': 'Product', gtin13: '3770012345017', offers: { '@type': 'AggregateOffer', lowPrice: '12.90', highPrice: '23.90' }, aggregateRating: { ratingValue: 4.7, reviewCount: 214 } });
     const bare = buildProductJsonLd({ id: 'x', name: 'X', source: 'manual', updatedAt: '' }, { brand: 'B' });
     expect(bare.aggregateRating).toBeUndefined();

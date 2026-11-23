@@ -19,6 +19,11 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
 import { euros, plansFor, VAT_NOTICE } from "@/components/site/plans-v2";
 import { MONTHLY_QUOTA } from "@/lib/content/quota";
+import { AGENCY_INCLUDED_CLIENTS, getAddon, getPlan } from "@/lib/plans";
+import { enginesLabel } from "@/components/site/offer-facts";
+import { FAMILIES, pct } from "@/lib/partners/program";
+
+const AGENCY_RATE = FAMILIES.agence.commission ? pct(FAMILIES.agence.commission.rate) : "–";
 import { pageMeta } from "@/lib/seo/meta";
 import { JsonLd } from "@/lib/seo/shell";
 import { fmtDate } from "@/lib/seo";
@@ -91,7 +96,7 @@ const FAQ: QA[] = [
   },
   {
     q: "Quelles IA sont mesurées pour mes clients ?",
-    a: "ChatGPT, Gemini, Perplexity et Claude, plus Mistral Vibe en option ; les aperçus IA et le mode IA de Google, Copilot et DeepSeek sont mesurables en option, Grok sur demande. Chaque IA a sa méthode publiée et sa marge d'erreur.",
+    a: `Pour chaque client : ${enginesLabel("pme", "essentiel").replace(/, ([^,]+)$/, " et $1")}, sur 30 questions chaque mois. Copilot et DeepSeek en option (+${euros(getAddon("agency_more_ai_client").priceCents)}/mois par client), Grok sur demande. Chaque IA a sa méthode publiée et sa marge d'erreur.`,
   },
   {
     q: "Faites-vous de l'échange de liens ou du contenu en masse ?",
@@ -99,7 +104,11 @@ const FAQ: QA[] = [
   },
   {
     q: "Comment fonctionne le partenariat sans abonnement ?",
-    a: "Un lien partenaire personnel et 30 % de commission pendant 12 mois sur chaque client apporté, sans abonnement. Votre client souscrit lui-même son offre. Détail et candidature : /partenaires.",
+    a: `Un lien partenaire personnel et ${AGENCY_RATE} de commission pendant 12 mois sur les paiements hors taxes de chaque client apporté, remboursements déduits, versée chaque trimestre sur facture, sans abonnement. Votre client souscrit lui-même son offre. Détail et candidature : /partenaires.`,
+  },
+  {
+    q: "Combien coûte l'offre Agence ?",
+    a: `${euros(getPlan("agency_month").priceCents)}/mois pour ${AGENCY_INCLUDED_CLIENTS} clients mesurés chaque mois, puis ${euros(getAddon("agency_extra_client").priceCents)}/mois par client au-delà. Mesure hebdomadaire d'un client en option (${euros(getAddon("agency_weekly_client").priceCents)}/mois par client). En annuel, 2 mois offerts.`,
   },
 ];
 
@@ -117,7 +126,7 @@ export default function AgencesPage() {
     { label: "Ce que vous obtenez", value: "Marque blanche, tableau de bord multi-clients, accès client avec validation, exports CSV par client, API REST, serveur MCP et webhooks." },
     {
       label: "Prix",
-      value: `Partenaire : 0 €, 30 % de commission pendant 12 mois. Agence : ${month ? euros(month.priceCents) : "–"}/mois${year ? ` ou ${euros(year.priceCents)}/an` : ""}, 20 clients en Essentiel. Exécution en marque blanche : ${execs.map((e) => `${e.name.replace(/^Exécution marque blanche — /, "")} ${euros(e.priceCents)}`).join(", ")} par client et par mois. ${VAT_NOTICE}.`,
+      value: `Partenaire : 0 €, ${AGENCY_RATE} de commission pendant 12 mois. Agence : ${month ? euros(month.priceCents) : "–"}/mois${year ? ` ou ${euros(year.priceCents)}/an` : ""} pour ${AGENCY_INCLUDED_CLIENTS} clients mesurés chaque mois, +${euros(getAddon("agency_extra_client").priceCents)}/mois par client au-delà, mesure hebdomadaire en option (+${euros(getAddon("agency_weekly_client").priceCents)}/mois par client). Exécution en marque blanche : ${execs.map((e) => `${e.name.replace(/^Exécution marque blanche — /, "")} ${euros(e.priceCents)}`).join(", ")} par client et par mois. ${VAT_NOTICE}.`,
     },
     { label: "État de l'offre", value: open ? "Ouverte." : "Fonctions construites et visibles dans la démo agence ; achat sur liste d'attente." },
     { label: "Ce que nous ne faisons pas", value: "Aucune promesse de position ni de citation, aucun échange de liens, aucun faux avis, rien de publié sans validation." },
@@ -296,9 +305,11 @@ export default function AgencesPage() {
                   <h3 className="text-xl font-bold text-white">{month.name}</h3>
                   <p className="mt-4 flex flex-wrap items-baseline gap-x-1.5">
                     <span className="tabular font-display text-[2.1rem] font-bold leading-none">{euros(month.priceCents)}</span>
-                    <span className="text-[0.95rem] text-on-deep">/mois</span>
+                    <span className="text-[0.95rem] text-on-deep">/mois pour {AGENCY_INCLUDED_CLIENTS} clients</span>
                   </p>
-                  {year ? <p className="mt-1.5 text-[0.88rem] text-on-deep">ou {euros(year.priceCents)}/an, 2 mois offerts</p> : null}
+                  <p className="mt-1.5 text-[0.88rem] text-on-deep">
+                    {year ? `ou ${euros(year.priceCents)}/an, 2 mois offerts. ` : ""}+{euros(getAddon("agency_extra_client").priceCents)}/mois par client au-delà.
+                  </p>
                   <ul className="mt-5 space-y-2.5 text-[0.95rem]">
                     {[...month.features, "API publique, serveur MCP et webhooks"].map((f) => (
                       <li key={f} className="flex gap-2.5">

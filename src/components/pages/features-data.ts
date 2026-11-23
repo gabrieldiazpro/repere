@@ -406,7 +406,7 @@ const BASE_FEATURES: Feature[] = [
     visualCaption: "Compte démo Paysia : une question suivie, trois IA, la part de voix sur toutes les questions suivies.",
     how: [
       { title: "Vos questions", text: "Nous partons de votre métier, de votre ville ou de vos produits pour proposer les questions que posent vos clients. Vous les gardez, les retirez ou en ajoutez." },
-      { title: "Plusieurs passages", text: `Chaque question est posée plusieurs fois à chaque IA (2 passages au test gratuit, 3 en suivi). Fréquence : ${frequencySummary()}.` },
+      { title: "Plusieurs passages", text: `Chaque question est posée plusieurs fois à chaque IA (2 passages au test de marque gratuit, 3 par mesure mensuelle, 2 par mesure hebdomadaire). Fréquence : ${frequencySummary()}.` },
       { title: "Lecture des réponses", text: "Nous repérons les entreprises citées, leur rang, le ton employé et les sites cités en appui." },
       { title: "Un chiffre avec sa marge", text: "Score, part de voix et rang sont affichés avec le nombre de réponses analysées et un niveau de confiance." },
     ],
@@ -427,7 +427,7 @@ const BASE_FEATURES: Feature[] = [
     limits: [
       "Nous ne voyons pas ce que l'IA répond à une personne précise : ses réponses dépendent de l'historique et de la localisation de chacun. Nous mesurons une tendance sur des questions types.",
       "Gemini est interrogé sans recherche web (sans ancrage) : il ne renvoie pas de sources.",
-      "Les aperçus IA (AI Overviews), le mode IA de Google et Copilot dans Bing sont relevés sur la page de résultats en France, en option : une recherche sans aperçu IA est comptée à part, jamais comme un oubli.",
+      "Les aperçus IA (AI Overviews) et le mode IA de Google, inclus dans les offres payantes, et Copilot dans Bing, en option, sont relevés sur la page de résultats en France : une recherche sans aperçu IA est comptée à part, jamais comme un oubli.",
     ],
     related: ["questions-suivies", "comprendre", "copilote", "barometres"],
     plans: "Découverte (5 questions, 1 mesure par mois), Essentiel et Accompagné.",

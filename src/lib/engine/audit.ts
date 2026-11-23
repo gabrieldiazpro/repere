@@ -65,14 +65,15 @@ function numEnv(k: string): number | undefined {
 }
 
 /**
- * V8 (FINALE, docs/v8/economie-offres.md) : budget d'une mesure PAYANTE aligné sur le volume de l'offre.
- * AUDIT_BUDGET_PAID_MODE=offre → budget = coût prévu de toutes les réponses de l'offre + 10 %, plafonné par
- * AUDIT_BUDGET_PAID_MAX_EUR (défaut 25 €) : les questions, IA et passages promis sont mesurés en entier.
- * Variable vide (défaut) → comportement inchangé : AUDIT_BUDGET_PAID_EUR, sinon 2,50 € (local) / 2,70 € (PME, e-commerce).
+ * Budget d'une mesure PAYANTE aligné sur le volume de l'offre (V8, docs/v8/economie-offres.md ; V10 : par défaut).
+ * AUDIT_BUDGET_PAID_MODE=offre (défaut depuis V10, décision 6) → budget = coût prévu de toutes les réponses de l'offre
+ * + 10 %, plafonné par AUDIT_BUDGET_PAID_MAX_EUR (défaut 25 €) : les questions, IA et passages promis sont mesurés en
+ * entier (mesure la plus chère : Accompagné PME ou e-commerce avec Copilot et DeepSeek ≈ 20,80 €).
+ * AUDIT_BUDGET_PAID_MODE=fixe → ancien comportement : AUDIT_BUDGET_PAID_EUR, sinon 2,50 € (local) / 2,70 €.
  */
 export function paidBudgetForPlan(mode: 'free' | 'paid', plannedEur: number, fixedEur: number): number {
   if (mode !== 'paid') return fixedEur;
-  const m = (env('AUDIT_BUDGET_PAID_MODE') || '').trim().toLowerCase();
+  const m = (env('AUDIT_BUDGET_PAID_MODE') || 'offre').trim().toLowerCase();
   if (m !== 'offre' && m !== 'offer' && m !== 'plan') return fixedEur;
   const max = numEnv('AUDIT_BUDGET_PAID_MAX_EUR') ?? 25;
   return Math.max(fixedEur, Math.min(max, plannedEur * 1.1));
@@ -338,7 +339,7 @@ export async function runAudit(input: AuditInput, opts: RunAuditOptions = {}): P
   const providerIds = [...new Set(requested)].filter((p) => opts.forceMock || !isExtended(p) || isConfigured(p));
   const providers = providerIds.map((p) => getProvider(p, input, seed, opts.forceMock));
   const queries = resolveAuditQueries(input, mode, opts.queries, opts.queriesMode);
-  const runs = mode === 'paid' ? 3 : 2;
+  const runs = Math.max(1, Math.min(5, Math.round(opts.runs ?? (mode === 'paid' ? 3 : 2))));
   const extractor: Extractor | null = !opts.forceMock && providers.some((p) => !p.demo) ? getExtractor() : null;
   // Budget : PME / e-commerce ajoutent 2 requêtes de marque (1 exécution) et l'extraction de perception (≈ +0,07 €).
   const defaultFree = segment === 'local' ? 0.6 : 0.7;

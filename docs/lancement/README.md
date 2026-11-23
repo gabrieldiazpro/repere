@@ -26,22 +26,29 @@ Variables d'environnement nouvelles (facultatives) : `PILOTS_NOTIFY_EMAIL` (où 
 5. [objections.md](objections.md) : les 14 objections probables et quoi répondre, sans promesse.
 6. [kpi.md](kpi.md) : les indicateurs à suivre chaque semaine, d'où les lire, les seuils d'alerte.
 
-## Décisions à prendre par vous (rien n'est engagé tant que vous n'avez pas dit oui)
+## Décisions (prises le 23 nov. 2026, docs/v10/DECISIONS.md)
 
-1. **Offre pilote : l'Accompagné offert 3 mois** — C'EST UNE PROPOSITION. Coût au tarif public : 297 € (Local),
-   1 170 € (e-commerce) ou 1 470 € (PME) par pilote, soit au plus 14 700 € de valeur faciale pour 10 PME, et surtout
-   votre temps (l'Accompagné inclut du travail fait à la main : fiches, pages, avis). Alternatives : 3 mois d'Essentiel
-   (moins de travail manuel, preuve plus faible), ou Accompagné 2 mois. La page /pilotes affiche aujourd'hui « 3 mois
-   d'Accompagné » : à changer dans `PILOT_MONTHS` (`src/lib/pilots/validate.ts`) si vous décidez autrement.
-2. **Répartition des 10 places** : proposition 4 commerces locaux, 3 PME, 3 e-commerce, au moins 3 villes.
-3. **Après les 3 mois** : proposition « aucun prélèvement automatique, choix libre », déjà écrit sur la page.
-   Option à décider : remise de lancement pour les pilotes qui restent (par exemple −30 % la première année).
+1. **Offre pilote : l'Accompagné offert 3 mois — DÉCIDÉ.** Valeur au tarif public : 297 € (Local), 1 170 €
+   (e-commerce) ou 1 470 € (PME) par pilote, soit 10 422 € de valeur faciale pour les 10 places (4 × 297 + 3 × 1 470 +
+   3 × 1 170), surtout du temps (fiches, pages, avis). Code : `PILOT_MONTHS`, `PILOT_SLOTS_BY_SEGMENT`
+   (`src/lib/pilots/validate.ts`) ; /pilotes affiche les places restantes par parcours.
+2. **Répartition des 10 places — DÉCIDÉ** : 4 commerces locaux, 3 PME, 3 e-commerce, au moins 3 villes.
+3. **Après les 3 mois** : aucun prélèvement automatique, choix libre (écrit sur la page). Avant/après publiable
+   **seulement avec l'accord écrit** du pilote. Remise de lancement pour les pilotes qui restent : non décidée.
 4. **Délai de réponse affiché** : « sous 5 jours ouvrés » (page /pilotes) et « 24 h ouvrées » pour la presse.
 5. **Fiche fondateur** : nom, bio de 2-3 phrases vérifiables, photo, LinkedIn (`NEXT_PUBLIC_FOUNDER_*`). Sans elles,
    /presse affiche « [À COMPLÉTER] » : à remplir avant d'envoyer le lien à un journaliste.
 6. **Adresse presse** dédiée (presse@…) ou contact@ ?
-7. **Envoi de prospection** : domaine secondaire dédié (ex. un sous-domaine d'envoi) et outil d'envoi (votre boîte,
-   ou un outil de séquences). Rien n'est branché : les scripts existants (`scripts/write-emails.ts`) préparent des
-   brouillons, ils n'envoient rien.
-8. **Product Hunt** : y aller ou non (audience anglophone, page à écrire en anglais) — voir le plan, J18.
+7. **Envoi de prospection — DÉCIDÉ : Brevo, offre gratuite** (société française, données hébergées dans l'UE ; à
+   créer par vous) avec un **domaine d'envoi secondaire dédié** (ex. `repere-mail.fr`, jamais le domaine du site) pour
+   protéger la réputation du domaine principal : SPF, DKIM et DMARC (`p=none` puis `quarantine`) sur ce domaine, chauffe
+   progressive (plan, J-6), au plus 20 à 30 messages par jour au début. L'offre gratuite de Brevo plafonne les envois
+   quotidiens et ajoute sa mention dans les messages : vérifiez les limites du moment sur brevo.com/pricing avant de
+   commencer. Rien n'est branché : `scripts/write-emails.ts` prépare des brouillons, il n'envoie rien.
+8. **Product Hunt — DÉCIDÉ : oui, à J18 du plan**, en anglais, une fois les premiers pilotes actifs (page, captures
+   de la démo avec la mention « fictitious company », lancement un mardi ou mercredi).
+10. **Publicité Meta — DÉCIDÉ : seulement après la preuve organique** que /analyse convertit (seuil dans kpi.md), et
+    avec le pixel chargé uniquement après consentement (bandeau de consentement à brancher avant).
+11. **Agenda de démo** : Cal.com, offre gratuite (compte à créer par vous, `NEXT_PUBLIC_BOOKING_URL`) ; d'ici là, le
+    formulaire /rendez-vous.
 9. **Mentions** à vérifier par un juriste avant le premier envoi de prospection (voir prospection-email.md §1).

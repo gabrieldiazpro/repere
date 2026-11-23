@@ -11,7 +11,7 @@ import { SOFTWARE_ID, breadcrumbListLd, graph, orgRef, pageIds, webPageLd } from
 import { JsonLd } from '@/lib/seo/shell';
 
 const PATH = '/analyse';
-const TITLE = 'Test gratuit : votre marque est-elle citée par les IA ?';
+const TITLE = 'Test de marque gratuit : êtes-vous cité par les IA ?';
 const DESC =
   'Vraies questions de clients posées en direct aux IA : êtes-vous cité, à quelle place, qui l’est à votre place et pourquoi. Puis l’analyse SEO et GEO du site.';
 

@@ -48,7 +48,7 @@ afterAll(async () => {
   await srv.close();
 });
 
-const input: AuditInput = { businessName: 'Plomberie Martin', trade: 'plombier', city: 'Paris', district: '11e', website: 'plomberie-martin.fr' };
+const input: AuditInput = { businessName: 'Plomberie Martin', trade: 'plombier', city: 'Paris', district: '11e', website: 'plomberie-martin.example' };
 
 /** Réponse Chat Completions DeepSeek avec deepseek_web_search (api-docs.deepseek.com/guides/web_tools). */
 function deepseekReply(text: string) {
@@ -65,7 +65,7 @@ function deepseekReply(text: string) {
           content: `\n${text}`,
           annotations: [
             { type: 'url_citation', url_citation: { url: 'https://www.pagesjaunes.fr/plombiers-paris?utm_source=x', title: 'Plombiers à Paris', start_index: 1, end_index: 20 } },
-            { type: 'url_citation', url_citation: { url: 'https://plomberie-martin.fr/', title: 'https://plomberie-martin.fr/', start_index: 30, end_index: 40 } },
+            { type: 'url_citation', url_citation: { url: 'https://plomberie-martin.example/', title: 'https://plomberie-martin.example/', start_index: 30, end_index: 40 } },
           ],
         },
       },
@@ -87,8 +87,8 @@ function dfsResult(withAi: boolean, type = 'organic') {
         {
           type: 'ai_overview_element',
           title: 'Plombiers bien notés à Paris 11e',
-          markdown: 'Parmi les plombiers bien notés, **Plomberie Martin** et Allo Plombier 11 reviennent souvent [1](https://plomberie-martin.fr/).',
-          references: [{ source: 'Plomberie Martin', domain: 'plomberie-martin.fr', url: 'https://plomberie-martin.fr/', title: 'Plomberie Martin', text: 'Devis gratuit' }],
+          markdown: 'Parmi les plombiers bien notés, **Plomberie Martin** et Allo Plombier 11 reviennent souvent [1](https://plomberie-martin.example/).',
+          references: [{ source: 'Plomberie Martin', domain: 'plomberie-martin.example', url: 'https://plomberie-martin.example/', title: 'Plomberie Martin', text: 'Devis gratuit' }],
         },
       ],
       references: [{ source: 'PagesJaunes', domain: 'pagesjaunes.fr', url: 'https://www.pagesjaunes.fr/', title: 'PagesJaunes', text: 'Annuaire' }],
@@ -151,7 +151,7 @@ describe('V8 · DeepSeek (API officielle + deepseek_web_search)', () => {
     expect(body.stream).toBe(false);
     expect(body.messages[0].content).toMatch(/en français.*Paris, France/);
     expect(r.text.startsWith('Plomberie Martin')).toBe(true);
-    expect(r.citations).toEqual(['https://www.pagesjaunes.fr/plombiers-paris', 'https://plomberie-martin.fr/']);
+    expect(r.citations).toEqual(['https://www.pagesjaunes.fr/plombiers-paris', 'https://plomberie-martin.example/']);
     expect(r.sources?.[0]).toMatchObject({ kind: 'cited', startIndex: 0, title: 'Plombiers à Paris' });
     expect(r.sources?.[1].title).toBeUndefined(); // titre = URL quand inconnu (doc)
     expect(r.sources?.some((s) => s.kind === 'retrieved' && s.url.includes('travaux.com'))).toBe(true);
@@ -212,7 +212,7 @@ describe('V8 · pages de résultats via DataForSEO (aperçus IA, AI Mode, Copilo
     expect(r.absent).toBeUndefined();
     expect(r.text).toMatch(/^Plombiers bien notés à Paris 11e\nParmi les plombiers bien notés, \*\*Plomberie Martin\*\*/);
     expect(r.text).not.toMatch(/\]\(/); // liens markdown retirés
-    expect(r.citations).toEqual(['https://plomberie-martin.fr/', 'https://www.pagesjaunes.fr/']);
+    expect(r.citations).toEqual(['https://plomberie-martin.example/', 'https://www.pagesjaunes.fr/']);
     expect(r.sources?.[0]).toMatchObject({ kind: 'cited', startIndex: 0, snippet: 'Devis gratuit' });
   });
   it('pas d’aperçu IA affiché : mesure « absente », pas une erreur ni un oubli', async () => {

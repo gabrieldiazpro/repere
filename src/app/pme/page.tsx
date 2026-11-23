@@ -28,10 +28,10 @@ export default function PmePage() {
       brief={[
         { label: "Pour qui", value: "PME, éditeurs de logiciels, cabinets de conseil, organismes de formation, ESN et industriels qui vendent à d'autres entreprises." },
         { label: "Ce que nous mesurons", value: `${promptsCount("pme", "essentiel")} à ${promptsCount("pme", "accompagne")} questions d'acheteurs de votre secteur (comparatif, « alternative à », prix), posées ${frequencyAdverb("pme", "essentiel")} à ${enginesLabel("pme", "essentiel")} (Essentiel) ; ${enginesLabel("pme", "accompagne")} en Accompagné. Votre part de voix face à 5 concurrents.` },
-        { label: "Prix", value: `Test gratuit sur 10 questions. Audit approfondi ${deepP}. Essentiel ${ess}/mois sans engagement. Accompagné ${acc}/mois, 3 mois minimum : nous faisons le travail. ${VAT_NOTICE}.` },
+        { label: "Prix", value: `Découverte gratuite (analyse du site et test de marque sans inscription, puis 5 questions suivies chaque mois). Essentiel ${ess}/mois sans engagement. Accompagné ${acc}/mois, 3 mois minimum : nous faisons le travail. À la carte : audit approfondi ${deepP}. ${VAT_NOTICE}.` },
         { label: "Travail fait (Accompagné)", value: "2 pages citables par mois, 3 fiches comparateurs ou annuaires B2B, 3 démarches vers les sources citées, mise en place du balisage schema.org, de llms.txt et des règles robots. Rien n'est publié sans votre accord." },
         { label: "Ce que nous ne faisons pas", value: "Aucune promesse de position, pas de faux avis ni de faux messages sur les forums." },
-        { label: "Délai", value: "Test gratuit : résultat par e-mail. Audit approfondi : livré sous 5 jours ouvrés." },
+        { label: "Délai", value: "Analyse gratuite : en 60 secondes. Audit approfondi : livré sous 5 jours ouvrés." },
       ]}
       related={[
         { href: "/guides/seo-geo-sites-pros-2026", label: "SEO + GEO pour les sites pros en 2026" },
@@ -113,7 +113,7 @@ export default function PmePage() {
       faq={[
         { q: "En quoi êtes-vous différents de Meteoria, Qwairy ou Peec ?", a: "Ce sont de bons outils de mesure pour des équipes marketing. Nous mesurons aussi, mais surtout nous faisons le travail : rédaction, balisage, démarches vers les sources. Et nous parlons à des dirigeants, pas seulement à des experts SEO." },
         { q: "Et par rapport à une agence ?", a: "Une agence GEO démarre généralement vers 950 à 2 500 €/mois. Nous automatisons la mesure et une partie de l'exécution, ce qui permet un prix de logiciel. Pour un dispositif sur mesure (relations presse, gros volume de contenu), une agence reste un bon choix." },
-        { q: "Pourquoi l'audit est-il payant ?", a: "Le test gratuit vous montre le problème. L'audit approfondi est un vrai travail d'analyse (2 à 3 heures humaines) et un plan sur 90 jours que vous pouvez exécuter seul, avec nous ou avec votre agence. Il est déduit de votre premier mois d'Accompagné si vous souscrivez sous 30 jours." },
+        { q: "Pourquoi l'audit est-il payant ?", a: "L'analyse gratuite (offre Découverte) vous montre le problème. L'audit approfondi est un vrai travail d'analyse (2 à 3 heures humaines) et un plan sur 90 jours que vous pouvez exécuter seul, avec nous ou avec votre agence. Il est déduit de votre premier mois d'Accompagné si vous souscrivez sous 30 jours." },
         { q: "Vous écrivez sur notre site ?", a: "Avec un accès délégué (WordPress, Webflow, HubSpot…) ou en vous livrant le texte prêt à publier. Rien n'est publié sans votre validation." },
         { q: "Vous postez sur Reddit ou des forums en notre nom ?", a: "Non. Nous repérons les discussions utiles et préparons des réponses ; c'est une vraie personne de votre équipe qui répond, identifiée comme telle. Le faux « client satisfait » est interdit et contre-productif." },
         { q: "Pouvez-vous promettre que nous serons cités ?", a: "Non. Nous nous engageons sur le travail fait et sur la mesure honnête de son effet." },

@@ -67,7 +67,7 @@ function Top({ r }: { r: AuditResult }) {
         </View>
         <Text style={s.dateTxt}>{`Audit du ${formatDateFr(r.createdAt)}`}</Text>
       </View>
-      {r.demo ? <Text style={s.demoBanner}>RAPPORT DE DÉMONSTRATION : données simulées, pas une mesure réelle.</Text> : null}
+      {r.demo ? <Text style={s.demoBanner}>RAPPORT DE DÉMONSTRATION : entreprise fictive, données simulées, pas une mesure réelle.</Text> : null}
     </>
   );
 }

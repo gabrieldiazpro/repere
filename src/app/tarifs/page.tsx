@@ -17,16 +17,18 @@ import { PAGE_UPDATED } from "@/lib/seo/site";
 import { breadcrumbListLd, faqPageLd, graph, softwareAppLd, webPageLd, SOFTWARE_ID } from "@/lib/seo/jsonld";
 import { MotionRoot } from "@/components/motion/MotionRoot";
 import { Reveal } from "@/components/motion/Reveal";
-import { DecouverteBand } from "@/components/pages/DecouverteBand";
-import { CompareTable } from "@/components/pages/CompareTable";
 import { RoiCalculator, type RoiPrices } from "@/components/pages/RoiCalculator";
 import { AccompagneProof } from "@/components/pages/AccompagneProof";
-import { SeoOfferTable } from "@/components/pages/SeoOfferTable";
+import { allCompareRows } from "@/components/pages/pricing-data";
+import { AgencyPricing } from "@/components/site/AgencyPricing";
+import { optionalEnginesLabel } from "@/components/site/offer-facts";
+import { AGENCY_INCLUDED_CLIENTS, getAddon, formatPrice } from "@/lib/plans";
+import { getPlan } from "@/lib/plans";
 
 const PATH = "/tarifs";
 const FROM = euros(fromPrice("local") ?? 2900);
 const TITLE = `Tarifs SEO et référencement IA : gratuit, puis dès ${FROM}/mois`;
-const DESCRIPTION = `Analyse gratuite, Découverte gratuite pour toujours, Essentiel dès ${FROM}/mois avec l'audit SEO, les positions et l'agent, Accompagné dès ${euros(tiersFor("local").accompagne?.priceCents ?? 9900)}/mois. Prix nets.`;
+const DESCRIPTION = `Découverte gratuite pour toujours, Essentiel dès ${FROM}/mois, Accompagné dès ${euros(tiersFor("local").accompagne?.priceCents ?? 9900)}/mois, Agence ${euros(getPlan("agency_month").priceCents)}/mois. Aperçus IA de Google inclus. Prix nets.`;
 
 export const metadata = pageMeta({ path: PATH, title: TITLE, description: DESCRIPTION });
 
@@ -102,58 +104,63 @@ const GUARANTEES = [
   },
 ];
 
+const OPTION_PRICE = formatPrice(getAddon("option_more_ai").priceCents);
+const AGENCY_PRICE = formatPrice(getPlan("agency_month").priceCents);
+const EXTRA_CLIENT = formatPrice(getAddon("agency_extra_client").priceCents);
+const WEEKLY_CLIENT = formatPrice(getAddon("agency_weekly_client").priceCents);
+
 const FAQ: QA[] = [
   {
-    q: "L'offre Découverte est-elle vraiment gratuite ?",
-    a: "Oui, sans carte bancaire et sans limite de durée : 1 marque, 5 questions suivies, 1 mesure par mois sur ChatGPT, Gemini et Perplexity. Elle ne comprend ni tâches prêtes ni travail fait. Vous passez à Essentiel ou Accompagné quand vous voulez.",
+    q: "Y a-t-il une offre gratuite ?",
+    a: "Oui, une seule : Découverte. Elle commence sans inscription (l'analyse de votre site en 60 secondes et le test de votre marque auprès des IA), puis continue avec un compte gratuit : 1 marque, 5 questions mesurées chaque mois sur ChatGPT, Gemini et Perplexity, l'audit SEO et GEO du site chaque mois. Sans carte bancaire et sans limite de durée.",
   },
   {
-    q: "Quelle différence entre l'analyse gratuite et Découverte ?",
-    a: "L'analyse gratuite est une photo ponctuelle de votre site, sans compte, en 60 secondes. Découverte est un compte gratuit qui refait l'analyse et la mesure des IA chaque mois et garde l'historique.",
+    q: "Qu'est devenu le « test gratuit » ?",
+    a: "Il fait désormais partie de Découverte : c'est l'analyse en 60 secondes et le test de marque, toujours gratuits et sans inscription. Les anciens liens mènent au même endroit.",
   },
   {
-    q: "Le SEO coûte-t-il plus cher ?",
-    a: "Non : les prix ne changent pas. L'analyse du site, l'audit SEO et GEO et la Search Console sont dans toutes les offres ; les positions suivies, les liens entrants et l'agent de publication dépendent de l'offre (tableau ci-dessus).",
+    q: "Quelle différence entre Essentiel et Accompagné ?",
+    a: "Avec Essentiel, vos questions sont mesurées chaque mois et l'agent prépare les corrections que vous validez. Avec Accompagné, la mesure a lieu chaque semaine et nous faisons le travail (fiches, pages, démarches), toujours après votre accord.",
   },
   {
-    q: "Pourquoi 3 mois minimum sur Accompagné ?",
-    a: "Le premier mois sert à tout mettre en place (fiches, balisage, pages) ; les effets se mesurent ensuite sur plusieurs semaines. Après les 3 premiers mois, l'abonnement est mensuel, sans engagement.",
-  },
-  {
-    q: "L'audit approfondi est-il déduit si je prends Accompagné ?",
-    a: "Oui. Son prix est déduit de votre premier mois d'Accompagné si vous souscrivez dans les 30 jours. Acheté seul, il vous donne aussi un mois d'Essentiel offert ; à la fin de ce mois, votre compte repasse en Découverte, sans aucun paiement ni abonnement.",
-  },
-  {
-    q: "Puis-je passer d'Essentiel à Accompagné ?",
-    a: "À tout moment, au prorata. Vous gardez votre historique, vos questions et vos sources.",
-  },
-  {
-    q: "Puis-je arrêter Essentiel quand je veux ?",
-    a: "Oui, en un clic depuis votre espace, sans appel ni justification. Le mois en cours reste accessible jusqu'à son terme.",
-  },
-  {
-    q: "Que se passe-t-il si vous ne livrez pas le travail du mois ?",
-    a: "Si les livrables listés dans votre offre Accompagné ne sont pas faits, le mois suivant est offert.",
-  },
-  {
-    q: "Y a-t-il de la TVA en plus ?",
-    a: `Non. Les prix affichés sont les prix à payer : ${VAT_NOTICE}. Aucune TVA n'est ajoutée et votre facture le mentionne. Pour une entreprise assujettie, cela veut aussi dire qu'il n'y a pas de TVA à récupérer sur nos factures : le prix affiché est votre coût final.`,
-  },
-  {
-    q: "Puis-je brancher Repéré dans Claude ou ChatGPT ?",
-    a: "Oui, avec l'offre Accompagné ou Agence : serveur MCP en lecture, clé créée dans Réglages › API. L'API REST et les webhooks signés sont inclus dans les mêmes offres ; la documentation est publique sur la page Développeurs.",
+    q: "Pourquoi Essentiel est-il mesuré chaque mois et pas chaque semaine ?",
+    a: "Parce que chaque mesure pose plusieurs fois chaque question à chaque IA, ce qui a un coût réel. Une mesure mensuelle complète et honnête vaut mieux qu'une mesure hebdomadaire tronquée. Vous recevez quand même une alerte dès qu'un concurrent passe devant, et Accompagné mesure chaque semaine.",
   },
   {
     q: "Quelles IA sont comprises dans le prix ?",
-    a: "Celles écrites dans chaque offre : ChatGPT, Gemini et Perplexity partout, Claude selon l'offre, Mistral Vibe en option en Accompagné PME et e-commerce. Les aperçus IA et le mode IA de Google, Copilot et DeepSeek sont mesurables en option, sans être comptés dans les offres à ce jour ; Grok sur demande. Le tableau « Les IA mesurables » ci-dessus donne la méthode de chacune.",
+    a: `Celles écrites dans chaque offre. Découverte : ChatGPT, Gemini et Perplexity. Toutes les offres payantes ajoutent les aperçus IA de Google (AI Overviews) et Google AI Mode ; Claude à partir d'Essentiel PME et e-commerce et en Accompagné ; Mistral Vibe en Accompagné PME et e-commerce. ${optionalEnginesLabel()} sont en option sur Accompagné (+${OPTION_PRICE}/mois) et Agence ; Grok sur demande.`,
+  },
+  {
+    q: "Pourquoi 3 mois minimum sur Accompagné ?",
+    a: "Le premier mois sert à tout mettre en place (fiches, balisage, pages) ; les effets se mesurent ensuite sur plusieurs semaines. Après les 3 premiers mois, l'abonnement est mensuel, sans engagement.",
+  },
+  {
+    q: "L'annuel est-il moins cher ?",
+    a: "Oui : Essentiel, Réseau et Agence en annuel, c'est 2 mois offerts. Accompagné est mensuel uniquement.",
+  },
+  {
+    q: "L'audit approfondi est-il déduit si je prends Accompagné ?",
+    a: "Oui. Son prix est déduit de votre premier mois d'Accompagné si vous souscrivez dans les 30 jours. Acheté seul, il vous donne aussi un mois d'Essentiel offert ; à la fin de ce mois, votre compte repasse en Découverte, sans aucun paiement ni abonnement.",
+  },
+  {
+    q: "Combien coûte l'offre Agence ?",
+    a: `${AGENCY_PRICE}/mois pour ${AGENCY_INCLUDED_CLIENTS} clients mesurés chaque mois (30 questions, 6 IA), puis ${EXTRA_CLIENT}/mois par client au-delà. La mesure chaque semaine d'un client est en option (${WEEKLY_CLIENT}/mois par client). Marque blanche, tableau de bord multi-clients et exports inclus. L'offre ouvre prochainement : liste d'attente sur cette page.`,
+  },
+  {
+    q: "Puis-je changer d'offre ou arrêter ?",
+    a: "Passer d'Essentiel à Accompagné se fait à tout moment, au prorata, en gardant votre historique. Essentiel s'arrête en un clic depuis votre espace, sans appel ni justification ; le mois en cours reste accessible jusqu'à son terme.",
+  },
+  {
+    q: "Que se passe-t-il si vous ne livrez pas le travail du mois ?",
+    a: "Si les livrables listés dans votre offre Accompagné ne sont pas faits, le mois suivant est offert.",
+  },
+  {
+    q: "Y a-t-il de la TVA en plus ?",
+    a: `Non. Les prix affichés sont les prix à payer : ${VAT_NOTICE}. Aucune TVA n'est ajoutée et votre facture le mentionne. Pour une entreprise assujettie, il n'y a donc pas de TVA à récupérer sur nos factures : le prix affiché est votre coût final.`,
   },
   {
     q: "Comment se passe le paiement ?",
     a: "Par carte bancaire via Stripe. Nous ne voyons ni ne stockons vos données de carte. Vos factures sont envoyées par e-mail et téléchargeables dans votre espace.",
-  },
-  {
-    q: "Je gère des clients : comment fonctionne l'offre agence ?",
-    a: "L'offre Agence (marque blanche et exécution à prix revendeur) est prête : tableau de bord multi-clients, rapports à votre nom envoyés depuis votre domaine, validation des corrections par votre client, exports CSV par client. Vous pouvez la voir dans la démo agence. Elle ouvre prochainement à l'achat : inscrivez-vous à la liste d'attente dans l'onglet Agences, nous vous prévenons à l'ouverture.",
   },
 ];
 
@@ -195,20 +202,30 @@ export default async function TarifsPage({ searchParams }: { searchParams: Promi
               Des tarifs clairs. Le travail inclus.
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-ink/75">
-              SEO et IA dans chaque offre : l&apos;analyse du site, l&apos;audit, la Search Console et la mesure des IA. Un compte gratuit pour
-              toujours, Essentiel sans engagement, 3 mois minimum sur Accompagné. Prix nets : {VAT_NOTICE}.
+              Trois paliers par activité : Découverte (gratuit pour toujours), Essentiel (vous faites, avec les textes prêts) et Accompagné
+              (nous faisons, vous validez). Les aperçus IA de Google sont mesurés dans toutes les offres payantes. Prix nets : {VAT_NOTICE}.
             </p>
             <Byline published={null} updated={updated} />
-            <div className="mt-8">
-              <DecouverteBand segment={seg} />
-            </div>
             <div className="mt-10">
-              <PricingExplorer key={initial} initial={initial} />
+              <PricingExplorer key={initial} initial={initial} rows={allCompareRows()} />
             </div>
           </Container>
         </section>
 
-        <section aria-labelledby="tous-prix-title" className="bg-canvas pb-20 sm:pb-24">
+        <section id="agence" aria-labelledby="agence-title" className="scroll-mt-20 bg-white py-20 sm:py-24">
+          <Container>
+            <SectionTitle
+              id="agence-title"
+              title="Agences : vendez le référencement IA à vos clients"
+              intro="Une offre à part : vos clients mesurés chaque mois sous votre marque, nous faisons la mesure et, si vous le souhaitez, le travail."
+            />
+            <div className="mt-8">
+              <AgencyPricing />
+            </div>
+          </Container>
+        </section>
+
+        <section aria-labelledby="tous-prix-title" className="bg-canvas py-20 sm:py-24">
           <Container>
             <SectionTitle
               id="tous-prix-title"
@@ -234,32 +251,6 @@ export default async function TarifsPage({ searchParams }: { searchParams: Promi
             />
             <div className="mt-8">
               <AiCoverageTable />
-            </div>
-          </Container>
-        </section>
-
-        <section id="seo-agent" aria-labelledby="seo-agent-title" className="scroll-mt-20 bg-white py-20 sm:py-24">
-          <Container>
-            <SectionTitle
-              id="seo-agent-title"
-              title="Ce que chaque offre inclut en SEO et avec l'agent"
-              intro="En plus de la mesure des IA, chaque offre comprend l'analyse du site, l'audit SEO, la Search Console et l'agent de publication ; les positions Google à partir d'Essentiel."
-            />
-            <div className="mt-8">
-              <SeoOfferTable />
-            </div>
-          </Container>
-        </section>
-
-        <section id="comparer" aria-labelledby="comparer-title" className="scroll-mt-20 bg-canvas py-20 sm:py-24">
-          <Container>
-            <SectionTitle
-              id="comparer-title"
-              title="Découverte, Essentiel ou Accompagné ?"
-              intro="Découverte, Essentiel ou Accompagné : la vraie différence, c'est qui fait le travail. Avec Essentiel, l'agent applique ce que vous validez. Avec Accompagné, nous pilotons le travail avec vous."
-            />
-            <div className="mt-10">
-              <CompareTable segment={seg} />
             </div>
           </Container>
         </section>

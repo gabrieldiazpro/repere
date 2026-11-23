@@ -39,12 +39,12 @@ afterEach(() => {
   }
 });
 
-const LOCAL: AuditInput = { businessName: 'Plomberie Martin', trade: 'plombier', city: 'Paris', district: '11e', website: 'plomberie-martin.fr', segment: 'local' };
+const LOCAL: AuditInput = { businessName: 'Plomberie Martin', trade: 'plombier', city: 'Paris', district: '11e', website: 'plomberie-martin.example', segment: 'local' };
 const PME: AuditInput = {
   businessName: 'Paysia',
   trade: 'logiciel de paie',
   city: 'Paris',
-  website: 'paysia.fr',
+  website: 'paysia.example',
   segment: 'pme',
   category: 'logiciel de paie pour PME',
   knownCompetitors: ['PayFit', 'Silae', 'Cegid', 'Lucca'],
@@ -54,7 +54,7 @@ const ECOM: AuditInput = {
   businessName: 'Maison Sora',
   trade: 'cosmétiques solides',
   city: 'Lyon',
-  website: 'maison-sora.fr',
+  website: 'maison-sora.example',
   segment: 'ecommerce',
   productCategories: ['shampoing solide', 'déodorant solide'],
   knownCompetitors: ['Lamazuna', 'Respire', 'Cut by Fred'],

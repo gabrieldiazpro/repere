@@ -7,7 +7,8 @@
 import crypto from 'node:crypto';
 import { getDoc, listDocs, putDoc } from '@/lib/store';
 import { normalizeWebsite, type AudienceSize, type PartnerFields } from './validate';
-import { FAMILIES, type CommissionTerms, type PartnerFamily } from './program';
+import { type CommissionTerms, type PartnerFamily } from './program';
+import { defaultTermsFor } from './terms';
 import { isPartnerCode, suggestCode, uniqueCode } from './codes';
 
 export const PARTNERS_COLLECTION = 'partners.records';
@@ -168,7 +169,8 @@ export function setPartnerStatus(id: string, status: PartnerStatus, now: Date = 
     if (status === 'accepte' && !code) {
       const taken = (await all()).map((r) => r.code).filter((c): c is string => !!c);
       code = uniqueCode(suggestCode(p.company), taken);
-      commission = FAMILIES[p.family].commission;
+      // V10 : conditions décidées par famille ; CCI et chambres : atelier gratuit à la place de la commission.
+      commission = defaultTermsFor(p.family, p.company);
     }
     return {
       ...p,

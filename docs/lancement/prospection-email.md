@@ -56,7 +56,8 @@ aussi personnelle. Restez sur l'adresse publiée pour l'activité et sur un obje
 5. Toute opposition entre dans la liste d'opposition sous 24 h (la base de Repéré en a déjà une : `addSuppression`,
    page `/desinscription`) et n'en sort jamais.
 6. 3 messages au maximum, puis arrêt. Pas de relance d'une personne qui a dit non.
-7. Au plus 20 à 30 premiers messages par jour et par boîte, envoyés à la main ou par un outil qui respecte la liste
+7. Envoi par **Brevo (offre gratuite)** depuis le **domaine d'envoi secondaire** dédié, jamais depuis le domaine du
+   site (décision 11, README). Au plus 20 à 30 premiers messages par jour et par boîte, envoyés à la main ou par un outil qui respecte la liste
    d'opposition. Arrêt immédiat si les plaintes pour spam dépassent 0,1 % (kpi.md).
 8. Conservation : 3 ans après la collecte ou le dernier contact venant du prospect.
 

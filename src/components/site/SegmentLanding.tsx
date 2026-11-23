@@ -101,7 +101,7 @@ function TierCard({ plan, tagline, recommended, sub }: { plan: SitePlan; tagline
       <p className="mt-4 flex flex-wrap items-baseline gap-x-1.5">
         <span className="tabular font-display text-[2.1rem] font-bold leading-none">{free ? "0 €" : euros(plan.priceCents)}</span>
         <span className={`text-[0.9rem] ${recommended ? "text-on-deep" : "text-muted"}`}>
-          {free ? "" : plan.interval === "month" ? "/mois" : "une fois"}
+          {free ? "pour toujours" : plan.interval === "month" ? "/mois" : "une fois"}
         </span>
       </p>
       {sub ? <p className={`mt-1 text-[0.85rem] ${recommended ? "text-on-deep" : "text-muted"}`}>{sub}</p> : null}
@@ -128,8 +128,8 @@ function TierCard({ plan, tagline, recommended, sub }: { plan: SitePlan; tagline
 export function SegmentLanding(p: SegmentLandingProps) {
   const t = tiersFor(p.segment);
   const tiers: { plan: SitePlan; tagline: string; recommended?: boolean; sub?: string }[] = [];
-  if (t.free) tiers.push({ plan: t.free, tagline: "Vous voyez le problème" });
-  if (t.deep) tiers.push({ plan: t.deep, tagline: "Vous avez le plan", sub: "Déduit de l'Accompagné sous 30 jours" });
+  // V10 : 3 paliers (Découverte, Essentiel, Accompagné) ; l'audit approfondi est proposé à la carte, sous la grille.
+  if (t.free) tiers.push({ plan: t.free, tagline: "Vous voyez où vous en êtes", sub: "Sans carte bancaire, sans limite de durée" });
   if (t.essentielMonth)
     tiers.push({
       plan: t.essentielMonth,
@@ -357,11 +357,19 @@ export function SegmentLanding(p: SegmentLandingProps) {
                 Comparer en détail
               </Link>
             </div>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-10 grid gap-5 md:grid-cols-3">
               {tiers.map((x) => (
                 <TierCard key={x.plan.id} {...x} />
               ))}
             </div>
+            {t.deep ? (
+              <p className="mt-6 text-[0.95rem] text-ink/80">
+                À la carte : {t.deep.name.charAt(0).toLowerCase() + t.deep.name.slice(1)} à {euros(t.deep.priceCents)}, une fois, déduit de l&apos;Accompagné sous 30 jours.{" "}
+                <Link href={planLink(t.deep)} className="font-semibold text-primary underline underline-offset-4">
+                  {t.deep.cta}
+                </Link>
+              </p>
+            ) : null}
             {p.pricingNote ? <p className="mt-6 text-[0.95rem] text-ink/80">{p.pricingNote}</p> : null}
             <p className="mt-3 text-[0.88rem] text-muted">
               Prix en vigueur au <time dateTime={updated}>{fmtDate(updated)}</time>.

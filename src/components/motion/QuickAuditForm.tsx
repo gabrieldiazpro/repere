@@ -8,8 +8,8 @@ export type QuickSegment = "local" | "pme" | "ecommerce";
 
 export const QUICK_PLACEHOLDER: Record<QuickSegment, string> = {
   local: "ex. Plomberie Martin",
-  pme: "ex. Paysia ou paysia.fr",
-  ecommerce: "ex. Maison Sora ou maisonsora.fr",
+  pme: "ex. Paysia ou www.votre-entreprise.fr",
+  ecommerce: "ex. Maison Sora ou www.votre-boutique.fr",
 };
 
 /**

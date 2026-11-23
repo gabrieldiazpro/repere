@@ -40,7 +40,7 @@ import {
 vi.setConfig({ testTimeout: 60_000 });
 
 const NOW = new Date('2026-11-10T10:00:00.000Z');
-const FACTS = { adresse: '12 rue Oberkampf, 75011 Paris', telephone: '01 43 55 12 34', site: 'plomberie-martin.fr', horaires: 'Du lundi au vendredi 8 h – 19 h' };
+const FACTS = { adresse: '12 rue Oberkampf, 75011 Paris', telephone: '01 43 55 12 34', site: 'plomberie-martin.example', horaires: 'Du lundi au vendredi 8 h – 19 h' };
 const CTX = { businessId: 'biz_test', businessName: 'Plomberie Martin', trade: 'plombier', facts: FACTS, now: NOW };
 
 beforeAll(() => {
@@ -64,7 +64,7 @@ describe('audit de fiche Google', () => {
 
   it('fiche complète et cohérente : score élevé, cohérence OK', () => {
     const a = auditGbp(
-      profileFromManual({ name: 'Plomberie Martin', primaryCategory: 'Plombier', secondaryCategories: ['Chauffagiste', 'Dépannage'], descriptionLength: 600, hasHours: true, hoursText: 'Lundi : 08:00–19:00', hasSpecialHours: true, servicesCount: 6, attributesCount: 4, photosCount: 30, lastPhotoDaysAgo: 10, lastPostDaysAgo: 3, website: 'https://www.plomberie-martin.fr/', phone: '+33 1 43 55 12 34', address: '12 r. Oberkampf 75011 Paris', reviewCount: 80, rating: 4.7, lastReviewDaysAgo: 5, replyRate: 0.9 }, NOW),
+      profileFromManual({ name: 'Plomberie Martin', primaryCategory: 'Plombier', secondaryCategories: ['Chauffagiste', 'Dépannage'], descriptionLength: 600, hasHours: true, hoursText: 'Lundi : 08:00–19:00', hasSpecialHours: true, servicesCount: 6, attributesCount: 4, photosCount: 30, lastPhotoDaysAgo: 10, lastPostDaysAgo: 3, website: 'https://www.plomberie-martin.example/', phone: '+33 1 43 55 12 34', address: '12 r. Oberkampf 75011 Paris', reviewCount: 80, rating: 4.7, lastReviewDaysAgo: 5, replyRate: 0.9 }, NOW),
       CTX,
     );
     expect(a.score).toBe(100);
@@ -72,7 +72,7 @@ describe('audit de fiche Google', () => {
   });
 
   it('source Places : critères non lisibles exclus, contenu non stocké', () => {
-    const p = profileFromPlaces({ displayName: { text: 'Plomberie Martin' }, primaryTypeDisplayName: { text: 'Plombier' }, types: ['plumber', 'point_of_interest'], rating: 4.6, userRatingCount: 37, photos: [{}, {}, {}], formattedAddress: '12 Rue Oberkampf, 75011 Paris, France', nationalPhoneNumber: '01 43 55 12 34', websiteUri: 'https://plomberie-martin.fr', regularOpeningHours: { weekdayDescriptions: ['lundi: 08:00–19:00'] }, reviews: [{ rating: 5, text: { text: 'Top' }, publishTime: '2026-11-01T00:00:00Z' }] }, 'ChIJabcdefghijk');
+    const p = profileFromPlaces({ displayName: { text: 'Plomberie Martin' }, primaryTypeDisplayName: { text: 'Plombier' }, types: ['plumber', 'point_of_interest'], rating: 4.6, userRatingCount: 37, photos: [{}, {}, {}], formattedAddress: '12 Rue Oberkampf, 75011 Paris, France', nationalPhoneNumber: '01 43 55 12 34', websiteUri: 'https://plomberie-martin.example', regularOpeningHours: { weekdayDescriptions: ['lundi: 08:00–19:00'] }, reviews: [{ rating: 5, text: { text: 'Top' }, publishTime: '2026-11-01T00:00:00Z' }] }, 'ChIJabcdefghijk');
     const a = auditGbp(p, CTX);
     expect(a.coverage).toBeLessThan(100);
     expect(a.criteria.find((c) => c.id === 'posts')!.status).toBe('unknown');

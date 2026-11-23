@@ -9,10 +9,13 @@
  *   suspension) ;
  * - écartés : autre devise que l'euro, client dont l'e-mail est sur le domaine du partenaire (auto-parrainage
  *   probable : à vérifier à la main) ;
- * - remboursements : NON déduits automatiquement (le webhook ne les enregistre pas) → à vérifier avant tout versement ;
- * - versements : saisis à la main dans l'admin ; dû = acquis − versé (jamais négatif). Aucun paiement automatique.
+ * - remboursements : DÉDUITS (V10, décision 8) : le webhook Stripe `charge.refunded` enregistre le montant remboursé
+ *   de la facture (`refundedExclTaxCents`, au prorata HT) ; la base devient HT payé − HT remboursé ;
+ * - versements : trimestriels, sur facture, saisis à la main dans l'admin ; dû = acquis − versé (jamais négatif) ; un
+ *   remboursement postérieur à un versement donne un trop-versé (`clawbackCents`) à déduire du versement suivant.
  */
 import type { CommissionTerms } from './program';
+import { quarterOf } from './terms';
 
 export interface PaymentRow {
   invoiceId: string;
@@ -21,6 +24,9 @@ export interface PaymentRow {
   amountPaidCents: number;
   /** Montant hors taxes (Stripe total_excluding_tax, borné au montant payé). */
   amountExclTaxCents: number;
+  /** V10 : montant remboursé (TTC, cumul Stripe `amount_refunded`) et sa part hors taxes */
+  refundedCents?: number;
+  refundedExclTaxCents?: number;
   currency: string;
   paidAt: string;
 }
@@ -43,6 +49,12 @@ export interface CommissionSummary {
   earnedCents: number;
   paidOutCents: number;
   dueCents: number;
+  /** V10 : commission déjà versée au-delà de l'acquis (remboursement après versement), à déduire du prochain versement */
+  clawbackCents: number;
+  /** V10 : total HT remboursé sur les paiements des clients apportés */
+  refundedExclTaxCents: number;
+  /** V10 : commission acquise par trimestre civil (« 2026-T4 » → centimes), pour le versement trimestriel */
+  byQuarter: Record<string, number>;
   /** Nombre de clients apportés ayant payé au moins une fois */
   payingClients: number;
 }
@@ -98,28 +110,39 @@ export function computeCommission(input: {
     .sort((a, b) => b.paidAt.localeCompare(a.paidAt))
     .map((p) => {
       const t = Date.parse(p.paidAt);
-      const base = Math.max(0, Math.min(p.amountExclTaxCents, p.amountPaidCents));
+      const base = netBase(p);
       let reason: string | null = null;
       if (!input.terms) reason = 'Pas de commission prévue pour ce partenaire.';
       else if (p.currency.toLowerCase() !== 'eur') reason = `Devise ${p.currency.toUpperCase()} : non comptée.`;
       else if (pdom && domainOfEmail(input.contactEmails?.[p.businessId]) === pdom) reason = 'Client sur le domaine du partenaire : auto-parrainage probable, à vérifier.';
       else if (!inAccepted(t)) reason = 'Paiement reçu hors période d’acceptation du partenaire.';
       else if (t >= MONTH_ADD(firstPaid.get(p.businessId) ?? p.paidAt, input.terms.months)) reason = `Au-delà des ${input.terms.months} mois suivant le premier paiement.`;
-      else if (base <= 0) reason = 'Montant nul.';
+      else if (base <= 0) reason = (p.refundedExclTaxCents ?? 0) > 0 ? 'Remboursé intégralement.' : 'Montant nul.';
       const eligible = reason === null;
       return { ...p, eligible, reason, commissionCents: eligible && input.terms ? Math.round(base * input.terms.rate) : 0 };
     });
 
   const earnedCents = lines.reduce((s, l) => s + l.commissionCents, 0);
   const paidOutCents = input.payouts.reduce((s, p) => s + (Number.isFinite(p.cents) ? p.cents : 0), 0);
+  const byQuarter: Record<string, number> = {};
+  for (const l of lines) if (l.commissionCents > 0) byQuarter[quarterOf(l.paidAt)] = (byQuarter[quarterOf(l.paidAt)] ?? 0) + l.commissionCents;
   return {
     lines,
-    baseCents: lines.filter((l) => l.eligible).reduce((s, l) => s + Math.max(0, Math.min(l.amountExclTaxCents, l.amountPaidCents)), 0),
+    baseCents: lines.filter((l) => l.eligible).reduce((s, l) => s + netBase(l), 0),
     earnedCents,
     paidOutCents,
     dueCents: Math.max(0, earnedCents - paidOutCents),
+    clawbackCents: Math.max(0, paidOutCents - earnedCents),
+    refundedExclTaxCents: lines.reduce((s, l) => s + Math.max(0, l.refundedExclTaxCents ?? 0), 0),
+    byQuarter,
     payingClients: firstPaid.size,
   };
+}
+
+/** Base HT d'un paiement, remboursements déduits (jamais négative). */
+export function netBase(p: Pick<PaymentRow, 'amountExclTaxCents' | 'amountPaidCents' | 'refundedExclTaxCents'>): number {
+  const ht = Math.max(0, Math.min(p.amountExclTaxCents, p.amountPaidCents));
+  return Math.max(0, ht - Math.max(0, Math.round(p.refundedExclTaxCents ?? 0)));
 }
 
 export const eur = (cents: number) =>

@@ -65,7 +65,7 @@ describe('Routes SEO-DATA — comptes démo', () => {
   });
 
   it('inspection d’URL démo ; page hors du site refusée', async () => {
-    const ok = await gscPost(post('/api/v5/seodata/search-console', { businessId: 'demo', action: 'inspect', url: 'https://plomberie-martin.fr/urgence' }));
+    const ok = await gscPost(post('/api/v5/seodata/search-console', { businessId: 'demo', action: 'inspect', url: 'https://plomberie-martin.example/urgence' }));
     expect(await body(ok)).toMatchObject({ available: true, source: { demo: true } });
     const ko = await gscPost(post('/api/v5/seodata/search-console', { businessId: 'demo', action: 'inspect', url: 'https://ailleurs.fr/' }));
     expect(ko.status).toBe(400);

@@ -126,8 +126,8 @@ export type ColumnId = 'repere' | CompetitorSlug;
 export const CELLS: Record<ColumnId, Record<FeatureId, string>> = {
   repere: {
     questions: 'Découverte : 5. Local : 20 à 30. PME et e-commerce : 50 à 100, selon l’offre. Questions personnalisables.',
-    frequence: 'Mensuelle (Découverte, Local), hebdomadaire (PME, e-commerce). Chaque question est répétée ; marge d’erreur affichée.',
-    ia: '10 IA mesurables : ChatGPT, Perplexity, Gemini, Claude dans les offres ; aperçus IA (AI Overviews) et AI Mode de Google, Copilot (Bing), DeepSeek, Mistral Vibe en option, Grok sur demande. 3 IA en Découverte. Méthode et marge affichées pour chaque IA.',
+    frequence: 'Mensuelle (Découverte, Essentiel), hebdomadaire (Accompagné). Chaque question est répétée ; marge d’erreur affichée.',
+    ia: '10 IA mesurables : ChatGPT, Perplexity, Gemini, Claude, aperçus IA (AI Overviews) et AI Mode de Google dans les offres payantes ; Mistral Vibe selon l’offre ; Copilot (Bing) et DeepSeek en option ; Grok sur demande. 3 IA en Découverte. Méthode et marge affichées pour chaque IA.',
     sources: 'Oui, page par page pour ChatGPT, Perplexity et Claude, classées par opportunité. Pas pour Gemini (limite de ses conditions d’utilisation).',
     faits: 'Oui : fiche de vérité ; chaque affirmation contredite devient une tâche de correction.',
     execution: 'Agent de publication : corrections appliquées sur WordPress (et WooCommerce), Shopify, Webflow, PrestaShop, Wix ou Magento après votre validation, annulables ; export pour les autres sites. Agent de contenu : pages manquantes rédigées avec vos seuls faits, en brouillon chez vous, mesurées à J+30 et J+90 ; mentions à obtenir plutôt qu’échange de liens. Accompagné : nous pilotons le travail.',
@@ -391,7 +391,7 @@ export const COMPETITORS: Competitor[] = [
       'Vous voulez vérifier ce que les IA affirment sur votre entreprise, avec votre fiche de vérité.',
     ],
     ourLimits: [
-      'Repéré inclut 4 IA dans ses offres (ChatGPT, Perplexity, Gemini, Claude) ; aperçus IA et AI Mode de Google, Copilot, DeepSeek et Mistral Vibe sont en option, mesurés en France seulement.',
+      'Repéré inclut jusqu’à 7 IA dans ses offres payantes (ChatGPT, Perplexity, Gemini, Claude, aperçus IA et AI Mode de Google, Mistral Vibe selon l’offre) ; Copilot et DeepSeek sont en option, le tout mesuré en France seulement.',
       'API publique et serveur MCP réservés aux offres Accompagné et Agence ; pas de Looker Studio.',
     ],
     faq: [
@@ -419,7 +419,7 @@ export const COMPETITORS: Competitor[] = [
     strengths: [
       'Prix d’entrée en dollars proche du nôtre (29 $ pour 15 questions) avec suivi quotidien [@otterlyHelp].',
       'Un audit GEO intégré : accès d’une vingtaine de robots d’IA, rendu statique ou dynamique, données structurées [@seVisibleOtterly].',
-      'Les AI Overviews font partie des moteurs inclus, alors qu’ils sont en option chez Repéré [@otterlyHelp].',
+      'Copilot fait partie des moteurs inclus, alors qu’il est en option chez Repéré [@otterlyHelp].',
       'Espaces de travail multiples, membres illimités, Looker Studio, API et MCP dès l’offre Standard [@otterlyHelp].',
       'Une note publique (G2 : 4,7/5 sur 54 avis) [@g2Otterly].',
     ],
@@ -439,7 +439,7 @@ export const COMPETITORS: Competitor[] = [
     ],
     ourLimits: [
       'Notre audit vérifie l’accès des principaux robots de recherche des IA (robots.txt, en-têtes, réponses servies à notre robot) ; il ne teste pas le pare-feu robot par robot.',
-      'Pas de suivi quotidien en Local ; aperçus IA de Google en option seulement.',
+      'Pas de suivi quotidien : chaque mois en Essentiel, chaque semaine en Accompagné.',
     ],
     faq: [
       {
@@ -464,7 +464,7 @@ export const COMPETITORS: Competitor[] = [
     intro:
       'Profound propose un essai gratuit de 7 jours et une offre payante sur devis. Les offres Starter à 99 $ et Growth à 399 $, publiées en juin 2026, ont été retirées le 21 septembre 2026 selon une source tierce.',
     strengths: [
-      'Jusqu’à neuf moteurs en Enterprise, dont les AI Overviews et l’AI Mode de Google (en option chez Repéré) [@profound].',
+      'Jusqu’à neuf moteurs en Enterprise, dont les AI Overviews et l’AI Mode de Google (inclus dans les offres payantes de Repéré) [@profound].',
       'Analyse des visites des robots d’IA à partir des journaux serveur ou du CDN, avec domaines illimités [@profound].',
       'Des fonctions d’entreprise : SSO et SAML, API, historique complet, SOC 2 [@profound].',
       'Des références clients déclarées (un tiers du Fortune 100) et 1 133 avis G2 (4,5/5) [@profoundHome][@g2Profound].',
@@ -530,7 +530,7 @@ export const COMPETITORS: Competitor[] = [
       'Vous voulez déléguer les corrections à l’offre Accompagné.',
     ],
     ourLimits: [
-      'Chez Repéré, les AI Overviews, l’AI Mode, Copilot et Grok sont en option ou sur demande, pas compris dans les offres à ce jour.',
+      'Chez Repéré, les AI Overviews et l’AI Mode sont compris dans les offres payantes ; Copilot est en option et Grok sur demande.',
       'Pas d’intégration Matomo ; Google Analytics 4 en lecture seulement.',
     ],
     faq: [
@@ -671,7 +671,7 @@ export const COMPETITORS: Competitor[] = [
     ourLimits: [
       'Repéré n’a pas d’index de mots-clés ni de liens propre : les positions et liens viennent d’un fournisseur de données, dans des limites par offre.',
       'Repéré explore au plus 2 000 pages par analyse.',
-      'Chez Repéré, l’AI Mode et les aperçus IA de Google sont mesurés en option (relevés en France), pas compris dans les offres à ce jour ; la Search Console en compte les clics.',
+      'Chez Repéré, l’AI Mode et les aperçus IA de Google sont mesurés dans toutes les offres payantes (relevés en France) ; la Search Console en compte les clics.',
     ],
     faq: [
       { q: 'Repéré remplace-t-il Semrush ?', a: 'Pour un spécialiste SEO, non : Semrush est plus complet sur les mots-clés, les concurrents et la publicité. Pour un dirigeant qui veut un site sain, des priorités claires, la mesure des IA et des corrections faites, Repéré couvre l’essentiel pour moins cher.' },

@@ -7,7 +7,7 @@ import { HallucinationScreen } from "@/components/site/mockups";
 import { ChatScene } from "@/components/site/ChatScene";
 import { VAT_NOTICE, euros, tiersFor } from "@/components/site/plans-v2";
 import { pageMeta } from "@/lib/seo/meta";
-import { enginesLabel, frequencyAdverb, v5OfferFacts } from "@/components/site/offer-facts";
+import { enginesLabel, frequencyAdverb, runsCount, v5OfferFacts } from "@/components/site/offer-facts";
 import { demoAbsentAnswer } from "@/components/site/demo-figures";
 
 /** Chiffres des comptes démo (trafic glissant sur 30 jours) recalculés chaque jour. */
@@ -33,11 +33,11 @@ export default async function LocalPage() {
       brief={[
         { label: "Pour qui", value: "Artisans, commerces, restaurants, agences immobilières et instituts qui veulent être trouvés sur Google et cités quand on demande une adresse à une IA." },
         { label: "Ce que nous vérifions sur votre site", value: `SEO local : pages par service et par ville, nom, adresse et téléphone identiques partout, balisage LocalBusiness, mentions légales, vitesse sur mobile. ${v5OfferFacts("local", "essentiel").seoLines[0]} en Essentiel ; ${v5OfferFacts("local", "essentiel").keywords} mots-clés locaux suivis sur Google.` },
-        { label: "Ce que nous mesurons", value: `Les questions de vos clients (« meilleur plombier dans le 11e », « ouvert le dimanche »), posées plusieurs fois (2 passages au test gratuit, 3 en suivi) à ${enginesLabel("local", "essentiel")} (Claude en plus en Accompagné) : qui est cité, à quel rang, sur quelles sources. Mesure ${frequencyAdverb("local", "essentiel")} en Essentiel, ${frequencyAdverb("local", "accompagne")} en Accompagné.` },
-        { label: "Prix", value: `Test gratuit. Essentiel ${ess}/mois sans engagement. Accompagné ${acc}/mois, 3 mois minimum : nous faisons le travail. ${VAT_NOTICE}.` },
+        { label: "Ce que nous mesurons", value: `Les questions de vos clients (« meilleur plombier dans le 11e », « ouvert le dimanche »), posées plusieurs fois (2 passages à l'analyse gratuite, ${runsCount("local", "essentiel")} par mesure en Essentiel, ${runsCount("local", "accompagne")} chaque semaine en Accompagné) à ${enginesLabel("local", "essentiel")} (Claude en plus en Accompagné) : qui est cité, à quel rang, sur quelles sources. Mesure ${frequencyAdverb("local", "essentiel")} en Essentiel, ${frequencyAdverb("local", "accompagne")} en Accompagné.` },
+        { label: "Prix", value: `Découverte gratuite (analyse du site et test de marque sans inscription, puis 5 questions suivies chaque mois). Essentiel ${ess}/mois sans engagement. Accompagné ${acc}/mois, 3 mois minimum : nous faisons le travail. ${VAT_NOTICE}.` },
         { label: "Travail fait (Accompagné)", value: "Fiches Google, Bing et Apple complétées et tenues à jour, réponses à vos avis, demandes d'avis à vos vrais clients, annuaires corrigés. Rien n'est publié sans votre accord." },
         { label: "Ce que nous ne faisons pas", value: "Aucune promesse de position dans une IA, aucun faux avis." },
-        { label: "Délai", value: `Résultat du test en quelques minutes. Les effets des corrections se mesurent en semaines ou en mois, d'où une mesure ${frequencyAdverb("local", "essentiel")} en Essentiel (${frequencyAdverb("local", "accompagne")} en Accompagné).` },
+        { label: "Délai", value: `Résultat de l'analyse gratuite en quelques minutes. Les effets des corrections se mesurent en semaines ou en mois, d'où une mesure ${frequencyAdverb("local", "essentiel")} en Essentiel (${frequencyAdverb("local", "accompagne")} en Accompagné).` },
       ]}
       related={[
         { href: "/guides/seo-local-et-ia", label: "SEO local et IA : le guide pour les commerces" },

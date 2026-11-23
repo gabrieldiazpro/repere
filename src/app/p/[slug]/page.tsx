@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await loadPublicFiche(slug);
   if (!p) return { title: { absolute: 'Page introuvable' }, robots: { index: false, follow: false } };
-  const title = `${p.name} : ${p.kind.toLowerCase()}`;
+  // V10 (décision 14) : un compte démo porte la mention « entreprise fictive » jusque dans le titre.
+  const title = p.demo ? `${p.name} (entreprise fictive), fiche de démonstration`.slice(0, 60) : `${p.name} : ${p.kind.toLowerCase()}`;
   const description = fitDescription(`${p.name} : ${p.activity}. Informations publiées par l’entreprise : coordonnées${p.ctx.segment === 'local' ? ', horaires' : ''}, services et prix, labels, liens officiels.`);
   return {
     title: { absolute: title },

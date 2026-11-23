@@ -54,7 +54,7 @@ export default async function ConnexionPage({ searchParams }: { searchParams: Pr
         <>
           <p>
             Pas encore de compte ? <Link href="/inscription" className="font-semibold text-primary underline">Créez un compte gratuit</Link>{' '}
-            ou <Link href="/audit" className="font-semibold text-primary underline">faites un test gratuit</Link>.
+            ou <Link href="/analyse" className="font-semibold text-primary underline">analysez votre site gratuitement</Link>, sans inscription.
           </p>
           <p>Vous avez payé ? Utilisez l’adresse e-mail de votre reçu : votre compte a été créé avec elle.</p>
           <p>

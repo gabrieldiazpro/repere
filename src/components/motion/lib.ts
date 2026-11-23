@@ -189,7 +189,7 @@ export function observe(el: Element, cb: IOCallback, opts: { threshold?: number 
 
 /* ---------- Formulaire du hero ---------- */
 
-/** Vrai si la saisie ressemble à une adresse de site (« paysia.fr », « https://… ») plutôt qu'à un nom. */
+/** Vrai si la saisie ressemble à une adresse de site (« paysia.example », « https://… ») plutôt qu'à un nom. */
 export function looksLikeSite(v: string): boolean {
   const s = v.trim().toLowerCase();
   if (!s || /\s/.test(s)) return false;

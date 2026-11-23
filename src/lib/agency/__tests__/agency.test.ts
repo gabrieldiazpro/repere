@@ -30,7 +30,7 @@ const base: ClientInput = {
 
 describe('droits agence', () => {
   it('réservés à l’offre Agence (et montrés en démo)', () => {
-    expect(agencyLimitsFor('agence')).toMatchObject({ portfolio: true, clients: 20, branding: true, senderDomain: true, clientPortal: true, clientExports: true });
+    expect(agencyLimitsFor('agence')).toMatchObject({ portfolio: true, clients: 50, includedClients: 10, branding: true, senderDomain: true, clientPortal: true, clientExports: true });
     expect(agencyLimitsFor('demo').portfolio).toBe(true);
     for (const t of ['decouverte', 'essentiel', 'accompagne'] as const) expect(agencyLimitsFor(t)).toMatchObject({ portfolio: false, clients: 0, branding: false, clientPortal: false });
     const agence = getEntitlements({ id: 'x', plan: 'agency', segment: 'local', planId: null });
@@ -61,7 +61,7 @@ describe('marque de l’agence', () => {
   });
 
   it('domaine d’envoi : normalisation', () => {
-    expect(normalizeDomain('https://Rapports.Agence-Exemple.fr/')).toBe('rapports.agence-exemple.fr');
+    expect(normalizeDomain('https://Rapports.Agence-Exemple.example/')).toBe('rapports.agence-exemple.example');
     expect(normalizeDomain('contact@agence.fr')).toBe('agence.fr');
     expect(normalizeDomain('192.168.0.1')).toBeNull();
     expect(normalizeDomain('localhost')).toBeNull();

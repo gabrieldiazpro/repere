@@ -88,9 +88,11 @@ export const ACCOMPAGNE_COMMITMENT_MONTHS = 3;
 export const V2_PLANS: readonly Plan[] = [
   // --- Local ---
   {
-    id: 'local_audit_free', segment: 'local', name: 'Test gratuit', priceCents: 0, interval: 'one_time',
-    features: ['Score de visibilité IA /100', 'Test sur ChatGPT, Gemini et Perplexity', 'Les concurrents cités à votre place', 'Un premier conseil détaillé', 'Rapport PDF par e-mail'],
-    highlighted: false, cta: 'Tester mon commerce gratuitement', available: true,
+    // V10 (décision 1) : le « Test gratuit » est absorbé par Découverte (analyse 60 s + test de marque sans inscription).
+    // Identifiant conservé (liens déjà envoyés, audits existants), absent de la grille.
+    id: 'local_audit_free', segment: 'local', legacy: true, name: 'Découverte', priceCents: 0, interval: 'one_time',
+    features: ['Analyse du site en 60 secondes et test de marque, sans inscription', '3 IA : ChatGPT, Gemini, Perplexity', 'Les concurrents cités à votre place'],
+    highlighted: false, cta: 'Analyser mon site gratuitement', available: true,
   },
   {
     id: 'local_audit_deep', segment: 'local', name: "Audit + plan d'action", priceCents: 14900, interval: 'one_time',
@@ -99,7 +101,7 @@ export const V2_PLANS: readonly Plan[] = [
   },
   {
     id: 'local_essentiel_month', segment: 'local', name: 'Essentiel', priceCents: 2900, interval: 'month',
-    features: ['20 questions clients suivies chaque mois', '3 IA : ChatGPT, Gemini, Perplexity', '3 concurrents suivis', 'Sources citées et opportunités classées', 'Actions de la semaine avec textes prêts à copier', 'Alerte si un concurrent vous dépasse', 'Sans engagement, résiliable en 1 clic'],
+    features: ['20 questions clients suivies chaque mois', '5 IA : ChatGPT, Gemini, Perplexity, Google AI Overviews, Google AI Mode', '3 concurrents suivis', 'Sources citées et opportunités classées', 'Actions de la semaine avec textes prêts à copier', 'Alerte si un concurrent vous dépasse', 'Sans engagement, résiliable en 1 clic'],
     highlighted: false, cta: 'Commencer', available: true,
   },
   {
@@ -109,12 +111,12 @@ export const V2_PLANS: readonly Plan[] = [
   },
   {
     id: 'local_accompagne_month', segment: 'local', name: 'Accompagné', priceCents: 9900, interval: 'month',
-    features: ['Tout Essentiel, 30 questions suivies', '4 IA : ChatGPT, Gemini, Perplexity, Claude', 'Fiches Google, Bing et Apple complétées et tenues à jour par nous', 'Réponses à vos avis rédigées (jusqu\'à 30/mois)', 'Une campagne de demande d\'avis à vos vrais clients chaque mois', '2 fiches d\'annuaire créées ou corrigées par mois', 'Rapport mensuel avant/après', 'Rien n\'est publié sans votre validation', '3 mois minimum, puis sans engagement'],
+    features: ['Tout Essentiel, 30 questions suivies chaque semaine', '6 IA : ChatGPT, Gemini, Perplexity, Claude, Google AI Overviews, Google AI Mode', 'En option : Copilot et DeepSeek (+9 €/mois)', 'Fiches Google, Bing et Apple complétées et tenues à jour par nous', 'Réponses à vos avis rédigées (jusqu\'à 30/mois)', 'Une campagne de demande d\'avis à vos vrais clients chaque mois', '2 fiches d\'annuaire créées ou corrigées par mois', 'Rapport mensuel avant/après', 'Rien n\'est publié sans votre validation', '3 mois minimum, puis sans engagement'],
     highlighted: true, cta: 'Être accompagné', available: true, commitmentMonths: ACCOMPAGNE_COMMITMENT_MONTHS,
   },
   {
     id: 'local_reseau_month', segment: 'local', name: 'Réseau', priceCents: 7900, interval: 'month',
-    features: ["Jusqu'à 5 établissements en Essentiel", '5 concurrents suivis par établissement', 'Tableau de bord multi-établissements', 'Accompagné : +69 €/mois par établissement supplémentaire'],
+    features: ["Jusqu'à 5 établissements en Essentiel", '5 concurrents suivis par établissement', 'Tableau de bord multi-établissements', 'Accompagné pour plusieurs établissements : sur devis'],
     highlighted: false, cta: 'Choisir Réseau', available: true,
   },
   {
@@ -124,9 +126,9 @@ export const V2_PLANS: readonly Plan[] = [
   },
   // --- PME ---
   {
-    id: 'pme_audit_free', segment: 'pme', name: 'Test gratuit', priceCents: 0, interval: 'one_time',
-    features: ["10 questions d'acheteurs de votre secteur", '3 IA : ChatGPT, Gemini, Perplexity', '3 concurrents cités à votre place', 'Les 5 sources les plus citées et votre présence', 'Résultat par e-mail'],
-    highlighted: false, cta: 'Tester mon entreprise gratuitement', available: true,
+    id: 'pme_audit_free', segment: 'pme', legacy: true, name: 'Découverte', priceCents: 0, interval: 'one_time',
+    features: ['Analyse du site en 60 secondes et test de marque, sans inscription', '3 IA : ChatGPT, Gemini, Perplexity', 'Les concurrents cités à votre place'],
+    highlighted: false, cta: 'Analyser mon site gratuitement', available: true,
   },
   {
     id: 'pme_audit_deep', segment: 'pme', name: 'Audit approfondi', priceCents: 39000, interval: 'one_time',
@@ -135,7 +137,7 @@ export const V2_PLANS: readonly Plan[] = [
   },
   {
     id: 'pme_essentiel_month', segment: 'pme', name: 'Essentiel', priceCents: 9900, interval: 'month',
-    features: ['50 questions suivies chaque semaine', '4 IA : ChatGPT, Gemini, Perplexity, Claude', '5 concurrents, part de voix et sentiment', 'Cartographie des sources classée par opportunité', 'Actions de la semaine prêtes à faire (pages, FAQ, balisage)', 'Trafic venu des IA via Google Analytics', 'Rapport mensuel exportable', 'Sans engagement'],
+    features: ['50 questions suivies chaque mois', '6 IA : ChatGPT, Gemini, Perplexity, Claude, Google AI Overviews, Google AI Mode', '5 concurrents, part de voix et sentiment', 'Alerte dès qu\'un concurrent passe devant', 'Cartographie des sources classée par opportunité', 'Actions de la semaine prêtes à faire (pages, FAQ, balisage)', 'Trafic venu des IA via Google Analytics', 'Rapport mensuel exportable', 'Sans engagement'],
     highlighted: false, cta: 'Commencer', available: true,
   },
   {
@@ -145,14 +147,14 @@ export const V2_PLANS: readonly Plan[] = [
   },
   {
     id: 'pme_accompagne_month', segment: 'pme', name: 'Accompagné', priceCents: 49000, interval: 'month',
-    features: ['Tout Essentiel, 100 questions suivies', '5 IA : ChatGPT, Gemini, Perplexity, Claude, Mistral', 'Mise en place faite : schema.org, llms.txt, robots IA, pages services', '2 pages citables rédigées par mois (comparatif, alternative, FAQ métier)', '3 fiches comparateurs ou annuaires B2B par mois', '3 démarches vers les sources citées par les IA', 'Rapport mensuel et point visio de 30 min', 'Rien n\'est publié sans votre validation', '3 mois minimum, puis sans engagement'],
+    features: ['Tout Essentiel, 100 questions suivies chaque semaine', '7 IA : ChatGPT, Gemini, Perplexity, Claude, Mistral, Google AI Overviews, Google AI Mode', 'En option : Copilot et DeepSeek (+9 €/mois)', 'Mise en place faite : schema.org, llms.txt, robots IA, pages services', '2 pages citables rédigées par mois (comparatif, alternative, FAQ métier)', '3 fiches comparateurs ou annuaires B2B par mois', '3 démarches vers les sources citées par les IA', 'Rapport mensuel et point visio de 30 min', 'Rien n\'est publié sans votre validation', '3 mois minimum, puis sans engagement'],
     highlighted: true, cta: 'Être accompagné', available: true, commitmentMonths: ACCOMPAGNE_COMMITMENT_MONTHS,
   },
   // --- E-commerce ---
   {
-    id: 'ecom_audit_free', segment: 'ecommerce', name: 'Test gratuit', priceCents: 0, interval: 'one_time',
-    features: ['10 requêtes produit testées', '3 IA : ChatGPT, Gemini, Perplexity', 'Marques citées à la place des vôtres', '5 sources citées (comparatifs, forums, marketplaces)', 'Résultat par e-mail'],
-    highlighted: false, cta: 'Tester ma boutique gratuitement', available: true,
+    id: 'ecom_audit_free', segment: 'ecommerce', legacy: true, name: 'Découverte', priceCents: 0, interval: 'one_time',
+    features: ['Analyse du site en 60 secondes et test de marque, sans inscription', '3 IA : ChatGPT, Gemini, Perplexity', 'Les marques citées à la place des vôtres'],
+    highlighted: false, cta: 'Analyser ma boutique gratuitement', available: true,
   },
   {
     id: 'ecom_audit_deep', segment: 'ecommerce', name: 'Audit catalogue approfondi', priceCents: 39000, interval: 'one_time',
@@ -161,7 +163,7 @@ export const V2_PLANS: readonly Plan[] = [
   },
   {
     id: 'ecom_essentiel_month', segment: 'ecommerce', name: 'Essentiel', priceCents: 7900, interval: 'month',
-    features: ['50 requêtes produit suivies chaque semaine', '4 IA : ChatGPT, Gemini, Perplexity, Claude', '5 marques concurrentes suivies', 'Sources citées : comparatifs, Reddit, marketplaces', 'Fiches produit et balisage prêts à copier', 'Trafic venu des IA via GA4 ou Shopify', 'Alertes quand un concurrent apparaît', 'Sans engagement'],
+    features: ['50 requêtes produit suivies chaque mois', '6 IA : ChatGPT, Gemini, Perplexity, Claude, Google AI Overviews, Google AI Mode', '5 marques concurrentes suivies', 'Sources citées : comparatifs, Reddit, marketplaces', 'Fiches produit et balisage prêts à copier', 'Trafic venu des IA via GA4 ou Shopify', 'Alertes quand un concurrent apparaît', 'Sans engagement'],
     highlighted: false, cta: 'Commencer', available: true,
   },
   {
@@ -171,7 +173,7 @@ export const V2_PLANS: readonly Plan[] = [
   },
   {
     id: 'ecom_accompagne_month', segment: 'ecommerce', name: 'Accompagné', priceCents: 39000, interval: 'month',
-    features: ['Tout Essentiel, 100 requêtes produit suivies', '5 IA : ChatGPT, Gemini, Perplexity, Claude, Mistral', 'Mise en place faite : balisage Product/Offer/Review/FAQ, llms.txt, flux Merchant vérifié', '20 fiches produit réécrites par mois', '1 guide d\'achat ou comparatif par mois', '3 démarches vers les comparatifs et sources citées', 'Rapport mensuel (trafic et ventes IA si disponibles) et visio de 30 min', 'Rien n\'est publié sans votre validation', '3 mois minimum, puis sans engagement'],
+    features: ['Tout Essentiel, 100 requêtes produit suivies chaque semaine', '7 IA : ChatGPT, Gemini, Perplexity, Claude, Mistral, Google AI Overviews, Google AI Mode', 'En option : Copilot et DeepSeek (+9 €/mois)', 'Mise en place faite : balisage Product/Offer/Review/FAQ, llms.txt, flux Merchant vérifié', '20 fiches produit réécrites par mois', '1 guide d\'achat ou comparatif par mois', '3 démarches vers les comparatifs et sources citées', 'Rapport mensuel (trafic et ventes IA si disponibles) et visio de 30 min', 'Rien n\'est publié sans votre validation', '3 mois minimum, puis sans engagement'],
     highlighted: true, cta: 'Être accompagné', available: true, commitmentMonths: ACCOMPAGNE_COMMITMENT_MONTHS,
   },
   // --- Agence : liste d'attente tant que la marque blanche n'est pas livrée ---
@@ -182,7 +184,7 @@ export const V2_PLANS: readonly Plan[] = [
   },
   {
     id: 'agency_month', segment: 'agence', name: 'Agence', priceCents: 14900, interval: 'month',
-    features: ['20 clients en Essentiel (tous parcours), +6 €/mois par client supplémentaire', '5 IA : ChatGPT, Gemini, Perplexity, Claude, Mistral', 'Marque blanche : votre logo, vos couleurs, votre domaine de rapport', 'Tests gratuits illimités pour vos prospects', 'Audits approfondis à prix revendeur (Local 99 €, PME et e-commerce 250 €)', 'Accès équipe et export des données'],
+    features: ['10 clients mesurés chaque mois (tous parcours), +9 €/mois par client au-delà', '30 questions suivies par client', '6 IA : ChatGPT, Gemini, Perplexity, Claude, Google AI Overviews, Google AI Mode', 'En option : mesure chaque semaine d\'un client (+39 €/mois par client), Copilot et DeepSeek (+2 €/mois par client)', 'Marque blanche : votre logo, vos couleurs, votre domaine de rapport', 'Analyses gratuites illimitées pour vos prospects', 'Audits approfondis à prix revendeur (Local 99 €, PME et e-commerce 250 €)', 'Accès équipe et export des données'],
     highlighted: true, cta: 'Ouvrir un compte agence', available: false,
   },
   {
@@ -255,13 +257,16 @@ export const LEGACY_PLANS: readonly Plan[] = [
 // pas d'exécution).
 // ---------------------------------------------------------------------------
 
+/**
+ * V10 (décision 1) : une seule offre gratuite. Découverte commence SANS inscription (analyse du site en 60 secondes et
+ * test de marque, /analyse) et continue, avec un compte gratuit, par une mesure chaque mois sur 5 questions.
+ */
 const DECOUVERTE_FEATURES = [
-  'Analyse du site et audit SEO + GEO chaque mois (60 pages)',
-  '1 marque suivie',
-  '5 questions suivies',
-  '1 mesure par mois',
+  'Sans inscription : analyse du site en 60 secondes et test de marque',
+  'Avec un compte gratuit : 5 questions suivies, mesurées chaque mois',
   '3 IA : ChatGPT, Gemini, Perplexity',
-  'Historique de vos mesures',
+  'Audit SEO + GEO du site chaque mois (60 pages)',
+  '1 marque suivie, historique de vos mesures',
   'Gratuit, sans carte bancaire, sans limite de durée',
 ];
 
@@ -339,8 +344,46 @@ export function resolvePlanId(id: PlanId): PlanIdV2 | DecouvertePlanId {
 
 /** Grille V2 d'un parcours (hors offres V1). `includeUnavailable` : afficher aussi la liste d'attente. */
 export function plansForSegment(segment: PlanSegment, opts: { includeUnavailable?: boolean } = {}): Plan[] {
-  return V2_PLANS.filter((p) => p.segment === segment && (opts.includeUnavailable || p.available));
+  return V2_PLANS.filter((p) => p.segment === segment && !p.legacy && (opts.includeUnavailable || p.available));
 }
+
+// ---------------------------------------------------------------------------
+// V10 : options payantes (décisions 3 et 5 de docs/v10/DECISIONS.md). Prix décrits dans scripts/ops/stripe-setup.mjs
+// (prix récurrents mensuels, quantité = nombre de clients pour l'Agence) ; activées par l'admin sur un espace
+// (`setOfferOptions`, src/lib/entitlements.ts). Marges : docs/v10/progress/DECISIONS-V10.md.
+// ---------------------------------------------------------------------------
+
+export type AddonId = 'option_more_ai' | 'agency_extra_client' | 'agency_weekly_client' | 'agency_more_ai_client';
+
+export interface PlanAddon {
+  id: AddonId;
+  name: string;
+  priceCents: number;
+  interval: 'month';
+  /** 'client' : prix par client et par mois (quantité Stripe = nombre de clients concernés) */
+  unit: 'account' | 'client';
+  /** offres qui peuvent la prendre */
+  tiers: PlanTier[];
+  description: string;
+}
+
+export const PLAN_ADDONS: readonly PlanAddon[] = [
+  { id: 'option_more_ai', name: 'Option Copilot et DeepSeek', priceCents: 900, interval: 'month', unit: 'account', tiers: ['accompagne'], description: 'Copilot (recherche Bing) et DeepSeek ajoutés à chaque mesure Accompagné.' },
+  { id: 'agency_extra_client', name: 'Client supplémentaire (Agence)', priceCents: 900, interval: 'month', unit: 'client', tiers: ['agency'], description: 'Au-delà des 10 clients inclus : un client de plus, mesuré chaque mois.' },
+  { id: 'agency_weekly_client', name: 'Mesure hebdomadaire d’un client (Agence)', priceCents: 3900, interval: 'month', unit: 'client', tiers: ['agency'], description: 'Le client est mesuré chaque semaine (2 passages) au lieu de chaque mois.' },
+  { id: 'agency_more_ai_client', name: 'Copilot et DeepSeek pour un client (Agence)', priceCents: 200, interval: 'month', unit: 'client', tiers: ['agency'], description: 'Copilot et DeepSeek ajoutés aux mesures du client.' },
+];
+
+export function getAddon(id: AddonId): PlanAddon {
+  const a = PLAN_ADDONS.find((x) => x.id === id);
+  if (!a) throw new Error(`Option inconnue : ${id}`);
+  return a;
+}
+
+/** Offre Agence : clients inclus dans le prix de base (au-delà : `agency_extra_client`). */
+export const AGENCY_INCLUDED_CLIENTS = 10;
+/** Plafond technique de clients d'un compte Agence (au-delà : devis). */
+export const AGENCY_MAX_CLIENTS = 50;
 
 /** Engagement minimum en mois (0 = sans engagement). */
 export function commitmentMonths(id: PlanId): number {
@@ -405,7 +448,7 @@ export const MAX_BUSINESSES: Record<PlanTier, number> = {
   free: 0,
   suivi: 1,
   pro: 5,
-  agency: 20,
+  agency: AGENCY_MAX_CLIENTS,
   essentiel: 1,
   accompagne: 1,
   reseau: 5,

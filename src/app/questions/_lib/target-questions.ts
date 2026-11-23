@@ -395,7 +395,7 @@ export const TARGET_QUESTIONS: TargetQuestion[] = [
       },
     ],
     related: [
-      { href: '/audit', label: 'Lancer le test gratuit' },
+      { href: '/analyse', label: 'Lancer le test de marque gratuit' },
       { href: '/guides/suivre-ses-questions-chatgpt', label: 'Guide : choisir les questions à suivre' },
       { href: '/methode#marge-erreur', label: 'Comment Repéré calcule la marge d’erreur' },
     ],

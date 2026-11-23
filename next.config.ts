@@ -79,7 +79,14 @@ const nextConfig: NextConfig = {
   htmlLimitedBots: HTML_LIMITED_BOTS,
   async redirects() {
     // L'ancienne adresse du robot (anciens user agents) pointe vers la page de référence.
-    return [{ source: "/robot", destination: "/methode/robot", permanent: true }];
+    return [
+      { source: "/robot", destination: "/methode/robot", permanent: true },
+      // V10 (docs/v10/DECISIONS.md, décision 1) : le « Test gratuit » est devenu l'analyse 60 s et le test de marque de
+      // l'offre Découverte. Anciennes adresses et anciens liens d'offre → /analyse (paramètres conservés : segment, site).
+      { source: "/test-gratuit", destination: "/analyse", permanent: true },
+      { source: "/audit-gratuit", destination: "/analyse", permanent: true },
+      { source: "/audit", has: [{ type: "query", key: "plan", value: "(?:local_|pme_|ecom_)?audit_free" }], destination: "/analyse", permanent: true },
+    ];
   },
   // Fiche officielle (V9, FICHE-OFFICIELLE) : version Markdown /p/<slug>.md servie par /p/<slug>/fiche.md.
   async rewrites() {

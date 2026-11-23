@@ -5,14 +5,14 @@ import { pageMeta } from "@/lib/seo/meta";
 import { breadcrumbListLd, faqPageLd, graph, orgRef, webPageLd } from "@/lib/seo/jsonld";
 import { CONTACT_EMAIL } from "@/lib/seo/site";
 import { getPlan, type PlanId } from "@/lib/plans";
-import { PILOT_MONTHS, PILOT_SLOTS } from "@/lib/pilots/validate";
-import { CONSENT_TEXT, listPilots, seatsTaken } from "@/lib/pilots/store";
+import { PILOT_MONTHS, PILOT_SLOTS, PILOT_SLOTS_BY_SEGMENT, PILOT_SEGMENT_SHORT, type PilotSegment } from "@/lib/pilots/validate";
+import { CONSENT_TEXT, listPilots, seatsBySegment, seatsTaken } from "@/lib/pilots/store";
 import { PilotForm } from "./PilotForm";
 
 const PATH = "/pilotes";
 const TITLE = "Programme entreprises pilotes";
-const DESCRIPTION = `Repéré se lance et cherche ${PILOT_SLOTS} entreprises pilotes : l'offre Accompagné offerte ${PILOT_MONTHS} mois, en échange de vos retours. Commerces locaux, PME et e-commerce.`;
-const UPDATED = "2026-11-15";
+const DESCRIPTION = `Repéré cherche ${PILOT_SLOTS} entreprises pilotes : l'offre Accompagné offerte ${PILOT_MONTHS} mois contre vos retours. ${PILOT_SLOTS_BY_SEGMENT.local} commerces, ${PILOT_SLOTS_BY_SEGMENT.pme} PME, ${PILOT_SLOTS_BY_SEGMENT.ecommerce} e-commerces.`;
+const UPDATED = "2026-11-23";
 
 export const metadata = pageMeta({ path: PATH, title: TITLE, description: DESCRIPTION });
 export const dynamic = "force-dynamic";
@@ -39,18 +39,21 @@ const FAQ = [
   },
   {
     q: "Mon avant/après sera-t-il publié ?",
-    a: "Seulement si vous le voulez. L'accord est facultatif, vous relisez et validez chaque texte avant publication, et vous pouvez le retirer à tout moment. Sans accord, rien n'est publié, même anonymisé.",
+    a: "Seulement avec votre accord écrit. Il est facultatif, vous relisez et validez chaque texte avant publication, et vous pouvez le retirer à tout moment. Sans accord écrit, rien n'est publié, même anonymisé.",
   },
   {
     q: "Comment les pilotes sont-ils choisis ?",
-    a: "Pour avoir des cas variés : des commerces locaux, des PME et des boutiques en ligne, dans plusieurs villes et plusieurs métiers. Le fondateur lit chaque candidature et répond à toutes, retenues ou non, sous 5 jours ouvrés.",
+    a: `Pour avoir des cas variés : ${PILOT_SLOTS_BY_SEGMENT.local} commerces locaux, ${PILOT_SLOTS_BY_SEGMENT.pme} PME et ${PILOT_SLOTS_BY_SEGMENT.ecommerce} boutiques en ligne, dans plusieurs villes et plusieurs métiers. Le fondateur lit chaque candidature et répond à toutes, retenues ou non, sous 5 jours ouvrés.`,
   },
 ];
 
 export default async function PilotesPage() {
   let taken = 0;
+  let bySeg = seatsBySegment([]);
   try {
-    taken = Math.min(PILOT_SLOTS, seatsTaken(await listPilots()));
+    const rows = await listPilots();
+    taken = Math.min(PILOT_SLOTS, seatsTaken(rows));
+    bySeg = seatsBySegment(rows);
   } catch {
     taken = 0;
   }
@@ -87,6 +90,16 @@ export default async function PilotesPage() {
                 />
               ))}
             </ol>
+            <ul className="mt-4 grid grid-cols-3 gap-2 text-center text-[0.88rem]" aria-label="Places par parcours">
+              {(Object.keys(PILOT_SLOTS_BY_SEGMENT) as PilotSegment[]).map((s) => (
+                <li key={s} className="rounded-lg bg-canvas px-2 py-2">
+                  <span className="block font-display text-lg font-bold text-ink">
+                    {bySeg[s].left}/{bySeg[s].slots}
+                  </span>
+                  <span className="text-muted">{PILOT_SEGMENT_SHORT[s]}</span>
+                </li>
+              ))}
+            </ul>
             <p className="mt-4 text-[0.95rem] text-ink/75">
               {taken === 0 ? "Aucune place attribuée pour l'instant." : `${taken} entreprise${taken > 1 ? "s" : ""} retenue${taken > 1 ? "s" : ""}.`} Compteur tenu à jour à partir des candidatures réellement retenues.
             </p>
@@ -139,8 +152,8 @@ export default async function PilotesPage() {
                 <li><strong>Vos retours francs</strong> : un échange de 30 minutes par mois, et un mot quand quelque chose ne va pas.</li>
                 <li><strong>Les accès utiles</strong> à votre site ou à votre fiche Google, pour que les corrections soient réellement faites.</li>
                 <li>
-                  <strong>Si vous le voulez</strong>, l&apos;accord pour publier votre avant/après chiffré à la fin. C&apos;est facultatif, vous relisez tout, et
-                  vous pouvez le retirer quand vous voulez.
+                  <strong>Si vous le voulez</strong>, votre accord écrit pour publier votre avant/après chiffré à la fin. C&apos;est facultatif, vous relisez tout, et
+                  vous pouvez le retirer quand vous voulez ; sans accord écrit, rien n&apos;est publié.
                 </li>
               </ul>
               <h3 className="mt-10 font-display text-xl font-bold">Qui nous cherchons</h3>

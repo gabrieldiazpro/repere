@@ -280,6 +280,8 @@ export interface RunAuditOptions {
   seed?: string;
   /** budget en euros (défaut : AUDIT_BUDGET_EUR ou 0,60 en gratuit) */
   budgetEur?: number;
+  /** V10 : passages par question et par IA (défaut : 2 en gratuit, 3 en payant ; l'offre le fixe : `Entitlements.runs`) */
+  runs?: number;
   /** nombre d'appels simultanés (défaut 6) */
   concurrency?: number;
   /**

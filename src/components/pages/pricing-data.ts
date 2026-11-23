@@ -1,27 +1,43 @@
 /**
- * Comparaison Découverte / Essentiel / Accompagné par parcours, tirée de la grille (docs/v2/07-plans-v2.json et
- * décision 2 du contrat V3 pour Découverte). Les prix viennent de la grille au rendu, jamais d'ici.
+ * Comparatif des fonctionnalités Découverte / Essentiel / Accompagné par parcours (/tarifs, V10). Tout ce qui est
+ * chiffré est lu dans la table des droits (src/lib/entitlements.ts, qui fait foi) ou dans la grille (src/lib/plans.ts) ;
+ * rien n'est recopié à la main. Serveur uniquement : le composant client /tarifs reçoit les lignes en props.
  */
-import { enginesLabel, frequencyLabel, offerEntitlements, promptsCount, type OfferTier } from "@/components/site/offer-facts";
-import { MONTHLY_QUOTA } from "@/lib/content/quota";
+import {
+  enginesLabel,
+  frequencyLabel,
+  offerEntitlements,
+  optionalEnginesLabel,
+  promptsCount,
+  runsCount,
+  v5OfferFacts,
+  type OfferTier,
+} from "@/components/site/offer-facts";
+import { getAddon } from "@/lib/plans";
+import { formatPrice } from "@/lib/plans";
 
 export type Seg = "local" | "pme" | "ecommerce";
 export type Cell = string | boolean;
 export interface CompareRow {
   label: string;
+  /** groupe d'affichage (« Mesure des IA », « SEO », …) */
+  group: string;
   decouverte: Cell;
   essentiel: Cell;
   accompagne: Cell;
 }
 
-/** Questions, fréquence et IA par offre : lues dans getEntitlements (src/lib/entitlements.ts), qui fait foi. */
 const q = (seg: Seg, t: OfferTier) => String(promptsCount(seg, t));
-const freq = (seg: Seg, t: OfferTier) => (t === "decouverte" ? "1 par mois" : frequencyLabel(seg, t));
+const freq = (seg: Seg, t: OfferTier) => frequencyLabel(seg, t);
+const runs = (seg: Seg, t: OfferTier) => `${runsCount(seg, t)} passages`;
 const RIVALS: Record<Seg, string> = { local: "3", pme: "5", ecommerce: "5" };
-/** V8 : plafond de contenus par mois (src/lib/content/quota.ts, proposition à valider par le fondateur). */
-const content = (t: "essentiel" | "accompagne") => `${MONTHLY_QUOTA[t]} par mois`;
-/** V8 : API publique lue dans les droits (champ `api`). */
+const nf = (n: number) => n.toLocaleString("fr-FR").replace(/ | /g, " ");
 const api = (seg: Seg, t: OfferTier) => offerEntitlements(seg, t).api;
+const contents = (seg: Seg, t: OfferTier) => {
+  const n = offerEntitlements(seg, t).contentsPerMonth;
+  return n > 0 ? `${n} par mois` : "Propositions visibles";
+};
+const seo = (seg: Seg, t: OfferTier) => v5OfferFacts(seg, t);
 
 const DONE: Record<Seg, string> = {
   local: "Fiches Google, Bing et Apple tenues à jour, réponses aux avis, campagne d'avis, 2 annuaires par mois",
@@ -29,21 +45,39 @@ const DONE: Record<Seg, string> = {
   ecommerce: "Balisage Product et flux Merchant, 20 fiches produit par mois, 1 guide d'achat, 3 démarches",
 };
 
+export const COMPARE_GROUPS = ["Mesure des IA", "SEO et site", "Agent et contenus", "Accompagnement et conditions"] as const;
+
 export function compareRows(seg: Seg): CompareRow[] {
+  const optionPrice = formatPrice(getAddon("option_more_ai").priceCents);
+  const T: OfferTier[] = ["decouverte", "essentiel", "accompagne"];
+  const row = (group: string, label: string, f: (t: OfferTier) => Cell): CompareRow => ({ group, label, decouverte: f(T[0]), essentiel: f(T[1]), accompagne: f(T[2]) });
   return [
-    { label: "Qui fait le travail", decouverte: "Vous", essentiel: "Vous, avec les textes prêts", accompagne: "Nous, après votre accord" },
-    { label: "Questions suivies", decouverte: q(seg, "decouverte"), essentiel: q(seg, "essentiel"), accompagne: q(seg, "accompagne") },
-    { label: "Fréquence des mesures", decouverte: freq(seg, "decouverte"), essentiel: freq(seg, "essentiel"), accompagne: freq(seg, "accompagne") },
-    { label: "IA interrogées", decouverte: enginesLabel(seg, "decouverte"), essentiel: enginesLabel(seg, "essentiel"), accompagne: enginesLabel(seg, "accompagne") },
-    { label: "Concurrents suivis", decouverte: false, essentiel: RIVALS[seg], accompagne: RIVALS[seg] },
-    { label: "Sources citées et opportunités", decouverte: "Sur vos 5 questions", essentiel: true, accompagne: true },
-    { label: "Tâches de la semaine, textes prêts", decouverte: false, essentiel: true, accompagne: true },
-    { label: "Travail fait pour vous", decouverte: false, essentiel: false, accompagne: DONE[seg] },
-    { label: "Contenus rédigés et publiés pour vous, après votre validation", decouverte: "Propositions visibles", essentiel: content("essentiel"), accompagne: content("accompagne") },
-    { label: "API publique, serveur MCP et webhooks", decouverte: api(seg, "decouverte"), essentiel: api(seg, "essentiel"), accompagne: api(seg, "accompagne") },
-    { label: "Rapport mensuel", decouverte: false, essentiel: true, accompagne: "Avec point visio" },
-    { label: "Engagement", decouverte: "Aucun, gratuit", essentiel: "Aucun", accompagne: "3 mois, puis sans engagement" },
+    row("Mesure des IA", "Analyse du site en 60 s et test de marque, sans inscription", () => true),
+    row("Mesure des IA", "Questions suivies", (t) => q(seg, t)),
+    row("Mesure des IA", "Fréquence des mesures", (t) => freq(seg, t)),
+    row("Mesure des IA", "Passages par question et par IA", (t) => runs(seg, t)),
+    row("Mesure des IA", "IA interrogées", (t) => enginesLabel(seg, t)),
+    row("Mesure des IA", "IA en option", (t) => (offerEntitlements(seg, t).optionalEngines.length ? `${optionalEnginesLabel()} (+${optionPrice}/mois)` : false)),
+    row("Mesure des IA", "Concurrents suivis", (t) => (t === "decouverte" ? false : RIVALS[seg])),
+    row("Mesure des IA", "Sources citées et opportunités", (t) => (t === "decouverte" ? "Sur vos 5 questions" : true)),
+    row("SEO et site", "Analyse du site", (t) => `${nf(seo(seg, t).pages)} pages, ${seo(seg, t).reanalysis}`),
+    row("SEO et site", "Audit SEO et GEO, Search Console, PageSpeed", () => true),
+    row("SEO et site", "Positions Google suivies", (t) => (seo(seg, t).keywords > 0 ? `${nf(seo(seg, t).keywords)} mots-clés` : false)),
+    row("SEO et site", "Liens entrants", (t) => seo(seg, t).backlinks),
+    row("Agent et contenus", "Tâches de la semaine, textes prêts", (t) => t !== "decouverte"),
+    row("Agent et contenus", "Corrections appliquées sur votre site, après validation", (t) => (seo(seg, t).apply ? `${nf(seo(seg, t).changeSets)} séries par mois` : "À télécharger")),
+    row("Agent et contenus", "Contenus rédigés, publiés après validation", (t) => contents(seg, t)),
+    row("Agent et contenus", "API publique, serveur MCP et webhooks", (t) => api(seg, t)),
+    row("Accompagnement et conditions", "Qui fait le travail", (t) => ({ decouverte: "Vous", essentiel: "Vous, avec les textes prêts", accompagne: "Nous, après votre accord" })[t]),
+    row("Accompagnement et conditions", "Travail fait pour vous", (t) => (t === "accompagne" ? DONE[seg] : false)),
+    row("Accompagnement et conditions", "Rapport mensuel", (t) => (t === "decouverte" ? false : t === "accompagne" ? "Avec point visio" : true)),
+    row("Accompagnement et conditions", "Engagement", (t) => ({ decouverte: "Aucun, gratuit", essentiel: "Aucun", accompagne: "3 mois, puis sans engagement" })[t]),
   ];
 }
 
 export const SEG_NAMES: Record<Seg, string> = { local: "Commerce local", pme: "PME et services", ecommerce: "E-commerce" };
+
+/** Les lignes des 3 parcours, pour le composant client de /tarifs. */
+export function allCompareRows(): Record<Seg, CompareRow[]> {
+  return { local: compareRows("local"), pme: compareRows("pme"), ecommerce: compareRows("ecommerce") };
+}

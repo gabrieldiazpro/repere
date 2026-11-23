@@ -24,7 +24,7 @@ export function MethodV3Sections() {
     <>
       <h2 id="questions-personnalisees" className={h2Class}>Vos propres questions</h2>
       <p className="leading-relaxed">
-        Le test gratuit utilise nos requêtes types. Avec un compte, vous suivez <strong>vos</strong> questions : celles que vos clients posent vraiment. Vous pouvez remplacer
+        Le test de marque gratuit utilise nos requêtes types. Avec un compte, vous suivez <strong>vos</strong> questions : celles que vos clients posent vraiment. Vous pouvez remplacer
         les questions types ou les compléter, leur donner un thème et des étiquettes (service, produit, ville, concurrent), importer une liste depuis un fichier CSV ou un texte collé,
         ou partir de nos suggestions, construites à partir de l&apos;adresse de votre site, de votre secteur et de vos concurrents. Deux questions quasi identiques (même intention,
         mots porteurs de sens en commun à plus de 80 %) sont fusionnées pour ne pas compter deux fois la même chose.
@@ -51,7 +51,7 @@ export function MethodV3Sections() {
       </p>
       <ul className="mt-3 list-disc space-y-2 pl-6 leading-relaxed">
         <li>Pays France, langue français ; aperçus IA relevés sur mobile par défaut, Copilot sur ordinateur.</li>
-        <li>Chaque question est posée 2 fois au test gratuit et 3 fois en suivi, à chaque IA ; la marge d&apos;erreur (à 90 %) est calculée IA par IA.</li>
+        <li>Chaque question est posée à chaque IA 2 fois au test de marque gratuit, 3 fois par mesure mensuelle (Découverte, Essentiel) et 2 fois par mesure hebdomadaire (Accompagné) ; la marge d&apos;erreur (à 90 %) est calculée IA par IA.</li>
         <li>Une recherche sans aperçu IA est comptée à part, jamais comme un oubli : Google n&apos;en affiche pas pour toutes les recherches.</li>
         <li>Copilot, c&apos;est la réponse Copilot affichée dans la recherche Bing, pas l&apos;application Copilot (qui n&apos;a pas d&apos;API publique).</li>
         <li>Le relevé se fait sans compte Google ni Microsoft : la personnalisation d&apos;un utilisateur connecté n&apos;est pas reproduite.</li>
@@ -179,7 +179,7 @@ export function MethodV3Sections() {
       <p className="leading-relaxed">
         Nous ne voyons pas ce qu&apos;une IA répond à une personne précise (historique, mémoire, compte connecté) : nous mesurons une tendance sur des questions types. Les applications
         mobiles des IA et l&apos;application Copilot n&apos;ont pas d&apos;interface de mesure : seules leurs API ou leurs réponses dans les pages de résultats le sont. Les aperçus IA de Google ne sont relevés
-        qu&apos;en France et en option ; votre présence dans l&apos;index de Google (Googlebot) reste un prérequis, que l&apos;audit « prêt pour les IA » vérifie. Voir aussi <Link href="/comparatif" className="underline">le comparatif</Link>.
+        qu&apos;en France (dans les offres payantes) ; votre présence dans l&apos;index de Google (Googlebot) reste un prérequis, que l&apos;audit « prêt pour les IA » vérifie. Voir aussi <Link href="/comparatif" className="underline">le comparatif</Link>.
       </p>
       <Card className="mt-4">
         <p className="text-sm" style={{ color: 'var(--muted)' }}>

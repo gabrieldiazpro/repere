@@ -2,6 +2,7 @@ import { pageMeta } from '@/lib/seo/meta';
 import type { LegalSection } from '@/lib/seo/shell';
 import { LegalDocument } from '@/components/pages/v4/LegalDocument';
 import { LEGAL, LEGAL_ADDRESS, SIREN_DISPLAY, orTodo } from '@/lib/seo/site';
+import { PARTNER_PRIVACY_SUMMARY } from '@/lib/partners/terms';
 
 export const metadata = pageMeta({
   path: '/confidentialite',
@@ -35,6 +36,9 @@ const sections: LegalSection[] = [
         ['Slack et webhook sortant [sous-traitance]', 'adresse de réception et secret de signature (chiffrés), messages envoyés (titre, score, lien), journal des livraisons', 'envoyer au client les alertes et résumés demandés', 'pour le compte du client', 'jusqu\'à suppression de l\'intégration ; journal des livraisons : 30 jours [À VÉRIFIER]'],
         ['Mesure avant/après et annotations', 'questions liées à une tâche, mesures à 14 et 30 jours, notes saisies par le client sur ses courbes', 'montrer l\'évolution après une action', 'contrat', 'durée du compte'],
         ['Parrainage', 'code de parrainage, lien parrain-filleul, statut de la récompense', 'attribuer et créditer la récompense', 'contrat / intérêt légitime (anti-fraude)', 'durée du compte, puis 5 ans pour les écritures comptables'],
+        // V10 : BROUILLON à relire (docs/v10/DECISIONS.md, décision 9).
+        ['Attribution partenaire (liens « ?ref= ») [À RELIRE]', 'code du partenaire, première page vue et date (mémoire de l\'onglet, sans cookie), métadonnée « partner_ref » du paiement Stripe, montants hors taxes encaissés et remboursés', 'attribuer l\'inscription ou le paiement au partenaire et calculer sa commission trimestrielle', 'intérêt légitime / exécution du contrat de partenariat', 'durée du programme, puis 10 ans pour les pièces comptables'],
+        ['Candidatures partenaires [À RELIRE]', 'structure, nom, e-mail, site, public, message, consentement horodaté', 'étudier la candidature et répondre', 'mesures précontractuelles', '3 ans après le dernier contact'],
         ['Classement public et badge (facultatifs)', 'nom d\'affichage, métier, ville, score et date de la dernière mesure', 'publier un classement par métier et par ville, afficher un badge', 'consentement (inscription volontaire, révocable à tout moment)', 'jusqu\'au retrait de l\'inscription ; le retrait est immédiat'],
         ['Benchmark entre clients', 'rangs et scores agrégés et anonymisés', 'situer le client face à ses pairs', 'intérêt légitime', 'moyenne publiée seulement à partir de 5 clients par cohorte'],
         ['Mesure du trafic IA (script sur le site du client) [sous-traitance]', 'jour, moteur d\'origine, page d\'arrivée, conversion éventuelle : totaux uniquement', 'montrer au client les visites venues des assistants IA', 'pour le compte du client', '13 mois au plus'],
@@ -52,7 +56,11 @@ const sections: LegalSection[] = [
     },
   },
   {
-    title: '3. D\'où viennent les données ?',
+    title: '2 bis. Parrainage et partenaires [À RELIRE : brouillon à faire valider par un avocat]',
+    paras: [...PARTNER_PRIVACY_SUMMARY],
+  },
+  {
+    title: '3. D\'où viennent les données ?',
     paras: [
       'De vous (formulaires, fiche de vérité), des connecteurs que vous autorisez, de sources publiques (annuaire des entreprises / Sirene (INSEE), informations publiées par l\'entreprise elle-même : site, e-mail professionnel de contact) et des réponses des assistants IA que nous interrogeons. Nous ne collectons pas de données de Google Maps en dehors des conditions de l\'API. Nous n\'utilisons aucune donnée sensible.',
     ],

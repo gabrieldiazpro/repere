@@ -12,11 +12,12 @@
  * Comptes démo : lecture seule (403 sur toute action).
  */
 import { getBusinessRecord } from '@/lib/db';
-import { assertCanApplyPublish, getEntitlements } from '@/lib/entitlements';
+import { assertCanApplyPublish, assertWithinPublishQuota, getEntitlements } from '@/lib/entitlements';
 import { HttpError, type Role } from '@/lib/auth';
 import {
   applyChangeSet,
   changeSetJournal,
+  countAppliedThisMonth,
   editChange,
   getChangeSet,
   proposeChangeSet,
@@ -80,7 +81,12 @@ export async function POST(req: Request, { params }: Ctx) {
         const current = await getChangeSet(businessId, id);
         if (current && current.platform !== 'export') {
           const rec = await getBusinessRecord(businessId);
-          if (rec) assertCanApplyPublish(getEntitlements(rec));
+          if (rec) {
+            const ent = getEntitlements(rec);
+            assertCanApplyPublish(ent);
+            // V10 : plafond mensuel (une reprise des échecs d'une série déjà appliquée ne compte pas deux fois).
+            if (!current.appliedAt) assertWithinPublishQuota(ent, await countAppliedThisMonth(businessId));
+          }
         }
         cs = await applyChangeSet(businessId, id, actor);
         break;

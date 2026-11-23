@@ -82,7 +82,7 @@ function factsOf(id: DemoId): Record<string, string> {
 
 function local(stage: number): SiteDef {
   const f = factsOf('demo');
-  const origin = 'https://plomberie-martin.fr';
+  const origin = 'https://plomberie-martin.example';
   const tel = f.telephone ?? '01 43 55 12 34';
   const adr = f.adresse ?? '42 rue Oberkampf, 75011 Paris';
   const hours = f.horaires ?? 'Du lundi au vendredi 8 h – 19 h, samedi 9 h – 13 h';
@@ -218,7 +218,7 @@ function local(stage: number): SiteDef {
     },
     { path: '/blog/fuite-chasse-eau', title: 'Chasse d’eau qui fuit : 3 causes | Plomberie Martin', desc: 'Joint, flotteur ou mécanisme : comment savoir ce qui fuit et quand appeler un plombier.', h1: 'Chasse d’eau qui fuit : les 3 causes', sections: [['Les causes', p('Un joint usé, un flotteur mal réglé ou un mécanisme entartré. Une chasse d’eau qui coule en continu peut consommer jusqu’à 600 litres par jour.')]], updated: '2023-11-02' },
     { path: '/devis', title: 'Demande de devis plombier | Plomberie Martin', desc: 'Décrivez votre besoin : devis gratuit sous 24 h ouvrées.', h1: 'Demander un devis', sections: [['Votre demande', p('Décrivez votre besoin, ajoutez une photo si possible : nous vous répondons sous 24 h ouvrées avec un devis ou une proposition de visite.')]], noindex: true, inSitemap: false },
-    { path: '/mentions-legales', title: 'Mentions légales – Plomberie Martin', desc: 'Mentions légales du site plomberie-martin.fr.', h1: 'Mentions légales', sections: [['Éditeur', p(`Plomberie Martin, ${adr}. Directeur de la publication : ${f.dirigeant ?? 'le gérant'}.`)]] },
+    { path: '/mentions-legales', title: 'Mentions légales – Plomberie Martin', desc: 'Mentions légales de plomberie-martin.example.', h1: 'Mentions légales', sections: [['Éditeur', p(`Plomberie Martin, ${adr}. Directeur de la publication : ${f.dirigeant ?? 'le gérant'}.`)]] },
     { path: '/confidentialite', title: 'Politique de confidentialité – Plomberie Martin', desc: 'Données collectées par le formulaire de devis et leur durée de conservation.', h1: 'Politique de confidentialité', sections: [['Données collectées', p('Nom, téléphone et description du besoin, conservés 3 ans.')]] },
     // Défauts : ancienne page qui redirige (chaîne), lien cassé.
     { path: '/plombier-paris-11.html', redirectTo: '/', hops: stage >= 2 ? 1 : 2, inSitemap: stage < 3 },
@@ -244,7 +244,7 @@ function local(stage: number): SiteDef {
 
 function pme(stage: number): SiteDef {
   const f = factsOf('demo-pme');
-  const origin = 'https://paysia.fr';
+  const origin = 'https://paysia.example';
   const prix = f.prix ?? 'À partir de 12 € HT par utilisateur et par mois';
   const org = {
     '@context': 'https://schema.org',
@@ -295,10 +295,10 @@ function pme(stage: number): SiteDef {
     page('/securite', 'Sécurité et hébergement des données | Paysia', 'Sécurité de vos données', 'Hébergement en France, chiffrement, double authentification, sauvegardes quotidiennes.', [['Hébergement', p('Données hébergées en France, sauvegardées chaque nuit sur deux sites distincts, conservées 6 ans.')]]),
     page('/a-propos', 'À propos de Paysia', 'Qui sommes-nous ?', `Paysia, éditeur français de logiciel de paie fondé en ${f.creation ?? '2016'}.`, [['Notre histoire', p(`Paysia a été fondée en ${f.creation ?? '2016'} à Paris par ${f.dirigeant ?? 'deux anciens gestionnaires de paie'}. L’équipe compte 48 personnes, dont 12 experts paie.`)]]),
     page('/contact', 'Contact – Paysia', 'Nous contacter', 'Écrivez-nous ou appelez le support du lundi au vendredi.', [['Coordonnées', p(`${f.adresse ?? '18 rue de la Chaussée-d’Antin, 75009 Paris'}. Support : du lundi au vendredi, 9 h – 18 h.`)]]),
-    page('/mentions-legales', 'Mentions légales – Paysia', 'Mentions légales', 'Mentions légales de paysia.fr.', [['Éditeur', p('Paysia SAS, Paris.')]]),
+    page('/mentions-legales', 'Mentions légales – Paysia', 'Mentions légales', 'Mentions légales de paysia.example.', [['Éditeur', p('Paysia SAS, Paris.')]]),
     page('/confidentialite', 'Politique de confidentialité – Paysia', 'Confidentialité', 'Traitement des données personnelles.', [['Vos données', p('Nous traitons les données de paie en qualité de sous-traitant de nos clients.')]]),
     { path: '/fonctionnalites', redirectTo: '/logiciel-paie-pme', hops: 1, inSitemap: stage < 2 },
-    { path: '/en/', title: 'Paysia – payroll software', h1: 'Payroll software for French SMEs', desc: 'Payroll software for French SMEs.', sections: [['Payroll', p('Paysia computes payslips and files the DSN for companies with 10 to 250 employees in France.')]], inSitemap: false, head: '<link rel="alternate" hreflang="fr" href="https://paysia.fr/">' },
+    { path: '/en/', title: 'Paysia – payroll software', h1: 'Payroll software for French SMEs', desc: 'Payroll software for French SMEs.', sections: [['Payroll', p('Paysia computes payslips and files the DSN for companies with 10 to 250 employees in France.')]], inSitemap: false, head: '<link rel="alternate" hreflang="fr" href="https://paysia.example/">' },
   ];
   // Liens profonds : le comparatif et les articles ne sont liés que depuis le blog (profondeur 3+).
   pages.find((x) => x.path === '/blog/externaliser-paie')!.links = [['/blog/bulletin-de-paie', 'Bulletin de paie 2026'], ['/fonctionnalites', 'nos fonctionnalités']];
@@ -321,7 +321,7 @@ function pme(stage: number): SiteDef {
 
 function ecom(stage: number): SiteDef {
   const f = factsOf('demo-ecom');
-  const origin = 'https://www.maison-sora.fr';
+  const origin = 'https://www.maison-sora.example';
   const liv = f.livraison ?? 'France et Belgique ; offerte dès 39 € ; expédition sous 48 h';
   const org = { '@context': 'https://schema.org', '@type': 'Organization', name: 'Maison Sora', url: `${origin}/`, logo: `${origin}/logo.png`, ...(stage >= 2 ? { sameAs: ['https://www.instagram.com/maisonsora.demo'] } : {}) };
   const products: [string, string, string, number, string][] = [
@@ -394,7 +394,7 @@ function ecom(stage: number): SiteDef {
     { path: '/collections/shampoings-solides?page=2', title: 'Shampoings solides naturels – Maison Sora', h1: 'Shampoings solides', desc: 'Page 2.', sections: [['Notre sélection', p('Suite de la collection shampoings solides.')]], inSitemap: false },
     { path: '/pages/notre-atelier', title: 'Notre atelier à Lyon – Maison Sora', h1: 'Notre atelier à la Croix-Rousse', desc: 'Comment nous fabriquons nos cosmétiques solides, en petites séries, à Lyon.', sections: [['Fabrication', p('Nous saponifions à froid et laissons sécher chaque pain 4 semaines. L’atelier emploie 6 personnes et produit environ 9 000 pains par mois.')], ['Nos fournisseurs', p('Huiles et beurres certifiés biologiques, argiles françaises, huiles essentielles de Provence quand c’est possible.')]] },
     { path: '/pages/livraison', title: 'Livraison et retours – Maison Sora', h1: 'Livraison et retours', desc: liv, sections: [['Livraison', p(`${liv}. Point relais à 4,90 €, domicile à 6,90 €.`)], ['Retours', p('Retours gratuits sous 30 jours pour les produits non ouverts.')]] },
-    { path: '/pages/cgv', title: 'Conditions générales de vente – Maison Sora', h1: 'Conditions générales de vente', desc: 'CGV de la boutique maison-sora.fr.', sections: [['Objet', p('Les présentes conditions régissent les ventes de la boutique en ligne Maison Sora.')]] },
+    { path: '/pages/cgv', title: 'Conditions générales de vente – Maison Sora', h1: 'Conditions générales de vente', desc: 'CGV de la boutique maison-sora.example.', sections: [['Objet', p('Les présentes conditions régissent les ventes de la boutique en ligne Maison Sora.')]] },
     { path: '/pages/contact', title: 'Contact – Maison Sora', h1: 'Nous contacter', desc: 'Une question sur un produit ou une commande ?', sections: [['Service client', p('Réponse sous 24 h ouvrées par courriel, du lundi au vendredi.')]] },
     { path: '/pages/mentions-legales', title: 'Mentions légales – Maison Sora', h1: 'Mentions légales', desc: 'Mentions légales.', sections: [['Éditeur', p('Maison Sora SAS, Lyon.')]] },
     { path: '/search?q=shampoing', title: 'Recherche – Maison Sora', h1: 'Résultats de recherche', desc: 'Recherche', sections: [['Résultats', p('4 produits trouvés pour « shampoing ».')]], inSitemap: false },

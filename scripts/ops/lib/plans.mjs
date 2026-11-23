@@ -43,3 +43,21 @@ export async function soldPlans({ legacy = false } = {}) {
   const m = await loadPlans();
   return m.PLANS.filter((p) => p.available && p.priceCents > 0 && (legacy || !p.legacy));
 }
+
+/**
+ * V10 (docs/v10/DECISIONS.md, décisions 3 et 5) : options payantes en prix Stripe récurrents mensuels
+ * (lookup_key = identifiant de l'option, quantité = nombre de clients pour l'Agence). Les options Agence et l'offre
+ * Agence (liste d'attente) ne sont décrites qu'avec `agency: true` (option --agence du script) : rien n'est créé
+ * tant que l'offre n'ouvre pas.
+ */
+export async function addonPlans({ agency = false } = {}) {
+  const m = await loadPlans();
+  const addons = (m.PLAN_ADDONS ?? []).filter((a) => agency || a.unit !== 'client');
+  return addons.map((a) => ({ id: a.id, segment: a.unit === 'client' ? 'agence' : 'options', name: a.name, priceCents: a.priceCents, interval: a.interval, available: true }));
+}
+
+/** Offre Agence (mensuelle et annuelle), décrite seulement avec --agence. */
+export async function agencyPlans() {
+  const m = await loadPlans();
+  return m.PLANS.filter((p) => p.segment === 'agence' && p.priceCents > 0 && /^agency_(month|year)$/.test(p.id));
+}

@@ -313,7 +313,16 @@ async function onInvoicePaid(invoice: Stripe.Invoice) {
   try {
     // V9 : paiement d'un client apporté par un partenaire (?ref=) → base de commission (@/lib/partners, idempotent).
     const { recordPartnerPayment, exclTax } = await import('@/lib/partners/payments');
-    const inv = invoice as unknown as { id?: string; total_excluding_tax?: number | null; tax?: number | null; currency?: string; status_transitions?: { paid_at?: number | null } };
+    const inv = invoice as unknown as {
+      id?: string;
+      total_excluding_tax?: number | null;
+      tax?: number | null;
+      currency?: string;
+      status_transitions?: { paid_at?: number | null };
+      payment_intent?: string | { id?: string } | null;
+      payments?: { data?: { payment?: { payment_intent?: string | { id?: string } | null } }[] };
+    };
+    const pi = inv.payment_intent ?? inv.payments?.data?.[0]?.payment?.payment_intent ?? null;
     const paidAt = inv.status_transitions?.paid_at ? new Date(inv.status_transitions.paid_at * 1000).toISOString() : null;
     await recordPartnerPayment({
       invoiceId: String(inv.id ?? ''),
@@ -323,6 +332,7 @@ async function onInvoicePaid(invoice: Stripe.Invoice) {
       amountExclTaxCents: exclTax({ amountPaid: invoice.amount_paid, totalExcludingTax: inv.total_excluding_tax, tax: inv.tax }),
       currency: inv.currency ?? 'eur',
       paidAt,
+      paymentIntentId: typeof pi === 'string' ? pi : pi?.id ?? null,
     });
   } catch (e) {
     console.error('[webhook] paiement partenaire non enregistré', sub.businessId, e);
@@ -333,6 +343,21 @@ async function onInvoicePaid(invoice: Stripe.Invoice) {
   } catch (e) {
     // Jamais bloquant pour la facturation : la récompense pourra être appliquée à la main.
     console.error('[webhook] parrainage non récompensé', sub.businessId, e);
+  }
+}
+
+/** V10 : remboursement d'un paiement → déduit de la base de commission partenaire (jamais bloquant). */
+async function onChargeRefunded(charge: Stripe.Charge) {
+  try {
+    const c = charge as unknown as { invoice?: string | { id?: string } | null; payment_intent?: string | { id?: string } | null; amount_refunded?: number };
+    const { recordPartnerRefund } = await import('@/lib/partners/payments');
+    await recordPartnerRefund({
+      invoiceId: typeof c.invoice === 'string' ? c.invoice : c.invoice?.id ?? null,
+      paymentIntentId: typeof c.payment_intent === 'string' ? c.payment_intent : c.payment_intent?.id ?? null,
+      amountRefundedCents: c.amount_refunded ?? 0,
+    });
+  } catch (e) {
+    console.error('[webhook] remboursement partenaire non enregistré', charge.id, e);
   }
 }
 
@@ -377,6 +402,9 @@ export async function POST(req: Request) {
         break;
       case 'invoice.paid':
         await onInvoicePaid(event.data.object);
+        break;
+      case 'charge.refunded':
+        await onChargeRefunded(event.data.object);
         break;
       case 'charge.dispute.created':
         console.warn('[webhook] litige ouvert', event.data.object.id, event.data.object.amount);

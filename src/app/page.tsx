@@ -34,7 +34,7 @@ import { houseOrgExtras, mergeOrg } from "@/lib/seo/house";
 
 const TITLE = "SEO et référencement IA (GEO) des sites pros | Repéré";
 const DESCRIPTION =
-  `Votre marque est-elle citée par les IA ? Test gratuit sans carte bancaire : qui elles citent à votre place et pourquoi, puis ${SEO_CHECK_COUNT} contrôles SEO de votre site.`;
+  `Votre marque est-elle citée par les IA ? Test de marque gratuit, sans carte bancaire : qui elles citent à votre place et pourquoi, puis ${SEO_CHECK_COUNT} contrôles SEO de votre site.`;
 
 export const metadata = pageMeta({
   path: "/",

@@ -8,7 +8,6 @@ import {
   offersIncluding,
   promptsCount,
 } from "../offer-facts";
-import { DETAILS } from "../PricingExplorer";
 import { compareRows } from "@/components/pages/pricing-data";
 import { GRID, GRID_ENGINES, GRID_PASSES, GRID_QUESTIONS } from "../ProofWall";
 
@@ -27,8 +26,8 @@ describe("promesses du site = table des droits", () => {
     expect(offersIncluding("chatgpt")).toBe("toutes les offres");
   });
 
-  it("la phrase de fréquence dit « chaque mois » pour l'Essentiel local", () => {
-    expect(frequencySummary()).toMatch(/chaque mois en Essentiel commerce local/);
+  it("la phrase de fréquence dit « chaque mois » pour Essentiel et « chaque semaine » pour Accompagné", () => {
+    expect(frequencySummary()).toBe("chaque mois en Découverte et en Essentiel, chaque semaine en Accompagné");
   });
 
   it("le tableau comparatif /tarifs reprend les droits", () => {
@@ -43,18 +42,31 @@ describe("promesses du site = table des droits", () => {
     }
   });
 
-  it("le détail des offres (composant client) ne contredit pas les droits", () => {
+  it("le comparatif des fonctionnalités (V10) reprend les IA, les passages et les quotas des droits", () => {
     for (const seg of ["local", "pme", "ecommerce"] as const) {
-      const qRow = DETAILS[seg][0];
-      for (const [col, tier] of [[2, "essentiel"], [3, "accompagne"]] as const) {
-        const cell = String(qRow.v[col]);
-        expect(cell.startsWith(String(promptsCount(seg, tier)))).toBe(true);
-        expect(cell).toContain(frequencyAdverb(seg, tier));
-        const ia = String(DETAILS[seg][1].v[col]);
-        const hasClaude = offerEntitlements(seg, tier).engines.includes("claude");
-        expect(/Claude/.test(ia) || (tier === "accompagne" && /Les 3, plus Claude|4 IA/.test(ia))).toBe(hasClaude);
+      const rows = compareRows(seg);
+      const ia = rows.find((r) => r.label === "IA interrogées")!;
+      const opt = rows.find((r) => r.label === "IA en option")!;
+      for (const tier of ["decouverte", "essentiel", "accompagne"] as const) {
+        const e = offerEntitlements(seg, tier);
+        expect(/Claude/.test(String(ia[tier]))).toBe(e.engines.includes("claude"));
+        expect(/AI Overviews/.test(String(ia[tier]))).toBe(e.engines.includes("google_aio"));
+        expect(opt[tier] === false).toBe(e.optionalEngines.length === 0);
+        const runs = rows.find((r) => r.label === "Passages par question et par IA")!;
+        expect(runs[tier]).toBe(`${e.runs} passages`);
       }
     }
+  });
+
+  it("V10 : Essentiel mensuel (3 passages), Accompagné hebdomadaire (2 passages), Google dans les offres payantes", () => {
+    for (const seg of ["local", "pme", "ecommerce"] as const) {
+      expect(frequencyAdverb(seg, "essentiel")).toBe("chaque mois");
+      expect(frequencyAdverb(seg, "accompagne")).toBe("chaque semaine");
+      expect(offerEntitlements(seg, "essentiel").runs).toBe(3);
+      expect(offerEntitlements(seg, "accompagne").runs).toBe(2);
+    }
+    expect(offersIncluding("google_aio")).toBe("toutes les offres payantes");
+    expect(offersIncluding("google_ai_mode")).toBe("toutes les offres payantes");
   });
 
   it("la grille de méthode du mur de preuves compte 8 × 3 × 2 = 48 réponses", () => {

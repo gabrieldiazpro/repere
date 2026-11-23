@@ -47,12 +47,12 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const LOCAL: AuditInput = { businessName: 'Plomberie Martin', trade: 'plombier', city: 'Paris', district: '11e', website: 'plomberie-martin.fr', segment: 'local' };
+const LOCAL: AuditInput = { businessName: 'Plomberie Martin', trade: 'plombier', city: 'Paris', district: '11e', website: 'plomberie-martin.example', segment: 'local' };
 const PME: AuditInput = {
   businessName: 'Paysia',
   trade: 'logiciel de paie',
   city: 'Paris',
-  website: 'paysia.fr',
+  website: 'paysia.example',
   segment: 'pme',
   category: 'logiciel de paie pour PME',
   knownCompetitors: ['PayFit', 'Silae', 'Cegid', 'Lucca'],
@@ -62,7 +62,7 @@ const ECOM: AuditInput = {
   businessName: 'Maison Sora',
   trade: 'cosmétiques solides',
   city: 'Lyon',
-  website: 'maison-sora.fr',
+  website: 'maison-sora.example',
   segment: 'ecommerce',
   productCategories: ['shampoing solide', 'déodorant solide'],
   knownCompetitors: ['Lamazuna', 'Respire', 'Cut by Fred'],
@@ -100,7 +100,7 @@ describe('classification des domaines', () => {
   });
 
   it('client et concurrents', () => {
-    expect(classifyDomain('https://www.plomberie-martin.fr/contact', { clientDomain: 'plomberie-martin.fr' }).category).toBe('client');
+    expect(classifyDomain('https://www.plomberie-martin.example/contact', { clientDomain: 'plomberie-martin.example' }).category).toBe('client');
     const c = classifyDomain('https://www.plomberie-laurent.fr/', { competitors: ['Plomberie Laurent', 'Ets Bonnet'] });
     expect(c).toMatchObject({ category: 'concurrent', competitor: 'Plomberie Laurent' });
     expect(classifyDomain('https://payfit.com/fr', { competitors: ['PayFit'] }).category).toBe('concurrent');
@@ -213,7 +213,7 @@ describe('opportunités', () => {
     const answers = [
       ans('chatgpt', 1, [
         { url: 'https://www.pagesjaunes.fr/annuaire/paris?utm_source=openai', title: 'Plombiers Paris 11e – PagesJaunes', snippet: 'Ets Bonnet, Atelier Roux', kind: 'cited', startIndex: 0 },
-        { url: 'https://www.plomberie-martin.fr/', kind: 'cited', startIndex: text.indexOf('Plomberie Martin') },
+        { url: 'https://www.plomberie-martin.example/', kind: 'cited', startIndex: text.indexOf('Plomberie Martin') },
       ]),
       ans('perplexity', 1, [{ url: 'https://www.reddit.com/r/paris/comments/1', title: 'Plombier ? : r/paris', kind: 'cited', startIndex: text.indexOf('Plomberie Martin') }]),
       ans('perplexity', 2, [{ url: 'https://www.pagesjaunes.fr/annuaire/paris', title: 'PagesJaunes', snippet: 'Ets Bonnet', kind: 'cited' }]),
@@ -248,7 +248,7 @@ describe('factCheck', () => {
     expect(compareFact('adresse', '12 rue Oberkampf, 75011 Paris', '21 rue Oberkampf, 75011 Paris')).toBe('faux');
     expect(compareFact('prix', 'À partir de 8 € HT par mois', 'environ 9 € par mois')).toBe('correct');
     expect(compareFact('prix', 'À partir de 8 € HT par mois', 'environ 15 € par mois')).toBe('faux');
-    expect(compareFact('site', 'paysia.fr', 'https://www.paysia.fr/tarifs')).toBe('correct');
+    expect(compareFact('site', 'paysia.example', 'https://www.paysia.example/tarifs')).toBe('correct');
     expect(compareFact('statut', 'ouvert', 'fermé définitivement')).toBe('faux');
   });
 

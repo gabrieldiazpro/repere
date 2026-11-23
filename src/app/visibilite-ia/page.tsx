@@ -78,7 +78,7 @@ export default function Hub() {
 
       <div className="mt-12 rounded-2xl p-6 sm:p-8" style={{ background: 'var(--primary-bg)' }}>
         <p className="mb-3 text-lg font-semibold">Et vous, êtes-vous cité ?</p>
-        <CtaLink href="/audit">Lancer mon test gratuit</CtaLink>
+        <CtaLink href="/analyse">Lancer mon test de marque gratuit</CtaLink>
         <p className="mt-3 text-sm" style={{ color: 'var(--muted)' }}>
           Les scores sont des mesures à un instant donné, avec une fourchette. <Link href="/methode" className="underline">Voir la méthode</Link>.
         </p>

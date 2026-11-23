@@ -47,7 +47,7 @@ const countPages = (buf: Buffer) => (buf.toString('latin1').match(/\/Type\s*\/Pa
 const auditPme = {
   ...audit,
   id: 'test-pme-1',
-  input: { businessName: 'Paysia', trade: 'logiciel de paie pour PME', city: 'France', website: 'paysia.fr', segment: 'pme' as const, category: 'logiciel de paie pour PME', offering: 'La paie en ligne pour les PME de 10 à 250 salariés', market: 'France' },
+  input: { businessName: 'Paysia', trade: 'logiciel de paie pour PME', city: 'France', website: 'paysia.example', segment: 'pme' as const, category: 'logiciel de paie pour PME', offering: 'La paie en ligne pour les PME de 10 à 250 salariés', market: 'France' },
   segment: 'pme' as const,
   competitors: [{ name: 'PayFit', mentions: 22, share: 0.55 }, { name: 'Silae', mentions: 15, share: 0.38 }, { name: 'Lucca', mentions: 9, share: 0.22 }],
   benchmark: { rank: 4, of: 12, label: '4ᵉ sur 12 logiciels de paie cités par les IA' },

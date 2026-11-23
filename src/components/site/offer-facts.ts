@@ -28,8 +28,8 @@ export const ENGINE_NAMES: Record<ProviderId, string> = {
   grok: "Grok",
 };
 
-/** Ordre d'affichage du site (ChatGPT, Gemini, Perplexity, Claude, Mistral). */
-const ORDER: ProviderId[] = ["chatgpt", "gemini", "perplexity", "claude", "mistral"];
+/** Ordre d'affichage du site (ChatGPT, Gemini, Perplexity, Claude, aperçus IA et AI Mode de Google, Mistral). */
+const ORDER: ProviderId[] = ["chatgpt", "gemini", "perplexity", "claude", "google_aio", "google_ai_mode", "mistral"];
 
 /** « ChatGPT, Gemini, Perplexity, Claude, plus Mistral Vibe en option » (Mistral n'est interrogé qu'avec sa clé). */
 export function enginesLabel(segment: OfferSegment, tier: OfferTier): string {
@@ -62,19 +62,23 @@ export function promptsCount(segment: OfferSegment, tier: OfferTier): number {
 }
 
 /**
- * Phrase de fréquence pour tout le site, dérivée des droits, par exemple :
- * « chaque mois en Essentiel commerce local, chaque semaine en Accompagné et pour les PME et l'e-commerce ».
+ * Phrase de fréquence pour tout le site, dérivée des droits. V10 : « chaque mois en Découverte et en Essentiel, chaque
+ * semaine en Accompagné » (détail par parcours si les droits divergent un jour).
  */
 export function frequencySummary(): string {
-  const parts: string[] = [];
-  const localEss = frequencyAdverb("local", "essentiel");
-  const localAcc = frequencyAdverb("local", "accompagne");
-  const pme = frequencyAdverb("pme", "essentiel");
-  const ecom = frequencyAdverb("ecommerce", "essentiel");
-  parts.push(`${localEss} en Essentiel commerce local`);
-  if (localAcc === pme && pme === ecom) parts.push(`${pme} en Accompagné local et dans les offres PME et e-commerce`);
-  else parts.push(`${localAcc} en Accompagné local`, `${pme} pour les PME`, `${ecom} pour l'e-commerce`);
-  return parts.join(", ");
+  const segs: OfferSegment[] = ["local", "pme", "ecommerce"];
+  const same = (t: OfferTier) => segs.every((s) => frequencyAdverb(s, t) === frequencyAdverb("local", t));
+  if (same("decouverte") && same("essentiel") && same("accompagne")) {
+    const dec = frequencyAdverb("local", "decouverte");
+    const ess = frequencyAdverb("local", "essentiel");
+    const acc = frequencyAdverb("local", "accompagne");
+    if (dec === ess && ess !== acc) return `${ess} en Découverte et en Essentiel, ${acc} en Accompagné`;
+    return `${dec} en Découverte, ${ess} en Essentiel, ${acc} en Accompagné`;
+  }
+  const NAMES: Record<OfferSegment, string> = { local: "commerce local", pme: "PME", ecommerce: "e-commerce" };
+  return (["essentiel", "accompagne"] as const)
+    .flatMap((t) => segs.map((s) => `${frequencyAdverb(s, t)} en ${t === "essentiel" ? "Essentiel" : "Accompagné"} ${NAMES[s]}`))
+    .join(", ");
 }
 
 /** Liste « ChatGPT, Gemini, Perplexity » commune à toutes les offres (le socle). */
@@ -94,6 +98,8 @@ export function offersIncluding(engine: ProviderId): string {
   const tiers: OfferTier[] = ["decouverte", "essentiel", "accompagne"];
   const has = (s: OfferSegment, t: OfferTier) => offerEntitlements(s, t).engines.includes(engine);
   if (tiers.every((t) => segs.every((s) => has(s, t)))) return "toutes les offres";
+  // V10 : aperçus IA de Google et AI Mode, dans toutes les offres payantes (pas Découverte).
+  if (!segs.some((s) => has(s, "decouverte")) && (["essentiel", "accompagne"] as const).every((t) => segs.every((s) => has(s, t)))) return "toutes les offres payantes";
   const parts: string[] = [];
   for (const t of tiers) {
     const inSegs = segs.filter((s) => has(s, t));
@@ -152,4 +158,15 @@ export function v5OfferFacts(segment: OfferSegment, tier: OfferTier): V5OfferFac
     seoLines,
     agentLine,
   };
+}
+
+/** V10 : IA en option payante (Copilot, DeepSeek) : « Copilot (Bing) et DeepSeek ». */
+export function optionalEnginesLabel(): string {
+  const e = offerEntitlements("pme", "accompagne").optionalEngines.map((p) => ENGINE_NAMES[p]);
+  return e.length > 1 ? `${e.slice(0, -1).join(", ")} et ${e[e.length - 1]}` : e.join("");
+}
+
+/** V10 : passages par mesure (« 3 passages » au mois, « 2 passages » à la semaine), lus dans les droits. */
+export function runsCount(segment: OfferSegment, tier: OfferTier): number {
+  return offerEntitlements(segment, tier).runs;
 }

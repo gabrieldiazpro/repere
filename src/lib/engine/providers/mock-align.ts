@@ -12,7 +12,7 @@ import type { ProviderAnswer, ProviderId, RawSource } from '../types';
 export interface AlignOptions {
   /** nom affiché du client (tel qu'il apparaît dans les réponses mock) */
   client: string;
-  /** domaine du site du client (ex. paysia.fr), pour retirer ses sources quand il n'est plus cité */
+  /** domaine du site du client (ex. paysia.example), pour retirer ses sources quand il n'est plus cité */
   clientDomain?: string;
   /** état voulu */
   mention: boolean;

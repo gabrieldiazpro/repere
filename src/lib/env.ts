@@ -101,7 +101,7 @@ export const EnvSchema = z.object({
   XAI_MODEL: str(),
   AUDIT_SERP_ENGINES: str(),
   AUDIT_PAID_EXTRA_ENGINES: str(),
-  /** V8 FINALE : « offre » = budget d'une mesure payante calé sur le volume de l'offre (docs/v8/economie-offres.md) */
+  /** V10 : « offre » (défaut si vide) = budget d’une mesure payante calé sur le volume de l’offre ; « fixe » = ancien garde-fou */
   AUDIT_BUDGET_PAID_MODE: str(),
   AUDIT_BUDGET_PAID_MAX_EUR: num(25),
   AUDIT_SERP_DEVICE: z.enum(['mobile', 'desktop']).optional().catch(undefined),

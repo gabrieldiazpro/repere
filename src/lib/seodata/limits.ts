@@ -54,7 +54,10 @@ export const SEODATA_LIMITS: Record<TierKey, SeoDataLimits> = {
   essentiel_local: { keywords: 20, devices: ['mobile'], depth: 20, aiOverview: true, backlinks: false, labs: true, inspectionsPerDay: 50, monthlyBudgetEur: 1 },
   essentiel: { keywords: 100, devices: ['desktop'], depth: 20, aiOverview: true, backlinks: false, labs: true, inspectionsPerDay: 100, monthlyBudgetEur: 3 },
   accompagne: { keywords: 300, devices: ['mobile', 'desktop'], depth: 20, aiOverview: true, backlinks: true, labs: true, inspectionsPerDay: 100, monthlyBudgetEur: 10 },
-  agence: { keywords: 2000, devices: ['desktop'], depth: 20, aiOverview: true, backlinks: true, labs: true, inspectionsPerDay: 200, monthlyBudgetEur: 40 },
+  // V10 : limites PAR ESPACE CLIENT de l'agence (chaque client est un espace, mesuré comme un Essentiel PME) : 10 clients
+  // × 3 € = 30 € par compte, sous les 40 € retenus dans docs/v8/economie-offres.md (avant : 2 000 mots-clés et 40 € par
+  // espace, soit jusqu'à 400 € pour 10 clients). Un client au-delà (+9 €/mois) couvre sa mesure (≈ 5,54 €) et ce plafond.
+  agence: { keywords: 100, devices: ['desktop'], depth: 20, aiOverview: true, backlinks: true, labs: true, inspectionsPerDay: 200, monthlyBudgetEur: 3 },
   // Démo : données de démonstration, aucun appel payant.
   demo: { keywords: 50, devices: ['mobile', 'desktop'], depth: 20, aiOverview: true, backlinks: true, labs: true, inspectionsPerDay: 0, monthlyBudgetEur: 0 },
 };

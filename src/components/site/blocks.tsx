@@ -107,7 +107,7 @@ export function SegmentPicker({
 }: {
   headingLevel?: 2 | 3;
   dark?: boolean;
-  /** « landing » : vers /local, /pme, /e-commerce ; « audit » : directement vers le test gratuit. */
+  /** « landing » : vers /local, /pme, /e-commerce ; « audit » : directement vers l'analyse gratuite (offre Découverte). */
   to?: "landing" | "audit";
 }) {
   const H = headingLevel === 2 ? "h2" : "h3";
@@ -117,12 +117,12 @@ export function SegmentPicker({
         {SEGMENTS.map((s) => (
           <li key={s.href}>
             <Link
-              href={`/audit?segment=${s.seg}`}
+              href={`/analyse?segment=${s.seg}`}
               className="group flex min-h-20 items-center justify-between gap-4 rounded-2xl bg-white px-5 py-4 text-ink transition-transform duration-200 hover:-translate-y-0.5"
             >
               <span>
                 <H className="text-lg font-bold">{s.title}</H>
-                <span className="text-[0.92rem] text-muted">Lancer mon test gratuit</span>
+                <span className="text-[0.92rem] text-muted">Analyser mon site gratuitement</span>
               </span>
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-bg text-primary transition-colors group-hover:bg-accent group-hover:text-ink">
                 <ArrowIcon />

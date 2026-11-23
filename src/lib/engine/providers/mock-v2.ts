@@ -44,11 +44,11 @@ const KNOWN_FACTS: Record<string, Partial<Record<BrandFactField, string>>> = {
     services: 'Dépannage de fuite, débouchage, remplacement de chauffe-eau, rénovation de salle de bains',
     dirigeant: 'Julien Martin',
     creation: '2009',
-    site: 'plomberie-martin.fr',
+    site: 'plomberie-martin.example',
     statut: 'ouvert',
   },
   paysia: {
-    site: 'paysia.fr',
+    site: 'paysia.example',
     adresse: '48 rue de la Chaussée-d’Antin, 75009 Paris',
     prix: 'À partir de 8 € HT par bulletin et par mois, sans frais de mise en place',
     services: 'Paie, DSN, gestion des absences et congés, notes de frais, portail salarié',
@@ -59,7 +59,7 @@ const KNOWN_FACTS: Record<string, Partial<Record<BrandFactField, string>>> = {
     statut: 'en activité',
   },
   'maison sora': {
-    site: 'maison-sora.fr',
+    site: 'maison-sora.example',
     produits: 'Shampoings, après-shampoings, déodorants et soins visage solides, sans emballage plastique',
     prix: 'Shampoing solide 12,90 € ; déodorant solide 9,90 €',
     livraison: 'France et Belgique ; offerte dès 39 € ; expédition sous 48 h',

@@ -732,7 +732,7 @@ export function AuditForm({ prefill }: { prefill: AuditPrefill }) {
           id="website"
           name="website"
           className={`${s.input} ${errors.website ? s.inputError : ''}`}
-          placeholder={seg === 'local' ? 'ex. plomberie-martin.fr' : seg === 'pme' ? 'ex. paysia.fr' : 'ex. maison-sora.fr'}
+          placeholder={seg === 'local' ? 'ex. www.votre-commerce.fr' : seg === 'pme' ? 'ex. www.votre-entreprise.fr' : 'ex. www.votre-boutique.fr'}
           inputMode="url"
           autoComplete="url"
           autoCapitalize="off"

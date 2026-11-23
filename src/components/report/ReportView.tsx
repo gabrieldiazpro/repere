@@ -56,6 +56,7 @@ export function ReportView({
   facts = null,
   cardHref = null,
   payable = true,
+  fictive = false,
 }: {
   result: ReportResult;
   unlocked?: boolean;
@@ -65,6 +66,8 @@ export function ReportView({
   cardHref?: string | null;
   /** paiement Stripe configuré ; sinon les offres renvoient vers /tarifs (aucun bouton mort) */
   payable?: boolean;
+  /** V10 (décision 14) : rapport d'un compte démo (Plomberie Martin, Paysia, Maison Sora) : entreprise fictive */
+  fictive?: boolean;
 }) {
   const r = result;
   const seg = segmentOf(r);
@@ -117,7 +120,9 @@ export function ReportView({
       {r.demo && (
         <>
           <div className={styles.demoBanner} role="note">
-            Rapport de démonstration : données simulées, pas une mesure réelle.
+            {fictive
+              ? `Rapport de démonstration : ${r.input.businessName} est une entreprise fictive, les données sont simulées, pas une mesure réelle.`
+              : 'Rapport de démonstration : données simulées, pas une mesure réelle.'}
           </div>
           <div className={styles.demoWatermark} aria-hidden="true">
             <span>DÉMO</span>

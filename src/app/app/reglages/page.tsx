@@ -211,7 +211,7 @@ export default async function ReglagesPage() {
                   ))}
                 </ul>
                 <p className="mt-1 text-[12px] text-[var(--muted)]">
-                  Les IA « en option » (aperçus IA et AI Mode de Google, Copilot dans Bing, DeepSeek, Grok, et Mistral Vibe hors offres qui l’annoncent) ne sont interrogées que lorsque la plateforme les active ; aucune n’est jamais simulée.{' '}
+                  Les IA « en option » (Copilot dans Bing et DeepSeek, en option payante en Accompagné et Agence ; Grok sur demande ; Mistral Vibe hors offres qui l’annoncent) ne sont interrogées que lorsqu’elles sont activées ; aucune n’est jamais simulée.{' '}
                   <Link href="/app/ia" className="rp-link">Comment chaque IA est mesurée</Link>
                 </p>
                 <ul className="mt-4 grid gap-1.5 text-[14px] sm:grid-cols-2">

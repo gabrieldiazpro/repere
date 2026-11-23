@@ -25,7 +25,7 @@ pas développeur : chaque étape dit **ce que vous cliquez**, **ce que vous coll
 | 4 | Vercel (hébergement) et domaine | 20 min | importer le projet | le domaine affiche le site |
 | 5 | Stripe (paiement) | 20 min | `node scripts/ops/stripe-setup.mjs --live` | « Valeurs écrites dans .env.production.local » |
 | 6 | Clés des IA | 20 min | coller les clés | `--liste` les montre ✓ |
-| 6 bis | IA en option (V8, facultatif) | 15 min | `DEEPSEEK_API_KEY`, `AUDIT_SERP_ENGINES` (+ DataForSEO de l'étape 14), `AUDIT_PAID_EXTRA_ENGINES` | `--liste` les montre ✓ |
+| 6 bis | IA de Google (requises dès la 1re vente, V10) et IA en option | 15 min | `DEEPSEEK_API_KEY`, `AUDIT_SERP_ENGINES` (+ DataForSEO de l'étape 14), `AUDIT_PAID_EXTRA_ENGINES` | `--liste` les montre ✓ |
 | 7 | Identité légale | 10 min | coller vos informations officielles | `check-env --prod` n'en signale plus |
 | 8 | Contrôle complet | 2 min | `node scripts/ops/check-env.mjs --prod` | « ✓ PRÊT » |
 | 9 | Envoyer les variables à Vercel | 10 min | `node scripts/ops/secrets.mjs --vercel-fichier` | redéploiement terminé |
@@ -154,16 +154,25 @@ mise à jour de l'application, relancez simplement `node scripts/ops/migrate.mjs
    ```bash
    node scripts/ops/stripe-setup.mjs --dry-run
    ```
-   Il liste ce qui va être créé : un produit par offre, **14 prix** lus dans `src/lib/plans.ts` (Local : audit
+   Il liste ce qui va être créé : un produit par offre, **15 prix** lus dans `src/lib/plans.ts` (Local : audit
    149 €, Essentiel 29 €/mois ou 290 €/an, Accompagné 99 €/mois, Réseau 79 €/mois ou 790 €/an ; PME : audit 390 €,
    Essentiel 99 €/mois ou 990 €/an, Accompagné 490 €/mois ; E-commerce : audit 390 €, Essentiel 79 €/mois ou 790 €/an,
-   Accompagné 390 €/mois), le **webhook** `https://votre-domaine.fr/api/stripe/webhook` avec ses 8 événements (dont
-   `invoice.paid`), et le **portail client**.
+   Accompagné 390 €/mois ; **option Copilot et DeepSeek 9 €/mois** pour Accompagné), le **webhook**
+   `https://votre-domaine.fr/api/stripe/webhook` avec ses 9 événements (dont `invoice.paid` et, depuis la V10,
+   `charge.refunded`, qui déduit les remboursements des commissions partenaires), et le **portail client**.
+   Découverte est gratuite : aucun prix Stripe.
+
+   **Agence (V10, à l'ouverture seulement)** : `node scripts/ops/stripe-setup.mjs --live --agence` ajoute l'offre
+   Agence (149 €/mois ou 1 490 €/an, **10 clients mesurés chaque mois inclus**) et ses options par client, en prix
+   mensuels à quantité : client au-delà de 10 (**9 €**), mesure hebdomadaire d'un client (**39 €**), Copilot et DeepSeek
+   pour un client (**2 €**). Tant que l'offre est en liste d'attente, ne passez pas `--agence` : rien n'est créé.
+   Une option souscrite s'ajoute comme ligne de l'abonnement (quantité = nombre de clients concernés) ; activez-la
+   ensuite sur l'espace (`setOfferOptions`, `src/lib/entitlements.ts`).
 4. Pour de vrai :
    ```bash
    node scripts/ops/stripe-setup.mjs --live
    ```
-   Le script écrit lui-même les 14 `STRIPE_PRICE_…` et `STRIPE_WEBHOOK_SECRET` dans votre fichier. Il se relance sans
+   Le script écrit lui-même les 15 `STRIPE_PRICE_…` et `STRIPE_WEBHOOK_SECRET` dans votre fichier. Il se relance sans
    risque : il ne recrée rien de ce qui existe. Si un prix change un jour dans `plans.ts`, relancez-le : il crée le
    nouveau prix, archive l'ancien (les abonnés en cours gardent le leur) et met à jour le fichier.
 5. Si le script affiche « ! Portail client » : ouvrez https://dashboard.stripe.com/settings/billing/portal, cliquez
@@ -201,9 +210,14 @@ Facultatif : `SENTRY_DSN` (suivi des erreurs, offre gratuite, https://sentry.io 
 
 Chaque IA est **désactivée tant que sa variable est vide** : elle n'est alors ni interrogée ni simulée pour un vrai client
 (elle disparaît simplement de la mesure). Les comptes démo les montrent avec des données de démonstration étiquetées.
-Les offres (plans.ts) n'annoncent pas encore ces IA (décision 3 du contrat V3, à revoir par le fondateur) : pour les ajouter
-aux mesures **payantes** de tous les abonnés, listez-les dans `AUDIT_PAID_EXTRA_ENGINES` (ex.
-`google_aio,google_ai_mode,copilot,deepseek`, ou `all`) ; seules les IA configurées sont prises. L'audit gratuit reste à 3 IA.
+
+**V10 (docs/v10/DECISIONS.md, décision 3)** : les **aperçus IA de Google et AI Mode font partie de toutes les offres
+payantes** (Essentiel, Accompagné, Agence) : configurez **obligatoirement** DataForSEO (étape 14) et
+`AUDIT_SERP_ENGINES=google_aio,google_ai_mode` (ajoutez `copilot` si vous vendez l'option) avant la première vente, sinon
+les mesures payantes ne les contiennent pas alors que l'offre les annonce. **Copilot et DeepSeek** sont des options
+payantes (Accompagné 9 €/mois, Agence 2 €/mois par client) activées espace par espace ; **Grok** sur demande.
+`AUDIT_PAID_EXTRA_ENGINES` reste un interrupteur plateforme (ajoute des IA à TOUTES les mesures payantes) : laissez-le vide.
+Découverte et l'analyse gratuite restent à 3 IA.
 
 | IA | Comment elle est mesurée (affiché tel quel dans l'app) | Variables |
 |---|---|---|
@@ -219,7 +233,8 @@ Exemple : `AUDIT_SERP_ENGINES=google_aio,google_ai_mode,copilot` (ou `all`). Che
 **Coût estimé** (pire cas, tarifs officiels relevés le 22 nov. 2026, 1 $ = 0,92 €) — compté dans `details.estimatedCostEur`
 de chaque audit, donc dans le compteur « Audits (IA) » du plafond journalier `OPS_DAILY_COST_CAP_EUR` (/admin/ops) ; pas
 dans le plafond mensuel SEO de chaque compte (pas de double compte). Chaque réponse ajoute ≈ 0,0003 € d'extraction des
-noms (extracteur OpenAI). Une mesure payante = chaque question posée 3 fois.
+noms (extracteur OpenAI). Tableau aux volumes V8 (3 passages chaque semaine) ; volumes et marges V10 (Essentiel 3 passages
+chaque mois, Accompagné 2 passages chaque semaine, Agence 10 clients chaque mois) : docs/v10/progress/DECISIONS-V10.md.
 
 | IA | Par réponse | Par client et par mois, Accompagné PME / e-commerce (100 questions × 3 passages × 4,33 semaines ≈ 1 300 réponses) | Agence (par marque : 50 questions, chaque semaine ≈ 650 réponses) |
 |---|---|---|---|
@@ -232,10 +247,12 @@ noms (extracteur OpenAI). Une mesure payante = chaque question posée 3 fois.
 À retenir : les trois IA relevées par DataForSEO coûtent ≈ 13 € par client Accompagné et par mois ; DeepSeek au plus 12 € ;
 Grok est cher pour une audience faible en France, d'où sa désactivation par défaut.
 
-**Budget par audit** : le garde-fou `AUDIT_BUDGET_PAID_EUR` (défaut 2,50 € local, 2,70 € PME / e-commerce) retire des
-passages quand l'estimation le dépasse — c'est déjà le cas avec 100 questions sur les 5 IA historiques (≈ 25 € par mesure
-complète). Fixez-le d'après l'offre (ex. 30 € pour Accompagné PME avec les IA en option) après vérification des factures ;
-sinon les dernières questions sont mesurées sur moins d'IA (le nombre de passages sautés est dans `details.skippedForBudget`).
+**Budget par mesure (V10, décision 6)** : par défaut (`AUDIT_BUDGET_PAID_MODE` vide ou `offre`), chaque mesure payante
+reçoit le budget de tout le volume de son offre (coût prévu + 10 %), plafonné à `AUDIT_BUDGET_PAID_MAX_EUR` (25 €). Les
+volumes V10 (Essentiel chaque mois, 3 passages ; Accompagné chaque semaine, 2 passages) tiennent sous ce plafond : mesure
+la plus chère ≈ 20,80 € (Accompagné PME ou e-commerce avec Copilot et DeepSeek), Essentiel PME ≈ 9,20 €, Accompagné local
+≈ 3,70 €. `AUDIT_BUDGET_PAID_MODE=fixe` rétablit l'ancien garde-fou (`AUDIT_BUDGET_PAID_EUR`, 2,50 € / 2,70 €), qui retire
+des passages puis des IA (`details.skippedForBudget`). Marges par offre : docs/v10/progress/DECISIONS-V10.md.
 
 **Vérifier** : `node scripts/ops/secrets.mjs --liste` montre ✓ devant `DEEPSEEK_API_KEY` / `AUDIT_SERP_ENGINES` ; dans
 l'app, /app/ia › « Comment chaque IA est mesurée » liste la méthode, le modèle, les échantillons et la marge de chaque IA.
@@ -444,8 +461,9 @@ Sans terminal : recollez `supabase/TOUT-EN-UN.sql` dans l'éditeur SQL de Supaba
   d'installation (webhook « App Instance Installed ») reste à brancher avant d'ouvrir ce parcours aux clients.
 - **Bing Places** : aucune API publique d'écriture (accès réservé à des partenaires) : rien à configurer, l'agent
   guide le client (import de la fiche Google dans Bing Places).
-- **Offres** : export pour tous ; application directe à partir d'Essentiel (proposition : 20 / 100 / 200 séries
-  appliquées par mois en Essentiel / Accompagné / Agence, à valider).
+- **Offres** : export pour tous ; application directe à partir d'Essentiel, **20 / 100 / 200 séries appliquées par
+  mois** en Essentiel / Accompagné / Agence (décidé en V10, appliqué par l'API de publication : au-delà, message
+  « limite atteinte » et export toujours possible) ; contenus rédigés 0 / 2 / 6 / 6 par mois.
 - **Agent automatique** : après chaque exploration ou réanalyse d'un espace, l'agent prépare des **brouillons** de
   corrections selon les réglages du client (types autorisés, rythme, notification) ; rien n'est appliqué sans
   validation. `PUBLISH_AGENT_AUTO=0` le coupe pour tous.

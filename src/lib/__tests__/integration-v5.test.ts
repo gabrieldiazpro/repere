@@ -43,7 +43,7 @@ describe('droits V5 par offre', () => {
     expect(ent('essentiel', 'local').seoData).toEqual(SEODATA_LIMITS.essentiel_local);
     expect(ent('essentiel', 'pme').seoData).toEqual(SEODATA_LIMITS.essentiel);
     expect(ent('accompagne', 'ecommerce').seoData).toEqual(SEODATA_LIMITS.accompagne);
-    expect(ent('agency').seoData.keywords).toBe(2_000);
+    expect(ent('agency').seoData).toEqual(SEODATA_LIMITS.agence); // V10 : par espace client (10 × 3 €)
     // Un commerce inactif retombe sur Découverte : aucun appel payant.
     expect(getEntitlements({ id: 'x', plan: 'essentiel' as never, segment: 'pme', planId: null as never, isActive: false }).seoData.monthlyBudgetEur).toBe(0);
   });

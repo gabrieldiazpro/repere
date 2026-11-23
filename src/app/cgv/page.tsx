@@ -2,6 +2,9 @@ import { pageMeta } from '@/lib/seo/meta';
 import type { LegalSection } from '@/lib/seo/shell';
 import { LegalDocument } from '@/components/pages/v4/LegalDocument';
 import { LEGAL, LEGAL_ADDRESS, SIREN_DISPLAY, orTodo } from '@/lib/seo/site';
+import { AGENCY_INCLUDED_CLIENTS, VAT_NOTICE, formatPrice, getAddon, getPlan, type AddonId, type PlanId } from '@/lib/plans';
+import { getEntitlements } from '@/lib/entitlements';
+import { PARTNER_LEGAL_SUMMARY } from '@/lib/partners/terms';
 
 export const metadata = pageMeta({
   path: '/cgv',
@@ -12,39 +15,55 @@ export const metadata = pageMeta({
 });
 
 /**
- * Prix de la grille V2 (docs/v2/07-plans-v2.json). Écrits ici et non importés de lib/plans :
- * les CGV doivent rester lisibles et figées même si le catalogue de paiement évolue ; à resynchroniser à la main.
+ * V10 : prix, quotas et options lus dans src/lib/plans.ts et src/lib/entitlements.ts (une seule source, test
+ * src/lib/__tests__/prix-affiches.test.ts) : plus de copie à resynchroniser à la main. La version des CGV en vigueur
+ * à la date de la commande reste celle qui s'applique (article 17).
  */
-const VAT = 'TVA non applicable, art. 293 B du CGI';
+const VAT = VAT_NOTICE;
+const P = (id: PlanId) => formatPrice(getPlan(id).priceCents);
+const A = (id: AddonId) => formatPrice(getAddon(id).priceCents);
+const ent = (plan: 'free' | 'essentiel' | 'accompagne' | 'agency', segment: 'local' | 'pme' | 'ecommerce') =>
+  getEntitlements({ id: `cgv-${plan}-${segment}`, plan, segment, planId: null, isActive: true });
+
+function priceRows(): string[][] {
+  return [
+    ['Découverte (gratuite, permanente ; analyse et test de marque sans inscription compris)', '0 €', '0 €', '0 €'],
+    ['Essentiel (mensuel, sans engagement)', `${P('local_essentiel_month')}/mois`, `${P('pme_essentiel_month')}/mois`, `${P('ecom_essentiel_month')}/mois`],
+    ['Essentiel annuel (payable d\'avance)', `${P('local_essentiel_year')}/an`, `${P('pme_essentiel_year')}/an`, `${P('ecom_essentiel_year')}/an`],
+    ['Accompagné (mensuel, 3 mois minimum)', `${P('local_accompagne_month')}/mois`, `${P('pme_accompagne_month')}/mois`, `${P('ecom_accompagne_month')}/mois`],
+    ['Option Copilot et DeepSeek (Accompagné)', `${A('option_more_ai')}/mois`, `${A('option_more_ai')}/mois`, `${A('option_more_ai')}/mois`],
+    ['Audit approfondi (paiement unique)', `${P('local_audit_deep')} (« Audit + plan d'action »)`, P('pme_audit_deep'), `${P('ecom_audit_deep')} (« Audit catalogue approfondi »)`],
+    ['Réseau (jusqu\'à 5 établissements en Essentiel)', `${P('local_reseau_month')}/mois ou ${P('local_reseau_year')}/an`, '–', '–'],
+  ];
+}
+
+/** Volumes et quotas par offre (décisions V10), lus dans la table des droits. */
+function quotaLine(): string {
+  const e = (p: 'free' | 'essentiel' | 'accompagne' | 'agency') => ent(p, 'pme');
+  return `Quotas mensuels par espace client. Contenus rédigés et publiés après validation : ${e('free').contentsPerMonth} (Découverte), ${e('essentiel').contentsPerMonth} (Essentiel), ${e('accompagne').contentsPerMonth} (Accompagné), ${e('agency').contentsPerMonth} par client (Agence). Séries de corrections appliquées sur le site du Client : ${e('essentiel').publish.changeSetsPerMonth} (Essentiel), ${e('accompagne').publish.changeSetsPerMonth} (Accompagné), ${e('agency').publish.changeSetsPerMonth} (Agence) ; en Découverte, les corrections sont seulement téléchargeables. Au-delà, les propositions restent visibles et téléchargeables et peuvent être appliquées le mois suivant.`;
+}
 
 const sections: LegalSection[] = [
   { title: '1. Identité et objet', paras: [
     `Les présentes conditions régissent l'accès au service Repéré, exploité par la société ${orTodo(LEGAL.name, 'dénomination exacte (NEXT_PUBLIC_LEGAL_NAME)')}, ${orTodo(LEGAL.form, 'forme juridique et capital (NEXT_PUBLIC_LEGAL_FORM)')}, immatriculée au RCS de ${orTodo(LEGAL.rcsCity, 'ville (NEXT_PUBLIC_LEGAL_RCS_CITY)')} sous le numéro ${orTodo(SIREN_DISPLAY, 'SIREN (NEXT_PUBLIC_LEGAL_SIREN)')}, dont le siège est situé ${orTodo(LEGAL_ADDRESS, 'adresse (NEXT_PUBLIC_LEGAL_STREET, NEXT_PUBLIC_LEGAL_POSTAL_CODE, NEXT_PUBLIC_LEGAL_CITY)')} (« l'Éditeur »), par tout professionnel (« le Client »). Contact : ${orTodo(LEGAL.email, 'e-mail (NEXT_PUBLIC_LEGAL_EMAIL)')}.`,
-    'Repéré est un service de référencement IA : il mesure dans quelle mesure l\'entreprise du Client est citée par des assistants d\'intelligence artificielle (ChatGPT, Gemini, Perplexity, Claude et, selon l\'offre, Mistral) en réponse à des questions types de clients ou d\'acheteurs, analyse les sources que ces assistants utilisent, vérifie ce qu\'ils disent du Client, propose des actions et, selon l\'offre, les prépare ou les réalise.',
+    'Repéré est un service de référencement IA : il mesure dans quelle mesure l\'entreprise du Client est citée par des assistants d\'intelligence artificielle (ChatGPT, Gemini, Perplexity, Claude, les aperçus IA de Google et Google AI Mode et, selon l\'offre, Mistral) en réponse à des questions types de clients ou d\'acheteurs, analyse les sources que ces assistants utilisent, vérifie ce qu\'ils disent du Client, propose des actions et, selon l\'offre, les prépare ou les réalise.',
     'Le service est réservé aux professionnels (article 4). Il est proposé selon trois parcours : « Local » (commerces et artisans, un établissement), « PME » (entreprises de services et B2B) et « E-commerce » (boutiques en ligne). Le parcours est choisi à la commande.',
   ] },
   { title: '2. Offres et prix', paras: [
     `Tous les prix sont indiqués en euros, nets : ${VAT}. Aucune TVA n'est ajoutée au paiement ; la facture porte cette mention. [À VÉRIFIER : mention valable seulement si la société éditrice bénéficie de la franchise en base de TVA (chiffre d'affaires de l'ensemble de ses activités inférieur à 37 500 € l'année précédente et à 41 250 € l'année en cours pour les prestations de services en 2026). À défaut : prix exprimés hors taxes, TVA de 20 % ajoutée et numéro de TVA intracommunautaire sur les factures.]`,
   ], table: {
     head: ['Offre', 'Local', 'PME', 'E-commerce'],
-    rows: [
-      ['Test gratuit (audit flash)', '0 €', '0 €', '0 €'],
-      ['Découverte (gratuite, permanente)', '0 €', '0 €', '0 €'],
-      ['Audit approfondi (paiement unique)', '149 € (« Audit + plan d\'action »)', '390 €', '390 € (« Audit catalogue approfondi »)'],
-      ['Essentiel (mensuel, sans engagement)', '29 €/mois', '99 €/mois', '79 €/mois'],
-      ['Essentiel annuel (payable d\'avance)', '290 €/an', '990 €/an', '790 €/an'],
-      ['Accompagné (mensuel, 3 mois minimum)', '99 €/mois', '490 €/mois', '390 €/mois'],
-    ],
+    rows: priceRows(),
   } },
   { title: '2 bis. Contenu des offres', list: [
-    'Test gratuit : score de visibilité IA, premiers résultats et rapport synthétique, sans engagement ni paiement. Sa portée (nombre de questions, de sources) est indiquée sur la page de l\'offre.',
-    'Découverte (gratuite, sans limite de durée) : un compte avec 1 marque (un établissement, une entreprise ou une boutique), 5 questions suivies, 1 mesure par mois, 3 assistants (ChatGPT, Perplexity, Gemini), 1 utilisateur et un nombre limité de questions par jour au Copilote. Elle ne comprend pas l\'exécution des actions, les exports, les liens de partage ni les intégrations. Elle est sans engagement et sans moyen de paiement ; le Client peut supprimer son compte à tout moment. L\'Éditeur peut faire évoluer son contenu (article 17) et suspendre un compte en cas d\'usage abusif (article 12).',
+    'Découverte (gratuite, sans limite de durée) : sans inscription, l\'analyse du site en 60 secondes et le test de marque (questions posées en direct aux assistants, sans engagement ni paiement) ; avec un compte gratuit, 1 marque (un établissement, une entreprise ou une boutique), 5 questions suivies, 1 mesure par mois, 3 assistants (ChatGPT, Perplexity, Gemini), 1 utilisateur et un nombre limité de questions par jour au Copilote. Elle ne comprend pas l\'exécution des actions, les exports, les liens de partage ni les intégrations. Elle est sans engagement et sans moyen de paiement ; le Client peut supprimer son compte à tout moment. L\'Éditeur peut faire évoluer son contenu (article 17) et suspendre un compte en cas d\'usage abusif (article 12).',
     'Audit approfondi : diagnostic détaillé (questions, assistants, passages, part de voix, sources citées, analyse des écarts avec les concurrents cités, vérification technique pour PME et e-commerce) et plan d\'action. Livré par voie électronique sous 48 heures (Local) ou 5 jours ouvrés (PME, e-commerce) après réception des informations nécessaires. Son prix est déduit du premier mois d\'Accompagné si le Client souscrit dans les 30 jours suivant la livraison. Acheté seul, il donne en outre accès, pendant un mois, à l\'offre Essentiel du même parcours, à titre gratuit ; à la fin de ce mois, le compte repasse automatiquement à l\'offre Découverte, sans paiement, sans abonnement et sans reconduction payante. Ce mois offert n\'est ni remboursable ni convertible et prend fin si l\'audit est remboursé (article 11).',
-    'Essentiel (logiciel en libre-service) : suivi des questions, des sources et des concurrents, actions de la semaine avec textes prêts à copier, rapports, alertes, exports et liens de partage. Le nombre de questions suivies et d\'assistants (3 ou 4) dépend du parcours et est indiqué sur la page Tarifs à la date de la commande. Le Client réalise lui-même les actions ou les confie à qui il veut.',
-    'Accompagné : tout Essentiel, avec un nombre de questions suivies supérieur, et des prestations d\'exécution réalisées par l\'Éditeur selon le parcours (article 5). La liste des livrables mensuels de chaque parcours figure sur la page Tarifs à la date de la commande et fait partie du contrat.',
-    'Réseau (Local, plusieurs établissements) : Essentiel à 79 €/mois jusqu\'à 5 établissements ; Accompagné : 69 €/mois par établissement supplémentaire. Au-delà de 200 questions suivies ou pour plusieurs pays : sur devis.',
-    'Aucun assistant n\'est garanti dans l\'offre : Mistral Vibe n\'est suivi que dans les offres qui le mentionnent. Les aperçus IA et le mode IA de Google, Copilot (Bing), DeepSeek et Grok sont des mesures en option : elles ne font partie d\'une offre que si sa description sur la page Tarifs les mentionne à la date de la commande (méthode : page Méthode).',
-    'Offre Agence (marque blanche et exécution revendeur) : non commercialisée à ce jour ; elle ne fait l\'objet que d\'une liste d\'attente, sans paiement ni engagement.',
+    'Essentiel (logiciel en libre-service) : suivi des questions, des sources et des concurrents, actions de la semaine avec textes prêts à copier, rapports, alertes, exports et liens de partage. Mesure chaque mois, chaque question étant posée plusieurs fois à chaque assistant ; le nombre de questions suivies et d\'assistants dépend du parcours et est indiqué sur la page Tarifs à la date de la commande. Le Client réalise lui-même les actions ou les confie à qui il veut.',
+    quotaLine(),
+    'Accompagné : tout Essentiel, avec un nombre de questions suivies supérieur mesurées chaque semaine, et des prestations d\'exécution réalisées par l\'Éditeur selon le parcours (article 5). La liste des livrables mensuels de chaque parcours figure sur la page Tarifs à la date de la commande et fait partie du contrat.',
+    'Réseau (Local, plusieurs établissements) : Essentiel jusqu\'à 5 établissements, au prix indiqué ci-dessus ; Accompagné pour plusieurs établissements : sur devis. Au-delà de 200 questions suivies ou pour plusieurs pays : sur devis.',
+    'Les assistants mesurés sont ceux que la description de l\'offre mentionne sur la page Tarifs à la date de la commande (méthode : page Méthode). Les aperçus IA de Google (AI Overviews) et Google AI Mode font partie de toutes les offres payantes ; Mistral Vibe n\'est suivi que dans les offres qui le mentionnent ; Copilot (Bing) et DeepSeek sont des options payantes des offres Accompagné et Agence ; Grok est mesuré sur demande. Un assistant momentanément indisponible n\'est jamais simulé : la mesure l\'indique.',
+    `Offre Agence (marque blanche et exécution revendeur) : ${P('agency_month')}/mois (ou ${P('agency_year')}/an) pour ${AGENCY_INCLUDED_CLIENTS} clients mesurés chaque mois, ${A('agency_extra_client')}/mois par client au-delà ; options par client : mesure hebdomadaire (${A('agency_weekly_client')}/mois), Copilot et DeepSeek (${A('agency_more_ai_client')}/mois). Non commercialisée à ce jour : elle ne fait l\'objet que d\'une liste d\'attente, sans paiement ni engagement.`,
     'Les prix peuvent évoluer ; tout changement du prix d\'un abonnement est notifié [À COMPLÉTER : 30 jours] avant et permet de résilier sans frais.',
   ] },
   { title: '3. Nature de nos engagements : obligation de moyens', paras: [
@@ -123,8 +142,9 @@ const sections: LegalSection[] = [
     'Les outils gratuits (audit de page, de site, de fiche produit, analyse du robots.txt, etc.) lisent les pages publiques dont l\'adresse est saisie par l\'utilisateur, par l\'intermédiaire du robot « RepereBot », qui respecte le robots.txt du site lu et ne conserve pas le contenu des pages (page Méthode, rubrique RepereBot). L\'utilisateur s\'engage à ne saisir que des adresses publiques et à ne pas utiliser ces outils pour surcharger un site tiers : l\'Éditeur limite le nombre de requêtes par adresse IP et peut bloquer un usage abusif. Les résultats sont des bonnes pratiques et des constats datés, pas une garantie d\'être cité.',
   ] },
   { title: '12 quater. Parrainage', paras: [
-    'Le Client abonné peut parrainer un autre professionnel avec son lien personnel. Après le premier paiement réellement encaissé du filleul, le parrain et le filleul reçoivent chacun un crédit sur leur facture, jamais d\'argent comptant, dans les conditions affichées sur la page Parrainage à la date de l\'inscription du filleul (aujourd\'hui : un mois offert à chacun, plafonné à six mois offerts par parrain sur 12 mois glissants) [À VÉRIFIER : valeurs à confirmer par l\'Éditeur avant ouverture]. L\'auto-parrainage (même propriétaire, même adresse e-mail ou même moyen de paiement) n\'ouvre aucun droit, un filleul n\'a qu\'un parrain, et l\'Éditeur peut annuler un crédit obtenu par fraude. Le parrain s\'interdit tout démarchage contraire à la loi (envoi non sollicité de messages, publicité mensongère) et ne fait aucune promesse de résultat au nom de l\'Éditeur.',
+    'Le Client abonné peut parrainer un autre professionnel avec son lien personnel. Après le premier paiement réellement encaissé du filleul, le parrain et le filleul reçoivent chacun un crédit sur leur facture, jamais d\'argent comptant, dans les conditions affichées sur la page Parrainage à la date de l\'inscription du filleul (aujourd\'hui : un mois offert à chacun, plafonné à six mois offerts par parrain sur 12 mois glissants) [À VÉRIFIER : valeurs à confirmer par l\'Éditeur avant ouverture]. L\'auto-parrainage (même propriétaire, même adresse e-mail ou même moyen de paiement) n\'ouvre aucun droit, un filleul n\'a qu\'un parrain, et l\'Éditeur peut annuler un crédit obtenu par fraude. Le parrain s\'interdit tout démarchage contraire à la loi (envoi non sollicité de messages, publicité mensongère) et ne fait aucune promesse de résultat au nom de l\'Éditeur. [À RELIRE : brouillon V10 à faire valider par un avocat.]',
   ] },
+  { title: '12 quater bis. Programme partenaires [À RELIRE : brouillon à faire valider par un avocat]', paras: [...PARTNER_LEGAL_SUMMARY] },
   { title: '12 quinquies. Classement public et badge (facultatifs)', paras: [
     'Le Client peut, s\'il le souhaite, apparaître dans un classement public par métier et par ville et afficher un badge sur son site. Cette inscription est un choix explicite, désactivée par défaut et révocable à tout moment depuis l\'espace client : le Client disparaît alors du classement. Un classement n\'est publié qu\'à partir d\'un nombre minimal de commerces inscrits ayant une mesure réelle récente. Le classement et le badge reposent sur une mesure datée : ils ne constituent ni un label, ni une certification, ni une garantie de position, et le Client s\'interdit de les présenter comme tels.',
   ] },

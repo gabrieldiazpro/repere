@@ -38,7 +38,7 @@ export const DEMO_MANUAL: ManualGbpInput = {
   photosCount: 6,
   lastPhotoDaysAgo: 240,
   lastPostDaysAgo: null,
-  website: 'plomberie-martin.fr',
+  website: 'plomberie-martin.example',
   phone: '01 43 55 12 34',
   address: '12 rue Oberkampf, 75011 Paris',
   reviewCount: 14, // = DEMO_REVIEWS.length (vérifié par les tests)

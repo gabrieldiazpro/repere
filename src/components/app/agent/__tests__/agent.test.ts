@@ -29,7 +29,7 @@ const demo = (segment: 'local' | 'pme' | 'ecommerce' = 'local') =>
     businessId: 'demo',
     segment,
     name: 'Plomberie Martin',
-    website: 'plomberie-martin.fr',
+    website: 'plomberie-martin.example',
     facts: { horaires: 'Du lundi au vendredi 8 h – 19 h', prix: 'Déplacement 49 € ; intervention à partir de 89 € TTC', creation: '2009' },
     tasks: [
       { id: 'demo-t3', kind: 'schema', deliverable: [{ type: 'jsonld', content: '{"@type":"Plumber"}' }] },

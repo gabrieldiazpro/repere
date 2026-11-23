@@ -209,7 +209,7 @@ describe('Comptes démo : données étiquetées, cohérentes, lecture seule', ()
     }
     // cohérence avec le compte démo existant : Plomberie Martin, Paris 11e, positions locales
     const ctx = await contextFor('demo');
-    expect(ctx.domain).toBe('plomberie-martin.fr');
+    expect(ctx.domain).toBe('plomberie-martin.example');
   });
 });
 

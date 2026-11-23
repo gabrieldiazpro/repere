@@ -75,7 +75,14 @@ async function setMarker(jobId: string | undefined, patch: Record<string, unknow
 export type AuditTriggerKind = 'onboarding' | 'manual' | 'scheduled';
 
 async function entitlements(business: import('@/lib/db').Business): Promise<SchedulingEntitlements> {
-  return entitlementsFor(business as import('@/lib/db').BusinessRecord);
+  // V10 : options payantes de l'espace (IA en option, client Agence hebdomadaire) ; jamais bloquant.
+  let options: import('@/lib/entitlements').OfferOptions | null = null;
+  try {
+    options = await (await import('@/lib/entitlements')).getOfferOptions(business.id);
+  } catch {
+    options = null;
+  }
+  return entitlementsFor(business as import('@/lib/db').BusinessRecord, options);
 }
 
 /** Entrée d'audit : dernier audit du commerce (garde les champs PME / e-commerce), complétée par la fiche. */
@@ -150,6 +157,7 @@ export async function handleAuditRun(p: Record<string, unknown>): Promise<Record
     current = await runAudit(input as unknown as Parameters<typeof runAudit>[0], {
       mode: 'paid',
       providers: ent.engines,
+      runs: ent.runs,
       ...(queries ? { queries: queries as NonNullable<Parameters<typeof runAudit>[1]>['queries'] } : {}),
     });
     if (job?.signal.aborted) throw new Error('annulé (délai dépassé) avant la sauvegarde');

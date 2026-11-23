@@ -14,7 +14,7 @@ export const DEMO_ECOM_ID = 'demo-ecom';
 export const isDemoEcom = (id: string) => id === DEMO_ECOM_ID;
 
 const AT = '2026-01-15T09:00:00.000Z';
-const SITE = 'https://maison-sora.fr';
+const SITE = 'https://maison-sora.example';
 
 /** Prix alignés sur la fiche de vérité démo (« Shampoing solide 12,90 € ; déodorant solide 9,90 € ») et sur le trafic démo. */
 export const DEMO_PRODUCTS: CatalogProduct[] = [
@@ -79,7 +79,7 @@ export const DEMO_PRODUCTS: CatalogProduct[] = [
 ];
 
 export function demoCatalog(): Catalog {
-  return { businessId: DEMO_ECOM_ID, brand: 'Maison Sora', website: 'maison-sora.fr', products: DEMO_PRODUCTS.map((p) => ({ ...p })), updatedAt: AT, demo: true };
+  return { businessId: DEMO_ECOM_ID, brand: 'Maison Sora', website: 'maison-sora.example', products: DEMO_PRODUCTS.map((p) => ({ ...p })), updatedAt: AT, demo: true };
 }
 
 const SUFFIXES: Record<string, string[]> = {

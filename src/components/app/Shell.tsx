@@ -238,11 +238,11 @@ export function DemoBar({ segment }: { segment: Segment }) {
     <div role="region" aria-label="Mode démo" className="rp-demobar">
       <p className="min-w-0 flex-1 truncate text-[13px] leading-snug" title="Données d’exemple, pas un audit réel. Vos modifications restent sur cet appareil.">
         <strong className="font-semibold">
-          <span className="sm:hidden">Démo</span>
+          <span className="sm:hidden">Démo fictive</span>
           <span className="hidden sm:inline">Compte démo.</span>
         </strong>{' '}
         <span className="text-[var(--warning-ink)]">
-          <span className="hidden sm:inline">Données d’exemple, pas un audit réel ; vos modifications restent sur cet appareil.</span>
+          <span className="hidden sm:inline">Entreprises fictives, données d’exemple, pas un audit réel ; vos modifications restent sur cet appareil.</span>
         </span>
       </p>
       <p className="flex flex-none items-center gap-3 whitespace-nowrap text-[13px]">

@@ -10,7 +10,7 @@ import { FACTS, type Fact } from "./facts";
 import { CheckIcon } from "./blocks";
 
 /**
- * Exemple de grille de mesure du test gratuit local (/methode) : 8 questions × 3 IA × 2 passages = 48 réponses.
+ * Exemple de grille de mesure du test de marque gratuit local (/methode) : 8 questions × 3 IA × 2 passages = 48 réponses.
  * Une colonne par question ; dans chaque colonne, ChatGPT, Gemini, Perplexity, deux passages chacun.
  */
 export const GRID_QUESTIONS = 8;
@@ -58,7 +58,7 @@ export function ProofWall({ facts = [FACTS.credoc, FACTS.g2Start] }: { facts?: r
       <Reveal i={0} className="bx-scope rounded-[1.25rem] bg-primary-deep p-6 text-white lg:col-span-3 lg:row-span-2 sm:p-8">
         <h3 className="text-[1.4rem] font-bold text-white">Une méthode publiée, pas une boîte noire</h3>
         <p className="mt-2 max-w-[52ch] text-on-deep">
-          Au test gratuit, chaque question est posée deux fois à chaque IA (trois fois en suivi), parce qu&apos;une IA ne répond jamais tout à fait pareil. Un score repose sur des dizaines de réponses, et nous affichons combien.
+          Au test de marque gratuit, chaque question est posée deux fois à chaque IA (trois fois par mesure mensuelle, deux par mesure hebdomadaire), parce qu&apos;une IA ne répond jamais tout à fait pareil. Un score repose sur des dizaines de réponses, et nous affichons combien.
         </p>
         <div className="mt-6 flex flex-wrap items-end gap-6">
           <div aria-hidden="true" className="grid grid-flow-col grid-rows-6 gap-1">
@@ -80,7 +80,7 @@ export function ProofWall({ facts = [FACTS.credoc, FACTS.g2Start] }: { facts?: r
             <span className="sr-only"> : 8 questions posées deux fois à 3 IA, soit 48 réponses analysées.</span>
           </p>
         </div>
-        <p className="mt-5 text-[0.82rem] text-on-deep">{GRID_QUESTIONS} questions × {GRID_ENGINES} IA × {GRID_PASSES} passages = {GRID_QUESTIONS * GRID_ENGINES * GRID_PASSES} réponses pour un test gratuit local. Exemple fictif.</p>
+        <p className="mt-5 text-[0.82rem] text-on-deep">{GRID_QUESTIONS} questions × {GRID_ENGINES} IA × {GRID_PASSES} passages = {GRID_QUESTIONS * GRID_ENGINES * GRID_PASSES} réponses pour un test de marque gratuit local. Exemple fictif.</p>
         <Link href="/methode" className="mt-5 inline-flex min-h-11 items-center font-semibold text-white underline underline-offset-4 hover:no-underline">
           Lire la méthode complète
         </Link>

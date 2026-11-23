@@ -85,7 +85,7 @@ describe('surlignage', () => {
     expect(segs.filter((s) => s.kind)).toHaveLength(1);
   });
   it('noms du client', () => {
-    expect(clientNamesOf('Paysia', 'www.paysia.fr')).toEqual(['Paysia', 'paysia.fr']);
+    expect(clientNamesOf('Paysia', 'www.paysia.example')).toEqual(['Paysia', 'paysia.example']);
     expect(clientNamesOf('X', '')).toEqual(['X']);
   });
 });

@@ -125,7 +125,7 @@ window.REELS = {
           { at: 0, text: 'Repéré mesure qui passe devant vous.' },
           { at: 2.3, text: 'Et pourquoi : {mot|les sites que les IA lisent.}' },
         ] },
-      { type: 'end', start: 12.2, dur: 3.6, noFadeOut: true, title: 'Votre entreprise est-elle citée par les IA&nbsp;?', cta: 'Test gratuit en 60 s', url: 'repere-ia.fr · sans carte' },
+      { type: 'end', start: 12.2, dur: 3.6, noFadeOut: true, title: 'Votre entreprise est-elle citée par les IA&nbsp;?', cta: 'Tester ma marque · 60 s', url: 'repere-ia.fr · sans carte' },
     ],
   },
 

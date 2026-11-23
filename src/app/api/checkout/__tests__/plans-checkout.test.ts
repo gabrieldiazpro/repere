@@ -16,20 +16,20 @@ const json = JSON.parse(readFileSync(path.join(process.cwd(), '../docs/v2/07-pla
 }[];
 
 describe('plans V2', () => {
-  it('reprend exactement docs/v2/07-plans-v2.json', () => {
+  // V10 (docs/v10/DECISIONS.md) : prix et identifiants inchangés depuis docs/v2/07-plans-v2.json ; les textes des offres
+  // ont changé (Découverte absorbe le « Test gratuit », IA de Google, rythmes, Agence 10 clients).
+  it('garde les identifiants, prix et rythmes de facturation de docs/v2/07-plans-v2.json', () => {
     expect(plans.V2_PLANS.map((p) => p.id)).toEqual(json.map((p) => p.id));
     for (const j of json) {
       const p = plans.getPlan(j.id as never);
-      expect({ segment: p.segment, name: p.name, priceCents: p.priceCents, interval: p.interval, features: p.features, highlighted: p.highlighted, cta: p.cta }).toEqual({
-        segment: j.segment, name: j.name, priceCents: j.priceCents, interval: j.interval, features: j.features, highlighted: j.highlighted, cta: j.cta,
-      });
+      expect({ segment: p.segment, priceCents: p.priceCents, interval: p.interval }).toEqual({ segment: j.segment, priceCents: j.priceCents, interval: j.interval });
     }
   });
   it('Agence : liste d’attente (available:false), autres parcours disponibles', () => {
     expect(plans.V2_PLANS.filter((p) => p.segment === 'agence').every((p) => !p.available)).toBe(true);
     expect(plans.V2_PLANS.filter((p) => p.segment !== 'agence').every((p) => p.available)).toBe(true);
     expect(plans.plansForSegment('agence')).toEqual([]);
-    expect(plans.plansForSegment('pme').map((p) => p.id)).toEqual(['pme_audit_free', 'pme_audit_deep', 'pme_essentiel_month', 'pme_essentiel_year', 'pme_accompagne_month']);
+    expect(plans.plansForSegment('pme').map((p) => p.id)).toEqual(['pme_audit_deep', 'pme_essentiel_month', 'pme_essentiel_year', 'pme_accompagne_month']);
   });
   it('Accompagné = 3 mois d’engagement ; garantie 14 j seulement sur les audits ponctuels', () => {
     for (const p of plans.V2_PLANS) {

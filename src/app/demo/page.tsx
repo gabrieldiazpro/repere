@@ -38,7 +38,7 @@ const FAQ: QA[] = [
   { q: "Puis-je modifier quelque chose dans le compte démo ?", a: "Les comptes démo sont en lecture seule : vous pouvez tout ouvrir, rien n'est enregistré." },
   {
     q: "Comment voir mes propres résultats ?",
-    a: "Créez un compte gratuit (offre Découverte) : 5 questions suivies sur 3 IA, une mesure par mois, sans carte bancaire. Ou lancez d'abord le test gratuit en quelques minutes.",
+    a: "Créez un compte gratuit (offre Découverte) : 5 questions suivies sur 3 IA, une mesure par mois, sans carte bancaire. Ou analysez d'abord votre site et testez votre marque, sans inscription, en quelques minutes.",
   },
 ];
 
@@ -186,7 +186,7 @@ export default function DemoPage() {
         </Container>
       </section>
 
-      <CtaBand title="Et votre entreprise ?" text="Créez un compte gratuit pour suivre vos propres questions, ou lancez d'abord le test gratuit." />
+      <CtaBand title="Et votre entreprise ?" text="Créez un compte gratuit (Découverte) pour suivre vos propres questions, ou analysez d'abord votre site sans inscription." />
     </SitePage>
   );
 }

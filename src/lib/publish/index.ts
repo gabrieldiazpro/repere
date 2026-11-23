@@ -36,5 +36,7 @@ export {
   revertChangeSet,
   exportChangeSet,
   createRewriteChangeSet,
+  appliedThisMonth,
+  countAppliedThisMonth,
 } from './service';
 export { demoChangeSets } from './demo';

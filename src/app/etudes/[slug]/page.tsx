@@ -196,8 +196,8 @@ function Barometre({ stats }: { stats: StudyStats | null }) {
             )}
             <p className="mt-3 leading-relaxed">
               Chaque{' '}
-              <Link href="/audit" className="underline" style={{ color: 'var(--primary)' }}>
-                test gratuit
+              <Link href="/analyse" className="underline" style={{ color: 'var(--primary)' }}>
+                test de marque gratuit
               </Link>{' '}
               contribue au Baromètre, sans que le nom de l&apos;entreprise soit jamais publié. En attendant, consultez notre{' '}
               <Link href="/etudes/ce-que-nous-savons-deja" className="underline" style={{ color: 'var(--primary)' }}>

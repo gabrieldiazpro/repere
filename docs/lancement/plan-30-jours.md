@@ -13,8 +13,8 @@ Trois objectifs au J30 (à valider) :
 
 | Jour | À faire | Fini quand |
 |---|---|---|
-| J-7 | Remplir l'identité (fondateur, mentions légales, SIREN) ; décider l'offre pilote (README, décision 1). | `/a-propos` et `/presse` sans « [À COMPLÉTER] ». |
-| J-6 | Créer l'adresse presse et l'adresse d'envoi de prospection sur un domaine secondaire (SPF, DKIM, DMARC en `p=none`). Commencer la chauffe : 5 à 10 e-mails réels par jour à des contacts connus. | Domaine authentifié (test sur un outil de vérification d'en-têtes). |
+| J-7 | Remplir l'identité (fondateur, mentions légales, SIREN). Offre pilote décidée : 3 mois d'Accompagné, 4 local / 3 PME / 3 e-commerce (README, décision 1). | `/a-propos` et `/presse` sans « [À COMPLÉTER] ». |
+| J-6 | Créer le compte **Brevo (offre gratuite)** et le **domaine d'envoi secondaire** dédié à la prospection (SPF, DKIM, DMARC en `p=none`) ; adresse presse. Commencer la chauffe : 5 à 10 e-mails réels par jour à des contacts connus. | Domaine authentifié dans Brevo (test sur un outil de vérification d'en-têtes). |
 | J-5 | Lancer les 3 premiers baromètres (un local, un PME, un e-commerce ; par ex. `plombiers-paris`, `logiciels-de-paie-pour-pme`, `marques-de-cosmetiques-solides`) avec les vraies clés. | Données relues à la main, pages en ligne en préproduction. |
 | J-4 | Liste de 30 personnes de votre réseau à prévenir personnellement le J1 (pas de mailing). Liste de 20 agences web locales. | Deux listes dans un tableur. |
 | J-3 | Profil LinkedIn à jour (linkedin.md §1). Écrire les 3 premières publications. | Publications programmées ou prêtes. |
@@ -51,7 +51,7 @@ c'est instable ». Toujours donner la méthode, le nombre de réponses, la date 
 | J15 | Retenir les pilotes 7 à 10 (compléter les parcours manquants). | Publication : ce que vous avez appris des 6 premiers J0 (agrégé, avec vos vrais chiffres ; forme type : « N sites sur 6 bloquaient un robot d'IA sans le savoir »). | Programme agence : proposer aux 2 agences les plus intéressées d'apporter un client pilote chacune. |
 | J16 | J0 des pilotes 7 à 10. | Participer à 3 discussions de communautés francophones où votre sujet est la question posée (groupes LinkedIn e-commerce, forums de commerçants, Slack ou Discord de fondateurs) : répondre utilement, lien seulement si demandé. | 20 e-mails 1/jour si la délivrabilité est saine (kpi.md, seuils). |
 | J17 | — | Proposer une tribune de 4 000 signes à un média commerce ou e-commerce : « Ce que les IA disent des commerces français » (chiffres des baromètres). | Appels de relance. |
-| J18 | — | Décider Product Hunt (README, décision 8). Si oui : page en anglais, captures de la démo, lancement un mardi ou mercredi, réponses à tous les commentaires toute la journée. Si non : poster sur une communauté de fondateurs francophones avec un retour d'expérience honnête. | — |
+| J18 | — | **Lancement Product Hunt** (décidé, README décision 8) : page en anglais préparée à J15-J17, captures de la démo (mention « fictitious company »), lancement un mardi ou mercredi (décaler au plus proche si J18 tombe un autre jour), réponses à tous les commentaires toute la journée. Le même jour, un retour d'expérience honnête dans une communauté de fondateurs francophones. | — |
 | J19 | J30 des 3 premiers pilotes : nouvelle mesure, échange de 30 minutes, noter les retours mot pour mot. | — | Bilan de semaine. |
 
 ## Semaine 4 — Premières preuves et cadence
@@ -66,7 +66,7 @@ c'est instable ». Toujours donner la méthode, le nombre de réponses, la date 
 | J30 | Bilan pilotes : liste des retours classés, 3 corrections produit à faire. | Bilan public sur LinkedIn : ce qui a marché, ce qui n'a pas marché, chiffres réels du mois (visites, analyses, inscriptions). | Bilan kpi.md ; décider la suite (élargir le programme, ouvrir l'offre agence, ajuster la séquence). |
 
 ## Ce que nous ne faisons pas pendant ces 30 jours
-- Pas de publicité payante tant que la page /analyse n'a pas montré qu'elle convertit (mesurer d'abord).
+- Pas de publicité payante (Meta compris) tant que la page /analyse n'a pas montré en organique qu'elle convertit (seuil : kpi.md) ; ensuite seulement, pixel Meta chargé après consentement (README, décision 10).
 - Pas d'achat de fichier d'e-mails, pas d'adresse devinée sans examen au cas par cas (prospection-email.md §1).
 - Pas de capture d'une vraie entreprise prospect dans une publication sans son accord.
 - Pas de « avant/après » publié avant J90 sauf accord explicite et mention claire « à J30, mesure intermédiaire ».

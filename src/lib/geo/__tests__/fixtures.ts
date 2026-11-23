@@ -135,17 +135,17 @@ ${d.extraMain ?? ''}
 /* Témoin 1 : artisan (plombier à Lyon)                                */
 /* ------------------------------------------------------------------ */
 
-export const ARTISAN_ORIGIN = 'https://plomberie-martin.fr';
+export const ARTISAN_ORIGIN = 'https://plomberie-martin.example';
 const A_NAV = '<a href="/">Accueil</a><a href="/tarifs">Tarifs</a><a href="/a-propos">À propos</a><a href="/contact">Contact</a><a href="/blog/detartrer-chauffe-eau">Conseils</a>';
 const A_FOOT =
-  'Plomberie Martin — 12 rue Paul Bert, 69003 Lyon — <a href="tel:+33478123456">04 78 12 34 56</a> — <a href="mailto:contact@plomberie-martin.fr">contact@plomberie-martin.fr</a> — <a href="https://www.facebook.com/plomberiemartin">Facebook</a> <a href="https://www.pagesjaunes.fr/pros/123">PagesJaunes</a>';
+  'Plomberie Martin — 12 rue Paul Bert, 69003 Lyon — <a href="tel:+33478123456">04 78 12 34 56</a> — <a href="mailto:contact@plomberie-martin.example">contact@plomberie-martin.example</a> — <a href="https://www.facebook.com/plomberiemartin">Facebook</a> <a href="https://www.pagesjaunes.fr/pros/123">PagesJaunes</a>';
 const A_ORG = {
   '@context': 'https://schema.org',
   '@type': 'Plumber',
   name: 'Plomberie Martin',
   url: `${ARTISAN_ORIGIN}/`,
   telephone: '+33 4 78 12 34 56',
-  email: 'contact@plomberie-martin.fr',
+  email: 'contact@plomberie-martin.example',
   address: { '@type': 'PostalAddress', streetAddress: '12 rue Paul Bert', postalCode: '69003', addressLocality: 'Lyon', addressCountry: 'FR' },
   openingHours: 'Mo-Fr 08:00-19:00',
   sameAs: ['https://www.facebook.com/plomberiemartin', 'https://www.pagesjaunes.fr/pros/123'],
@@ -171,7 +171,7 @@ export function artisanSite(): SiteCrawl {
           ['Dans quelles communes intervenez-vous ?', 'Nous intervenons dans 25 communes du Grand Lyon : Lyon (69001 à 69009), Villeurbanne, Bron, Vénissieux, Caluire-et-Cuire, Écully, Oullins et Saint-Fons. Le déplacement est inclus dans le forfait de 90 € TTC pour toutes ces communes.'],
           ['Plomberie Martin intervient-il en urgence le week-end ?', 'Oui, Plomberie Martin assure les urgences 7 jours sur 7, y compris le dimanche et les jours fériés, de 7 h à 22 h. La majoration d’urgence du week-end est de 30 € TTC, annoncée avant le départ du technicien.'],
           ['Quels sont vos horaires d’ouverture ?', 'Le bureau de Plomberie Martin est ouvert du lundi au vendredi de 8 h à 19 h et le samedi de 9 h à 13 h. En dehors de ces horaires, la ligne d’urgence au 04 78 12 34 56 reste joignable de 7 h à 22 h.'],
-          ['Comment contacter Plomberie Martin ?', 'Appelez Plomberie Martin au 04 78 12 34 56 ou écrivez à contact@plomberie-martin.fr : un technicien vous rappelle en moins de 15 minutes pendant les horaires d’ouverture, avec une estimation du prix avant déplacement.'],
+          ['Comment contacter Plomberie Martin ?', 'Appelez Plomberie Martin au 04 78 12 34 56 ou écrivez à contact@plomberie-martin.example : un technicien vous rappelle en moins de 15 minutes pendant les horaires d’ouverture, avec une estimation du prix avant déplacement.'],
           ['Plomberie Martin est-il assuré et certifié ?', 'Oui, Plomberie Martin est assuré en garantie décennale auprès de la MAAF (contrat n° 4521) et certifié RGE Qualibat depuis 2018 pour l’installation de chauffe-eau thermodynamiques. Les attestations sont envoyées avec chaque devis.'],
           ['Que disent les avis clients sur Plomberie Martin ?', 'Plomberie Martin obtient 4,8/5 sur 312 avis Google au 1er novembre 2026. Les clients citent surtout la ponctualité et le prix annoncé avant l’intervention, selon l’analyse de nos avis publiée sur cette page.'],
           ['Comment choisir un plombier à Lyon ?', 'Pour bien choisir un plombier à Lyon, vérifiez 3 critères : une assurance décennale valide, un devis écrit avant travaux et des avis récents. Selon la DGCCRF, le devis est obligatoire au-delà de 150 € TTC pour les travaux de dépannage à domicile.'],

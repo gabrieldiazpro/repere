@@ -8,6 +8,7 @@ import type { PortfolioClient } from '@/lib/agency/portfolio';
 import { brandFromProfile, type ReportBrand } from '@/lib/reports/monthly';
 import { loadWorkspace } from '../workspace';
 import { loadEntitlements } from '../shell/server';
+import { AGENCY_MAX_CLIENTS } from '@/lib/plans';
 
 export interface AgencyView {
   mode: 'demo' | 'real' | 'none';
@@ -22,7 +23,7 @@ export async function isDemoAgency(): Promise<boolean> {
 
 export const loadAgency = cache(async (): Promise<AgencyView> => {
   const ws = await loadWorkspace();
-  if (ws.demo) return { mode: 'demo', ctx: { agencyId: DEMO_AGENCY_PROFILE.agencyId, demo: true, clientIds: [], otherCount: 0, maxClients: 20 }, profile: DEMO_AGENCY_PROFILE };
+  if (ws.demo) return { mode: 'demo', ctx: { agencyId: DEMO_AGENCY_PROFILE.agencyId, demo: true, clientIds: [], otherCount: 0, maxClients: AGENCY_MAX_CLIENTS }, profile: DEMO_AGENCY_PROFILE };
   const session = await getSession();
   if (!session) return { mode: 'none', ctx: null, profile: null };
   const ctx = await agencyContextFor(session).catch(() => null);

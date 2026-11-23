@@ -1,5 +1,7 @@
 import { euros, tiersFor, plansFor, VAT_NOTICE } from "./plans-v2";
 import { fmtDate } from "@/lib/seo";
+import { AGENCY_INCLUDED_CLIENTS, getAddon } from "@/lib/plans";
+import { FAMILIES, pct } from "@/lib/partners/program";
 
 /**
  * « Tous les prix en un coup d'œil » : tableau statique rendu côté serveur, toujours visible.
@@ -24,10 +26,10 @@ export function PriceTable({ updated }: { updated: string }) {
         <thead>
           <tr className="bg-canvas">
             <th scope="col" className="px-5 py-3 font-display font-semibold">Parcours</th>
-            <th scope="col" className="px-4 py-3 font-display font-semibold">Test</th>
-            <th scope="col" className="px-4 py-3 font-display font-semibold">Audit approfondi</th>
+            <th scope="col" className="px-4 py-3 font-display font-semibold">Découverte</th>
             <th scope="col" className="px-4 py-3 font-display font-semibold">Essentiel</th>
             <th scope="col" className="px-4 py-3 font-display font-semibold">Accompagné (on fait le travail)</th>
+            <th scope="col" className="px-4 py-3 font-display font-semibold">À la carte : audit approfondi</th>
           </tr>
         </thead>
         <tbody>
@@ -36,8 +38,10 @@ export function PriceTable({ updated }: { updated: string }) {
             return (
               <tr key={s.id} className="border-t border-line/70 align-top">
                 <th scope="row" className="px-5 py-3 font-semibold">{s.label}</th>
-                <td className="px-4 py-3">{price(t.free?.priceCents)}</td>
-                <td className="tabular px-4 py-3">{price(t.deep?.priceCents, ", une fois")}</td>
+                <td className="px-4 py-3">
+                  {price(t.free?.priceCents)}
+                  <span className="block text-[0.85rem] text-muted">Analyse 60 s sans inscription, puis suivi mensuel</span>
+                </td>
                 <td className="tabular px-4 py-3">
                   {price(t.essentielMonth?.priceCents, "/mois")}
                   {t.essentielYear ? <span className="block text-[0.85rem] text-muted">ou {euros(t.essentielYear.priceCents)}/an</span> : null}
@@ -46,6 +50,7 @@ export function PriceTable({ updated }: { updated: string }) {
                   {price(t.accompagne?.priceCents, "/mois")}
                   <span className="block text-[0.85rem] text-muted">3 mois minimum</span>
                 </td>
+                <td className="tabular px-4 py-3">{price(t.deep?.priceCents, ", une fois")}</td>
               </tr>
             );
           })}
@@ -53,8 +58,9 @@ export function PriceTable({ updated }: { updated: string }) {
             <tr className="border-t border-line/70 align-top">
               <th scope="row" className="px-5 py-3 font-semibold">Agences</th>
               <td className="px-4 py-3" colSpan={4}>
-                Partenaire : 30 % de commission pendant 12 mois, sans abonnement. Agence (marque blanche) : {euros(agency.priceCents)}/mois. Fonctions visibles dans la démo
-                agence ; ouverture prochaine, sur liste d&apos;attente.
+                Agence (marque blanche) : {euros(agency.priceCents)}/mois pour {AGENCY_INCLUDED_CLIENTS} clients mesurés chaque mois, +{euros(getAddon("agency_extra_client").priceCents)}/mois par
+                client au-delà ; mesure hebdomadaire en option (+{euros(getAddon("agency_weekly_client").priceCents)}/mois par client). Ouverture prochaine, sur liste
+                d&apos;attente. Partenaire sans abonnement : {FAMILIES.agence.commission ? pct(FAMILIES.agence.commission.rate) : "–"} de commission pendant 12 mois.
               </td>
             </tr>
           ) : null}

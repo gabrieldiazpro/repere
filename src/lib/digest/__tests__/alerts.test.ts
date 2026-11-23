@@ -115,7 +115,7 @@ describe('detectAlerts', () => {
 describe('compareFact / localFactCheck', () => {
   it('tolère les formats de téléphone et de site', () => {
     expect(compareFact('telephone', '01 43 55 12 34', '+33 1 43 55 12 34')).toBe('correct');
-    expect(compareFact('site', 'plomberie-martin.fr', 'https://www.plomberie-martin.fr/contact')).toBe('correct');
+    expect(compareFact('site', 'plomberie-martin.example', 'https://www.plomberie-martin.example/contact')).toBe('correct');
     expect(compareFact('prix', 'Intervention à partir de 89 €', 'à partir de 120 €')).toBe('faux');
     expect(compareFact('statut', 'ouvert', 'fermé définitivement')).toBe('faux');
   });

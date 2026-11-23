@@ -23,7 +23,11 @@ Un tableau, rempli chaque vendredi. Chaque chiffre a sa source ; si une source n
 | Inscriptions → espace avec 2e mesure | rétention |
 | Erreurs d'analyse (sites difficiles) | à corriger en priorité |
 
-## 3. Prospection (sources : outil d'envoi, tableur de suivi)
+**Seuil « preuve organique » avant toute publicité Meta (décision 13)** : sur 4 semaines glissantes, au moins 200
+analyses gratuites terminées venues de canaux non payants ET un taux analyse → inscription Découverte d'au moins 10 %
+(à ajuster après le premier mois). Tant que ce seuil n'est pas atteint, aucune dépense publicitaire.
+
+## 3. Prospection (sources : Brevo, domaine d'envoi secondaire ; tableur de suivi)
 | Indicateur | Point de départ | Alerte |
 |---|---|---|
 | Premiers e-mails envoyés / jour | 10 → 25 | — |

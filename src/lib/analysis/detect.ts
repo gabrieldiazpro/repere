@@ -55,7 +55,7 @@ function cleanName(s: string): string {
   return s.replace(/\s+/g, ' ').trim().slice(0, 80);
 }
 
-/** Domaine lisible : « www.plomberie-martin.fr » → « Plomberie Martin ». */
+/** Domaine lisible : « www.plomberie-martin.example » → « Plomberie Martin ». */
 export function nameFromDomain(url: string): string {
   let host = url;
   try {

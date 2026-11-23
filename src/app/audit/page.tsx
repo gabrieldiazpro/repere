@@ -9,9 +9,9 @@ import { abs } from '@/lib/seo/site';
 import { breadcrumbListLd } from '@/lib/seo/jsonld';
 import { JsonLd } from '@/lib/seo/shell';
 
-const AUDIT_TITLE = 'Votre audit de visibilité IA gratuit';
+const AUDIT_TITLE = 'Test de visibilité IA par nom, gratuit';
 // ≤ 160 caractères : au-delà, Google coupe la description (V6).
-const AUDIT_DESC = 'Commerce, PME ou e-commerce : ChatGPT, Gemini et Perplexity vous citent-ils ? Qui citent-ils à votre place, quelles sources lisent-ils ? Test gratuit.';
+const AUDIT_DESC = 'Commerce, PME ou e-commerce : ChatGPT, Gemini et Perplexity vous citent-ils ? Qui citent-ils à votre place, quelles sources lisent-ils ? Offre Découverte.';
 const AUDIT_OG = { url: abs('/opengraph-image'), width: 1200, height: 630, alt: AUDIT_TITLE };
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 const AUDIT_CRUMBS = breadcrumbListLd('/audit', [
   { name: 'Accueil', path: '/' },
-  { name: 'Audit gratuit', path: '/audit' },
+  { name: 'Test par nom', path: '/audit' },
 ]);
 
 type SP = Record<string, string | string[] | undefined>;
@@ -109,8 +109,8 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
     <div className={r.root}>
       <main id="contenu" className={s.page}>
         <header className={s.head}>
-          <span className={r.eyebrow}>Audit gratuit · sans engagement</span>
-          <h1>Votre audit de visibilité IA</h1>
+          <span className={r.eyebrow}>Découverte · gratuit, sans inscription</span>
+          <h1>Votre test de visibilité IA, par le nom</h1>
           <p>
             {prefill.segment === 'pme'
               ? 'Le nom de votre entreprise et votre secteur suffisent. Nous posons aux IA les questions de vos acheteurs.'

@@ -28,7 +28,7 @@ describe('détection', () => {
   it('sans signal : PME, nom tiré du domaine ; la saisie l’emporte', () => {
     expect(detectSite({ url: 'https://acme-conseil.test' }, null)).toMatchObject({ brand: 'Acme Conseil', siteType: 'pme' });
     expect(detectSite({ url: 'https://x.test', brand: 'Mon Nom', siteType: 'local', city: 'Nantes' }, null)).toMatchObject({ brand: 'Mon Nom', siteType: 'local', city: 'Nantes' });
-    expect(nameFromDomain('www.plomberie-martin.fr')).toBe('Plomberie Martin');
+    expect(nameFromDomain('www.plomberie-martin.example')).toBe('Plomberie Martin');
   });
 });
 

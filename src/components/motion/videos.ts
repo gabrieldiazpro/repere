@@ -8,12 +8,12 @@ export type DemoVideoId = (typeof DEMO_VIDEO_IDS)[number];
 export type DemoVideoFiles = { mp4: string | null; webm: string | null; poster: string | null; vtt: string | null };
 
 export const DEMO_VIDEO_LABELS: Record<DemoVideoId, string> = {
-  hero: "Démo : Repéré en 30 secondes, sur un compte démo",
-  explication: "Démo : Repéré de A à Z en 2 minutes, l’analyse d’un site fictif puis l’application sur des comptes démo",
-  mesurer: "Démo : ce que répondent les IA, question par question (compte démo, 30 s)",
-  comprendre: "Démo : les sources des IA et pourquoi un concurrent passe devant (compte démo, 30 s)",
-  agir: "Démo : les actions de la semaine, la fiche Google et les pages à corriger (compte démo, 30 s)",
-  prouver: "Démo : les visites venues des IA et le rapport du mois (compte démo, 30 s)",
+  hero: "Démo : Repéré en 30 secondes, sur un compte démo (entreprises fictives)",
+  explication: "Démo : Repéré de A à Z en 2 minutes, l’analyse d’un site fictif puis l’application sur des comptes démo (entreprises fictives)",
+  mesurer: "Démo : ce que répondent les IA, question par question (compte démo, entreprise fictive, 30 s)",
+  comprendre: "Démo : les sources des IA et pourquoi un concurrent passe devant (compte démo, entreprise fictive, 30 s)",
+  agir: "Démo : les actions de la semaine, la fiche Google et les pages à corriger (compte démo, entreprise fictive, 30 s)",
+  prouver: "Démo : les visites venues des IA et le rapport du mois (compte démo, entreprise fictive, 30 s)",
 };
 
 /**

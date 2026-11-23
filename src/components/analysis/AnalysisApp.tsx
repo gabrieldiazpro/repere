@@ -220,7 +220,7 @@ function AnalysisForm({
   return (
     <div className={s.formHero}>
       <div>
-        <h1 className={s.h1}>Test gratuit : votre marque est-elle citée par les IA ?</h1>
+        <h1 className={s.h1}>Test de marque gratuit : votre marque est-elle citée par les IA ?</h1>
         <p className={s.lede}>
           Entrez votre site : nous posons en direct de vraies questions de clients aux IA, et vous voyez qui elles citent, à quelle place, qui
           passe devant vous et pourquoi. Puis votre site est analysé page par page (SEO et GEO), avec vos premières actions.

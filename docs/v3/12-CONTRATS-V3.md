@@ -21,6 +21,8 @@ Lire d'abord docs/v3/00-BRIEF-V3.md. Code : /home/claude/auditia/app (Next 15.5,
    pour l'achat, mais les briques (rapports en marque blanche, lien de partage) sont construites.
 3. **IA suivies** : ChatGPT, Perplexity, Gemini (sans ancrage, pas de sources), Claude, + **Mistral (Le Chat)** en
    option (`MISTRAL_API_KEY`). Pas de suivi des AI Overviews / AI Mode en V3 (pas d'API propre) : dit honnêtement.
+   **Remplacée le 23 nov. 2026 (V10)** : AI Overviews et AI Mode dans toutes les offres payantes, Copilot et DeepSeek en
+   option, Grok sur demande — voir docs/v10/progress/DECISIONS-V10.md.
 4. **Volumes de questions** : jamais de faux volumes. On affiche un « indice de demande » (faible / moyen / fort)
    étiqueté « estimation », dérivé de signaux déclarés (méthode publiée), ou rien.
 5. **Logos** : pas de logos de marques tierces (ChatGPT, Google…) ni de faux logos clients. Noms en toutes lettres

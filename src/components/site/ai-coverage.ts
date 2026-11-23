@@ -3,7 +3,7 @@
  * Serveur uniquement (lit la table des droits). Sources uniques : PROVIDER_LABELS (src/lib/engine/types.ts),
  * providerMethod() (src/lib/engine/providers/methods.ts) et getEntitlements() via offersIncluding().
  *
- * Règle (MOTEURS-IA, décision 3 du contrat V3, test plans-engines) : une IA qu'aucune offre n'annonce est dite
+ * Règle (MOTEURS-IA ; V10 : aperçus IA de Google et AI Mode dans les offres payantes, test plans-engines) : une IA qu'aucune offre n'annonce est dite
  * « en option » et n'est jamais comptée dans le « N IA » d'une offre. Noms en texte, jamais de logos.
  */
 import { PROVIDER_LABELS, type ProviderId } from "@/lib/engine/types";
@@ -62,6 +62,10 @@ export function aiCoverage(): AiCoverage[] {
     if (id === "grok") {
       status = "demande";
       offers = "Sur demande";
+    } else if (id === "copilot" || id === "deepseek") {
+      // V10 : option payante (Accompagné +9 €/mois, Agence +2 €/mois par client), jamais comptée dans « N IA ».
+      status = "option";
+      offers = "En option (Accompagné, Agence)";
     } else if (!inOffers) {
       status = "option";
       offers = "En option";

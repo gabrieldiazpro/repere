@@ -132,10 +132,10 @@ export const DEMO_AGENCY_PROFILE: AgencyProfile = {
   logoUrl: null,
   color: '#0f766e',
   senderName: 'Agence Exemple',
-  replyTo: 'contact@agence-exemple.fr',
+  replyTo: 'contact@agence-exemple.example',
   hideRepere: true,
   footer: 'Agence Exemple · agence fictive de démonstration',
-  senderDomain: { name: 'agence-exemple.fr', localPart: 'rapports', status: 'pending', providerId: null, records: [
+  senderDomain: { name: 'agence-exemple.example', localPart: 'rapports', status: 'pending', providerId: null, records: [
     { record: 'SPF', type: 'TXT', name: 'send', value: 'v=spf1 include:amazonses.com ~all', status: 'pending' },
     { record: 'DKIM', type: 'TXT', name: 'resend._domainkey', value: 'p=MIGfMA0G… (valeur fournie à la vérification)', status: 'pending' },
   ], checkedAt: null, error: null },

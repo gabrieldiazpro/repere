@@ -11,6 +11,7 @@
  */
 import { BRAND, CONTACT_EMAIL, ENTITY_READY, FOUNDER, LEGAL, ONE_LINER, SAME_AS, SITE_URL, TAGLINE, abs } from './site';
 import { SITE_PLANS, type SitePlan, type SiteSegment } from '@/components/site/plans-v2';
+import { PLAN_ADDONS } from '@/lib/plans';
 
 export { FOUNDER, SAME_AS, ENTITY_READY } from './site';
 
@@ -314,7 +315,7 @@ export const SOFTWARE_FEATURES: string[] = [
   'Audit SEO de 185 contrôles en 12 familles (indexation, technique, contenu, doublons, maillage, liens, international, images, données structurées, performance, e-commerce, local)',
   'Audit GEO en 8 familles avec niveau de preuve (accès des robots d’IA, contenu citable, identité, couverture des questions, présence hors site, données structurées, fraîcheur, llms.txt)',
   'Search Console, PageSpeed Insights et CrUX connectés ; positions Google suivies chaque semaine',
-  'Mesure des réponses de ChatGPT, Perplexity, Gemini et Claude (Mistral en option), avec marge d’erreur',
+  'Mesure des réponses de ChatGPT, Perplexity, Gemini, Claude, des aperçus IA de Google et d’AI Mode (Mistral, Copilot et DeepSeek selon l’offre ou en option), avec marge d’erreur',
   'Sources citées par les IA, vérification des faits, part de voix face aux concurrents',
   'Agent de publication : corrections appliquées sur WordPress (et WooCommerce), Shopify, Webflow, PrestaShop, Wix ou Magento après validation, journalisées et annulables',
   'Agent de contenu : pages manquantes rédigées avec vos seuls faits, créées en brouillon chez vous, publiées après validation',
@@ -322,11 +323,37 @@ export const SOFTWARE_FEATURES: string[] = [
   'Baromètres mensuels de la visibilité dans les IA par métier et par ville, publiés seulement après une mesure réelle',
 ];
 
-/** Paliers affichés pour un parcours : test, audit approfondi, Essentiel mensuel, Accompagné (et Réseau en local). */
+/** Paliers affichés pour un parcours (V10) : Découverte, Essentiel mensuel et annuel, Accompagné, plus l'audit approfondi
+ *  et Réseau proposés à la carte. Agence : l'offre et ses options par client (PLAN_ADDONS). */
 export function displayedPlans(segment: SiteSegment): SitePlan[] {
   const list = SITE_PLANS.filter((p) => p.segment === segment);
-  if (segment === 'agence') return list.filter((p) => p.interval !== 'year');
-  return list.filter((p) => /_(audit_free|audit_deep|essentiel_month|accompagne_month|reseau_month)$/.test(p.id));
+  if (segment === 'agence') return list;
+  return list.filter((p) => /_(decouverte|audit_deep|essentiel_month|essentiel_year|accompagne_month|reseau_month)$/.test(p.id));
+}
+
+/** Options payantes (V10) en Offer : prix mensuel, par client pour l'Agence. Mêmes chiffres que /tarifs. */
+export function addonOffersLd() {
+  return PLAN_ADDONS.map((a) => ({
+    '@type': 'Offer',
+    '@id': `${SITE_URL}/tarifs#offer-${a.id}`,
+    name: a.name,
+    description: a.description,
+    price: price(a.priceCents),
+    priceCurrency: 'EUR',
+    priceSpecification: {
+      '@type': 'UnitPriceSpecification',
+      price: price(a.priceCents),
+      priceCurrency: 'EUR',
+      unitCode: 'MON',
+      ...(a.unit === 'client' ? { unitText: 'par client et par mois' } : {}),
+      referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' },
+      valueAddedTaxIncluded: false,
+    },
+    category: 'Option mensuelle',
+    url: abs('/tarifs'),
+    eligibleRegion: { '@type': 'Country', name: 'FR' },
+    seller: orgRef(),
+  }));
 }
 
 /**
@@ -354,6 +381,6 @@ export function softwareAppLd(pagePath: string, segments: SiteSegment[], opts: {
       name: `Fonctions de ${BRAND}`,
       itemListElement: SOFTWARE_FEATURES.map((f) => ({ '@type': 'Service', name: f })),
     },
-    offers: segments.flatMap((s) => displayedPlans(s)).map((p) => offerLd(p)),
+    offers: [...segments.flatMap((s) => displayedPlans(s)).map((p) => offerLd(p)), ...(segments.includes('agence') ? addonOffersLd() : [])],
   };
 }

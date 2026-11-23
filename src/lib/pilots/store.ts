@@ -5,7 +5,7 @@
  */
 import crypto from 'node:crypto';
 import { getDoc, listDocs, putDoc } from '@/lib/store';
-import { normalizeWebsite, type PilotFields, type PilotSegment } from './validate';
+import { PILOT_SLOTS_BY_SEGMENT, normalizeWebsite, type PilotFields, type PilotSegment } from './validate';
 
 export const PILOTS_COLLECTION = 'pilots.applications';
 
@@ -185,4 +185,15 @@ export function linkPilotBusiness(id: string, businessId: string, startDate?: st
 /** Compte les places occupées (retenues + actives) sur PILOT_SLOTS. Pur. */
 export function seatsTaken(rows: Pick<PilotRow, 'status'>[]): number {
   return rows.filter((r) => r.status === 'retenue' || r.status === 'active').length;
+}
+
+/** V10 : places occupées et restantes par parcours (4 local, 3 PME, 3 e-commerce). Pur. */
+export function seatsBySegment(rows: Pick<PilotRow, 'status' | 'segment'>[]): Record<PilotSegment, { slots: number; taken: number; left: number }> {
+  const out = {} as Record<PilotSegment, { slots: number; taken: number; left: number }>;
+  for (const seg of Object.keys(PILOT_SLOTS_BY_SEGMENT) as PilotSegment[]) {
+    const slots = PILOT_SLOTS_BY_SEGMENT[seg];
+    const taken = Math.min(slots, seatsTaken(rows.filter((r) => r.segment === seg)));
+    out[seg] = { slots, taken, left: slots - taken };
+  }
+  return out;
 }

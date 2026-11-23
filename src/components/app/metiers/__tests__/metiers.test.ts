@@ -161,13 +161,13 @@ describe('produits (démo Maison Sora)', () => {
     expect(urlKey('https://WWW.Shop.fr/x/')).toBe('shop.fr/x');
   });
   it('suivi produit démo : chaque produit du catalogue a sa ligne', async () => {
-    const c = await loadContext({ id: 'demo-ecom', name: 'Maison Sora', website: 'https://maison-sora.fr' });
+    const c = await loadContext({ id: 'demo-ecom', name: 'Maison Sora', website: 'https://maison-sora.example' });
     const t = buildProductTracking(c.audit, c.catalog, { demo: true });
     expect(t.answersAnalyzed).toBeGreaterThan(0);
     expect(t.products.map((p) => p.productId).sort()).toEqual(c.catalog.products.map((p) => p.id).sort());
   });
   it('revendeurs démo : parts cohérentes', async () => {
-    const r = await retailerReport({ id: 'demo-ecom', name: 'Maison Sora', website: 'https://maison-sora.fr' });
+    const r = await retailerReport({ id: 'demo-ecom', name: 'Maison Sora', website: 'https://maison-sora.example' });
     const sum = Object.values(r.byKind).reduce((n, k) => n + (k?.share ?? 0), 0);
     if (r.citations) expect(sum).toBeCloseTo(1, 1);
     expect(r.thirdPartyShare).toBeGreaterThanOrEqual(0);

@@ -420,6 +420,19 @@ async function markEffect(cs: ChangeSet, actor: Actor, now: Date): Promise<void>
   }
 }
 
+/**
+ * V10 (décision 7) : séries de corrections appliquées chez le client ce mois-ci (première application, hors export),
+ * pour le plafond `Entitlements.publish.changeSetsPerMonth` (20 / 100 / 200). Pur.
+ */
+export function appliedThisMonth(list: Pick<ChangeSet, 'platform' | 'appliedAt'>[], now: Date = new Date()): number {
+  const month = now.toISOString().slice(0, 7);
+  return list.filter((c) => c.platform !== 'export' && typeof c.appliedAt === 'string' && c.appliedAt.slice(0, 7) === month).length;
+}
+
+export async function countAppliedThisMonth(businessId: string, now: Date = new Date()): Promise<number> {
+  return appliedThisMonth(await listChangeSets(businessId, { limit: 2000 }), now);
+}
+
 export async function applyChangeSet(businessId: string, id: string, actor: Actor, opts: ApplyOptions = {}): Promise<ChangeSet> {
   assertNotDemo(businessId);
   const now = opts.now ?? new Date();

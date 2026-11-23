@@ -227,14 +227,15 @@ describe('droits par offre', () => {
 
   it('Essentiel et Accompagné suivent les volumes annoncés par parcours', () => {
     expect(getEntitlements({ ...base, plan: 'essentiel' })).toMatchObject({ tier: 'essentiel', prompts: 20, frequency: 'monthly', execution: true });
-    expect(getEntitlements({ ...base, segment: 'pme', plan: 'essentiel' })).toMatchObject({ prompts: 50, frequency: 'weekly', integrations: true });
+    // V10 : Essentiel mesuré chaque mois dans tous les parcours.
+    expect(getEntitlements({ ...base, segment: 'pme', plan: 'essentiel' })).toMatchObject({ prompts: 50, frequency: 'monthly', integrations: true });
     expect(getEntitlements({ ...base, segment: 'ecommerce', plan: 'accompagne' })).toMatchObject({ tier: 'accompagne', prompts: 100 });
     expect(getEntitlements({ ...base, plan: 'accompagne' }).prompts).toBe(30);
     expect(getEntitlements({ ...base, segment: 'pme', plan: 'accompagne' }).engines).toContain('mistral');
   });
 
   it('Agence : marque blanche ; démo : tout visible ; inactif : Découverte ; V1 mappées', () => {
-    expect(getEntitlements({ ...base, plan: 'agency' })).toMatchObject({ tier: 'agence', whiteLabel: true, brands: 20 });
+    expect(getEntitlements({ ...base, plan: 'agency' })).toMatchObject({ tier: 'agence', whiteLabel: true, brands: 50, prompts: 30, frequency: 'monthly' });
     expect(getEntitlements({ ...base, id: 'demo-ecom', plan: 'free' })).toMatchObject({ tier: 'demo', execution: true });
     expect(getEntitlements({ ...base, plan: 'essentiel', isActive: false }).tier).toBe('decouverte');
     expect(getEntitlements({ ...base, plan: 'suivi' }).tier).toBe('essentiel');

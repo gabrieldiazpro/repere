@@ -402,7 +402,7 @@ export const GUIDES_V3: Guide[] = [
     sources: [
       { label: 'SparkToro et Gumshoe, variabilité des recommandations des IA (Search Engine Journal)', url: 'https://www.searchenginejournal.com/ai-recommendations-change-with-nearly-every-query-sparktoro/', note: '600 volontaires, près de 3 000 exécutions.' },
     ],
-    cta: { text: 'Posez vos premières questions : le test gratuit vous montre qui est cité à votre place.', href: '/audit', label: 'Lancer mon test gratuit' },
+    cta: { text: 'Posez vos premières questions : le test de marque gratuit vous montre qui est cité à votre place.', href: '/analyse', label: 'Lancer mon test de marque gratuit' },
     related: ['apparaitre-dans-chatgpt-pme', 'page-que-les-ia-citent', 'ia-disent-des-choses-fausses'],
   },
 ];

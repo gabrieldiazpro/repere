@@ -15,6 +15,10 @@ import { v3Routes, type RouteEntry } from '@/lib/seo/routes';
 import { publishedEntries } from '@/lib/barometre/public';
 import { SOFTWARE_FEATURES } from '@/lib/seo/jsonld';
 import { aiCoverage, aiCoverageCounts } from '@/components/site/ai-coverage';
+import { offerEntitlements } from '@/components/site/offer-facts';
+import { AGENCY_INCLUDED_CLIENTS, PLAN_ADDONS, getAddon, getPlan } from '@/lib/plans';
+import { COMMISSION_BY_FAMILY } from '@/lib/partners/terms';
+import { pct } from '@/lib/partners/program';
 
 // Régénéré toutes les heures : la section « Baromètres » n'apparaît qu'une fois un baromètre réellement mesuré.
 export const revalidate = 3600;
@@ -23,11 +27,13 @@ const link = (label: string, path: string, note?: string) => `- [${label}](${abs
 
 function priceLine(seg: 'local' | 'pme' | 'ecommerce', label: string) {
   const t = tiersFor(seg);
+  const ess = offerEntitlements(seg, 'essentiel');
+  const acc = offerEntitlements(seg, 'accompagne');
   const parts = [
-    'analyse gratuite du site',
-    t.deep ? `audit approfondi ${euros(t.deep.priceCents)}` : null,
-    t.essentielMonth ? `Essentiel ${euros(t.essentielMonth.priceCents)}/mois` : null,
-    t.accompagne ? `Accompagné ${euros(t.accompagne.priceCents)}/mois (3 mois minimum)` : null,
+    'Découverte gratuite',
+    t.essentielMonth ? `Essentiel ${euros(t.essentielMonth.priceCents)}/mois${t.essentielYear ? ` ou ${euros(t.essentielYear.priceCents)}/an` : ''} (${ess.prompts} questions, ${ess.engines.length} IA, chaque mois)` : null,
+    t.accompagne ? `Accompagné ${euros(t.accompagne.priceCents)}/mois, 3 mois minimum (${acc.prompts} questions, ${acc.engines.length} IA, chaque semaine)` : null,
+    t.deep ? `à la carte : audit approfondi ${euros(t.deep.priceCents)}` : null,
   ].filter(Boolean);
   return `  - ${label} : ${parts.join(', ')}`;
 }
@@ -57,9 +63,10 @@ export async function GET() {
     priceLine('local', 'Commerce local'),
     priceLine('pme', 'PME et services B2B'),
     priceLine('ecommerce', 'E-commerce'),
-    '- Offre gratuite permanente (Découverte) : 1 marque, 5 questions suivies, 1 mesure par mois, 3 IA (ChatGPT, Perplexity, Gemini), sans carte bancaire',
+    '- Une seule offre gratuite, Découverte : sans inscription, l\'analyse du site en 60 secondes et le test de marque ; avec un compte gratuit, 1 marque, 5 questions suivies, 1 mesure par mois, 3 IA (ChatGPT, Perplexity, Gemini), sans carte bancaire ni limite de durée',
+    `- Aperçus IA de Google (AI Overviews) et Google AI Mode : inclus dans toutes les offres payantes. Options : ${PLAN_ADDONS.filter((a) => a.unit === 'account').map((a) => `${a.name} ${euros(a.priceCents)}/mois`).join(', ')} (Accompagné) ; Grok sur demande`,
     `- IA mesurables (${aiCoverageCounts().total}) : ${aiCoverage().map((a) => `${a.name} : ${a.mode}, ${a.status === 'offres' ? `offres : ${a.offers}` : a.offers.replace(/^En/, 'en').replace(/^Sur/, 'sur')}`).join(' ; ')}. Une IA en option n'est interrogée que si elle est activée, jamais simulée ; méthode et marge d'erreur par IA sur /methode`,
-    '- Agences : marque blanche et partenariat, sur liste d\'attente',
+    `- Agence (liste d'attente) : ${euros(getPlan('agency_month').priceCents)}/mois pour ${AGENCY_INCLUDED_CLIENTS} clients mesurés chaque mois, +${euros(getAddon('agency_extra_client').priceCents)}/mois par client au-delà, mesure hebdomadaire d'un client en option (+${euros(getAddon('agency_weekly_client').priceCents)}/mois) ; partenaires sans abonnement : agences ${pct(COMMISSION_BY_FAMILY.agence!.rate)}, prescripteurs et formateurs ${pct(COMMISSION_BY_FAMILY.prescripteur!.rate)} des paiements HT pendant 12 mois, CCI et chambres : atelier gratuit`,
     "- Ce que nous ne faisons pas : aucune garantie de position dans Google ni de citation par une IA, aucun faux avis, rien n'est publié sans la validation du client, aucune donnée inventée (un fournisseur non configuré est affiché comme tel)",
     '- Limites : pas d\'index de liens propre (liens entrants via un fournisseur de données, selon l\'offre) ; exploration plafonnée à 60 pages (analyse publique), 500 ou 2 000 pages selon l\'offre ; pas d\'analyse de journaux serveur',
     `- Contact : ${CONTACT_EMAIL}`,
@@ -67,9 +74,9 @@ export async function GET() {
     `- Mise à jour de ce fichier : ${updated}`,
     '',
     '## Produit',
-    link('Test de marque gratuit', '/analyse', 'test gratuit, sans carte bancaire : votre marque est-elle citée par les IA (questions posées en direct, qui est cité à votre place et pourquoi), puis analyse SEO et GEO du site'),
-    link('Test de visibilité IA par nom', '/audit', 'score de visibilité IA sur 100, concurrents cités, premières sources, selon le parcours (local, PME, e-commerce)'),
-    link('Tarifs', '/tarifs', 'tous les prix des trois parcours, rendus dans la page sans JavaScript'),
+    link('Test de marque gratuit (Découverte)', '/analyse', 'sans inscription ni carte bancaire : votre marque est-elle citée par les IA (questions posées en direct, qui est cité à votre place et pourquoi), puis analyse SEO et GEO du site'),
+    link('Test de visibilité IA par nom (Découverte, sans site)', '/audit', 'score de visibilité IA sur 100, concurrents cités, premières sources, selon le parcours (local, PME, e-commerce)'),
+    link('Tarifs', '/tarifs', 'Découverte, Essentiel et Accompagné pour chacun des trois parcours, l\'offre Agence à part, comparatif des fonctionnalités, rendus dans la page sans JavaScript'),
     link('Méthode', '/methode', 'exploration du site, audit SEO (familles, poids, note), audit GEO et niveaux de preuve, Search Console et positions, agent de publication, formule du score IA, marge d’erreur, sources, vérification des faits, limites, versions'),
     ...routeLines('produit', routes).filter((l) => !l.includes('/analyse)')),
     link('Commerces locaux : SEO local et IA', '/local'),

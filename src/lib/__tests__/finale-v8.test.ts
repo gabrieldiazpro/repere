@@ -32,7 +32,9 @@ describe('site : IA mesurables', () => {
     expect(list.map((a) => a.id).sort()).toEqual([...ALL_PROVIDERS].sort());
     expect(aiCoverageCounts().total).toBe(10);
     const off = (id: string) => list.find((a) => a.id === id)!;
-    for (const id of ['google_aio', 'google_ai_mode', 'copilot', 'deepseek']) expect(off(id).status).toBe('option');
+    // V10 : aperçus IA de Google et AI Mode dans les offres payantes ; Copilot et DeepSeek en option (Accompagné, Agence).
+    for (const id of ['copilot', 'deepseek']) expect(off(id).status).toBe('option');
+    for (const id of ['google_aio', 'google_ai_mode']) expect(off(id)).toMatchObject({ status: 'offres', offers: 'Toutes les offres payantes' });
     expect(off('grok').status).toBe('demande');
     expect(off('chatgpt').offers).toBe('Toutes les offres');
     // Les IA « dans les offres » sont exactement celles des droits.
@@ -48,9 +50,10 @@ describe('Réglages : liste dynamique des IA', () => {
     const { engineAccess } = await import('@/components/app/shell/verrou');
     const names = { essentiel: TIER_NAMES.essentiel, accompagne: TIER_NAMES.accompagne };
     const ess = getEntitlements({ id: 'x', plan: 'essentiel', segment: 'pme', planId: null } as never);
-    const list = engineAccess(ess, 'pme', (b) => getEntitlements(b), names, { extras: ['google_aio'] });
+    const list = engineAccess(ess, 'pme', (b) => getEntitlements(b), names, { extras: ['deepseek'] });
     expect(list.map((e) => e.id)).toEqual(ALL_PROVIDERS);
-    expect(list.find((e) => e.id === 'google_aio')).toMatchObject({ optional: true, extraActive: true });
+    expect(list.find((e) => e.id === 'google_aio')).toMatchObject({ included: true, optional: false });
+    expect(list.find((e) => e.id === 'deepseek')).toMatchObject({ optional: true, extraActive: true });
     expect(list.find((e) => e.id === 'copilot')).toMatchObject({ optional: true });
     expect(list.find((e) => e.id === 'copilot')?.extraActive).toBeUndefined();
     expect(list.find((e) => e.id === 'mistral')).toMatchObject({ optional: false, unlock: TIER_NAMES.accompagne });
@@ -58,8 +61,10 @@ describe('Réglages : liste dynamique des IA', () => {
 });
 
 describe('budget d’une mesure payante (économie des offres)', () => {
-  it('par défaut, inchangé ; « offre » = coût prévu + 10 %, plafonné', async () => {
+  it('V10 : « offre » par défaut (coût prévu + 10 %, plafonné) ; « fixe » = ancien garde-fou', async () => {
     const { paidBudgetForPlan } = await import('@/lib/engine/audit');
+    expect(paidBudgetForPlan('paid', 18.4, 2.7)).toBeCloseTo(20.24);
+    vi.stubEnv('AUDIT_BUDGET_PAID_MODE', 'fixe');
     expect(paidBudgetForPlan('paid', 18.4, 2.7)).toBe(2.7);
     vi.stubEnv('AUDIT_BUDGET_PAID_MODE', 'offre');
     expect(paidBudgetForPlan('paid', 10, 2.7)).toBeCloseTo(11);

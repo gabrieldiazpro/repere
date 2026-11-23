@@ -84,5 +84,11 @@ export default async function RapportPage({ params }: Props) {
     facts = null;
   }
   const cardHref = r.demo ? null : await activeCardHref(id);
-  return <ReportView result={r} unlocked={unlocked} facts={facts} cardHref={cardHref} payable={isStripeEnabled()} />;
+  let fictive = false;
+  try {
+    fictive = !!findDemoAudit(id);
+  } catch {
+    fictive = false;
+  }
+  return <ReportView result={r} unlocked={unlocked} facts={facts} cardHref={cardHref} payable={isStripeEnabled()} fictive={fictive} />;
 }

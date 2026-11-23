@@ -36,6 +36,10 @@ const QUERIES = [
 
 const CHANGELOG = [
   {
+    v: 'Offres et rythmes (V10)', date: '23 novembre 2026',
+    txt: 'Les aperçus IA et le mode IA de Google font partie de toutes les offres payantes ; Copilot et DeepSeek deviennent des options d’Accompagné et d’Agence. Essentiel est mesuré chaque mois (chaque question posée 3 fois à chaque IA), Accompagné chaque semaine (2 fois). Chaque mesure payante couvre tout le volume de son offre. La formule du score est inchangée.',
+  },
+  {
     v: 'Mesure des IA (V8)', date: '22 novembre 2026',
     txt: '10 IA mesurables : aux quatre IA des offres (ChatGPT, Perplexity, Gemini, Claude) s’ajoutent, en option, les aperçus IA et le mode IA de Google et Copilot dans Bing (relevés sur la page de résultats en France), DeepSeek, Mistral Vibe (ex-Le Chat) et, sur demande, Grok. Méthode et marge d’erreur affichées pour chaque IA ; une recherche sans aperçu IA est comptée à part. Test de marque gratuit : questions posées en direct, une fois à chaque IA activée, « mesure unique, à confirmer dans le temps ». La formule du score est inchangée.',
   },
@@ -127,7 +131,7 @@ export default function MethodPage() {
       title="Comment nous analysons votre site et mesurons les IA"
       meta={<Byline published={METHOD_PUBLISHED} updated={PAGE_UPDATED[PATH]} />}
       intro={<p>Version de la méthode : {METHOD_VERSION}. {BRAND} explore d&apos;abord votre site comme Google et les robots des IA le lisent, puis
-        le contrôle (audit SEO et audit GEO, chaque règle avec sa source). Ensuite, il pose à ChatGPT, Gemini, Perplexity et Claude (et, en option, aux aperçus IA et au mode IA de Google, à Copilot, DeepSeek, Mistral Vibe ou Grok) les questions qu&apos;un client ou un acheteur poserait,
+        le contrôle (audit SEO et audit GEO, chaque règle avec sa source). Ensuite, il pose à ChatGPT, Gemini, Perplexity et Claude, aux aperçus IA et au mode IA de Google dans les offres payantes (et, selon l&apos;offre ou en option, à Mistral Vibe, Copilot, DeepSeek ou Grok) les questions qu&apos;un client ou un acheteur poserait,
         puis regarde si votre entreprise est citée, à quelle place, face à qui, et sur quelles sources les IA s&apos;appuient. Tout est expliqué ici,
         pour que vous puissiez refaire le test vous-même.</p>}
       visual={<ScoreFormula weights={WEIGHTS} />}
@@ -136,8 +140,8 @@ export default function MethodPage() {
       <>
       <h2 id="resume" className={h2Class}>En résumé</h2>
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card><p className="text-3xl font-semibold">8 à 10</p><p className="text-sm" style={{ color: 'var(--muted)' }}>requêtes types au test gratuit (8 en local, 10 pour une PME ou un e-commerce)</p></Card>
-        <Card><p className="text-3xl font-semibold">2</p><p className="text-sm" style={{ color: 'var(--muted)' }}>exécutions par requête et par IA</p></Card>
+        <Card><p className="text-3xl font-semibold">8 à 10</p><p className="text-sm" style={{ color: 'var(--muted)' }}>requêtes types au test de marque gratuit (8 en local, 10 pour une PME ou un e-commerce)</p></Card>
+        <Card><p className="text-3xl font-semibold">2</p><p className="text-sm" style={{ color: 'var(--muted)' }}>exécutions par requête et par IA au test gratuit (3 par mesure mensuelle, 2 par mesure hebdomadaire)</p></Card>
         <Card><p className="text-3xl font-semibold">48 et plus</p><p className="text-sm" style={{ color: 'var(--muted)' }}>réponses analysées au test local (8 × 2 × 3 IA) ; le nombre exact est affiché sur chaque rapport</p></Card>
       </div>
       <p className="mt-3 text-sm" style={{ color: 'var(--muted)' }}>Le suivi et les audits approfondis utilisent davantage de requêtes (jusqu&apos;à 100 selon l&apos;offre), plusieurs exécutions et ajoutent Claude pour les sources. Chaque rapport indique le nombre de réponses analysées.</p>
@@ -340,7 +344,7 @@ export default function MethodPage() {
 
       <div className="mt-12 rounded-2xl p-6 sm:p-8" style={{ background: 'var(--primary-bg)' }}>
         <p className="mb-3 text-lg font-semibold">Voir ce que répondent les IA pour votre métier.</p>
-        <CtaLink href="/audit">Lancer mon test gratuit</CtaLink>
+        <CtaLink href="/analyse">Lancer mon test de marque gratuit</CtaLink>
         <p className="mt-3 text-sm" style={{ color: 'var(--muted)' }}>Ou parcourez <Link href="/visibilite-ia" className="underline">la visibilité IA par métier, secteur et catégorie</Link>, ou nos <Link href="/guides" className="underline">guides</Link>.</p>
       </div>
       <h2 id="notre-site" className={h2Class}>Ce que nous appliquons sur notre propre site</h2>

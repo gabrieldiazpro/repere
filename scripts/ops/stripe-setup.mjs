@@ -17,17 +17,27 @@
  *
  * Options : --domaine https://votre-domaine.fr (défaut NEXT_PUBLIC_APP_URL), --fichier <fichier>,
  *   --ecrire (écrire aussi en mode test), --sans-ecrire, --anciennes-offres (offres V1 conservées),
- *   --recreer-webhook (supprime et recrée l'endpoint pour obtenir un nouveau secret).
+ *   --recreer-webhook (supprime et recrée l'endpoint pour obtenir un nouveau secret),
+ *   --agence (V10 : offre Agence et ses options par client, à n'utiliser qu'à l'ouverture de l'offre).
+ *
+ * V10 — prix décrits (src/lib/plans.ts, PLAN_ADDONS ; rien n'est créé tant que le script n'est pas lancé) :
+ *  - option_more_ai          9 €/mois    Copilot et DeepSeek ajoutés à un espace Accompagné ;
+ *  - agency_month / _year    149 €/mois, 1 490 €/an  Agence, 10 clients mesurés chaque mois inclus (--agence) ;
+ *  - agency_extra_client     9 €/mois × quantité     client au-delà des 10 inclus (--agence) ;
+ *  - agency_weekly_client    39 €/mois × quantité    client mesuré chaque semaine (--agence) ;
+ *  - agency_more_ai_client   2 €/mois × quantité     Copilot et DeepSeek pour un client (--agence).
+ * Les options s'ajoutent comme lignes d'abonnement (quantité ajustée à la main dans Stripe ou par l'admin), puis
+ * l'admin active l'option sur l'espace (setOfferOptions, src/lib/entitlements.ts).
  */
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { APP_ROOT, argValue, loadScriptEnv, upsertEnvFile } from './lib/envfile.mjs';
-import { priceEnvName, soldPlans } from './lib/plans.mjs';
+import { addonPlans, agencyPlans, priceEnvName, soldPlans } from './lib/plans.mjs';
 
 export const WEBHOOK_PATH = '/api/stripe/webhook';
 export const WEBHOOK_ROUTE_FILE = path.join(APP_ROOT, 'src', 'app', 'api', 'stripe', 'webhook', 'route.ts');
-const SEGMENT_LABEL = { local: 'Local', pme: 'PME', ecommerce: 'E-commerce', agence: 'Agence' };
+const SEGMENT_LABEL = { local: 'Local', pme: 'PME', ecommerce: 'E-commerce', agence: 'Agence', options: 'Option' };
 
 /** Événements traités par la route webhook (lus dans le code : jamais de liste recopiée à la main). */
 export async function webhookEvents(file = WEBHOOK_ROUTE_FILE) {
@@ -220,7 +230,12 @@ async function main() {
 
   const { default: Stripe } = await import('stripe');
   const stripe = new Stripe(vars.STRIPE_SECRET_KEY, { appInfo: { name: 'repere-stripe-setup' }, maxNetworkRetries: 2 });
-  const plans = await soldPlans({ legacy: argv.includes('--anciennes-offres') });
+  const agency = argv.includes('--agence');
+  const plans = [
+    ...(await soldPlans({ legacy: argv.includes('--anciennes-offres') })),
+    ...(agency ? await agencyPlans() : []),
+    ...(await addonPlans({ agency })),
+  ];
   const events = await webhookEvents();
 
   console.log(`Stripe en mode ${mode === 'live' ? 'LIVE (paiements réels)' : 'test (sandbox)'}${dryRun ? ' — ESSAI À BLANC, rien ne sera modifié' : ''}`);

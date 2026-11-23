@@ -203,7 +203,7 @@ const QUESTIONS: Question[] = [
   {
     id: 'ai-overviews-suivis', theme: 'Mesurer',
     q: 'Repéré mesure-t-il les aperçus IA de Google ?',
-    a: "Non. Repéré suit ChatGPT, Perplexity, Gemini et Claude, avec Mistral en option, mais pas les aperçus IA ni le mode IA de Google, faute d'interface fiable pour les interroger. Plusieurs concurrents les suivent avec leurs propres méthodes. Être présent dans l'index de Google reste un prérequis, que notre audit de site vérifie.",
+    a: "Oui, dans toutes les offres payantes : les aperçus IA (AI Overviews) et le mode IA de Google sont relevés sur la page de résultats en France, en français ; une recherche sans aperçu IA est comptée à part. L'offre gratuite Découverte s'en tient à ChatGPT, Gemini et Perplexity. Être présent dans l'index de Google reste un prérequis, que notre audit vérifie.",
     link: { href: '/comparatif', label: 'Ce que suit chaque outil' },
   },
   {

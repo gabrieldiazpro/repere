@@ -96,7 +96,7 @@ const FAQ: QA[] = [
   },
   {
     q: 'Repéré suit-il les AI Overviews de Google ?',
-    a: "Oui, en option : les aperçus IA (AI Overviews) et l'AI Mode de Google sont relevés sur la page de résultats en France, en français ; une recherche sans aperçu IA est comptée à part, jamais comme un oubli. Les offres incluent ChatGPT, Perplexity, Gemini et Claude ; Copilot, DeepSeek et Mistral Vibe sont aussi en option, Grok sur demande. La méthode de chaque IA est publiée sur la page Méthode.",
+    a: "Oui, dans toutes les offres payantes : les aperçus IA (AI Overviews) et l'AI Mode de Google sont relevés sur la page de résultats en France, en français ; une recherche sans aperçu IA est comptée à part, jamais comme un oubli. Les offres incluent aussi ChatGPT, Perplexity, Gemini et, selon l'offre, Claude et Mistral Vibe ; Copilot et DeepSeek sont en option (Accompagné, Agence), Grok sur demande. La méthode de chaque IA est publiée sur la page Méthode.",
   },
 ];
 

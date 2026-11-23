@@ -80,12 +80,13 @@ describe('verrou', () => {
     expect(verrou(e, 'execution').locked).toBe(true);
     expect(verrou(e, 'team').locked).toBe(true);
   });
-  it('Essentiel local : exports ouverts, intégrations et Claude fermés ; PME : hebdo', () => {
+  it('Essentiel local : exports ouverts, intégrations et Claude fermés ; hebdo : Accompagné (V10)', () => {
     const e = getEntitlements(biz('essentiel', 'local'));
     expect(verrou(e, 'exports').locked).toBe(false);
     expect(verrou(e, 'integrations').locked).toBe(true);
     expect(verrou(e, 'claude').locked).toBe(true);
-    expect(verrou(getEntitlements(biz('essentiel', 'pme')), 'weekly').locked).toBe(false);
+    expect(verrou(getEntitlements(biz('essentiel', 'pme')), 'weekly').locked).toBe(true);
+    expect(verrou(getEntitlements(biz('accompagne', 'pme')), 'weekly').locked).toBe(false);
   });
   it('démo : rien de verrouillé ; droits inconnus : pas de faux verrou', () => {
     const d = getEntitlements({ id: 'demo', plan: 'free' as never, segment: 'local', planId: null as never });
@@ -147,7 +148,7 @@ describe('bien démarrer', () => {
     expect(parseDemarrage(null)).toEqual({ manual: [], hidden: false });
   });
   it('normalise l’adresse du site', () => {
-    expect(normaliserSite('plomberie-martin.fr')).toBe('https://plomberie-martin.fr');
+    expect(normaliserSite('plomberie-martin.example')).toBe('https://plomberie-martin.example');
     expect(normaliserSite('http://www.exemple.com/')).toBe('http://www.exemple.com');
     expect(normaliserSite('pas un site')).toBeNull();
     expect(normaliserSite('')).toBeNull();

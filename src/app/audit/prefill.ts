@@ -14,7 +14,7 @@ export interface SitePrefill {
 
 const STOP = new Set(['www', 'shop', 'boutique', 'store', 'site', 'web', 'fr', 'com', 'paris']);
 
-/** « maison-sora.fr » → « Maison Sora » ; « https://www.plomberie-martin.fr/contact » → « Plomberie Martin ». */
+/** « maison-sora.example » → « Maison Sora » ; « https://www.plomberie-martin.example/contact » → « Plomberie Martin ». */
 export function nameFromDomain(input: string): string | null {
   let host = input.trim().toLowerCase();
   if (!host) return null;

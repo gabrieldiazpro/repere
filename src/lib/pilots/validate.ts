@@ -3,10 +3,18 @@
  * Pur (aucun import serveur) : utilisé par le formulaire (client) et par la route POST /pilotes/candidature (serveur).
  */
 
-/** Nombre de places du programme (affiché sur /pilotes). */
-export const PILOT_SLOTS = 10;
-/** Durée de l'offre pilote, en mois (PROPOSITION à valider par le fondateur, voir docs/lancement/). */
+/**
+ * Offre pilote DÉCIDÉE en V10 (docs/v10/DECISIONS.md, décision 10) : 3 mois d'Accompagné offerts, 10 places réparties
+ * 4 commerces locaux / 3 PME / 3 e-commerce ; avant/après publiable seulement avec l'accord écrit de l'entreprise.
+ */
+/** Durée de l'offre pilote, en mois. */
 export const PILOT_MONTHS = 3;
+/** Offre offerte aux pilotes (niveau d'accès de l'espace pendant le programme). */
+export const PILOT_TIER = 'accompagne' as const;
+/** Places par parcours (la somme fait PILOT_SLOTS). */
+export const PILOT_SLOTS_BY_SEGMENT = { local: 4, pme: 3, ecommerce: 3 } as const;
+/** Nombre de places du programme (affiché sur /pilotes). */
+export const PILOT_SLOTS = PILOT_SLOTS_BY_SEGMENT.local + PILOT_SLOTS_BY_SEGMENT.pme + PILOT_SLOTS_BY_SEGMENT.ecommerce;
 
 export const PILOT_SEGMENTS = [
   { id: 'local', label: 'Commerce local (boutique, restaurant, artisan, cabinet…)' },

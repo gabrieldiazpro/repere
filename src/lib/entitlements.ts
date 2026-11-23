@@ -2,6 +2,10 @@
  * Droits par offre (contrat docs/v3/12-CONTRATS-V3.md) — une seule table de vérité, testée.
  * Sources : docs/v2/07-plans-v2.json (questions, IA, rythme annoncés), décision 2 (Découverte : 1 marque,
  * 5 questions, 1 mesure par mois, 3 IA, pas d'exécution), décision 3 (IA suivies, Mistral en option).
+ * V10 (docs/v10/DECISIONS.md, scénario S2 de docs/v8/economie-offres.md) : aperçus IA de Google et AI Mode dans toutes
+ * les offres payantes ; Essentiel mesuré chaque mois (3 passages) ; Accompagné chaque semaine (2 passages) ; Agence
+ * 10 clients mesurés chaque mois ; Copilot et DeepSeek en option (Accompagné, Agence), Grok sur demande. Marges :
+ * docs/v10/progress/DECISIONS-V10.md.
  *
  * Un commerce inactif ou sans offre payante active a les droits Découverte. Les comptes démo ont tout (lecture seule
  * côté serveur par ailleurs) pour montrer le produit complet.
@@ -11,7 +15,7 @@ import { isDemoBusinessId } from '@/lib/demo-v2';
 import type { ProviderId } from '@/lib/engine/types';
 import type { Segment } from '@/lib/engine/types-v2';
 import { HttpError } from '@/lib/auth/roles';
-import { getPlan, isPlanId, type PlanId, type PlanTier } from '@/lib/plans';
+import { AGENCY_INCLUDED_CLIENTS, AGENCY_MAX_CLIENTS, getPlan, isPlanId, type PlanId, type PlanTier } from '@/lib/plans';
 import { limitsFor as seoDataLimitsFor, type SeoDataLimits } from '@/lib/seodata/limits';
 import { crawlRights, type CrawlRights } from '@/lib/recrawl-rights';
 
@@ -24,6 +28,12 @@ export interface Entitlements {
   prompts: number;
   engines: ProviderId[];
   frequency: 'monthly' | 'weekly' | 'daily';
+  /** V10 : passages par mesure (chaque question posée N fois à chaque IA) : 3 au mois, 2 à la semaine */
+  runs: number;
+  /** V10 : IA ajoutables en option payante (Copilot, DeepSeek : Accompagné et Agence) ; jamais comptées dans « N IA » */
+  optionalEngines: ProviderId[];
+  /** V10 : contenus rédigés publiables par mois (0 / 2 / 6 / 6 par client) — src/lib/content/quota.ts */
+  contentsPerMonth: number;
   /** tâches d'exécution (livrables, génération) */
   execution: boolean;
   /** utilisateurs (membres + invitations en attente) */
@@ -65,11 +75,13 @@ export interface AgencyLimits {
   clientPortal: boolean;
   /** export CSV par client (constats, positions, réponses des IA) depuis le tableau de bord */
   clientExports: boolean;
+  /** V10 : clients compris dans le prix de base (au-delà : +9 €/mois par client, option `agency_extra_client`) */
+  includedClients: number;
 }
 
-const NO_AGENCY: AgencyLimits = { portfolio: false, clients: 0, branding: false, senderDomain: false, clientPortal: false, clientExports: false };
-/** « 20 clients » (offre Agence, docs/v2/07-plans-v2.json) : même plafond que `brands`. */
-const AGENCY_FULL: AgencyLimits = { portfolio: true, clients: 20, branding: true, senderDomain: true, clientPortal: true, clientExports: true };
+const NO_AGENCY: AgencyLimits = { portfolio: false, clients: 0, branding: false, senderDomain: false, clientPortal: false, clientExports: false, includedClients: 0 };
+/** V10 : « 10 clients mesurés chaque mois, +9 €/mois par client au-delà » ; plafond technique AGENCY_MAX_CLIENTS (devis au-delà). */
+const AGENCY_FULL: AgencyLimits = { portfolio: true, clients: AGENCY_MAX_CLIENTS, branding: true, senderDomain: true, clientPortal: true, clientExports: true, includedClients: AGENCY_INCLUDED_CLIENTS };
 
 export function agencyLimitsFor(tier: EntitlementTier): AgencyLimits {
   return tier === 'agence' || tier === 'demo' ? { ...AGENCY_FULL } : { ...NO_AGENCY };
@@ -121,10 +133,22 @@ function v5Limits(tier: EntitlementTier, segment: Segment): Pick<Entitlements, '
 
 const BASE3: ProviderId[] = ['chatgpt', 'perplexity', 'gemini'];
 const BASE4: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude'];
+/** V10 : aperçus IA de Google et AI Mode (DataForSEO, ≈ 0,008 € la question pour les deux), dans toutes les offres payantes. */
+export const GOOGLE_AI: ProviderId[] = ['google_aio', 'google_ai_mode'];
+/** V10 : IA en option payante (Accompagné, Agence). Grok : sur demande, hors offres. */
+export const OPTIONAL_AI: ProviderId[] = ['copilot', 'deepseek'];
+const ESS_LOCAL: ProviderId[] = [...BASE3, ...GOOGLE_AI];
+const PLUS: ProviderId[] = [...BASE4, ...GOOGLE_AI];
 /** Mistral n'est réellement interrogé que si MISTRAL_API_KEY est fourni (moteur). */
-const ALL: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral'];
+const ALL: ProviderId[] = ['chatgpt', 'perplexity', 'gemini', 'claude', 'mistral', ...GOOGLE_AI];
 
-type Row = Omit<Entitlements, 'planId' | 'tier' | 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency' | 'api'>;
+/** V10 : passages par mesure selon le rythme (docs/v10/progress/DECISIONS-V10.md : marge brute ≥ 70 %). */
+export const RUNS_BY_FREQUENCY: Record<Entitlements['frequency'], number> = { monthly: 3, weekly: 2, daily: 1 };
+
+/** V10 : contenus publiables par mois (décision 7 : 0 / 2 / 6 / 6 par client). */
+export const CONTENTS_PER_MONTH: Record<EntitlementTier, number> = { decouverte: 0, essentiel: 2, accompagne: 6, agence: 6, demo: 2 };
+
+type Row = Omit<Entitlements, 'planId' | 'tier' | 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency' | 'api' | 'runs' | 'contentsPerMonth' | 'optionalEngines'>;
 
 const DECOUVERTE: Row = {
   prompts: 5, engines: BASE3, frequency: 'monthly', execution: false, seats: 1, brands: 1,
@@ -134,25 +158,26 @@ const DECOUVERTE: Row = {
 /** Par parcours : les offres n'annoncent pas les mêmes volumes (docs/v2/07-plans-v2.json). */
 const TABLE: Record<'essentiel' | 'accompagne', Record<Segment, Row>> = {
   essentiel: {
-    // « 20 questions clients suivies chaque mois », « 3 IA »
-    local: { prompts: 20, engines: BASE3, frequency: 'monthly', execution: true, seats: 2, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 10, integrations: false },
-    // « 50 questions suivies chaque semaine », trafic IA via GA4
-    pme: { prompts: 50, engines: BASE4, frequency: 'weekly', execution: true, seats: 3, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 20, integrations: true },
-    // « 50 requêtes produit suivies chaque semaine », GA4 ou Shopify
-    ecommerce: { prompts: 50, engines: BASE4, frequency: 'weekly', execution: true, seats: 3, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 20, integrations: true },
+    // « 20 questions clients suivies chaque mois », « 5 IA »
+    local: { prompts: 20, engines: ESS_LOCAL, frequency: 'monthly', execution: true, seats: 2, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 10, integrations: false },
+    // « 50 questions suivies chaque mois », « 6 IA », trafic IA via GA4
+    pme: { prompts: 50, engines: PLUS, frequency: 'monthly', execution: true, seats: 3, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 20, integrations: true },
+    // « 50 requêtes produit suivies chaque mois », « 6 IA », GA4 ou Shopify
+    ecommerce: { prompts: 50, engines: PLUS, frequency: 'monthly', execution: true, seats: 3, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 20, integrations: true },
   },
   accompagne: {
-    // « Tout Essentiel, 30 questions suivies »
-    local: { prompts: 30, engines: BASE4, frequency: 'weekly', execution: true, seats: 3, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 20, integrations: true },
-    // « Tout Essentiel, 100 questions suivies »
+    // « Tout Essentiel, 30 questions suivies chaque semaine », « 6 IA » (2 passages)
+    local: { prompts: 30, engines: PLUS, frequency: 'weekly', execution: true, seats: 3, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 20, integrations: true },
+    // « Tout Essentiel, 100 questions suivies chaque semaine », « 7 IA » (2 passages)
     pme: { prompts: 100, engines: ALL, frequency: 'weekly', execution: true, seats: 5, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 40, integrations: true },
     ecommerce: { prompts: 100, engines: ALL, frequency: 'weekly', execution: true, seats: 5, brands: 1, exports: true, shareLinks: true, whiteLabel: false, historyMonths: null, copilotDaily: 40, integrations: true },
   },
 };
 
-/** « 20 clients en Essentiel », marque blanche, accès équipe et export (offre en liste d'attente, briques construites). */
+/** V10 : « 10 clients mesurés chaque mois » (30 questions, 6 IA, 3 passages) ; marque blanche, accès équipe et export
+ *  (offre en liste d'attente, briques construites). Droits d'UN espace client ; `brands` = plafond du compte. */
 const AGENCE: Row = {
-  prompts: 50, engines: ALL, frequency: 'weekly', execution: true, seats: 10, brands: 20,
+  prompts: 30, engines: PLUS, frequency: 'monthly', execution: true, seats: 10, brands: AGENCY_MAX_CLIENTS,
   exports: true, shareLinks: true, whiteLabel: true, historyMonths: null, copilotDaily: 60, integrations: true,
 };
 
@@ -190,7 +215,7 @@ function segmentOf(b: Pick<Business, 'segment' | 'planId'>): Segment {
 type EntitlementBusiness = Pick<Business, 'id' | 'plan' | 'segment' | 'planId'> & { isActive?: boolean };
 
 export function getEntitlements(business: EntitlementBusiness): Entitlements {
-  if (isDemoBusinessId(business.id)) return { planId: 'demo', tier: 'demo', ...DEMO, engines: [...DEMO.engines], ...v5Limits('demo', segmentOf(business)) };
+  if (isDemoBusinessId(business.id)) return { planId: 'demo', tier: 'demo', ...DEMO, engines: [...DEMO.engines], ...v10Fields('demo', DEMO), ...v5Limits('demo', segmentOf(business)) };
   const active = business.isActive !== false;
   const tier = active ? tierOf(business.plan) : 'decouverte';
   const segment = segmentOf(business);
@@ -206,7 +231,70 @@ export function getEntitlements(business: EntitlementBusiness): Entitlements {
         ? String(business.planId)
         : `${segment === 'ecommerce' ? 'ecom' : segment}_decouverte`
       : String(business.planId ?? business.plan);
-  return { planId, tier, ...row, engines: [...row.engines], ...v5Limits(tier, segment) };
+  return { planId, tier, ...row, engines: [...row.engines], ...v10Fields(tier, row), ...v5Limits(tier, segment) };
+}
+
+function v10Fields(tier: EntitlementTier, row: Row): Pick<Entitlements, 'runs' | 'optionalEngines' | 'contentsPerMonth'> {
+  return {
+    runs: RUNS_BY_FREQUENCY[row.frequency],
+    optionalEngines: tier === 'accompagne' || tier === 'agence' || tier === 'demo' ? [...OPTIONAL_AI] : [],
+    contentsPerMonth: CONTENTS_PER_MONTH[tier],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// V10 : options payantes d'un espace (Copilot et DeepSeek ; mesure hebdomadaire d'un client Agence).
+// Activées par l'admin après souscription de l'option dans Stripe (scripts/ops/stripe-setup.mjs) ; document
+// `entitlements.options` (id = businessId). Une option non permise par l'offre est ignorée.
+// ---------------------------------------------------------------------------
+
+export const OFFER_OPTIONS_COLLECTION = 'entitlements.options';
+
+export interface OfferOptions {
+  /** IA en option activées (sous-ensemble de `optionalEngines`) */
+  engines?: ProviderId[];
+  /** Agence : ce client est mesuré chaque semaine (2 passages) */
+  weekly?: boolean;
+  updatedAt?: string;
+}
+
+/** Droits avec les options de l'espace appliquées (pur). */
+export function withOfferOptions(e: Entitlements, opts: OfferOptions | null | undefined): Entitlements {
+  if (!opts) return e;
+  const extra = (opts.engines ?? []).filter((p) => e.optionalEngines.includes(p) && !e.engines.includes(p));
+  const weekly = opts.weekly === true && e.tier === 'agence';
+  return {
+    ...e,
+    engines: [...e.engines, ...extra],
+    ...(weekly ? { frequency: 'weekly' as const, runs: RUNS_BY_FREQUENCY.weekly } : {}),
+  };
+}
+
+export async function getOfferOptions(businessId: string): Promise<OfferOptions | null> {
+  if (isDemoBusinessId(businessId)) return null;
+  const { getDoc } = await import('@/lib/store');
+  return (await getDoc<OfferOptions>(OFFER_OPTIONS_COLLECTION, businessId))?.data ?? null;
+}
+
+export async function setOfferOptions(businessId: string, opts: OfferOptions, now: Date = new Date()): Promise<OfferOptions> {
+  const { putDoc } = await import('@/lib/store');
+  const clean: OfferOptions = {
+    engines: [...new Set((opts.engines ?? []).filter((p) => OPTIONAL_AI.includes(p)))],
+    weekly: opts.weekly === true,
+    updatedAt: now.toISOString(),
+  };
+  await putDoc(OFFER_OPTIONS_COLLECTION, businessId, clean, businessId);
+  return clean;
+}
+
+/** Droits d'un espace, options comprises (mesures planifiées, moteur). */
+export async function getEntitlementsWithOptions(business: EntitlementBusiness): Promise<Entitlements> {
+  const e = getEntitlements(business);
+  try {
+    return withOfferOptions(e, await getOfferOptions(business.id));
+  } catch {
+    return e;
+  }
 }
 
 /** Offre minimale qui débloque une fonction (message 402). */
@@ -241,6 +329,19 @@ export function assertAgency(e: Entitlements, feature: Exclude<keyof AgencyLimit
 export function assertCanApplyPublish(e: Entitlements): void {
   if (e.publish.apply) return;
   throw new HttpError(402, 'L’application directe sur votre site est disponible avec l’offre Essentiel. Vous pouvez télécharger les modifications (export) dès maintenant.', 'upgrade_required');
+}
+
+/** V10 : plafond mensuel de séries de corrections appliquées (Essentiel 20, Accompagné 100, Agence 200). */
+export function assertWithinPublishQuota(e: Entitlements, appliedThisMonth: number): void {
+  const max = e.publish.changeSetsPerMonth;
+  if (appliedThisMonth < max) return;
+  throw new HttpError(
+    402,
+    max > 0
+      ? `Votre offre comprend ${max} séries de corrections appliquées par mois : la limite est atteinte. Vous pouvez télécharger ces modifications (export) ou attendre le mois prochain.`
+      : 'L’application directe sur votre site est disponible avec l’offre Essentiel.',
+    'quota_exceeded',
+  );
 }
 
 /** Quota numérique : lève 402 si `used + adding` dépasse la limite. */

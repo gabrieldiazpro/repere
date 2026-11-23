@@ -29,8 +29,8 @@ interface DemoSpec {
 
 export const DEMO_SPECS: Record<DemoId, DemoSpec> = {
   demo: {
-    domain: 'plomberie-martin.fr',
-    site: 'https://plomberie-martin.fr/',
+    domain: 'plomberie-martin.example',
+    site: 'https://plomberie-martin.example/',
     location: 'Paris,Ile-de-France,France',
     competitors: ['plombier-voltaire.example', 'depannage-oberkampf.example', 'artisan-plomb-paris.example', 'sos-fuites-11.example'],
     keywords: [
@@ -49,8 +49,8 @@ export const DEMO_SPECS: Record<DemoId, DemoSpec> = {
     links: { backlinks: 214, domains: 37, rank: 112 },
   },
   'demo-pme': {
-    domain: 'paysia.fr',
-    site: 'sc-domain:paysia.fr',
+    domain: 'paysia.example',
+    site: 'sc-domain:paysia.example',
     location: '',
     competitors: ['paylo.example', 'netpaie.example', 'salaria.example', 'clairpaie.example'],
     keywords: [
@@ -69,8 +69,8 @@ export const DEMO_SPECS: Record<DemoId, DemoSpec> = {
     links: { backlinks: 1840, domains: 162, rank: 241 },
   },
   'demo-ecom': {
-    domain: 'maison-sora.fr',
-    site: 'https://www.maison-sora.fr/',
+    domain: 'maison-sora.example',
+    site: 'https://www.maison-sora.example/',
     location: '',
     competitors: ['savonnerie-alba.example', 'pain-de-lune.example', 'atelier-brume.example', 'solides-et-sens.example'],
     keywords: [
