@@ -6,6 +6,7 @@
 import { domainToUnicode } from 'node:url';
 import { parseHtml, type ParsedPage } from '@/lib/siteaudit/html';
 import { allNodes, typesOf } from '@/lib/siteaudit/jsonld';
+import { cleanActivity, tradeFromBrand } from './activity';
 import type { AnalysisInput, Detection, SiteType } from './types';
 
 type Node = Record<string, unknown>;
@@ -45,14 +46,38 @@ const TRADE_BY_TYPE: Record<string, string> = {
 const LOCAL_TYPE_RE =
   /LocalBusiness|Store|Restaurant|Bakery|Cafe|Bar|Salon|Spa|Plumber|Electrician|Locksmith|Contractor|HVAC|Painter|Florist|AutoRepair|RealEstateAgent|Hotel|Dentist|Optician|Pharmacy|Gym|Veterinary|ChildCare|MovingCompany|FoodEstablishment|HomeAndConstructionBusiness|MedicalBusiness|LodgingBusiness/;
 const ORG_TYPE_RE = /Organization|Corporation|LocalBusiness|Store|Brand|OnlineStore|OnlineBusiness/;
+const SOFT_TYPE_RE = /^(SoftwareApplication|WebApplication|MobileApplication|Service|FinancialProduct|BankAccount|LoanOrCredit|PaymentService|InsuranceAgency|Course|EducationalOrganization)$/;
+/** Plateformes faites pour vendre en ligne (Shopify, WooCommerce, PrestaShop). Une boutique Wix ajoutée à un site
+ * d'établissement (« wixstores ») ne suffit pas : cas réel d'une praticienne avec un petit e-shop. */
+const STRONG_ECOM_RE = /cdn\.shopify\.com|Shopify\.theme|woocommerce|prestashop/i;
 const ECOM_HTML_RE = /cdn\.shopify\.com|Shopify\.theme|woocommerce|prestashop|wix-ecommerce|\/cart\b|\/panier\b|ajouter au panier|add to cart|data-product-id/i;
 
 function str(v: unknown): string | undefined {
   return typeof v === 'string' && v.trim() ? v.trim() : undefined;
 }
 
+/**
+ * Nom de marque lisible (TESTS-REELS) : sans forme juridique (« FLEURS DE VIES SAS » → « Fleurs de Vies »), et sans
+ * capitales criées pour les mots de 4 lettres ou plus qui ont des voyelles (« CAFÉS RICHARD » → « Cafés Richard ») ;
+ * les sigles restent (« LDLC », « OVH »).
+ */
 function cleanName(s: string): string {
-  return s.replace(/\s+/g, ' ').trim().slice(0, 80);
+  let n = s
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/[\s,-]+\b(?:SAS|SASU|SARL|EURL|SA|SNC|SCI|SCOP|SELARL|EIRL|EI|GmbH|Ltd|Inc\.?|LLC)\.?$/i, '')
+    .trim();
+  if (n === n.toUpperCase() && /\p{Lu}{4,}/u.test(n)) {
+    n = n
+      .split(' ')
+      .map((w, i) => {
+        if (w.length < 4 && i > 0 && /^(DE|DU|DES|ET|LA|LE|LES|EN|AU|AUX|D'|L')$/i.test(w)) return w.toLowerCase();
+        if (w.length >= 4 && /[AEIOUYÀÂÉÈÊËÎÏÔÛÙÜ]/.test(w)) return w.charAt(0) + w.slice(1).toLowerCase();
+        return w;
+      })
+      .join(' ');
+  }
+  return n.slice(0, 80);
 }
 
 /** Domaine lisible : « www.plomberie-martin.example » → « Plomberie Martin ». */
@@ -87,12 +112,17 @@ function addressOf(n: Node): Node | null {
   return null;
 }
 
+const NOT_CITY =
+  /^(?:Domicile|Distance|Ligne|France|Europe|Mesure|Rendez|Devis|Gros|Promo|Promotion|Stock|Vente|Bio|Direct|Partenariat|Savoir|Ce|Cette|Votre|Vos|Notre|Nos|Toute|Tout|Tous|Plus|Moins|Location|Livraison|Magasin|Boutique|Ville|Centre|Famille|Solo|Groupe|Equipe|Équipe|Option|Ce|Un|Une|Le|La|Les|Images?|Vidéo|Video|Photos?|Cadeau|Offre|Soldes?|Noël|Noel|Fête|Fete|Été|Ete|Hiver|Automne|Printemps|Janvier|Février|Mars|Avril|Mai|Juin|Juillet|Août|Septembre|Octobre|Novembre|Décembre|Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi|Dimanche|Savoir-faire|Français|Française|Francais|Francaise|Anglais|English|Fr|En|Cas|Fonction|Matière|Bois|Or|Argent|Cuir|Coton|Lin|Soie|Laine|Verre|Pierre|Céramique|Ceramique|Bref|Images?)$/i;
+
 /** Ville citée dans un texte court : « Plombier à Lyon 3e » → « Lyon ». */
 export function cityFromText(text: string): string | undefined {
-  const m = /\b(?:à|a|sur|en)\s+([A-ZÉÈÀÂÎÔ][\p{L}'’-]+(?:[ -](?:sur|en|lès|les|de|du)[ -][A-ZÉ][\p{L}'’-]+)?)/u.exec(text);
+  const m = /(?:^|\s)(?:à|sur|en)\s+([A-ZÉÈÀÂÎÔ][\p{L}'’-]+(?:[ -](?:sur|en|lès|les|de|du)[ -][A-ZÉ][\p{L}'’-]+)?)/u.exec(text);
   if (!m) return undefined;
   const c = m[1];
-  if (/^(Domicile|Distance|Ligne|France|Paris\d)/i.test(c)) return /^France/i.test(c) ? undefined : c.replace(/\d+$/, '');
+  // « Sur Mesure », « En Ligne », « À Domicile »… : pas des villes (titres en casse de titre de vrais sites).
+  if (NOT_CITY.test(c)) return undefined;
+  if (/^Paris\d/i.test(c)) return c.replace(/\d+$/, '');
   return c;
 }
 
@@ -113,6 +143,26 @@ export function homeSignals(html: string): HomeSignals {
     }
   }
   return { page, nodes, types: nodes.flatMap((n) => typesOf(n)) };
+}
+
+/**
+ * Activité lue dans le H1, le titre, puis la description (« Spécialiste de … », « … à Lyon ») : premier segment qui
+ * est vraiment une activité une fois nettoyé (sans la marque, la ville, les articles ni les slogans).
+ */
+export function activityFromText(sig: HomeSignals, brand: string): string | undefined {
+  const h1 = sig.page.headings.find((h) => h.level === 1)?.text ?? '';
+  const segs = [...titleSegments(h1), ...titleSegments(sig.page.title)];
+  for (const seg of segs) {
+    const a = cleanActivity(seg, brand);
+    if (a) return a;
+  }
+  const desc = str(sig.page.metaDescription) ?? str(sig.page.og['og:description']) ?? '';
+  const m = /\bsp[ée]cialiste\s+(?:fran[çc]ais\s+|français(?:e)?\s+)?(?:de\s+la\s+|de\s+l['’]\s*|du\s+|des\s+|de\s+|d['’]\s*|en\s+)([^,.;:!?]{3,60})/i.exec(desc);
+  if (m) {
+    const a = cleanActivity(m[1].split(/\s+et\s+(?:de|du|des|d['’])\s+/i)[0], brand);
+    if (a) return a;
+  }
+  return undefined;
 }
 
 /** Détection complète. `html` absent (page injoignable) : on se rabat sur la saisie puis le domaine. */
@@ -158,13 +208,25 @@ export function detectSite(input: AnalysisInput, html: string | null, finalUrl?:
   // ---- Type de site ----
   let siteType: SiteType;
   let typeSrc: string;
-  const isProduct = types.some((t) => /^(Product|ProductGroup|Offer|AggregateOffer|OnlineStore)$/.test(t));
+  // Un logiciel, une banque ou un service déclarés aussi « Product » avec des « Offer » (cas réels : SaaS de paie,
+  // néobanque) ne sont pas des boutiques en ligne.
+  const isProduct = nodes.some((n) => {
+    const ts = typesOf(n);
+    if (ts.some((x) => SOFT_TYPE_RE.test(x))) return false;
+    if (ts.some((x) => /^(Product|ProductGroup|OnlineStore)$/.test(x))) return true;
+    // Offre isolée : seulement si elle porte sur un produit (pas un abonnement logiciel, pas une offre d'emploi).
+    return ts.some((x) => /^(Offer|AggregateOffer)$/.test(x)) && typesOf((n.itemOffered as Node) ?? {}).some((x) => /^(Product|ProductGroup)$/.test(x));
+  });
   const isLocal = types.some((t) => LOCAL_TYPE_RE.test(t) && !/OnlineStore/.test(t)) || nodes.some((n) => !!str(addressOf(n)?.addressLocality) && (str(n.telephone) || n.openingHoursSpecification || n.openingHours));
   const ecomHtml = !!html && ECOM_HTML_RE.test(html);
+  // Boutique en ligne qui se déclare aussi « LiquorStore » / « Store » avec une adresse de siège, sans horaires
+  // d'ouverture (cas réel : lepetitballon.com, Shopify) : c'est un e-commerce, pas un commerce de quartier.
+  const hasHours = nodes.some((n) => n.openingHoursSpecification || n.openingHours);
+  const shopPlatform = !!html && STRONG_ECOM_RE.test(html);
   if (input.siteType) {
     siteType = input.siteType;
     typeSrc = 'saisie';
-  } else if (isProduct || (ecomHtml && !isLocal)) {
+  } else if (isProduct || (ecomHtml && !isLocal) || (shopPlatform && isLocal && !hasHours)) {
     siteType = 'ecommerce';
     typeSrc = isProduct ? 'JSON-LD Product/Offer' : 'plateforme de boutique détectée';
   } else if (isLocal) {
@@ -199,31 +261,20 @@ export function detectSite(input: AnalysisInput, html: string | null, finalUrl?:
   }
 
   // ---- Activité (métier ou catégorie) ----
+  // Type schema.org (métier) d'abord pour un établissement ; pour une boutique en ligne, ce qu'elle vend (texte).
   let activity: string | undefined;
   const t = types.find((x) => TRADE_BY_TYPE[x]);
-  if (t) activity = TRADE_BY_TYPE[t];
-  if (!activity && sig) {
-    const brandKey = brand.toLowerCase();
-    const seg = [sig.page.headings.find((h) => h.level === 1)?.text ?? '', ...titleSegments(sig.page.title)]
-      .map((s) => s.trim())
-      .find((s) => s && !s.toLowerCase().includes(brandKey) && s.length <= 90);
-    if (seg) {
-      activity = seg
-        .replace(/\s*[:,].*$/, '')
-        .replace(/\s+(?:à|a|sur|en)\s+[A-ZÉ].*$/u, '')
-        .split(/\s+/)
-        .slice(0, 6)
-        .join(' ')
-        .toLowerCase()
-        .trim();
-      if (activity.length < 3) activity = undefined;
-    }
-  }
+  const fromType = t ? TRADE_BY_TYPE[t] : undefined;
+  if (fromType && siteType !== 'ecommerce') activity = fromType;
+  // « Coiffeur Jean Louis David » : le métier est dans le nom de l'enseigne (plus sûr qu'un slogan).
+  if (!activity && siteType !== 'ecommerce') activity = tradeFromBrand(brand);
+  if (!activity && sig) activity = activityFromText(sig, brand);
   if (!activity && siteType === 'ecommerce') {
     const p = nodes.find((n) => typesOf(n).includes('Product'));
     const cat = str(p?.category);
-    if (cat) activity = cat.toLowerCase().slice(0, 60);
+    if (cat) activity = cleanActivity(cat.split(/\s*[>/]\s*/).pop(), brand);
   }
+  if (!activity && fromType) activity = fromType;
 
   return {
     brand,

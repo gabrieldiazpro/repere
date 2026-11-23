@@ -40,9 +40,10 @@ function Cell({ c, demo }: { c: BrandTestCell; demo: boolean }) {
           <span className={s.btMark} aria-hidden="true">{c.status === 'cited' ? '✓' : c.status === 'not_cited' ? '✕' : '–'}</span>
           {cellWord(c)}
         </span>
-        {instead ? <span className={s.btInstead}>{instead}{demo ? ' (simulé)' : ''}</span> : null}
+        {instead ? <span className={s.btInstead}>{instead}{demo ? ' (exemple simulé)' : ''}</span> : null}
       </summary>
       <div className={s.btMore}>
+        {demo ? <p className={s.small}>Exemple simulé : aucune IA n’a été interrogée, cette réponse montre seulement la forme du résultat.</p> : null}
         {c.excerpt ? <blockquote className={s.btQuote}>{c.excerpt}</blockquote> : <p className={s.small}>Aucune phrase à citer.</p>}
         {c.sources.length ? (
           <p className={s.btSources}>
@@ -176,7 +177,7 @@ function WhyCard({ w, demo }: { w: CompetitorWhy; demo: boolean }) {
       <p className={s.whyQ}>{w.question}</p>
       <h3 className={s.whyTitle}>
         Pourquoi {w.competitor}
-        {demo ? ' (nom simulé)' : ''} ?
+        {demo ? ' (exemple simulé)' : ''} ?
       </h3>
       <p className={s.small}>Cité par {w.providers.join(', ')}.</p>
       <div className={s.whyGrid}>

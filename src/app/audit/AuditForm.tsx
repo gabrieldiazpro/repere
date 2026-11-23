@@ -1,5 +1,6 @@
 'use client';
 
+import { consumeProIntent } from '@/components/analysis/proIntent';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import r from '@/components/report/report.module.css';
@@ -400,6 +401,12 @@ export function AuditForm({ prefill }: { prefill: AuditPrefill }) {
       alive.current = false;
       cancelAnimationFrame(raf.current);
     };
+  }, []);
+
+  // Case « usage professionnel » cochée dans le formulaire de l'accueil, dans cet onglet, pour ce nom : déjà cochée ici.
+  useEffect(() => {
+    if (prefill.businessName && consumeProIntent(prefill.businessName)) setV((old) => ({ ...old, pro: true }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Site transmis dans l'URL (?site=) : même pré-remplissage qu'à la saisie.

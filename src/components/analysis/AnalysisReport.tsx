@@ -474,7 +474,7 @@ function AiSection({ ai, brand }: { ai: AiCheckSummary; brand: string }) {
       {ai.topCompetitors.length ? (
         <p className={`${s.small} mt-4`}>
           Les plus cités à votre place : <b className="text-ink">{ai.topCompetitors.join(', ')}</b>
-          {ai.demo ? ' (noms simulés)' : ''}.
+          {ai.demo ? ' (exemples simulés, aucun vrai nom)' : ''}.
         </p>
       ) : null}
       {!ai.demo ? <p className={`${s.small} mt-2`}>{ai.note}</p> : null}

@@ -201,7 +201,7 @@ function where(platform: PlatformInfo | null | undefined, t: Topic): string[] {
  */
 export function accessReport(crawl: SiteCrawl | null, fallbackError?: string): AccessReport {
   const d: CrawlDiagnosis = crawl?.diagnosis ?? {
-    state: crawl && crawl.pages.length ? 'ok' : /délai|timeout/i.test(fallbackError ?? '') ? 'timeout' : /site public|ports? 80|identifiants|http et https/i.test(fallbackError ?? '') ? 'blocked_address' : /domaine introuvable/i.test(fallbackError ?? '') ? 'dns' : 'unreachable',
+    state: crawl && crawl.pages.length ? 'ok' : /délai|timeout/i.test(fallbackError ?? '') ? 'timeout' : /site public|ports? 80|identifiants|http et https/i.test(fallbackError ?? '') ? 'blocked_address' : /domaine introuvable/i.test(fallbackError ?? '') ? 'dns' : /certificat/i.test(fallbackError ?? '') ? 'tls_error' : 'unreachable',
     readable: !!crawl && crawl.pages.some((p) => p.status === 200),
     pagesRead: crawl ? crawl.pages.filter((p) => p.status === 200).length : 0,
     homeStatus: crawl?.pages[0]?.status ?? 0,
@@ -354,6 +354,18 @@ export function accessReport(crawl: SiteCrawl | null, fallbackError?: string): A
       message = 'L’adresse (ou une redirection en chemin) pointe vers un réseau privé, un port non standard ou une forme d’adresse refusée : par sécurité, notre robot ne la suit pas. Aucun score n’est calculé.';
       howTo = ['Saisissez l’adresse publique de votre site, en https, sans port ni identifiant.'];
       break;
+    case 'tls_error':
+      tone = 'block';
+      title = 'Le certificat HTTPS du site n’est pas valide';
+      message = 'Votre serveur présente un certificat de sécurité expiré, auto-signé ou délivré pour un autre nom de domaine. Les navigateurs affichent une alerte, et Google comme les IA n’ouvrent pas la page. Aucun score n’est calculé.';
+      howTo = ['Ouvrez votre site en https : le navigateur indique le problème de certificat.', 'Demandez à votre hébergeur (ou activez dans son interface) un certificat gratuit Let’s Encrypt qui couvre ce domaine, avec et sans « www ».'];
+      break;
+    case 'directory_listing':
+      tone = 'block';
+      title = 'L’adresse affiche une liste de fichiers, pas votre site';
+      message = 'Le serveur montre le contenu d’un dossier (« Index of / ») au lieu d’une page d’accueil : le site n’est pas publié à cet endroit, ou son fichier d’accueil manque. Aucun score n’est calculé.';
+      howTo = ['Vérifiez que le site est bien publié dans le bon dossier chez votre hébergeur (fichier index.html ou index.php).', 'Désactivez l’affichage des listes de fichiers (option « Indexes » du serveur) : elles exposent vos fichiers.'];
+      break;
     case 'unreachable':
     default:
       tone = 'block';
@@ -365,7 +377,7 @@ export function accessReport(crawl: SiteCrawl | null, fallbackError?: string): A
   if (d.state === 'ok' && rs.aiBlocked.length && !notes.length) tone = 'info';
   return {
     state: d.state,
-    readable: d.readable && !['blocked_robots', 'blocked_firewall', 'rate_limited', 'auth_required', 'password_protected', 'maintenance', 'server_error', 'http_error', 'parked', 'not_html', 'empty', 'redirect_loop', 'cookie_loop', 'too_many_redirects', 'timeout', 'dns', 'unreachable', 'blocked_address'].includes(d.state),
+    readable: d.readable && !['blocked_robots', 'blocked_firewall', 'rate_limited', 'auth_required', 'password_protected', 'maintenance', 'server_error', 'http_error', 'parked', 'not_html', 'empty', 'redirect_loop', 'cookie_loop', 'too_many_redirects', 'timeout', 'dns', 'unreachable', 'blocked_address', 'tls_error', 'directory_listing'].includes(d.state),
     tone,
     title,
     message,

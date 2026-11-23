@@ -14,8 +14,9 @@ import { createRealProvider, getExtractor, selectedProviders } from '@/lib/engin
 import { ALL_PROVIDERS, PROVIDER_LABELS, type AuditInput, type AuditResult, type ProviderId } from '@/lib/engine/types';
 import type { CustomQuery } from '@/lib/engine/types-v3';
 import { isRegulatedTrade } from '@/lib/regulated';
-import { BRAND_TEST_MAX_QUESTIONS, BRAND_TEST_MIN_QUESTIONS, buildBrandTest, engineLabel } from './brandtest';
+import { BRAND_TEST_MAX_QUESTIONS, BRAND_TEST_MIN_QUESTIONS, anonymizeDemoNames, buildBrandTest, competitorNames, engineLabel, scrubDemoSources } from './brandtest';
 import { draftWhy } from './why';
+import { de, isFeminineHead, isPluralHead, nounPhrase, pluralOf, productFocus, withDefinite, withIndefinite, type NounPhrase } from './activity';
 import type { AiCheckContext, AiCheckSummary, SiteType } from './types';
 
 export const DEFAULT_MAX_AI_CALLS = 18;
@@ -31,67 +32,128 @@ export function maxAiCallsFromEnv(): number {
 
 /** Genre grammatical (approché) d'un métier, pour des questions sans faute : « une boulangerie », « un plombier ». */
 export function isFeminine(activity: string): boolean {
-  const first = activity.trim().toLowerCase().split(/[\s,]+/)[0] ?? '';
-  if (/^(agence|entreprise|boutique|salle|clinique|pharmacie|auto-école|école|crèche|onglerie|épicerie|brasserie|pizzeria|crêperie|fromagerie|poissonnerie|boucherie|charcuterie|pâtisserie|boulangerie|librairie|cave|société|marque|maison|imprimerie|blanchisserie|laverie|carrosserie|menuiserie|serrurerie|plomberie|conciergerie|banque|assurance|mutuelle|clinique|ferme|chambre)$/.test(first)) return true;
-  if (/^(commerce|garage|salon|cabinet|restaurant|hôtel|hotel|institut|magasin|atelier|traiteur|bar|café|cafe|spa)$/.test(first)) return false;
-  return /(erie|rie|ique|ance|ence|tion|sion|ure|ette|ade)$/.test(first);
+  return isFeminineHead(activity);
 }
 
-/** « luminaires artisanaux », « bijoux » : activité décrite par un pluriel (pas un métier). */
+/** « luminaires artisanaux », « bijoux », « box de vins » : activité décrite par un pluriel (pas un métier). */
 export function isPluralActivity(activity: string): boolean {
-  const first = activity.trim().toLowerCase().split(/[\s,]+/)[0] ?? '';
-  return first.length > 3 && /[sx]$/.test(first) && !/^(bois|prix|fils|tapis|repas|relais|palais|vis|cours|corps|temps|pays|gaz|nez|choix|voix|croix|taux|ascenseurs?)$/.test(first);
+  return isPluralHead(activity);
 }
 
-/** Pluriel simple du premier mot (« boulangerie » → « boulangeries », « bureau » → « bureaux »). */
-function plural(activity: string): string {
-  const [head, ...rest] = activity.trim().split(' ');
-  const p = /[sxz]$/i.test(head) ? head : /(eau|au|eu)$/i.test(head) ? `${head}x` : /al$/i.test(head) && !/(bal|carnaval|festival|régal)$/i.test(head) ? `${head.slice(0, -2)}aux` : `${head}s`;
-  return [p, ...rest].join(' ');
-}
+const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 
-/** Questions de recommandation (jamais de question nommant la marque : on mesure si les IA la citent d'elles-mêmes). */
+/**
+ * Questions de recommandation (jamais de question nommant la marque : on mesure si les IA la citent d'elles-mêmes).
+ * TESTS-REELS (nov. 2026) : formulations choisies selon la nature de l'activité (métier / produits / prestation),
+ * avec genre, nombre et élisions (« Quel caviste… », « Où acheter des box de vins… », « Qui contacter pour la location
+ * de voitures… »), pour rester correctes sur les activités lues sur de vrais sites.
+ */
 export function buildQuickQuestions(siteType: SiteType, activity: string | undefined, city: string | undefined, n: number): CustomQuery[] {
   const act = (activity || '').trim();
   const where = city ? ` à ${city}` : ' en France';
   const out: CustomQuery[] = [];
   if (siteType === 'local') {
-    // Activité au pluriel (« luminaires artisanaux ») : on interroge sur « un spécialiste des … ».
-    const a = isPluralActivity(act) ? `spécialiste des ${act}` : act || 'commerce';
-    const f = isFeminine(a);
-    const g = { quel: f ? 'Quelle' : 'Quel', quels: f ? 'Quelles' : 'Quels', un: f ? 'une' : 'un', notes: f ? 'notées' : 'notés', serieux: f ? 'sérieuse' : 'sérieux' };
-    const pl = plural(a);
-    out.push(
-      { text: `${g.quel} ${a} me recommandez-vous${where} ?`, intent: 'best' },
-      { text: `${g.quels} sont les ${pl} les mieux ${g.notes}${where} ?`, intent: 'review' },
-      { text: `J'ai besoin d'${g.un} ${a}${where} rapidement, qui contacter ?`, intent: 'urgent' },
-      { text: `Pouvez-vous me conseiller ${g.un} ${a} ${g.serieux}${where} ?`, intent: 'best' },
-      { text: `${g.quel} ${a} choisir${where} pour un bon rapport qualité-prix ?`, intent: 'price' },
-      { text: `Liste des meilleur${f ? 'e' : ''}s ${pl}${where}, avec leurs points forts`, intent: 'comparison' },
-    );
+    const p = nounPhrase(act || 'commerce');
+    if (p.kind === 'trade') {
+      const f = p.feminine;
+      const a = p.text;
+      const g = { quel: f ? 'Quelle' : 'Quel', quels: f ? 'Quelles' : 'Quels', notes: f ? 'notées' : 'notés', serieux: f ? 'sérieuse' : 'sérieux' };
+      const pl = pluralOf(p);
+      out.push(
+        { text: `${g.quel} ${a} me recommandez-vous${where} ?`, intent: 'best' },
+        { text: `${g.quels} sont les ${pl} les mieux ${g.notes}${where} ?`, intent: 'review' },
+        { text: `J’ai besoin ${de(withIndefinite(p))}${where} rapidement, qui contacter ?`, intent: 'urgent' },
+        { text: `Pouvez-vous me conseiller ${withIndefinite(p)} ${g.serieux}${where} ?`, intent: 'best' },
+        { text: `${g.quel} ${a} choisir${where} pour un bon rapport qualité-prix ?`, intent: 'price' },
+        { text: `Liste des meilleur${f ? 'e' : ''}s ${pl}${where}, avec leurs points forts`, intent: 'comparison' },
+      );
+    } else if (p.kind === 'products') {
+      const x = withIndefinite(p); // « des box de vins »
+      out.push(
+        { text: `Où acheter ${x}${where} ?`, intent: 'where_to_buy' },
+        { text: `Quelle boutique me recommandez-vous pour ${x}${where} ?`, intent: 'best' },
+        { text: `Quelles sont les adresses les mieux notées pour ${x}${where} ?`, intent: 'review' },
+        { text: `Qui propose ${x} de qualité${where} ?`, intent: 'best' },
+        { text: `Où trouver ${x} au meilleur rapport qualité-prix${where} ?`, intent: 'price' },
+        { text: `Liste des meilleures adresses pour ${x}${where}, avec leurs points forts`, intent: 'comparison' },
+      );
+    } else {
+      const x = withDefinite(p); // « la location de voitures »
+      out.push(
+        { text: `Qui me recommandez-vous pour ${x}${where} ?`, intent: 'best' },
+        { text: `Quelles sont les entreprises les mieux notées pour ${x}${where} ?`, intent: 'review' },
+        { text: `J’ai besoin d’aide pour ${x}${where} rapidement, qui contacter ?`, intent: 'urgent' },
+        { text: `Quel professionnel sérieux choisir pour ${x}${where} ?`, intent: 'best' },
+        { text: `Qui choisir pour ${x}${where}, au bon rapport qualité-prix ?`, intent: 'price' },
+        { text: `Liste des meilleurs professionnels pour ${x}${where}, avec leurs points forts`, intent: 'comparison' },
+      );
+    }
   } else if (siteType === 'ecommerce') {
-    const a = act || 'ces produits';
-    out.push(
-      { text: `Où acheter ${a} en ligne en France ?`, intent: 'where_to_buy' },
-      { text: `Quelles sont les meilleures boutiques en ligne pour ${a} ?`, intent: 'best' },
-      { text: `Quelle marque française recommandez-vous pour ${a} ?`, intent: 'french_brand' },
-      { text: `Quel site choisir pour ${a} avec une livraison rapide ?`, intent: 'where_to_buy' },
-      { text: `Comparatif des meilleurs sites pour ${a}`, intent: 'comparison' },
-      { text: `${a} : quelles alternatives aux grandes marques ?`, intent: 'alternative' },
-    );
+    if (!act) {
+      out.push(
+        { text: 'Quelles boutiques en ligne françaises me recommandez-vous ?', intent: 'best' },
+        { text: 'Quelles sont les marques françaises les mieux notées en ligne ?', intent: 'french_brand' },
+        { text: 'Quels sites de vente en ligne français sont fiables, avec une livraison rapide ?', intent: 'where_to_buy' },
+        { text: 'Comparatif des meilleures boutiques en ligne françaises', intent: 'comparison' },
+      );
+    } else {
+      const p = nounPhrase(productFocus(act));
+      const def = withDefinite(p);
+      const what = p.kind === 'service' ? withIndefinite(p) : p.plural ? withIndefinite(p) : partitive(p);
+      out.push(
+        { text: `Où acheter ${what} en ligne en France ?`, intent: 'where_to_buy' },
+        { text: `Quelles sont les meilleures boutiques en ligne pour ${def} ?`, intent: 'best' },
+        { text: `Quelle marque française recommandez-vous pour ${def} ?`, intent: 'french_brand' },
+        { text: `Quel site choisir pour ${def}, avec une livraison rapide ?`, intent: 'where_to_buy' },
+        { text: `Comparatif des meilleurs sites pour ${def}`, intent: 'comparison' },
+        { text: `${cap(def)} : quelles alternatives aux grandes marques ?`, intent: 'alternative' },
+      );
+    }
   } else {
-    const a = act || 'notre secteur';
     const zone = city ? ` à ${city}` : ' en France';
-    out.push(
-      { text: `Quelles entreprises recommandez-vous pour ${a}${zone} ?`, intent: 'which_company' },
-      { text: `Quel prestataire choisir pour ${a}${zone} ?`, intent: 'best' },
-      { text: `Quels sont les acteurs de référence en ${a}${zone} ?`, intent: 'best' },
-      { text: `Comparatif des meilleures solutions pour ${a}`, intent: 'comparison' },
-      { text: `Quelle société sérieuse pour ${a}, avec de bons avis ?`, intent: 'review' },
-      { text: `Combien coûte ${a} et qui contacter${zone} ?`, intent: 'price' },
-    );
+    if (!act) {
+      out.push(
+        { text: `Quelles entreprises de services aux professionnels recommandez-vous${zone} ?`, intent: 'which_company' },
+        { text: `Quel prestataire B2B sérieux choisir${zone} ?`, intent: 'best' },
+        { text: `Quelles sont les PME de référence${zone}, avec de bons avis ?`, intent: 'review' },
+        { text: `Quels prestataires pour entreprises sont les mieux notés${zone} ?`, intent: 'review' },
+        { text: `Comparatif des meilleurs prestataires pour PME${zone}`, intent: 'comparison' },
+        { text: `Quelle société de services choisir${zone} pour un bon rapport qualité-prix ?`, intent: 'price' },
+      );
+    } else {
+      const p = nounPhrase(act);
+      if (p.kind === 'trade' && !p.plural) {
+        const f = p.feminine;
+        const pl = pluralOf(p);
+        out.push(
+          { text: `${f ? 'Quelle' : 'Quel'} ${p.text} me recommandez-vous${zone} ?`, intent: 'which_company' },
+          { text: `${f ? 'Quelles' : 'Quels'} sont les ${pl} de référence${zone} ?`, intent: 'best' },
+          { text: `Comparatif des meilleur${f ? 'e' : ''}s ${pl}${zone}`, intent: 'comparison' },
+          { text: `${f ? 'Quelle' : 'Quel'} ${p.text} ${f ? 'sérieuse' : 'sérieux'} choisir, avec de bons avis ?`, intent: 'review' },
+          { text: `Combien coûte ${withIndefinite(p)}, et qui contacter${zone} ?`, intent: 'price' },
+          { text: `${f ? 'Quelle' : 'Quel'} ${p.text} choisir${zone} pour une PME ?`, intent: 'best' },
+        );
+      } else {
+        const def = withDefinite(p);
+        out.push(
+          { text: `Quelles entreprises recommandez-vous pour ${def}${zone} ?`, intent: 'which_company' },
+          { text: `Quel prestataire choisir pour ${def}${zone} ?`, intent: 'best' },
+          { text: `Quels sont les acteurs de référence pour ${def}${zone} ?`, intent: 'best' },
+          { text: `Comparatif des meilleures solutions pour ${def}`, intent: 'comparison' },
+          { text: `Quelle société sérieuse choisir pour ${def}, avec de bons avis ?`, intent: 'review' },
+          { text: `Combien coûte ${p.plural ? withDefinite(p) : def}, et qui contacter${zone} ?`, intent: 'price' },
+        );
+      }
+    }
   }
   return out.slice(0, Math.max(3, Math.min(6, n))).map((q, i) => ({ ...q, id: `Q60-${i + 1}`, kind: 'reco' as const }));
+}
+
+/** « du vin », « de la bière », « de l’huile d’olive » (non dénombrable) ; produits au pluriel : « des … ». */
+function partitive(p: NounPhrase): string {
+  if (p.plural) return `des ${p.text}`;
+  if (/^[aeiouyàâéèêëîïôûùh]/i.test(p.text)) return `de l’${p.text}`;
+  return `${p.feminine ? 'de la' : 'du'} ${p.text}`;
 }
 
 /** Toutes les IA connues du moteur (y compris celles ajoutées après coup dans PROVIDER_LABELS). */
@@ -215,8 +277,16 @@ export async function runQuickAiCheck(ctx: AiCheckContext): Promise<AiCheckSumma
   const calls = demo ? 0 : result.answers.filter((a) => !a.demo).length;
   const summary = summarizeAudit(result, Math.min(calls, ctx.maxCalls));
   const notConfigured = demo ? [] : knownProviders().filter((p) => !providers.includes(p)).map(engineLabel);
-  const test = buildBrandTest(result, { brand: ctx.brand, notConfigured });
+  let test = buildBrandTest(result, { brand: ctx.brand, notConfigured });
   test.why = draftWhy(test, result, ctx.url);
+  if (demo) {
+    // Démonstration : pas de faux noms ni de faux sites qui pourraient être ceux de vrais commerces.
+    const names = competitorNames(test, [...result.competitors.map((c) => c.name), ...result.mentions.flatMap((m) => m.competitors), ...summary.topCompetitors]);
+    test = scrubDemoSources(anonymizeDemoNames(test, names, ctx.brand), ctx.url);
+    const anon = anonymizeDemoNames({ questions: summary.questions, topCompetitors: summary.topCompetitors }, names, ctx.brand);
+    summary.questions = anon.questions;
+    summary.topCompetitors = anon.topCompetitors;
+  }
   summary.test = test;
   // Mesure réelle : l'audit moteur est enregistré (comme l'audit gratuit) pour être rattaché au compte à l'inscription.
   if (!demo && ctx.save !== false) {

@@ -26,11 +26,12 @@ import {
   type SitemapFetch,
 } from './analyze';
 import { parseSitemap } from '@/lib/crawl/sitemap';
+import { firewallOf } from '@/lib/crawl/diagnose';
 import type { HeadersReport, HreflangReport, IndexReport, LinksReport, MetaReport, OgReport, RedirectReport, SitemapReport } from './types';
 
 /** Budget total d'un outil (la route a 30 s au plus). */
 export const TOOL_BUDGET_MS = 20_000;
-const KNOWN: SafeFetchErrorCode[] = ['invalid_url', 'blocked_scheme', 'blocked_port', 'blocked_credentials', 'blocked_host', 'blocked_ip', 'dns', 'timeout', 'too_many_redirects', 'robots_disallowed', 'network'];
+const KNOWN: SafeFetchErrorCode[] = ['invalid_url', 'blocked_scheme', 'blocked_port', 'blocked_credentials', 'blocked_host', 'blocked_ip', 'dns', 'timeout', 'too_many_redirects', 'robots_disallowed', 'tls', 'firewall', 'rate_limited', 'network'];
 
 /** Décompresse un sitemap .gz (10 Mo au plus) ; illisible : vide. */
 function gunz(b: Buffer): Buffer {
@@ -71,7 +72,21 @@ function toPage(r: HopResult): PageFetch {
 export async function fetchPage(input: string, f = fetcher()): Promise<PageFetch> {
   const r = await f.fetch(start(input));
   if (r.error) throw toError(r);
+  blockedOrThrow(r);
   return toPage(r);
+}
+
+/**
+ * Réponse d'un pare-feu (DataDome, Cloudflare…) ou d'une limitation : rien à analyser. Cas réel (TESTS-REELS) : un
+ * site protégé par DataDome obtenait « Google ne peut pas indexer cette page : elle répond 403 », alors que c'est notre
+ * robot, pas Googlebot, qui était refusé.
+ */
+function blockedOrThrow(r: HopResult): void {
+  if (r.status === 429) throw new SafeFetchError('rate_limited');
+  if ([401, 403, 503].includes(r.status) || (r.status === 200 && r.body.length < 40_000)) {
+    const fw = firewallOf(r.status, r.headers, r.body.length ? decodeBody(r.body, r.headers['content-type']) : '');
+    if (fw) throw new SafeFetchError('firewall', fw);
+  }
 }
 
 /** Exécute des tâches avec au plus `n` en parallèle. */
@@ -95,6 +110,10 @@ async function statusOf(f: CrawlFetcher, url: string): Promise<{ status: number;
   if (!r.error && [403, 405, 501].includes(r.status)) r = await f.fetch(url, { maxBytes: 16 * 1024, followTo: () => false });
   if (r.blockedByRobots) return { status: 0, error: 'non vérifié (robots.txt)' };
   if (r.error) return { status: 0, error: r.error };
+  // Réponse d'un pare-feu ou d'une limitation (cas réels : Cloudflare, DataDome, 429) : le lien n'est pas « cassé »,
+  // il n'a pas pu être vérifié (TESTS-REELS, nov. 2026).
+  if (r.status === 429) return { status: 429, error: 'non vérifié (trop de requêtes)' };
+  if ([401, 403, 503].includes(r.status) && firewallOf(r.status, r.headers, r.body?.length ? decodeBody(r.body, r.headers['content-type']) : '')) return { status: r.status, error: 'non vérifié (protection anti-robots)' };
   return { status: r.chain.length ? r.chain[0].status : r.status, ...(r.chain.length ? { finalUrl: r.finalUrl } : {}) };
 }
 
@@ -112,8 +131,9 @@ export async function runIndex(url: string): Promise<IndexReport> {
   return analyzeIndex(page, rob.status ? { url: rob.url, status: rob.status, text: rob.text } : null);
 }
 
-async function chainOf(f: CrawlFetcher, url: string): Promise<ChainResult> {
+async function chainOf(f: CrawlFetcher, url: string, main = false): Promise<ChainResult> {
   const r = await f.fetch(url, { maxBytes: 16 * 1024 });
+  if (main && !r.error) blockedOrThrow(r);
   const final = { url: r.finalUrl, status: r.status };
   return { start: url, chain: r.chain, final, ...(r.error ? { error: r.error, errorCode: r.errorCode } : {}) };
 }
@@ -121,7 +141,7 @@ async function chainOf(f: CrawlFetcher, url: string): Promise<ChainResult> {
 export async function runRedirects(url: string, variants = true): Promise<RedirectReport> {
   const f = fetcher();
   const u = start(url);
-  const main = await chainOf(f, u);
+  const main = await chainOf(f, u, true);
   if (main.errorCode && !['redirect_loop', 'too_many_redirects'].includes(main.errorCode) && main.chain.length === 0) throw new SafeFetchError((KNOWN as string[]).includes(main.errorCode) ? (main.errorCode as SafeFetchErrorCode) : 'network', main.error);
   const vs = variants ? await pool(urlVariants(u), 2, (v) => chainOf(f, v)) : [];
   return analyzeRedirects(main, vs);
@@ -184,6 +204,16 @@ export async function runLinks(url: string): Promise<LinksReport> {
 }
 
 /** Le sitemap : adresse donnée, sinon ceux déclarés dans le robots.txt, sinon /sitemap.xml puis /sitemap_index.xml. */
+/** Erreurs qui disent que le site entier est injoignable (et pas seulement son sitemap). */
+const SITE_LEVEL = ['dns', 'tls', 'network', 'blocked_host', 'blocked_ip', 'blocked_port'];
+const sameHost = (a: string, u: URL) => {
+  try {
+    return new URL(a).hostname === u.hostname;
+  } catch {
+    return false;
+  }
+};
+
 export async function runSitemap(input: string): Promise<SitemapReport> {
   const f = fetcher();
   const u = new URL(start(input));
@@ -196,8 +226,10 @@ export async function runSitemap(input: string): Promise<SitemapReport> {
       ? declared.slice(0, 1).map((d) => ({ url: d, source: 'robots' as const }))
       : [`${u.origin}/sitemap.xml`, `${u.origin}/sitemap_index.xml`].map((x) => ({ url: x, source: 'default' as const }));
   let fetched: SitemapFetch | null = null;
+  let lastHostError: HopResult | null = null;
   for (const c of candidates) {
     const r = await f.fetch(c.url, { accept: 'application/xml,text/xml;q=0.9,*/*;q=0.5' });
+    lastHostError = r.error && sameHost(c.url, u) ? r : null;
     const body = r.error ? Buffer.alloc(0) : gunz(r.body);
     fetched = {
       url: c.url,
@@ -213,6 +245,9 @@ export async function runSitemap(input: string): Promise<SitemapReport> {
     if (!r.error && r.status >= 200 && r.status < 300) break;
   }
   const fx = fetched!;
+  // Site lui-même injoignable (domaine inexistant, connexion refusée, adresse bloquée) : même erreur que les autres
+  // outils (« Nom de domaine introuvable »), et non « Aucun sitemap trouvé » (TESTS-REELS, nov. 2026).
+  if (fx.error && lastHostError && SITE_LEVEL.includes(lastHostError.errorCode ?? '')) throw toError(lastHostError);
   if (fx.error || fx.status < 200 || fx.status >= 300) return analyzeSitemap(fx);
   const parsed = parseSitemap(fx.text);
   let children: SitemapReport['children'] = [];

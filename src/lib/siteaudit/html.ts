@@ -20,8 +20,13 @@ export function decodeEntities(s: string): string {
   });
 }
 
+/**
+ * Texte d'un fragment HTML. Les balises EN LIGNE (span, a, strong…) ne séparent pas les mots, comme dans un
+ * navigateur : TESTS-REELS (nov. 2026), un H1 Wix écrit lettre par lettre en <span> colorés était lu « f l e u r s ».
+ */
+const INLINE_TAG = /<\/?(?:a|abbr|b|bdi|bdo|cite|code|data|dfn|em|font|i|kbd|mark|q|s|samp|small|span|strong|sub|sup|time|u|var|wbr)\b[^>]*>/gi;
 export function stripTags(s: string): string {
-  return decodeEntities(s.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, ' '))
+  return decodeEntities(s.replace(/<br\s*\/?>/gi, ' ').replace(INLINE_TAG, '').replace(/<[^>]*>/g, ' '))
     .replace(/\s+/g, ' ')
     .trim();
 }

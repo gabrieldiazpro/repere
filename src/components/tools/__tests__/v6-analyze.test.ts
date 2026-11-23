@@ -226,6 +226,45 @@ describe('récupération réseau (simulée)', () => {
     expect(seen).toContain('HEAD https://e.example/vieux');
   });
 
+  it('sitemap : domaine inexistant → « Nom de domaine introuvable », pas « Aucun sitemap trouvé » (cas réel)', async () => {
+    restore = setFetchDeps({
+      resolver: async () => {
+        const e = new Error('getaddrinfo ENOTFOUND') as Error & { code: string };
+        e.code = 'ENOTFOUND';
+        throw e;
+      },
+      transport: async () => {
+        throw new Error('ne doit pas être appelé');
+      },
+    });
+    await expect(runSitemap('domaine-inexistant-zzqx123.fr')).rejects.toMatchObject({ code: 'dns' });
+    // Le site répond mais n'a pas de sitemap : verdict « Aucun sitemap » conservé.
+    restore();
+    fakeWeb({ 'https://k.example/': { status: 200 } });
+    const r = await runSitemap('k.example');
+    expect(r.verdict.title).toMatch(/Aucun sitemap/);
+  });
+
+  it('pare-feu (DataDome 403) : « le site refuse notre robot », pas « Google ne peut pas indexer » (cas réel)', async () => {
+    fakeWeb({ 'https://protege.example/': { status: 403, headers: { 'x-datadome': 'protected' }, body: '<html><script src="https://ct.captcha-delivery.com/c.js"></script></html>' } });
+    await expect(runIndex('https://protege.example/')).rejects.toMatchObject({ code: 'firewall' });
+    await expect(runRedirects('https://protege.example/', false)).rejects.toMatchObject({ code: 'firewall' });
+    await expect(runMeta('https://protege.example/')).rejects.toMatchObject({ code: 'firewall' });
+  });
+
+  it('liens interdits à notre robot (robots.txt) ou refusés par un pare-feu : non vérifiés, pas cassés (cas réel)', async () => {
+    fakeWeb({
+      'https://m.example/': { status: 200, body: '<a href="/ok">Page</a><a href="https://social.example/page">Réseau</a><a href="https://cf.example/x">Partenaire</a>' },
+      'https://m.example/ok': { status: 200 },
+      'https://social.example/robots.txt': { status: 200, headers: { 'content-type': 'text/plain' }, body: 'User-agent: *\nDisallow: /\n' },
+      'https://cf.example/x': { status: 403, headers: { 'cf-mitigated': 'challenge', server: 'cloudflare' }, body: '<title>Just a moment...</title>' },
+    });
+    const l = await runLinks('https://m.example/');
+    expect(l.broken).toBe(0);
+    expect(l.verdict.title).toMatch(/aucun cassé/);
+    expect(l.checks.find((c) => c.id === 'unverified')?.label).toMatch(/2 liens non vérifiés/);
+  });
+
   it('liens : teste les adresses et trouve le lien cassé ; hreflang : ouvre les versions', async () => {
     fakeWeb({
       'https://f.example/': { status: 200, body: '<html lang="fr"><head><link rel="alternate" hreflang="fr" href="https://f.example/"><link rel="alternate" hreflang="en" href="https://f.example/en/"><link rel="alternate" hreflang="x-default" href="https://f.example/"></head><body><a href="/ok">Page</a><a href="/ko">Autre page</a></body></html>' },

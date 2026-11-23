@@ -547,13 +547,18 @@ export function analyzeLinks(p: PageFetch, rows: LinkRow[], statuses: Map<string
   const relCount = (k: string) => links.filter((l) => l.rel.includes(k)).length;
   const nofollow = relCount('nofollow');
   const checkedRows = [...new Map(links.filter((l) => l.status !== undefined).map((l) => [l.href.replace(/#.*$/, ''), l])).values()];
-  const broken = checkedRows.filter((l) => l.status === 0 || (l.status ?? 0) >= 400);
+  // « non vérifié » (robots.txt, pare-feu, limitation) n'est pas « cassé » : cas réels, liens Facebook / Instagram
+  // interdits à notre robot comptés comme cassés (TESTS-REELS, nov. 2026).
+  const unverified = checkedRows.filter((l) => /^non vérifié/.test(l.error ?? ''));
+  const broken = checkedRows.filter((l) => !/^non vérifié/.test(l.error ?? '') && (l.status === 0 || (l.status ?? 0) >= 400));
   const checks: V6Check[] = [];
   if (!links.length) checks.push(check('none', 'Aucun lien dans le HTML', 'fail', 'Sans lien, Google ne découvre pas vos autres pages depuis celle-ci. Les menus construits en JavaScript ne comptent pas toujours.', 'Ajoutez des liens HTML <a href> vers vos pages principales.'));
   else if (!internal) checks.push(check('internal', 'Aucun lien interne', 'warn', 'La page ne renvoie vers aucune autre page de votre site.', 'Ajoutez des liens vers vos services, produits ou articles proches.'));
   else checks.push(check('internal', `${pl(internal, 'lien interne', 'liens internes')}`, 'ok', 'Google peut découvrir vos autres pages depuis celle-ci.'));
-  if (broken.length) checks.push(check('broken', `${pl(broken.length, 'lien cassé', 'liens cassés')} sur ${checkedRows.length} vérifiés`, 'fail', broken.slice(0, 6).map((b) => `${b.href} (${b.status || b.error || 'injoignable'})`).join(' ; '), 'Corrigez l’adresse ou retirez le lien ; pour une page supprimée, redirigez-la en 301.'));
-  else if (checkedRows.length) checks.push(check('broken', `Aucun lien cassé sur ${checkedRows.length} vérifiés`, 'ok', 'Toutes les adresses testées répondent.'));
+  if (broken.length) checks.push(check('broken', `${pl(broken.length, 'lien cassé', 'liens cassés')} sur ${checkedRows.length - unverified.length} vérifiés`, 'fail', broken.slice(0, 6).map((b) => `${b.href} (${b.status || b.error || 'injoignable'})`).join(' ; '), 'Corrigez l’adresse ou retirez le lien ; pour une page supprimée, redirigez-la en 301.'));
+  else if (checkedRows.length > unverified.length) checks.push(check('broken', `Aucun lien cassé sur ${checkedRows.length - unverified.length} vérifiés`, 'ok', 'Toutes les adresses testées répondent.'));
+  if (unverified.length)
+    checks.push(check('unverified', `${pl(unverified.length, 'lien non vérifié', 'liens non vérifiés')}`, 'ok', `${unverified.slice(0, 6).map((u) => `${u.href} (${(u.error ?? '').replace(/^non vérifié \((.*)\)$/, '$1')})`).join(' ; ')}. Le site visé refuse notre robot ou limite ses visites : ce n’est pas une erreur de votre part.`));
   const redirected = checkedRows.filter((l) => (l.status ?? 0) >= 300 && (l.status ?? 0) < 400);
   if (redirected.length) checks.push(check('redirected', `${pl(redirected.length, 'lien passe', 'liens passent')} par une redirection`, 'warn', redirected.slice(0, 4).map((r) => r.href).join(' ; '), 'Remplacez-les par l’adresse finale.'));
   const internalNofollow = links.filter((l) => l.internal && l.rel.includes('nofollow')).length;

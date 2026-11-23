@@ -138,6 +138,8 @@ function parseLine(line: string): RouteLine | null {
 export interface StartBody {
   url: string;
   pro: true;
+  /** où la case « usage professionnel » a été cochée (preuve horodatée côté serveur) */
+  proSource?: 'accueil' | 'analyse';
   brand?: string;
   city?: string;
   siteType?: 'local' | 'pme' | 'ecommerce';

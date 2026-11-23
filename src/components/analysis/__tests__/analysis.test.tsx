@@ -266,4 +266,12 @@ describe('rendu', () => {
     expect(html).toContain('action="/audit"');
     expect(html).toContain('name="nom"');
   });
+
+  it('formulaire de l’accueil : case professionnelle visible, envoyée en ?pro=1 (démarrage direct sur /analyse)', () => {
+    const html = renderToStaticMarkup(<QuickAuditForm segment="local" idPrefix="t" />);
+    expect(html).toContain('J’agis pour les besoins de mon activité professionnelle');
+    expect(html).toMatch(/type="checkbox"[^>]*|name="pro"/);
+    expect(html).toContain('name="pro"');
+    expect(html).toContain('value="1"');
+  });
 });

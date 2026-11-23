@@ -21,6 +21,10 @@ export function resolveAnalysisPrefill(sp: SearchParams): AnalysisPrefill {
   if (seg === 'local' || seg === 'pme' || seg === 'ecommerce') out.siteType = seg;
   else if (seg === 'b2b') out.siteType = 'pme';
   else if (seg === 'e-commerce' || seg === 'ecom') out.siteType = 'ecommerce';
+  // Case « usage professionnel » cochée sur l'accueil : /analyse démarre seul SI la trace de l'onglet le confirme
+  // (proIntent.ts) ; un lien partagé avec ?pro=1 ne coche rien.
+  const pro = first(sp, 'pro');
+  if (out.site && pro && /^(1|true|on|oui)$/i.test(pro)) out.pro = true;
   const ville = first(sp, 'ville', 'city');
   if (ville) out.city = ville.slice(0, 60);
   return out;

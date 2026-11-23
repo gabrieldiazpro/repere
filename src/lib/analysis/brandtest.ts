@@ -125,7 +125,7 @@ export function buildBrandTest(r: AuditResult, opts: { brand: string; notConfigu
     overall,
     ...(opts.reusedAt ? { reused: { at: opts.reusedAt } } : {}),
     note: demo
-      ? 'Démonstration : aucune IA n’est configurée sur ce serveur. Les réponses et les noms cités sont simulés et ne mesurent rien.'
+      ? 'Démonstration : aucune IA n’est configurée sur ce serveur. Les réponses sont des exemples simulés et les concurrents sont remplacés par « Concurrent A, B… » : rien n’est mesuré.'
       : `Mesure unique : ${questions.length} questions posées une fois à ${providers.length} IA. Les réponses des IA varient d’un jour à l’autre : la fourchette indique la marge d’erreur, à confirmer dans le temps par le suivi.`,
   };
 }
@@ -180,4 +180,55 @@ export function competitorSite(name: string, answers: Pick<ProviderAnswer, 'text
     }
   }
   return null;
+}
+
+/**
+ * Démonstration (aucune IA configurée) : les noms de concurrents inventés par le simulateur (« Atelier Caron »,
+ * « Vidal Les »…) avaient l'air de vrais commerces, et pouvaient en être un. Pour un visiteur, l'aperçu honnête est
+ * « Concurrent A, B, C… (exemple simulé) » : la forme du résultat sans faux noms (TESTS-REELS, nov. 2026).
+ * Remplace partout (cellules, phrases, synthèse, « pourquoi lui ») ; la marque analysée n'est jamais remplacée.
+ */
+export function demoPlaceholder(i: number): string {
+  return `Concurrent ${String.fromCharCode(65 + (i % 26))}${i >= 26 ? Math.floor(i / 26) + 1 : ''}`;
+}
+
+export function anonymizeDemoNames<T>(value: T, names: string[], brand: string): T {
+  const b = fold(brand).trim();
+  const uniq = [...new Set(names.map((n) => n.trim()).filter((n) => n.length >= 2 && fold(n) !== b))];
+  if (!uniq.length) return value;
+  const map = new Map(uniq.map((n, i) => [n, demoPlaceholder(i)]));
+  const esc = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp([...map.keys()].sort((x, y) => y.length - x.length).map(esc).join('|'), 'g');
+  const walk = (v: unknown): unknown => {
+    if (typeof v === 'string') return v.replace(re, (m) => map.get(m) ?? m);
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
+    return v;
+  };
+  return walk(value) as T;
+}
+
+/** Noms de concurrents d'un test de marque (ordre d'apparition). */
+export function competitorNames(t: BrandTest, extra: string[] = []): string[] {
+  const out: string[] = [];
+  for (const q of t.questions) for (const c of q.cells) for (const n of c.instead) if (!out.includes(n)) out.push(n);
+  for (const w of t.why ?? []) if (!out.includes(w.competitor)) out.push(w.competitor);
+  for (const n of extra) if (!out.includes(n)) out.push(n);
+  return out;
+}
+
+/** Démonstration : seules restent les sources génériques (annuaire, carte) et le site analysé ; aucun site de concurrent. */
+export function scrubDemoSources(t: BrandTest, clientUrl: string): BrandTest {
+  let client = '';
+  try {
+    client = registrableDomain(new URL(/^https?:\/\//i.test(clientUrl) ? clientUrl : `https://${clientUrl}`).hostname);
+  } catch {
+    /* adresse brute */
+  }
+  const keep = (d: string) => d === client || /^(?:google\.[a-z.]+|pagesjaunes\.fr)$/.test(d);
+  return {
+    ...t,
+    questions: t.questions.map((q) => ({ ...q, cells: q.cells.map((c) => ({ ...c, sources: c.sources.filter((x) => keep(x.domain)) })) })),
+    ...(t.why ? { why: t.why.map((w) => ({ ...w, site: null, sources: w.sources.filter((x) => keep(x.domain)) })) } : {}),
+  };
 }

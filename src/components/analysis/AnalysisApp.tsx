@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import s from './analysis.module.css';
 import { AnalysisReport } from './AnalysisReport';
 import { LiveAnalysis } from './LiveAnalysis';
+import { PRO_DECLARATION_TEXT, consumeProIntent } from './proIntent';
 import { initialLive, reduceLive, startAnalysis, waitLabel, type LiveState, type StartBody } from './stream';
 
 type SiteType = 'local' | 'pme' | 'ecommerce';
@@ -15,6 +16,8 @@ export interface AnalysisPrefill {
   name?: string;
   siteType?: SiteType;
   city?: string;
+  /** case « usage professionnel » cochée sur l'accueil (?pro=1) : démarrage direct si l'onglet le confirme */
+  pro?: boolean;
 }
 
 type Stage = { kind: 'form' } | { kind: 'live' } | { kind: 'done' } | { kind: 'failed'; message: string };
@@ -50,6 +53,7 @@ export function AnalysisApp({ prefill = {}, engines, children }: { prefill?: Ana
   }, [stage.kind]);
 
   useEffect(() => () => ctrl.current?.abort(), []);
+
 
   const run = useCallback(async (body: StartBody) => {
     ctrl.current?.abort();
@@ -97,6 +101,27 @@ export function AnalysisApp({ prefill = {}, engines, children }: { prefill?: Ana
       setStage({ kind: 'failed', message: state.error ?? 'L’analyse s’est arrêtée avant la fin. Relancez-la dans un instant.' });
     }
   }, []);
+
+  // Arrivée depuis l'accueil, case cochée là-bas : le test démarre tout de suite (pas de second clic).
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (autoStarted.current) return;
+    autoStarted.current = true;
+    const site = prefill.site?.trim();
+    if (!prefill.pro || !site) return;
+    try {
+      // ?pro=1 retiré de l'adresse : un rechargement ou un lien copié ne vaut pas déclaration.
+      const u = new URL(window.location.href);
+      if (u.searchParams.has('pro')) {
+        u.searchParams.delete('pro');
+        window.history.replaceState(null, '', `${u.pathname}${u.search}${u.hash}`);
+      }
+    } catch {
+      /* sans effet */
+    }
+    if (!SITE_RE.test(site) || !consumeProIntent(site)) return;
+    void run({ url: site, pro: true, proSource: 'accueil', ...(prefill.siteType ? { siteType: prefill.siteType } : {}), ...(prefill.city ? { city: prefill.city } : {}) });
+  }, [prefill.pro, prefill.site, prefill.siteType, prefill.city, run]);
 
   const cancel = () => {
     ctrl.current?.abort();
@@ -209,6 +234,7 @@ function AnalysisForm({
     onSubmit({
       url: u,
       pro: true,
+      proSource: 'analyse',
       ...(brand.trim() ? { brand: brand.trim() } : {}),
       ...(city.trim() ? { city: city.trim() } : {}),
       ...(siteType ? { siteType } : {}),
@@ -287,7 +313,7 @@ function AnalysisForm({
 
           <label className={s.check} data-invalid={fields.pro ? '' : undefined}>
             <input ref={proRef} type="checkbox" checked={pro} onChange={(e) => setPro(e.target.checked)} aria-describedby={fields.pro ? 'an-pro-err' : undefined} required />
-            <span>J’agis pour les besoins de mon activité professionnelle</span>
+            <span>{PRO_DECLARATION_TEXT}</span>
           </label>
           {fields.pro ? (
             <p id="an-pro-err" className={s.fieldError} style={{ marginTop: -8 }}>

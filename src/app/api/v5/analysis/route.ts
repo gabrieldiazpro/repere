@@ -1,8 +1,10 @@
 /**
  * POST /api/v5/analysis — analyse publique en 60 s, en flux NDJSON (une ligne JSON par événement).
  *
- * Corps : { url, pro: true, brand?, siteType?, city?, email?, hp? }
- * - `pro` obligatoire (service réservé aux professionnels, comme l'audit gratuit).
+ * Corps : { url, pro: true, proSource?, brand?, siteType?, city?, email?, hp? }
+ * - `pro` obligatoire (service réservé aux professionnels, comme l'audit gratuit). Chaque demande acceptée enregistre
+ *   la déclaration avec l'horodatage du SERVEUR, le texte exact de la case, sa version, l'endroit où elle a été cochée
+ *   (`proSource` : accueil ou /analyse) et une empreinte de l'IP (collection `analysis.pro`, référencée par l'analyse).
  * - Limites : IP (heure + jour), domaine analysé (heure + jour), plafonds globaux ; cache 10 min par domaine (analyse
  *   complète) et 24 h pour le test de marque (src/lib/analysis/aiguard.ts : aucune IA réinterrogée, plafond quotidien).
  * - Anti-SSRF : l'adresse est validée ici (forme) puis à chaque requête par le crawl (DNS, IP, redirections).
@@ -25,7 +27,7 @@ import {
   type AnalysisEvent,
   type FullAnalysis,
 } from '@/lib/analysis';
-import { emailHash } from '@/lib/analysis/store';
+import { emailHash, recordProDeclaration, type ProDeclarationRef } from '@/lib/analysis/store';
 import { sendAnalysisEmail } from '@/lib/analysis/mail';
 import { recordAttribution, sanitizeAttribution } from '@/lib/roi/attribution';
 
@@ -60,6 +62,8 @@ const Body = z.object({
   city: text(60, 'Indiquez seulement le nom de la ville.'),
   siteType: z.preprocess(empty, z.enum(['local', 'pme', 'ecommerce']).optional()),
   email: z.preprocess(empty, z.email({ error: 'Cette adresse e-mail semble incomplète.' }).max(200).optional()),
+  /** où la case « usage professionnel » a été cochée (accueil : lancement direct depuis la page d'accueil) */
+  proSource: z.preprocess(empty, z.enum(['accueil', 'analyse']).optional()),
   /** relancer l'analyse même si une analyse de moins de 10 min existe */
   fresh: z.boolean().optional(),
   hp: z.string().optional(),
@@ -128,10 +132,18 @@ export async function POST(req: Request): Promise<Response> {
     if (!h.ok || !d.ok) return tooMany('Vous avez lancé plusieurs analyses récemment. Réessayez un peu plus tard.', (h.ok ? d : h).retryAfter);
   }
 
+  const proSource = body.proSource ?? 'api';
+  const declare = (analysisId?: string): Promise<ProDeclarationRef | undefined> =>
+    recordProDeclaration({ source: proSource, domain, ip: getClientIp(req), ...(analysisId ? { analysisId } : {}) }).catch((err) => {
+      console.error('[api/v5/analysis] déclaration professionnelle non enregistrée', err);
+      return undefined;
+    });
+
   // ---- Cache 10 min par domaine ----
   if (!body.fresh) {
     const hit = await cachedAnalysis(domain).catch(() => null);
     if (hit) {
+      await declare(hit.analysis.id);
       const tok = await issueToken(hit.analysis.id, body.email);
       await recordAttribution('analysis', hit.analysis.id, attribution);
       return stream(async function* () {
@@ -153,6 +165,7 @@ export async function POST(req: Request): Promise<Response> {
   const gd = gh.ok ? await rateLimit('analysis-global-d', 'all', L.globalDay, DAY_MS, { failClosed: true }) : gh;
   if (!gh.ok || !gd.ok) return json({ error: 'Beaucoup d’analyses en ce moment. Réessayez dans une heure.' }, 503, { 'Retry-After': '3600' });
 
+  const pro = await declare();
   const previous = await previousAnalysis(domain).catch(() => null);
   const ac = new AbortController();
   req.signal?.addEventListener('abort', () => ac.abort());
@@ -168,7 +181,7 @@ export async function POST(req: Request): Promise<Response> {
     }
     if (result) {
       try {
-        const saved = await saveAnalysis(result, { domain, email: body.email });
+        const saved = await saveAnalysis(result, { domain, email: body.email, ...(pro ? { pro } : {}) });
         await recordAttribution('analysis', result.id, attribution);
         const mailed = await mailReport(body.email, result, saved.url);
         yield { type: 'saved', id: result.id, url: saved.url, token: saved.token, ...(mailed === 'sent' ? { emailed: true } : {}) };

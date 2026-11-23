@@ -10,7 +10,7 @@
  * validée en cas d'échec réseau.
  */
 import { gunzipSync } from 'node:zlib';
-import { BOT_TOKEN, USER_AGENT, SafeFetchError, decodeText, getFetchDeps, normalizeInputUrl, resolvePublicAll } from '@/lib/siteaudit/fetch';
+import { BOT_TOKEN, USER_AGENT, SafeFetchError, decodeText, getFetchDeps, isTlsError, normalizeInputUrl, resolvePublicAll } from '@/lib/siteaudit/fetch';
 import { isAllowed, parseRobots, productToken, type ParsedRobots } from '@/lib/siteaudit/robots';
 import { baseHost } from './url';
 
@@ -333,8 +333,8 @@ export class CrawlFetcher {
       if (!res) {
         const cancelled = this.opts.signal?.aborted;
         return base({
-          error: cancelled ? 'Exploration annulée.' : timedOut ? `Pas de réponse en ${Math.round(timeoutMs / 1000)} s.` : `Site injoignable (${(lastErr as Error)?.message ?? 'erreur réseau'}).`,
-          errorCode: cancelled ? 'aborted' : timedOut ? 'timeout' : 'network',
+          error: cancelled ? 'Exploration annulée.' : timedOut ? `Pas de réponse en ${Math.round(timeoutMs / 1000)} s.` : isTlsError(lastErr) ? `Certificat HTTPS invalide (${(lastErr as Error)?.message ?? 'TLS'}).` : `Site injoignable (${(lastErr as Error)?.message ?? 'erreur réseau'}).`,
+          errorCode: cancelled ? 'aborted' : timedOut ? 'timeout' : isTlsError(lastErr) ? 'tls' : 'network',
         });
       }
       this.cookies.store(u.hostname, res.headers['set-cookie']);

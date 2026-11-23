@@ -38,6 +38,9 @@ export type SafeFetchErrorCode =
   | 'timeout'
   | 'too_many_redirects'
   | 'robots_disallowed'
+  | 'tls'
+  | 'firewall'
+  | 'rate_limited'
   | 'network';
 
 const MESSAGES: Record<SafeFetchErrorCode, string> = {
@@ -51,8 +54,21 @@ const MESSAGES: Record<SafeFetchErrorCode, string> = {
   timeout: 'Le site n’a pas répondu dans les 8 secondes.',
   too_many_redirects: 'Trop de redirections.',
   robots_disallowed: 'Le robots.txt du site interdit l’accès à notre robot (RepereBot) : nous respectons ce choix.',
+  tls: 'Le certificat HTTPS du site n’est pas valide (expiré, auto-signé ou délivré pour un autre domaine) : les navigateurs affichent une alerte de sécurité.',
+  firewall: 'Le site refuse notre robot (protection anti-robots) : la page n’a pas pu être lue, aucun résultat n’est calculé. Googlebot peut être autorisé, lui : vérifiez avec l’outil d’inspection d’URL de la Search Console.',
+  rate_limited: 'Le site limite les visites de notre robot (erreur 429) : réessayez dans quelques minutes.',
   network: 'Le site est injoignable.',
 };
+
+/**
+ * Erreur de certificat ou de négociation TLS (codes Node.js). TESTS-REELS (nov. 2026) : un vrai site de cuisiniste
+ * présentait le certificat d'un autre domaine ; le message générique « Le site est injoignable » ne disait pas quoi faire.
+ */
+export function isTlsError(e: unknown): boolean {
+  const code = String((e as { code?: unknown } | null)?.code ?? '');
+  const msg = String((e as Error | null)?.message ?? '');
+  return /^(?:CERT_|ERR_TLS_|ERR_SSL_|UNABLE_TO_|DEPTH_ZERO_SELF_SIGNED_CERT|SELF_SIGNED_CERT_IN_CHAIN|HOSTNAME_MISMATCH)/.test(code) || /certificate|self[- ]signed|altnames|ssl3?_|tlsv1 alert|wrong version number/i.test(msg);
+}
 
 export class SafeFetchError extends Error {
   code: SafeFetchErrorCode;
@@ -505,6 +521,7 @@ async function doFetch(start: URL, opts: SafeFetchOptions, deadline: number, max
     } catch (e) {
       if (e instanceof SafeFetchError) throw e;
       if (controller.signal.aborted) throw new SafeFetchError('timeout');
+      if (isTlsError(e)) throw new SafeFetchError('tls', (e as Error).message);
       throw new SafeFetchError('network', (e as Error).message);
     } finally {
       clearTimeout(timer);

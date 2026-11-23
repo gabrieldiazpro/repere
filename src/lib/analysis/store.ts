@@ -12,6 +12,7 @@ import crypto from 'node:crypto';
 import { getDoc, listDocs, putDoc } from '@/lib/store';
 import { appUrl } from '@/lib/email';
 import { DEFAULT_EXPIRY_DAYS, TOKEN_RE, hashToken, newToken } from '@/lib/share';
+import { PRO_DECLARATION_TEXT } from '@/components/analysis/proIntent';
 import type { FullAnalysis } from './types';
 
 export const RUNS = 'analysis.runs';
@@ -30,6 +31,47 @@ export interface StoredAnalysis {
   emailHashes: string[];
   businessId?: string | null;
   attachedAt?: string | null;
+  /** preuve de la déclaration « usage professionnel » du demandeur (horodatage serveur) */
+  pro?: ProDeclarationRef;
+}
+
+/* ---- Déclaration « j'agis pour mon activité professionnelle » (service réservé aux pros) ---- */
+export const PRO_DECLARATIONS = 'analysis.pro';
+/** Texte exact de la case, identique sur l'accueil et sur /analyse (source unique : components/analysis/proIntent.ts). */
+export { PRO_DECLARATION_TEXT };
+export const PRO_DECLARATION_VERSION = 'analyse-2026-11';
+export type ProDeclarationSource = 'accueil' | 'analyse' | 'api';
+
+export interface ProDeclarationRef {
+  id: string;
+  /** horodatage du serveur à la réception de la demande (jamais celui du navigateur) */
+  at: string;
+  source: ProDeclarationSource;
+}
+
+export interface ProDeclaration extends ProDeclarationRef {
+  text: string;
+  version: string;
+  domain: string;
+  /** empreinte HMAC de l'adresse IP (jamais l'adresse en clair) */
+  ipHash: string;
+  analysisId?: string;
+}
+
+export function ipHash(ip: string): string {
+  return crypto.createHmac('sha256', secret()).update(`analysis-ip|${ip}`).digest('hex').slice(0, 32);
+}
+
+/** Enregistre la déclaration (case cochée) avec l'horodatage du serveur ; renvoie sa référence. */
+export async function recordProDeclaration(d: { source: ProDeclarationSource; domain: string; ip: string; analysisId?: string; now?: Date }): Promise<ProDeclarationRef> {
+  const ref: ProDeclarationRef = { id: crypto.randomBytes(12).toString('base64url'), at: (d.now ?? new Date()).toISOString(), source: d.source };
+  const doc: ProDeclaration = { ...ref, text: PRO_DECLARATION_TEXT, version: PRO_DECLARATION_VERSION, domain: d.domain, ipHash: ipHash(d.ip), ...(d.analysisId ? { analysisId: d.analysisId } : {}) };
+  await putDoc<ProDeclaration>(PRO_DECLARATIONS, ref.id, doc);
+  return ref;
+}
+
+export async function getProDeclaration(id: string): Promise<ProDeclaration | null> {
+  return (await getDoc<ProDeclaration>(PRO_DECLARATIONS, id))?.data ?? null;
 }
 
 interface DomainIndex {
@@ -62,7 +104,7 @@ export function analysisShareUrl(id: string, token: string): string {
 /** Enregistre l'analyse et renvoie le jeton de partage (à ne montrer qu'à son auteur). */
 export async function saveAnalysis(
   analysis: FullAnalysis,
-  meta: { domain: string; email?: string | null; now?: Date; /** réanalyse d'un espace (file de tâches) : rattachée d'office */ businessId?: string | null },
+  meta: { domain: string; email?: string | null; now?: Date; /** réanalyse d'un espace (file de tâches) : rattachée d'office */ businessId?: string | null; pro?: ProDeclarationRef },
 ): Promise<{ token: string; url: string; expiresAt: string }> {
   const now = meta.now ?? new Date();
   const token = newToken();
@@ -75,6 +117,7 @@ export async function saveAnalysis(
     emailHashes: meta.email ? [emailHash(meta.email)] : [],
     businessId: meta.businessId ?? null,
     ...(meta.businessId ? { attachedAt: now.toISOString() } : {}),
+    ...(meta.pro ? { pro: meta.pro } : {}),
   };
   await putDoc<StoredAnalysis>(RUNS, analysis.id, doc, meta.businessId ?? null);
   const k = domainKey(meta.domain);

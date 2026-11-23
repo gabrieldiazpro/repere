@@ -5,9 +5,14 @@
  */
 import type { AccessNoteCode, AccessState, CrawlDiagnosis, CrawledPage, SiteCrawl } from './types';
 
-/** Défis anti-robots (pare-feu applicatif, CDN) reconnaissables dans une réponse. */
+/**
+ * Défis anti-robots (pare-feu applicatif, CDN) reconnaissables dans une réponse. TESTS-REELS (nov. 2026) : un vrai
+ * restaurant parisien (WordPress, LiteSpeed) a servi par intermittence à RepereBot une page 200 « Un instant, s'il vous
+ * plaît… » de 9 mots : classée « site en JavaScript » au lieu de « défi anti-robots ». Titre complet seulement (pas de
+ * faux positif sur « Un instant gourmand »).
+ */
 const CHALLENGE_BODY =
-  /(cf-chl-|\/cdn-cgi\/challenge-platform|<title>just a moment\.\.\.<\/title>|attention required! \| cloudflare|cf-browser-verification|captcha-delivery\.com|geo\.captcha-delivery|px-captcha|perimeterx|_incapsula_resource|incapsula incident|sucuri website firewall|access denied \| [^<]* used cloudflare|verify you are human|vérifiez que vous êtes humain|vérification de sécurité|ddos-guard|aws-waf-token|awswaf)/i;
+  /(cf-chl-|\/cdn-cgi\/challenge-platform|<title>just a moment\.\.\.<\/title>|attention required! \| cloudflare|cf-browser-verification|captcha-delivery\.com|geo\.captcha-delivery|px-captcha|perimeterx|_incapsula_resource|incapsula incident|sucuri website firewall|access denied \| [^<]* used cloudflare|verify you are human|vérifiez que vous êtes humain|vérification de sécurité|ddos-guard|aws-waf-token|awswaf|<title>\s*(?:un instant(?:,? s['’]il vous pla[iî]t)?|one moment,? please|please wait|veuillez patienter|merci de patienter)\s*(?:…|\.{3})?\s*<\/title>)/i;
 
 /** Nom du pare-feu ou du service anti-robots qui a répondu, ou null. */
 export function firewallOf(status: number, headers: Record<string, string>, body?: string): string | null {
@@ -31,6 +36,8 @@ export function firewallOf(status: number, headers: Record<string, string>, body
 
 const PARKED =
   /(this domain (is|may be) for sale|domain (is )?for sale|buy this domain|ce (nom de )?domaine (est|peut être) à vendre|nom de domaine à vendre|domaine en vente|sedoparking\.com|parkingcrew\.net|bodis\.com|dan\.com\/buy|afternic\.com|this domain (has been|is) (parked|registered)|domain parked|parked free, courtesy of|ce domaine a été réservé)/i;
+/** Liste de fichiers du serveur (« Index of / », Apache / nginx) à la place d'un site (cas réel, nov. 2026). */
+const DIRECTORY_LISTING = /^\s*(?:index of \/|directory listing for \/)/i;
 const MAINTENANCE = /(maintenance|en travaux|bientôt de retour|we'?ll be back|under construction|site en construction|coming soon|ouverture prochaine)/i;
 
 export interface CrawlSignals {
@@ -109,7 +116,7 @@ export function diagnoseCrawl(c: SiteCrawl, sig: CrawlSignals): CrawlDiagnosis {
   const code = sig.entryErrorCode;
 
   if (!home) {
-    state = code === 'timeout' ? 'timeout' : code === 'dns' ? 'dns' : code === 'redirect_loop' ? 'redirect_loop' : code === 'too_many_redirects' ? 'too_many_redirects' : 'unreachable';
+    state = code === 'timeout' ? 'timeout' : code === 'dns' ? 'dns' : code === 'tls' ? 'tls_error' : code === 'redirect_loop' ? 'redirect_loop' : code === 'too_many_redirects' ? 'too_many_redirects' : 'unreachable';
   } else if (home.blockedByRobots) state = 'blocked_robots';
   else if (code === 'redirect_loop') state = sig.entryHeaders?.['set-cookie'] ? 'cookie_loop' : 'redirect_loop';
   else if (code === 'too_many_redirects') state = 'too_many_redirects';
@@ -131,6 +138,7 @@ export function diagnoseCrawl(c: SiteCrawl, sig: CrawlSignals): CrawlDiagnosis {
   else if (homeStatus >= 300 && homeStatus < 400 && pagesRead === 0) state = 'unreachable';
   else if (/\/password\/?$/.test(new URL(home.finalUrl).pathname) && /shopify/i.test(JSON.stringify(home.headers) + body.slice(0, 20_000))) state = 'password_protected';
   else if (homeStatus === 200 && PARKED.test(`${home.title ?? ''} ${body.slice(0, 30_000)}`) && pagesRead <= 1) state = 'parked';
+  else if (homeStatus === 200 && DIRECTORY_LISTING.test(home.title ?? '') && read.every((p) => DIRECTORY_LISTING.test(p.title ?? ''))) state = 'directory_listing';
   else if (homeStatus === 200 && !/html/i.test(home.contentType ?? 'text/html')) state = pagesRead ? 'ok' : 'not_html';
   else if (homeStatus === 200 && sig.binaryPages && pagesRead === 0) state = 'not_html';
   else if (home.renderHints.likelyClientRendered && !home.rendered) state = 'js_only';
@@ -146,7 +154,7 @@ export function diagnoseCrawl(c: SiteCrawl, sig: CrawlSignals): CrawlDiagnosis {
     firewall = sig.firewall.name;
   }
 
-  const readable = pagesRead > 0 && !['blocked_robots', 'blocked_firewall', 'parked', 'password_protected', 'auth_required', 'maintenance', 'not_html'].includes(state);
+  const readable = pagesRead > 0 && !['blocked_robots', 'blocked_firewall', 'parked', 'password_protected', 'auth_required', 'maintenance', 'not_html', 'directory_listing', 'tls_error'].includes(state);
   return {
     state,
     readable,

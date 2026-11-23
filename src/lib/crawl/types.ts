@@ -86,7 +86,9 @@ export type AccessState =
   | 'timeout'
   | 'unreachable'
   | 'dns'
-  | 'blocked_address';
+  | 'blocked_address'
+  | 'tls_error'
+  | 'directory_listing';
 export type AccessNoteCode =
   | 'robots_timeout'
   | 'robots_unreachable'
