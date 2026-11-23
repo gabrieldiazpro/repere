@@ -16,7 +16,7 @@ export default async function AgentSettingsPage() {
         meta="Réglages"
         result={`L’agent peut proposer ${d.settings.kinds.length} types de corrections sur ${total}`}
         resultTone="brand"
-        subtitle="Choisissez ce qu’il a le droit de vous proposer et quand. Rien n’est jamais appliqué sans votre validation."
+        subtitle="Choisissez ce qu’il a le droit de vous proposer et quand. Rien n’est appliqué sans votre validation, sauf ce que votre mandat Pilote automatique autorise."
       />
       <div className="rp-page">
         <SimBand />

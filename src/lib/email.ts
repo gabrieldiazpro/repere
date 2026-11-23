@@ -726,3 +726,41 @@ export async function sendAuditOfferReminderEmail(
     tags: [{ name: 'type', value: 'audit_offer_reminder' }],
   });
 }
+
+// ---------------------------------------------------------------------------
+// V10 (PILOTE-AUTO) : e-mails du pilote automatique (avis après coup avec annulation en 1 clic, contenu en relecture
+// 72 h avec blocage en 1 clic, récapitulatif hebdomadaire, rapport mensuel, arrêt automatique). Textes simples,
+// liens signés (src/lib/autopilot/tokens.ts) ouvrant une page de confirmation.
+// ---------------------------------------------------------------------------
+
+export interface AutopilotEmail {
+  subject: string;
+  preheader: string;
+  /** paragraphes en texte brut (échappés ici) */
+  paragraphs: string[];
+  /** lignes de liste : texte et lien facultatif (annuler, bloquer, voir) */
+  items?: { text: string; link?: { label: string; url: string } }[];
+  cta?: { label: string; url: string };
+  tag: 'autopilot_done' | 'autopilot_review' | 'autopilot_recap' | 'autopilot_report' | 'autopilot_stop' | 'autopilot_mandate';
+}
+
+const REASON_AUTOPILOT = `Vous recevez cet e-mail car votre entreprise a signé le mandat Pilote automatique de ${BRAND}. Chaque action est annulable ; le mandat se met en pause ou se révoque en un clic dans votre espace.`;
+
+export async function sendAutopilotEmail(to: string, m: AutopilotEmail): Promise<SendEmailResult> {
+  const p = (t: string) => `<p style="margin:0 0 14px">${esc(t)}</p>`;
+  const list = m.items?.length
+    ? `<ul style="margin:0 0 14px;padding-left:20px">${m.items
+        .map((i) => `<li style="margin:0 0 8px">${esc(i.text)}${i.link ? ` — <a href="${esc(i.link.url)}" style="color:${C.primary};font-weight:600">${esc(i.link.label)}</a>` : ''}</li>`)
+        .join('')}</ul>`
+    : '';
+  const body = `<p style="margin:0 0 14px">Bonjour,</p>${m.paragraphs.map(p).join('')}${list}`;
+  const text = `Bonjour,\n\n${m.paragraphs.join('\n\n')}${m.items?.length ? `\n\n${m.items.map((i) => `- ${i.text}${i.link ? ` (${i.link.label} : ${i.link.url})` : ''}`).join('\n')}` : ''}${m.cta ? `\n\n${m.cta.label} : ${m.cta.url}` : ''}${textFooter(to, REASON_AUTOPILOT)}`;
+  return sendEmail({
+    to,
+    subject: m.subject.slice(0, 140),
+    kind: 'transactional',
+    html: layout({ to, preheader: m.preheader, body, cta: m.cta, reason: REASON_AUTOPILOT }),
+    text,
+    tags: [{ name: 'type', value: m.tag }],
+  });
+}

@@ -82,8 +82,8 @@ export default async function MerciPage({ searchParams }: { searchParams: Promis
               </ol>
 
               <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-                <Link href={spaceHref(loggedIn)} className={buttonClasses({ size: "lg" })}>
-                  Ouvrir mon espace
+                <Link href={spaceHref(loggedIn, kind === "pilote" ? "/app/agent/pilote" : "/app")} className={buttonClasses({ size: "lg" })}>
+                  {kind === "pilote" ? "Démarrer le pilote automatique" : "Ouvrir mon espace"}
                 </Link>
                 {auditId ? (
                   <Link href={`/rapport/${encodeURIComponent(auditId)}`} className={buttonClasses({ size: "lg", variant: "secondary" })}>

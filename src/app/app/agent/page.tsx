@@ -31,8 +31,8 @@ export default async function AgentPage({ searchParams }: { searchParams: Promis
         resultTone={waiting.length || validated.length ? 'warn' : 'brand'}
         subtitle={
           <>
-            L’agent prépare les corrections, vous les validez, il les applique puis vérifie qu’elles sont en ligne. Tout est
-            journalisé et peut être annulé.
+            L’agent prépare les corrections, vous les validez (ou votre mandat Pilote automatique les autorise d’avance), il les
+            applique puis vérifie qu’elles sont en ligne. Tout est journalisé et peut être annulé.
             {incomplete ? ` ${incomplete} proposition${incomplete > 1 ? 's demandent' : ' demande'} une information que vous seul connaissez.` : ''}
           </>
         }

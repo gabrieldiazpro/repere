@@ -13,7 +13,7 @@ import {
   v5OfferFacts,
   type OfferTier,
 } from "@/components/site/offer-facts";
-import { getAddon } from "@/lib/plans";
+import { getAddon, getPlan, type PlanId } from "@/lib/plans";
 import { formatPrice } from "@/lib/plans";
 
 export type Seg = "local" | "pme" | "ecommerce";
@@ -45,6 +45,8 @@ const DONE: Record<Seg, string> = {
   ecommerce: "Balisage Product et flux Merchant, 20 fiches produit par mois, 1 guide d'achat, 3 démarches",
 };
 
+const PILOTE_BY_SEG: Record<Seg, PlanId> = { local: "local_pilote_month", pme: "pme_pilote_month", ecommerce: "ecom_pilote_month" };
+
 export const COMPARE_GROUPS = ["Mesure des IA", "SEO et site", "Agent et contenus", "Accompagnement et conditions"] as const;
 
 export function compareRows(seg: Seg): CompareRow[] {
@@ -70,6 +72,10 @@ export function compareRows(seg: Seg): CompareRow[] {
     row("Agent et contenus", "API publique, serveur MCP et webhooks", (t) => api(seg, t)),
     row("Accompagnement et conditions", "Qui fait le travail", (t) => ({ decouverte: "Vous", essentiel: "Vous, avec les textes prêts", accompagne: "Nous, après votre accord" })[t]),
     row("Accompagnement et conditions", "Travail fait pour vous", (t) => (t === "accompagne" ? DONE[seg] : false)),
+    // V10 (PILOTE-AUTO) : formule « Tout fait pour vous, sans rendez-vous » de l'Essentiel (mandat écrit, révocable).
+    row("Accompagnement et conditions", "Pilote automatique : corrections et contenus appliqués sans rendez-vous, dans le cadre de votre mandat", (t) =>
+      t === "essentiel" ? `En formule Pilote automatique, ${formatPrice(getPlan(PILOTE_BY_SEG[seg]).priceCents)}/mois` : t === "accompagne" ? "Non : chaque livrable est validé avec vous" : false,
+    ),
     row("Accompagnement et conditions", "Rapport mensuel", (t) => (t === "decouverte" ? false : t === "accompagne" ? "Avec point visio" : true)),
     row("Accompagnement et conditions", "Engagement", (t) => ({ decouverte: "Aucun, gratuit", essentiel: "Aucun", accompagne: "3 mois, puis sans engagement" })[t]),
   ];

@@ -24,19 +24,21 @@ function allowedFor(name: string): Set<number> {
     Accompagné: [...byName(/^Accompagné/), euros(getAddon('option_more_ai').priceCents)],
     Agence: [...byName(/^Agence|^Exécution/), ...PLAN_ADDONS.filter((a) => a.unit === 'client').map((a) => euros(a.priceCents))],
     Réseau: byName(/^Réseau/),
+    // V10 (PILOTE-AUTO) : « Tout fait pour vous, sans rendez-vous »
+    'Pilote automatique': byName(/^Pilote automatique/),
     Audit: byName(/^Audit/),
     Découverte: [0],
   };
   return new Set(sets[name] ?? []);
 }
 
-const NAME_RE = /(Essentiel|Accompagné|Agence|Réseau|Audit(?: approfondi| catalogue| \+ plan)|Découverte)([^.\n;]{0,60}?)(\d{1,3}(?: \d{3})*)(?:,\d{2})? ?€/g;
+const NAME_RE = /(Essentiel|Accompagné|Agence|Réseau|Pilote automatique|Audit(?: approfondi| catalogue| \+ plan)|Découverte)([^.\n;]{0,60}?)(\d{1,3}(?: \d{3})*)(?:,\d{2})? ?€/g;
 
 function amountsByOffer(text: string): { offer: string; amount: number; ctx: string }[] {
   const out: { offer: string; amount: number; ctx: string }[] = [];
   for (const m of text.matchAll(NAME_RE)) {
     // Un autre nom d'offre entre le nom et le montant : le montant appartient à ce dernier (repris par la boucle).
-    if (/(Essentiel|Accompagné|Agence|Réseau|Audit|Découverte)/.test(m[2])) continue;
+    if (/(Essentiel|Accompagné|Agence|Réseau|Pilote automatique|Audit|Découverte)/.test(m[2])) continue;
     const offer = m[1].startsWith('Audit') ? 'Audit' : m[1];
     out.push({ offer, amount: Number(m[3].replace(/ /g, '')), ctx: m[0] });
   }
@@ -73,11 +75,13 @@ describe('prix affichés = src/lib/plans.ts', () => {
     expect(contradictions('t', 'Essentiel à 35 €/mois')).toHaveLength(1);
     expect(contradictions('t', 'Agence : 149 €/mois, 20 clients en Essentiel')).toHaveLength(1);
     expect(contradictions('t', 'Accompagné 99 €/mois, Essentiel 29 €/mois')).toEqual([]);
+    expect(contradictions('t', 'Pilote automatique : 49 €/mois')).toHaveLength(1);
+    expect(contradictions('t', `Pilote automatique : ${formatPrice(getPlan('local_pilote_month').priceCents)}/mois`)).toEqual([]);
   });
 
   it('tableau « Tous les prix en un coup d’œil » (/tarifs)', () => {
     const html = renderToStaticMarkup(PriceTable({ updated: '2026-11-23' }));
-    for (const id of ['local_essentiel_month', 'pme_essentiel_month', 'ecom_essentiel_month', 'local_accompagne_month', 'pme_accompagne_month', 'ecom_accompagne_month', 'agency_month'] as const) {
+    for (const id of ['local_essentiel_month', 'pme_essentiel_month', 'ecom_essentiel_month', 'local_pilote_month', 'pme_pilote_month', 'ecom_pilote_month', 'local_accompagne_month', 'pme_accompagne_month', 'ecom_accompagne_month', 'agency_month'] as const) {
       expect(sp(html)).toContain(sp(formatPrice(getPlan(id).priceCents)));
     }
     expectNoContradiction('PriceTable', html);
@@ -94,6 +98,7 @@ describe('prix affichés = src/lib/plans.ts', () => {
       expect(o.price, id).toBe((cents / 100).toFixed(2));
     }
     expect(offers.some((o) => /_audit_free$/.test(o['@id']))).toBe(false);
+    for (const id of ['local_pilote_month', 'pme_pilote_month', 'ecom_pilote_month']) expect(offers.some((o) => o['@id'].endsWith(`#offer-${id}`)), id).toBe(true);
   });
 
   it('comparatif des fonctionnalités : options au bon prix', () => {

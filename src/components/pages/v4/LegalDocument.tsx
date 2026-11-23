@@ -26,7 +26,7 @@ export function leadIn(t: string): [string | null, string] {
 export function legalToc(sections: LegalSection[]) {
   const seen = new Map<string, number>();
   return sections.map((sec) => {
-    let id = slugify(sec.title) || "section";
+    let id = sec.id || slugify(sec.title) || "section";
     const n = seen.get(id) ?? 0;
     seen.set(id, n + 1);
     if (n) id = `${id}-${n + 1}`;

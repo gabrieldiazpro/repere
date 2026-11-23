@@ -37,6 +37,9 @@ export type PlanIdV2 =
   | 'ecom_essentiel_month'
   | 'ecom_essentiel_year'
   | 'ecom_accompagne_month'
+  | 'local_pilote_month'
+  | 'pme_pilote_month'
+  | 'ecom_pilote_month'
   | 'agency_partner'
   | 'agency_month'
   | 'agency_year'
@@ -175,6 +178,24 @@ export const V2_PLANS: readonly Plan[] = [
     id: 'ecom_accompagne_month', segment: 'ecommerce', name: 'Accompagné', priceCents: 39000, interval: 'month',
     features: ['Tout Essentiel, 100 requêtes produit suivies chaque semaine', '7 IA : ChatGPT, Gemini, Perplexity, Claude, Mistral, Google AI Overviews, Google AI Mode', 'En option : Copilot et DeepSeek (+9 €/mois)', 'Mise en place faite : balisage Product/Offer/Review/FAQ, llms.txt, flux Merchant vérifié', '20 fiches produit réécrites par mois', '1 guide d\'achat ou comparatif par mois', '3 démarches vers les comparatifs et sources citées', 'Rapport mensuel (trafic et ventes IA si disponibles) et visio de 30 min', 'Rien n\'est publié sans votre validation', '3 mois minimum, puis sans engagement'],
     highlighted: true, cta: 'Être accompagné', available: true, commitmentMonths: ACCOMPAGNE_COMMITMENT_MONTHS,
+  },
+  // --- V10 (PILOTE-AUTO, 23 nov. 2026) : « Tout fait pour vous, sans rendez-vous ». Droits de l'Essentiel du parcours
+  // (mesure, quotas de corrections et de contenus) + application automatique dans le cadre d'un mandat écrit, révocable
+  // (src/lib/autopilot). Mensuel, sans engagement. Prix et marges : docs/v10/progress/PILOTE-AUTO.md.
+  {
+    id: 'local_pilote_month', segment: 'local', name: 'Pilote automatique', priceCents: 5900, interval: 'month',
+    features: ['Tout Essentiel : 20 questions clients suivies chaque mois', '5 IA : ChatGPT, Gemini, Perplexity, Google AI Overviews, Google AI Mode', 'Corrections faites pour vous sur votre site, sans rendez-vous (jusqu\'à 20 séries par mois)', '2 pages ou articles par mois, mis en ligne après 72 h de relecture possible', 'Seulement ce que votre mandat autorise, annulable en 1 clic', 'Récapitulatif chaque semaine par e-mail, rapport chaque mois', 'Support par écrit, aucun appel nécessaire', 'Sans engagement, résiliable en 1 clic'],
+    highlighted: false, cta: 'Choisir le pilote automatique', available: true,
+  },
+  {
+    id: 'pme_pilote_month', segment: 'pme', name: 'Pilote automatique', priceCents: 17900, interval: 'month',
+    features: ['Tout Essentiel : 50 questions suivies chaque mois', '6 IA : ChatGPT, Gemini, Perplexity, Claude, Google AI Overviews, Google AI Mode', 'Corrections faites pour vous sur votre site, sans rendez-vous (jusqu\'à 20 séries par mois)', '2 pages ou articles par mois, mis en ligne après 72 h de relecture possible', 'Seulement ce que votre mandat autorise, annulable en 1 clic', 'Récapitulatif chaque semaine par e-mail, rapport chaque mois', 'Support par écrit, aucun appel nécessaire', 'Sans engagement, résiliable en 1 clic'],
+    highlighted: false, cta: 'Choisir le pilote automatique', available: true,
+  },
+  {
+    id: 'ecom_pilote_month', segment: 'ecommerce', name: 'Pilote automatique', priceCents: 15900, interval: 'month',
+    features: ['Tout Essentiel : 50 requêtes produit suivies chaque mois', '6 IA : ChatGPT, Gemini, Perplexity, Claude, Google AI Overviews, Google AI Mode', 'Corrections faites pour vous sur votre boutique, sans rendez-vous (jusqu\'à 20 séries par mois)', '2 pages ou articles par mois, mis en ligne après 72 h de relecture possible', 'Seulement ce que votre mandat autorise, annulable en 1 clic', 'Récapitulatif chaque semaine par e-mail, rapport chaque mois', 'Support par écrit, aucun appel nécessaire', 'Sans engagement, résiliable en 1 clic'],
+    highlighted: false, cta: 'Choisir le pilote automatique', available: true,
   },
   // --- Agence : liste d'attente tant que la marque blanche n'est pas livrée ---
   {
@@ -385,6 +406,19 @@ export const AGENCY_INCLUDED_CLIENTS = 10;
 /** Plafond technique de clients d'un compte Agence (au-delà : devis). */
 export const AGENCY_MAX_CLIENTS = 50;
 
+/** V10 (PILOTE-AUTO) : offre « Pilote automatique » (tout fait pour vous, sans rendez-vous), une par parcours. */
+export type PilotePlanId = 'local_pilote_month' | 'pme_pilote_month' | 'ecom_pilote_month';
+export const PILOTE_PLAN_IDS: readonly PilotePlanId[] = ['local_pilote_month', 'pme_pilote_month', 'ecom_pilote_month'];
+
+export function isPilotePlanId(v: unknown): v is PilotePlanId {
+  return typeof v === 'string' && (PILOTE_PLAN_IDS as readonly string[]).includes(v);
+}
+
+/** Offre Pilote automatique d'un parcours (agence → local). */
+export function pilotePlanFor(segment: PlanSegment | string | null | undefined): PilotePlanId {
+  return segment === 'pme' ? 'pme_pilote_month' : segment === 'ecommerce' ? 'ecom_pilote_month' : 'local_pilote_month';
+}
+
 /** Engagement minimum en mois (0 = sans engagement). */
 export function commitmentMonths(id: PlanId): number {
   return getPlan(id).commitmentMonths ?? 0;
@@ -423,6 +457,8 @@ export function planTier(id: PlanId): PlanTier {
   if (id === 'agency_month' || id === 'agency_year') return 'agency';
   if (id.includes('_accompagne_')) return 'accompagne';
   if (id.includes('_essentiel_')) return 'essentiel';
+  // V10 (PILOTE-AUTO) : droits de l'Essentiel du parcours + mandat de publication (src/lib/autopilot).
+  if (id.includes('_pilote_')) return 'essentiel';
   if (id.startsWith('local_reseau')) return 'reseau';
   return 'free';
 }

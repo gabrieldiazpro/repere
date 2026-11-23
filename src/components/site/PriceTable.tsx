@@ -45,6 +45,11 @@ export function PriceTable({ updated }: { updated: string }) {
                 <td className="tabular px-4 py-3">
                   {price(t.essentielMonth?.priceCents, "/mois")}
                   {t.essentielYear ? <span className="block text-[0.85rem] text-muted">ou {euros(t.essentielYear.priceCents)}/an</span> : null}
+                  {t.pilote ? (
+                    <span className="block text-[0.85rem] text-muted">
+                      Pilote automatique (tout fait, sans rendez-vous) : {euros(t.pilote.priceCents)}/mois
+                    </span>
+                  ) : null}
                 </td>
                 <td className="tabular px-4 py-3">
                   {price(t.accompagne?.priceCents, "/mois")}

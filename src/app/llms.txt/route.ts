@@ -32,6 +32,7 @@ function priceLine(seg: 'local' | 'pme' | 'ecommerce', label: string) {
   const parts = [
     'Découverte gratuite',
     t.essentielMonth ? `Essentiel ${euros(t.essentielMonth.priceCents)}/mois${t.essentielYear ? ` ou ${euros(t.essentielYear.priceCents)}/an` : ''} (${ess.prompts} questions, ${ess.engines.length} IA, chaque mois)` : null,
+    t.pilote ? `Pilote automatique ${euros(t.pilote.priceCents)}/mois, sans engagement (tout Essentiel, appliqué pour vous sans rendez-vous dans le cadre d'un mandat écrit révocable)` : null,
     t.accompagne ? `Accompagné ${euros(t.accompagne.priceCents)}/mois, 3 mois minimum (${acc.prompts} questions, ${acc.engines.length} IA, chaque semaine)` : null,
     t.deep ? `à la carte : audit approfondi ${euros(t.deep.priceCents)}` : null,
   ].filter(Boolean);
@@ -88,6 +89,7 @@ export async function GET() {
     link('Développeurs', '/developpeurs', 'API REST (OpenAPI 3.1 sur /api/public/v1/openapi.json), serveur MCP en lecture (/api/mcp), webhooks signés'),
     link('Fiche officielle', '/fonctionnalites/fiche-officielle', 'faits de l’entreprise datés, sourcés et vérifiés par elle : page publique (schema.org, Markdown, llms.txt), encart pour son site, alertes d’écarts, rappel tous les 90 jours'),
     link('Programme partenaires', '/partenaires', 'agences, plateformes compatibles, experts-comptables, CCI, fédérations, écoles et formateurs ; candidature en ligne'),
+    link('Tout fait pour vous (pilote automatique)', '/tout-fait-pour-vous', 'Repéré applique les corrections et publie les contenus que le client autorise une fois par écrit (mandat par catégorie, révocable), prévient après coup avec annulation en un clic, contenus relisibles 72 h ; jamais de prix, de mentions légales, d\'avis ni de suppression ; aucun appel ni rendez-vous'),
     link('Réserver une démo', '/rendez-vous', 'démonstration des offres Accompagné et Agence, réponse sous un jour ouvré'),
     '',
     '## Veille',

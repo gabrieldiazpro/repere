@@ -291,6 +291,34 @@ function SegmentTiers({ segment, billing, rows, active }: { segment: Seg; billin
         ) : null}
       </div>
 
+      {t.pilote ? (
+        <div
+          id={t.pilote.id}
+          className="relative mt-6 flex scroll-mt-24 flex-col gap-4 rounded-2xl bg-white p-5 shadow-[0_0_0_1px_rgba(27,31,46,.09)] ring-1 ring-inset ring-primary/25 sm:p-6 lg:flex-row lg:items-center"
+        >
+          {active ? <span id="pilote-automatique" aria-hidden="true" className="absolute -top-24" /> : null}
+          <div className="min-w-0 flex-1">
+            <p className="text-[0.8rem] font-semibold uppercase tracking-[0.06em] text-primary">Tout fait pour vous, sans rendez-vous</p>
+            <h3 className="mt-1 text-lg font-bold">
+              {t.pilote.name} : <span className="tabular">{euros(t.pilote.priceCents)}</span>/mois
+              <span className="font-normal text-muted"> · sans engagement{billing === "year" ? ", mensuel uniquement" : ""}</span>
+            </h3>
+            <p className="mt-1 text-[0.95rem] text-ink/75">
+              Tout Essentiel, et Repéré applique lui-même les corrections et publie les contenus que vous autorisez une fois, par écrit. Prévenu après
+              coup, annulable en 1 clic, contenus relisibles 72 h avant leur mise en ligne. Aucun appel, aucun rendez-vous.
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row lg:flex-col">
+            <Link href={`/tout-fait-pour-vous?segment=${segment}#commencer`} className={buttonClasses({ variant: "primary", className: "w-full sm:w-auto" })}>
+              {t.pilote.cta}
+            </Link>
+            <Link href={`/tout-fait-pour-vous?segment=${segment}`} className="inline-flex min-h-11 items-center justify-center text-[0.92rem] font-semibold text-primary underline underline-offset-4 hover:no-underline">
+              Ce que fait le pilote, et ce qu&apos;il ne fait jamais
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {t.deep ? (
           <div id={t.deep.id} className="flex scroll-mt-24 flex-col gap-3 rounded-2xl bg-white p-5 shadow-[0_0_0_1px_rgba(27,31,46,.09)] sm:p-6">

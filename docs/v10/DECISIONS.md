@@ -34,3 +34,9 @@ réversibles (configuration, textes) ; rien d'irréversible ni de payant n'est e
 14. Comptes démo : noms conservés (Plomberie Martin, Paysia, Maison Sora), avec la mention « entreprise fictive »
     partout où ils apparaissent ; domaines en .example si un domaine .fr réel correspond.
 15. Agenda de démo : Cal.com gratuit (compte à créer par le fondateur) ; d'ici là, formulaire /rendez-vous.
+
+## Offre sans contact (PILOTE-AUTO, demande du 23 nov.)
+16. « Pilote automatique » (tout fait pour vous, sans rendez-vous) : une offre par parcours, mensuelle sans engagement —
+    Local 59 €, PME 179 €, E-commerce 159 € — = Essentiel + application automatique dans le cadre d'un mandat écrit,
+    par catégorie, révocable (marge brute 86–88 %, support écrit compris). Pas d'option sur Accompagné (marge < 70 %).
+    Mandat et CGV 5 bis à relire par un avocat. Détail : docs/v10/progress/PILOTE-AUTO.md.

@@ -86,6 +86,21 @@ export async function handleAnalysisRerun(p: Record<string, unknown>): Promise<R
   // Agent de publication : brouillons à valider selon les réglages du client (jamais d'application ici).
   let agent: Record<string, unknown> | undefined;
   const crawl = captured.crawl;
+  // V10 (PILOTE-AUTO) : offre Pilote automatique et mandat actif → arrêt automatique si un score a baissé, puis
+  // application des seules corrections couvertes par le mandat (avant l'agent : il ne propose que le reste).
+  let autopilot: Record<string, unknown> | undefined;
+  if (crawl && ent.autopilot) {
+    const { runAutopilot } = await import('@/lib/autopilot/runner');
+    const { siteFromCrawl } = await import('@/lib/publish/planner');
+    const r = await runAutopilot(businessId, {
+      trigger: 'analysis',
+      findings: [...allFindings(a.seo), ...allFindings(a.geo)],
+      crawl,
+      site: siteFromCrawl(crawl, { businessId, name: b.name, ...(b.city ? { city: b.city } : {}) }),
+      analysis: { id: a.id, createdAt: a.createdAt, scores: { seo: a.scores.seo, geo: a.scores.geo } },
+    });
+    autopilot = r.status === 'done' ? { applied: r.applied.length, scheduled: r.scheduled.length } : r.status === 'stopped' ? { stopped: r.detail } : { skipped: r.reason };
+  }
   if (crawl) {
     const { runPublishAgent } = await import('@/lib/publish/agent');
     const r = await runPublishAgent(businessId, { findings: [...allFindings(a.seo), ...allFindings(a.geo)], crawl, name: b.name, ...(b.city ? { city: b.city } : {}), trigger: p.reason === 'scheduled' ? 'scheduled' : 'analysis' });
@@ -98,6 +113,7 @@ export async function handleAnalysisRerun(p: Record<string, unknown>): Promise<R
     scores: a.scores,
     partial: a.partial,
     ...(agent ? { agent } : {}),
+    ...(autopilot ? { autopilot } : {}),
     ...(a.comparison ? { fixed: a.comparison.fixed.length, appeared: a.comparison.appeared.length } : {}),
   };
 }

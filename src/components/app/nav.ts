@@ -60,6 +60,7 @@ const AGIR: NavGroup = {
     { href: '/app/actions', label: 'Centre d’actions', short: 'Agir', sub: 'Quoi faire, dans quel ordre, avec l’effet mesuré', icon: 'check', badge: 'tasks', key: 'a', also: ['/app/taches', '/app/plan'] },
     { href: '/app/scenarios', label: 'Scénarios', sub: 'Et si je corrigeais ces points ? L’effet sur vos contrôles', icon: 'trend' },
     { href: '/app/agent', label: 'Agent', sub: 'Les corrections faites pour vous, après votre accord', icon: 'send' },
+    { href: '/app/agent/pilote', label: 'Pilote automatique', sub: 'Tout fait pour vous, sans rendez-vous, dans le cadre de votre mandat', icon: 'bolt' },
     { href: '/app/fiche', label: 'Fiche officielle', sub: 'Vos informations vérifiées, publiées sur votre page, votre site et pour les IA', icon: 'flag' },
     { href: '/app/contenu', label: 'Contenus', sub: 'Les pages qui vous manquent, rédigées avec vos faits', icon: 'file' },
     { href: '/app/validation', label: 'À valider', sub: 'Les corrections de l’agent qui attendent votre accord', icon: 'check' },

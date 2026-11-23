@@ -15,7 +15,7 @@ import { isDemoBusinessId } from '@/lib/demo-v2';
 import type { ProviderId } from '@/lib/engine/types';
 import type { Segment } from '@/lib/engine/types-v2';
 import { HttpError } from '@/lib/auth/roles';
-import { AGENCY_INCLUDED_CLIENTS, AGENCY_MAX_CLIENTS, getPlan, isPlanId, type PlanId, type PlanTier } from '@/lib/plans';
+import { AGENCY_INCLUDED_CLIENTS, AGENCY_MAX_CLIENTS, getPlan, isPilotePlanId, isPlanId, type PlanId, type PlanTier } from '@/lib/plans';
 import { limitsFor as seoDataLimitsFor, type SeoDataLimits } from '@/lib/seodata/limits';
 import { crawlRights, type CrawlRights } from '@/lib/recrawl-rights';
 
@@ -59,6 +59,11 @@ export interface Entitlements {
   agency: AgencyLimits;
   /** V8 — API publique REST, serveur MCP en lecture et webhooks (src/lib/publicapi) : Accompagné, Agence, démo */
   api: boolean;
+  /**
+   * V10 (PILOTE-AUTO) — offre « Pilote automatique » : Repéré applique lui-même, dans le cadre d'un mandat écrit et
+   * révocable (src/lib/autopilot), ce que le client a autorisé. Quotas = ceux de l'offre (publish, contentsPerMonth).
+   */
+  autopilot: boolean;
 }
 
 /** V6 — fonctions agences. Toutes fausses / nulles hors offre Agence. */
@@ -148,7 +153,7 @@ export const RUNS_BY_FREQUENCY: Record<Entitlements['frequency'], number> = { mo
 /** V10 : contenus publiables par mois (décision 7 : 0 / 2 / 6 / 6 par client). */
 export const CONTENTS_PER_MONTH: Record<EntitlementTier, number> = { decouverte: 0, essentiel: 2, accompagne: 6, agence: 6, demo: 2 };
 
-type Row = Omit<Entitlements, 'planId' | 'tier' | 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency' | 'api' | 'runs' | 'contentsPerMonth' | 'optionalEngines'>;
+type Row = Omit<Entitlements, 'planId' | 'tier' | 'analysis' | 'seoData' | 'publish' | 'recrawl' | 'agency' | 'api' | 'runs' | 'contentsPerMonth' | 'optionalEngines' | 'autopilot'>;
 
 const DECOUVERTE: Row = {
   prompts: 5, engines: BASE3, frequency: 'monthly', execution: false, seats: 1, brands: 1,
@@ -215,7 +220,7 @@ function segmentOf(b: Pick<Business, 'segment' | 'planId'>): Segment {
 type EntitlementBusiness = Pick<Business, 'id' | 'plan' | 'segment' | 'planId'> & { isActive?: boolean };
 
 export function getEntitlements(business: EntitlementBusiness): Entitlements {
-  if (isDemoBusinessId(business.id)) return { planId: 'demo', tier: 'demo', ...DEMO, engines: [...DEMO.engines], ...v10Fields('demo', DEMO), ...v5Limits('demo', segmentOf(business)) };
+  if (isDemoBusinessId(business.id)) return { planId: 'demo', tier: 'demo', ...DEMO, engines: [...DEMO.engines], ...v10Fields('demo', DEMO), ...v5Limits('demo', segmentOf(business)), autopilot: true };
   const active = business.isActive !== false;
   const tier = active ? tierOf(business.plan) : 'decouverte';
   const segment = segmentOf(business);
@@ -231,7 +236,9 @@ export function getEntitlements(business: EntitlementBusiness): Entitlements {
         ? String(business.planId)
         : `${segment === 'ecommerce' ? 'ecom' : segment}_decouverte`
       : String(business.planId ?? business.plan);
-  return { planId, tier, ...row, engines: [...row.engines], ...v10Fields(tier, row), ...v5Limits(tier, segment) };
+  // V10 (PILOTE-AUTO) : le pilote automatique est attaché à l'offre achetée (planId), pas au niveau d'accès.
+  const autopilot = tier === 'essentiel' && isPilotePlanId(business.planId);
+  return { planId, tier, ...row, engines: [...row.engines], ...v10Fields(tier, row), ...v5Limits(tier, segment), autopilot };
 }
 
 function v10Fields(tier: EntitlementTier, row: Row): Pick<Entitlements, 'runs' | 'optionalEngines' | 'contentsPerMonth'> {

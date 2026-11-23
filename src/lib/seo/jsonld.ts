@@ -328,7 +328,7 @@ export const SOFTWARE_FEATURES: string[] = [
 export function displayedPlans(segment: SiteSegment): SitePlan[] {
   const list = SITE_PLANS.filter((p) => p.segment === segment);
   if (segment === 'agence') return list;
-  return list.filter((p) => /_(decouverte|audit_deep|essentiel_month|essentiel_year|accompagne_month|reseau_month)$/.test(p.id));
+  return list.filter((p) => /_(decouverte|audit_deep|essentiel_month|essentiel_year|pilote_month|accompagne_month|reseau_month)$/.test(p.id));
 }
 
 /** Options payantes (V10) en Offer : prix mensuel, par client pour l'Agence. Mêmes chiffres que /tarifs. */

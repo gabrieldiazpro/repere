@@ -154,10 +154,11 @@ mise à jour de l'application, relancez simplement `node scripts/ops/migrate.mjs
    ```bash
    node scripts/ops/stripe-setup.mjs --dry-run
    ```
-   Il liste ce qui va être créé : un produit par offre, **15 prix** lus dans `src/lib/plans.ts` (Local : audit
-   149 €, Essentiel 29 €/mois ou 290 €/an, Accompagné 99 €/mois, Réseau 79 €/mois ou 790 €/an ; PME : audit 390 €,
-   Essentiel 99 €/mois ou 990 €/an, Accompagné 490 €/mois ; E-commerce : audit 390 €, Essentiel 79 €/mois ou 790 €/an,
-   Accompagné 390 €/mois ; **option Copilot et DeepSeek 9 €/mois** pour Accompagné), le **webhook**
+   Il liste ce qui va être créé : un produit par offre, **18 prix** lus dans `src/lib/plans.ts` (Local : audit
+   149 €, Essentiel 29 €/mois ou 290 €/an, Pilote automatique 59 €/mois, Accompagné 99 €/mois, Réseau 79 €/mois ou
+   790 €/an ; PME : audit 390 €, Essentiel 99 €/mois ou 990 €/an, Pilote automatique 179 €/mois, Accompagné 490 €/mois ;
+   E-commerce : audit 390 €, Essentiel 79 €/mois ou 790 €/an, Pilote automatique 159 €/mois, Accompagné 390 €/mois ;
+   **option Copilot et DeepSeek 9 €/mois** pour Accompagné), le **webhook**
    `https://votre-domaine.fr/api/stripe/webhook` avec ses 9 événements (dont `invoice.paid` et, depuis la V10,
    `charge.refunded`, qui déduit les remboursements des commissions partenaires), et le **portail client**.
    Découverte est gratuite : aucun prix Stripe.

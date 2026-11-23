@@ -17,7 +17,7 @@ export * from './prefs';
 export { sendScheduledReport, getSchedule, saveSchedule, confirmRecipient, renderScheduledReport, nextRunAt, ReportError, type ReportSchedule } from './reports';
 
 /** Types déjà envoyés par e-mail par d'autres modules (digest, alertes mensuelles, rapport d'audit). */
-const EMAIL_HANDLED_ELSEWHERE: NotifType[] = ['audit_done', 'weekly_digest', 'score_change', 'competitor_overtook', 'fact_error', 'actions_reminder'];
+const EMAIL_HANDLED_ELSEWHERE: NotifType[] = ['audit_done', 'weekly_digest', 'score_change', 'competitor_overtook', 'fact_error', 'actions_reminder', 'autopilot'];
 
 export function eventOfType(type: NotifType): (typeof EVENTS)[number] | null {
   if (type === 'audit_done') return 'audit.completed';

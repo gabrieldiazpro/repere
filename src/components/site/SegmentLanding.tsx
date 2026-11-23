@@ -198,6 +198,13 @@ export function SegmentLanding(p: SegmentLandingProps) {
                     Voir la démo en vidéo
                   </Link>
                 </div>
+                <p className="mt-2 text-[0.95rem] text-ink/75">
+                  Pas le temps de vous en occuper ?{" "}
+                  <Link href={`/tout-fait-pour-vous?segment=${p.segment}`} className="font-semibold text-primary underline underline-offset-4 hover:no-underline">
+                    Tout fait pour vous, sans rendez-vous
+                  </Link>
+                  {tiersFor(p.segment).pilote ? ` : Pilote automatique, ${euros(tiersFor(p.segment).pilote!.priceCents)}/mois, sans engagement` : ""}.
+                </p>
               </div>
               <div className="relative mx-auto w-full max-w-xl lg:mt-2 lg:max-w-none">
                 <div

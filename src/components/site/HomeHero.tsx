@@ -90,6 +90,13 @@ export function HomeHero({ children, preview, engines }: { children: ReactNode; 
             Explorer le compte démo
           </DemoEntry>
         </div>
+        <p className="mt-2 text-[0.95rem] text-ink/75">
+          Pas le temps de vous en occuper ?{" "}
+          <Link href={`/tout-fait-pour-vous?segment=${seg}`} className="font-semibold text-primary underline underline-offset-4 hover:no-underline">
+            Tout fait pour vous, sans rendez-vous
+          </Link>
+          .
+        </p>
       </div>
 
       <div className="relative mx-auto w-full max-w-xl lg:mt-1 lg:max-w-none">{preview}</div>

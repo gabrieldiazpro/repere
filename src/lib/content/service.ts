@@ -35,7 +35,26 @@ function assertNotDemo(businessId: string) {
   if (isDemoBusinessId(businessId)) throw new ContentError(403, DEMO_MSG, 'demo_read_only');
 }
 function assertHuman(actor: Actor) {
-  if (!actor.id || actor.id === 'agent' || actor.id === 'system') throw new ContentError(403, 'Cette étape doit être faite par une personne.', 'human_required');
+  if (!actor.id || actor.id === 'agent' || actor.id === 'system' || actor.role === 'mandate') throw new ContentError(403, 'Cette étape doit être faite par une personne.', 'human_required');
+}
+
+/**
+ * V10 (PILOTE-AUTO) : une personne, OU le mandat Pilote automatique signé par le client (acteur `mandat:<id>`) —
+ * seulement pour un contenu validé sous CE mandat (contrôlé par l'appelant via `d.validation.by.id`) et tant que le
+ * mandat est actif et autorise les contenus (relu dans le stockage, jamais cru sur parole).
+ */
+async function assertHumanOrMandate(businessId: string, actor: Actor) {
+  if (actor.role !== 'mandate') return assertHuman(actor);
+  const { isMandateActor, mandateAllows } = await import('@/lib/autopilot/mandate');
+  const { getMandate } = await import('@/lib/autopilot/store');
+  const m = await getMandate(businessId);
+  if (!isMandateActor(actor) || !m || actor.id !== `mandat:${m.id}` || !mandateAllows(m, 'contenus')) {
+    throw new ContentError(403, 'Mandat Pilote automatique absent, en pause ou sans les contenus : validation par une personne requise.', 'human_required');
+  }
+}
+
+function assertSameValidator(d: ContentDraft, actor: Actor) {
+  if (actor.role === 'mandate' && d.validation?.by?.id !== actor.id) throw new ContentError(403, 'Ce contenu n’a pas été validé sous ce mandat.', 'human_required');
 }
 const msg = (e: unknown) => (e instanceof PublishError || e instanceof ContentError ? e.message : 'Erreur inattendue pendant l’opération.');
 
@@ -139,7 +158,8 @@ async function mustGet(businessId: string, id: string): Promise<ContentDraft> {
 /** Rédige le brouillon d'une proposition (une seule fois : un brouillon ouvert pour la même proposition est renvoyé). */
 export async function createDraft(businessId: string, op: ContentOpportunity, ctx: Omit<DraftContext, 'businessId'>, actor: Actor): Promise<ContentDraft> {
   assertNotDemo(businessId);
-  assertHuman(actor);
+  // V10 (PILOTE-AUTO) : le pilote rédige aussi des brouillons sous mandat (rédiger n'est pas publier).
+  await assertHumanOrMandate(businessId, actor);
   return withLock(`op:${businessId}:${op.id}`, async () => {
     const open = (await listDrafts(businessId)).find((d) => d.opportunityId === op.id && d.status !== 'rejected' && d.status !== 'removed');
     if (open) return open;
@@ -201,6 +221,28 @@ export async function validateDraft(businessId: string, id: string, actor: Actor
     d.validation = { by: actor, at: now.toISOString() };
     await save(d, now);
     await appendContentJournal(businessId, id, actor, 'validated', d.title, now);
+    return d;
+  });
+}
+
+/**
+ * V10 (PILOTE-AUTO) : validation sous mandat. Le pilote (src/lib/autopilot/runner.ts) a déjà vérifié les règles du
+ * mandat (faits de la fiche officielle confirmée, contrôles passés, rien de juridique ni de prix) ; ici, double garde :
+ * mandat actif relu dans le stockage, brouillon complet, aucun contrôle bloquant.
+ */
+export async function validateDraftUnderMandate(businessId: string, id: string, actor: Actor, now = new Date()): Promise<ContentDraft> {
+  assertNotDemo(businessId);
+  await assertHumanOrMandate(businessId, actor);
+  if (actor.role !== 'mandate') throw new ContentError(403, 'Réservé au pilote automatique.', 'bad_actor');
+  return withLock(id, async () => {
+    const d = await mustGet(businessId, id);
+    if (d.status !== 'draft') throw new ContentError(409, 'Seul un brouillon peut être validé.', 'bad_state');
+    if (TODO_TEST.test(`${d.title}\n${d.metaTitle}\n${d.metaDescription}\n${d.body}`) || d.missing.length) throw new ContentError(409, 'Contenu incomplet : il reste à la validation manuelle.', 'incomplete');
+    if (d.checks.some((c) => !c.ok)) throw new ContentError(409, 'Un contrôle ne passe pas : il reste à la validation manuelle.', 'checks');
+    d.status = 'validated';
+    d.validation = { by: actor, at: now.toISOString() };
+    await save(d, now);
+    await appendContentJournal(businessId, id, actor, 'validated', `${d.title} (mandat Pilote automatique)`, now);
     return d;
   });
 }
@@ -275,10 +317,11 @@ export interface PushResult {
  */
 export async function pushDraft(businessId: string, id: string, actor: Actor, opts: { tier: EntitlementTier; author: string; now?: Date }): Promise<PushResult> {
   assertNotDemo(businessId);
-  assertHuman(actor);
+  await assertHumanOrMandate(businessId, actor);
   const now = opts.now ?? new Date();
   return withLock(id, async () => {
     const d = await mustGet(businessId, id);
+    assertSameValidator(d, actor);
     if (d.status !== 'validated' || !d.validation?.by?.id) throw new ContentError(409, 'Ce contenu doit être validé avant d’être envoyé sur votre site.', 'not_validated');
     if (TODO_TEST.test(d.body)) throw new ContentError(409, 'Il reste des « [à compléter] ».', 'incomplete');
     const settings = await getSettings(businessId);
@@ -353,10 +396,11 @@ async function markLive(d: ContentDraft, actor: Actor, now: Date, effectInputs?:
 /** Mise en ligne (second geste explicite, après relecture du brouillon chez la plateforme). */
 export async function publishDraft(businessId: string, id: string, actor: Actor, opts: { now?: Date; effect?: EffectInputs } = {}): Promise<ContentDraft> {
   assertNotDemo(businessId);
-  assertHuman(actor);
+  await assertHumanOrMandate(businessId, actor);
   const now = opts.now ?? new Date();
   return withLock(id, async () => {
     const d = await mustGet(businessId, id);
+    assertSameValidator(d, actor);
     if (d.status !== 'remote_draft' && d.status !== 'unpublished') throw new ContentError(409, 'Rien à mettre en ligne.', 'bad_state');
     if (!d.validation?.by?.id) throw new ContentError(409, 'Contenu non validé.', 'not_validated');
     const { conn, ctx, po } = await remoteCtx(businessId, d, now);

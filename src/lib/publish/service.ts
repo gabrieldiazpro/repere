@@ -304,7 +304,7 @@ export async function editChange(businessId: string, id: string, changeId: strin
 
 export async function validateChangeSet(businessId: string, id: string, actor: Actor, opts: { exclude?: string[]; note?: string } = {}, now = new Date()): Promise<ChangeSet> {
   assertNotDemo(businessId);
-  if (!actor.id || actor.id === 'agent' || actor.id === 'system') throw new PublishError(403, 'La validation doit être faite par une personne.', 'human_required');
+  if (!actor.id || actor.id === 'agent' || actor.id === 'system' || actor.role === 'mandate') throw new PublishError(403, 'La validation doit être faite par une personne.', 'human_required');
   return withLock(id, async () => {
     const cs = await mustGet(businessId, id);
     assertTransition(cs, 'validate');
@@ -322,6 +322,37 @@ export async function validateChangeSet(businessId: string, id: string, actor: A
     cs.validation = { by: actor, at: now.toISOString(), ...(opts.note ? { note: opts.note.slice(0, 300) } : {}) };
     await save(cs, now);
     await appendJournal(businessId, id, actor, 'validated', { detail: `${cs.changes.filter((c) => c.status === 'pending').length} modification(s) validée(s)${opts.exclude?.length ? `, ${opts.exclude.length} écartée(s)` : ''}` }, now);
+    return cs;
+  });
+}
+
+/**
+ * V10 (PILOTE-AUTO) : validation donnée À L'AVANCE par le mandat Pilote automatique signé par le client. Le pilote
+ * (src/lib/autopilot/runner.ts) a vérifié les règles du mandat (catégories, pages juridiques, prix, avis, fiche
+ * officielle) ; ici, double garde : mandat actif relu dans le stockage, chaque type couvert par ses catégories, aucun
+ * « [à compléter] ». La trace de validation désigne le mandat (`mandat:<id>`, e-mail du signataire).
+ */
+export async function validateChangeSetUnderMandate(businessId: string, id: string, now = new Date()): Promise<ChangeSet> {
+  assertNotDemo(businessId);
+  const { getMandate } = await import('@/lib/autopilot/store');
+  const { categoryOfKind, mandateActor, mandateAllows } = await import('@/lib/autopilot/mandate');
+  const m = await getMandate(businessId);
+  if (!m || m.status !== 'active') throw new PublishError(403, 'Aucun mandat Pilote automatique actif.', 'no_mandate');
+  const actor = mandateActor(m);
+  return withLock(id, async () => {
+    const cs = await mustGet(businessId, id);
+    assertTransition(cs, 'validate');
+    const pending = cs.changes.filter((c) => c.status === 'pending');
+    if (!pending.length) throw new PublishError(409, 'Aucune modification retenue.', 'nothing_to_apply');
+    for (const c of pending) {
+      const cat = categoryOfKind(c.kind);
+      if (!cat || !mandateAllows(m, cat)) throw new PublishError(403, `« ${c.kind} » n’est pas couvert par le mandat.`, 'out_of_mandate');
+      if (TO_COMPLETE_RE.test(`${c.after ?? ''}\n${c.patch.value}`)) throw new PublishError(409, 'Modification incomplète : validation manuelle requise.', 'incomplete');
+    }
+    cs.status = 'validated';
+    cs.validation = { by: actor, at: now.toISOString(), note: `Mandat Pilote automatique signé le ${m.signedAt.slice(0, 10)} par ${m.signedBy.email}` };
+    await save(cs, now);
+    await appendJournal(businessId, id, actor, 'validated', { detail: `${pending.length} modification(s) validée(s) par le mandat Pilote automatique (${m.id})` }, now);
     return cs;
   });
 }

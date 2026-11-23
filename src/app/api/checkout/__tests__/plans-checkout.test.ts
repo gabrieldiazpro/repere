@@ -29,7 +29,7 @@ describe('plans V2', () => {
     expect(plans.V2_PLANS.filter((p) => p.segment === 'agence').every((p) => !p.available)).toBe(true);
     expect(plans.V2_PLANS.filter((p) => p.segment !== 'agence').every((p) => p.available)).toBe(true);
     expect(plans.plansForSegment('agence')).toEqual([]);
-    expect(plans.plansForSegment('pme').map((p) => p.id)).toEqual(['pme_audit_deep', 'pme_essentiel_month', 'pme_essentiel_year', 'pme_accompagne_month']);
+    expect(plans.plansForSegment('pme').map((p) => p.id)).toEqual(['pme_audit_deep', 'pme_essentiel_month', 'pme_essentiel_year', 'pme_accompagne_month', 'pme_pilote_month']);
   });
   it('Accompagné = 3 mois d’engagement ; garantie 14 j seulement sur les audits ponctuels', () => {
     for (const p of plans.V2_PLANS) {

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Tabs } from '@/components/ui/Tabs';
 import { useAgent } from './state';
 
-export type AgentTab = 'propositions' | 'journal' | 'connexions' | 'reglages';
+export type AgentTab = 'propositions' | 'pilote' | 'journal' | 'connexions' | 'reglages';
 
 export function SimBand() {
   const a = useAgent();
@@ -42,6 +42,7 @@ export function AgentTabs({ current }: { current: AgentTab }) {
       className="mb-5"
       items={[
         { id: 'propositions', label: 'Propositions', count: todo || undefined, href: '/app/agent' },
+        { id: 'pilote', label: 'Pilote automatique', href: '/app/agent/pilote' },
         { id: 'journal', label: 'Journal', href: '/app/agent/journal' },
         { id: 'connexions', label: 'Connexions', count: a.connections.length || undefined, href: '/app/agent/connexions' },
         { id: 'reglages', label: 'Réglages', href: '/app/agent/reglages' },

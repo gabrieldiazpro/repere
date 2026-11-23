@@ -21,6 +21,7 @@ export const NOTIF_TYPES = [
   'report_sent',
   'integration_error',
   'agent_proposals',
+  'autopilot',
 ] as const;
 export type NotifType = (typeof NOTIF_TYPES)[number];
 export const isNotifType = (v: unknown): v is NotifType => typeof v === 'string' && (NOTIF_TYPES as readonly string[]).includes(v);
@@ -42,6 +43,7 @@ export const NOTIF_LABELS: Record<NotifType, string> = {
   report_sent: 'Rapport planifié envoyé',
   integration_error: 'Échec d’envoi vers Slack ou un webhook',
   agent_proposals: 'Nouvelles corrections proposées par l’agent (à valider)',
+  autopilot: 'Pilote automatique : ce qui a été fait, ce qui attend (l’e-mail part toujours, avec le lien d’annulation)',
 };
 
 /** Types considérés comme des « alertes » (événement `alert.created` vers Slack et webhook). */
@@ -77,6 +79,8 @@ export function defaultPrefs(): AlertPrefs {
       report_sent: on('inApp'),
       integration_error: on('inApp', 'email'),
       agent_proposals: on('inApp', 'email'),
+      // V10 (PILOTE-AUTO) : l'e-mail est envoyé par le pilote lui-même (liens signés d'annulation et de blocage).
+      autopilot: on('inApp'),
     },
     threshold: 5,
     copyTo: [],

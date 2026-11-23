@@ -26,6 +26,10 @@
  *  - agency_extra_client     9 €/mois × quantité     client au-delà des 10 inclus (--agence) ;
  *  - agency_weekly_client    39 €/mois × quantité    client mesuré chaque semaine (--agence) ;
  *  - agency_more_ai_client   2 €/mois × quantité     Copilot et DeepSeek pour un client (--agence).
+ * V10 (PILOTE-AUTO) — offre « Pilote automatique » (tout fait pour vous, sans rendez-vous), une par parcours, créée
+ * avec les autres offres vendues (soldPlans) : local_pilote_month 59 €/mois, pme_pilote_month 179 €/mois,
+ * ecom_pilote_month 159 €/mois (mensuel, sans engagement ; droits de l'Essentiel + mandat de publication). Paiement en
+ * libre-service depuis /tout-fait-pour-vous (/api/checkout) ; le webhook pose plan = essentiel, planId = l'offre.
  * Les options s'ajoutent comme lignes d'abonnement (quantité ajustée à la main dans Stripe ou par l'admin), puis
  * l'admin active l'option sur l'espace (setOfferOptions, src/lib/entitlements.ts).
  */

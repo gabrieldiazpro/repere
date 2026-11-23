@@ -177,9 +177,9 @@ export const SAME_AS: string[] = [
  */
 export const PAGE_UPDATED = {
   '/': '2026-11-23',
-  '/local': '2026-11-13',
+  '/local': '2026-11-23',
   '/pme': '2026-11-23',
-  '/e-commerce': '2026-11-22',
+  '/e-commerce': '2026-11-23',
   '/audit': '2026-11-15',
   '/tarifs': '2026-11-23',
   '/methode': '2026-11-22',
@@ -210,6 +210,8 @@ export const PAGE_UPDATED = {
   '/veille/lettre': '2026-11-23',
   '/ressources': '2026-11-23',
   '/ressources/guide-2027': '2026-11-23',
+  // V10 (PILOTE-AUTO, 23 nov. 2026) : « Tout fait pour vous, sans rendez-vous ».
+  '/tout-fait-pour-vous': '2026-11-23',
 } as const satisfies Record<string, string>;
 
 export type StaticPath = keyof typeof PAGE_UPDATED;

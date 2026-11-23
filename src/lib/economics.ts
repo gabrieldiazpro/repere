@@ -60,3 +60,36 @@ export function grossMargin(priceEur: number, e: Pick<Entitlements, 'prompts' | 
   const marginEur = priceEur - aiEur - otherEur;
   return { priceEur, aiEur, otherEur, marginEur, rate: priceEur > 0 ? marginEur / priceEur : 0 };
 }
+
+// ---------------------------------------------------------------------------
+// V10 (PILOTE-AUTO) : coût variable du « Pilote automatique » (tout fait pour vous, sans rendez-vous). Estimations
+// prudentes, à recaler sur les premières factures (docs/v10/progress/PILOTE-AUTO.md) :
+// - une série de corrections : rédaction IA des textes (titres, descriptions, textes alternatifs ; ≈ 10 textes à
+//   0,002 €) + relecture ciblée des pages après application ≈ 0,025 € ;
+// - un contenu (page ou article) : rédaction IA + contrôles + relectures ≈ 0,15 € (pris large : « quelques centimes ») ;
+// - e-mails : récapitulatif hebdomadaire, rapport mensuel, avis après coup ≈ 12 par mois à 0,001 € ;
+// - support par écrit : provision de temps humain (≈ 6 à 10 min par mois et par client), le seul poste humain compté.
+// ---------------------------------------------------------------------------
+
+export const AUTOPILOT_COSTS_EUR = {
+  perSeries: 0.025,
+  perContent: 0.15,
+  perEmail: 0.001,
+  emailsPerMonth: 12,
+  writtenSupport: { local: 3, pme: 5, ecommerce: 5 } as Record<'local' | 'pme' | 'ecommerce', number>,
+} as const;
+
+/** Coût mensuel du pilote automatique au plafond de l'offre (toutes les séries et tous les contenus consommés). */
+export function autopilotMonthlyCostEur(e: Pick<Entitlements, 'publish' | 'contentsPerMonth'>, segment: 'local' | 'pme' | 'ecommerce'): number {
+  const c = AUTOPILOT_COSTS_EUR;
+  return e.publish.changeSetsPerMonth * c.perSeries + e.contentsPerMonth * c.perContent + c.emailsPerMonth * c.perEmail + c.writtenSupport[segment];
+}
+
+/** Marge brute du pilote automatique : mesure + données SEO + Stripe + coût du pilote (support écrit compris). */
+export function autopilotMargin(priceEur: number, e: Pick<Entitlements, 'prompts' | 'engines' | 'runs' | 'frequency' | 'seoData' | 'publish' | 'contentsPerMonth'>, segment: 'local' | 'pme' | 'ecommerce'): Margin {
+  const base = grossMargin(priceEur, e);
+  const pilot = autopilotMonthlyCostEur(e, segment);
+  const otherEur = base.otherEur + pilot;
+  const marginEur = priceEur - base.aiEur - otherEur;
+  return { priceEur, aiEur: base.aiEur, otherEur, marginEur, rate: priceEur > 0 ? marginEur / priceEur : 0 };
+}

@@ -88,7 +88,7 @@ const ACCOMPAGNE_FLOW = [
 const GUARANTEES = [
   {
     title: "Rien n'est publié sans votre accord",
-    text: "Chaque fiche, page ou réponse vous est soumise. Vous validez en un clic, depuis votre téléphone si vous voulez.",
+    text: "Chaque fiche, page ou réponse vous est soumise, ou entre dans le mandat écrit que vous avez signé (Pilote automatique), révocable en un clic.",
   },
   {
     title: "Le travail du mois, ou le mois suivant offert",
@@ -105,6 +105,7 @@ const GUARANTEES = [
 ];
 
 const OPTION_PRICE = formatPrice(getAddon("option_more_ai").priceCents);
+const PILOTE_PRICES = (["local_pilote_month", "ecom_pilote_month", "pme_pilote_month"] as const).map((id) => formatPrice(getPlan(id).priceCents)).join(", ").replace(/, ([^,]+)$/, " ou $1");
 const AGENCY_PRICE = formatPrice(getPlan("agency_month").priceCents);
 const EXTRA_CLIENT = formatPrice(getAddon("agency_extra_client").priceCents);
 const WEEKLY_CLIENT = formatPrice(getAddon("agency_weekly_client").priceCents);
@@ -121,6 +122,10 @@ const FAQ: QA[] = [
   {
     q: "Quelle différence entre Essentiel et Accompagné ?",
     a: "Avec Essentiel, vos questions sont mesurées chaque mois et l'agent prépare les corrections que vous validez. Avec Accompagné, la mesure a lieu chaque semaine et nous faisons le travail (fiches, pages, démarches), toujours après votre accord.",
+  },
+  {
+    q: "Puis-je tout déléguer, sans appel ni rendez-vous ?",
+    a: `Oui, avec la formule Pilote automatique (${PILOTE_PRICES}/mois selon votre activité, sans engagement). Vous payez en ligne, connectez votre site avec l'assistant, confirmez votre fiche officielle pré-remplie et signez un mandat écrit qui dit, catégorie par catégorie, ce que Repéré peut faire seul. Repéré applique ensuite, vous prévient après coup avec une annulation en un clic, et vous écrit chaque semaine. Support par écrit uniquement. Le détail : /tout-fait-pour-vous.`,
   },
   {
     q: "Pourquoi Essentiel est-il mesuré chaque mois et pas chaque semaine ?",
@@ -203,7 +208,8 @@ export default async function TarifsPage({ searchParams }: { searchParams: Promi
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-ink/75">
               Trois paliers par activité : Découverte (gratuit pour toujours), Essentiel (vous faites, avec les textes prêts) et Accompagné
-              (nous faisons, vous validez). Les aperçus IA de Google sont mesurés dans toutes les offres payantes. Prix nets : {VAT_NOTICE}.
+              (nous faisons, vous validez). Pour tout déléguer sans rendez-vous : la formule Pilote automatique. Les aperçus IA de Google sont mesurés
+              dans toutes les offres payantes. Prix nets : {VAT_NOTICE}.
             </p>
             <Byline published={null} updated={updated} />
             <div className="mt-10">

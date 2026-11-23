@@ -101,6 +101,8 @@ export function tiersFor(segment: Exclude<SiteSegment, "agence">) {
     deep: pick(/_audit_deep$/),
     essentielMonth: pick(/_essentiel_month$/),
     essentielYear: pick(/_essentiel_year$/),
+    /** V10 (PILOTE-AUTO) : « Tout fait pour vous, sans rendez-vous » (droits de l'Essentiel + mandat de publication) */
+    pilote: pick(/_pilote_month$/),
     accompagne: pick(/_accompagne_month$/),
     reseauMonth: pick(/_reseau_month$/),
     reseauYear: pick(/_reseau_year$/),

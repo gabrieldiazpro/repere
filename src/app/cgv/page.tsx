@@ -4,6 +4,7 @@ import { LegalDocument } from '@/components/pages/v4/LegalDocument';
 import { LEGAL, LEGAL_ADDRESS, SIREN_DISPLAY, orTodo } from '@/lib/seo/site';
 import { AGENCY_INCLUDED_CLIENTS, VAT_NOTICE, formatPrice, getAddon, getPlan, type AddonId, type PlanId } from '@/lib/plans';
 import { getEntitlements } from '@/lib/entitlements';
+import { CATEGORY_DEFS, CONTENT_REVIEW_HOURS, MANDATE_VERSION, NEVER_DONE, SCORE_DROP_MARGIN } from '@/lib/autopilot/mandate';
 import { PARTNER_LEGAL_SUMMARY } from '@/lib/partners/terms';
 
 export const metadata = pageMeta({
@@ -30,6 +31,7 @@ function priceRows(): string[][] {
     ['Découverte (gratuite, permanente ; analyse et test de marque sans inscription compris)', '0 €', '0 €', '0 €'],
     ['Essentiel (mensuel, sans engagement)', `${P('local_essentiel_month')}/mois`, `${P('pme_essentiel_month')}/mois`, `${P('ecom_essentiel_month')}/mois`],
     ['Essentiel annuel (payable d\'avance)', `${P('local_essentiel_year')}/an`, `${P('pme_essentiel_year')}/an`, `${P('ecom_essentiel_year')}/an`],
+    ['Pilote automatique (mensuel, sans engagement ; Essentiel + application sous mandat)', `${P('local_pilote_month')}/mois`, `${P('pme_pilote_month')}/mois`, `${P('ecom_pilote_month')}/mois`],
     ['Accompagné (mensuel, 3 mois minimum)', `${P('local_accompagne_month')}/mois`, `${P('pme_accompagne_month')}/mois`, `${P('ecom_accompagne_month')}/mois`],
     ['Option Copilot et DeepSeek (Accompagné)', `${A('option_more_ai')}/mois`, `${A('option_more_ai')}/mois`, `${A('option_more_ai')}/mois`],
     ['Audit approfondi (paiement unique)', `${P('local_audit_deep')} (« Audit + plan d'action »)`, P('pme_audit_deep'), `${P('ecom_audit_deep')} (« Audit catalogue approfondi »)`],
@@ -86,6 +88,18 @@ const sections: LegalSection[] = [
     'Le Client garantit qu\'il est en droit de confier ces accès et de publier les contenus qu\'il valide (droits sur les photos, marques, informations sur ses produits et prix). Les prestations dépendent aussi des règles des plateformes, qui peuvent changer ou refuser une modification ; l\'Éditeur n\'est pas responsable d\'un refus ou d\'une suspension décidés par une plateforme en l\'absence de faute de sa part.',
     'Le Client fournit en temps utile les informations, accès et validations nécessaires. À défaut, les livrables du mois concerné peuvent être reportés sans que l\'engagement de l\'article 3 soit mis en jeu.',
   ] },
+  {
+    id: 'pilote-automatique',
+    title: '5 bis. Pilote automatique : mandat de publication [À RELIRE : modèle à faire valider par un avocat]',
+    paras: [
+      `L'offre Pilote automatique comprend l'offre Essentiel du parcours et l'application, par l'Éditeur, de modifications sur le site du Client sans validation au cas par cas, dans le seul cadre d'un mandat de publication écrit (version ${MANDATE_VERSION}). Le mandat est signé dans l'espace client par une personne habilitée à engager le Client, après affichage de son texte complet ; l'Éditeur conserve le texte signé, sa version, son empreinte SHA-256, l'horodatage de son serveur, l'identité du signataire et une empreinte de l'adresse IP.`,
+      `Le mandat désigne, catégorie par catégorie, ce que l'Éditeur peut faire seul : ${CATEGORY_DEFS.map((c) => c.label.toLowerCase()).join(', ')}. Les catégories non cochées restent soumises à la validation du Client, une modification à la fois. Changer les catégories équivaut à signer un nouveau mandat.`,
+      `Contenus (pages et articles) : seulement si tous leurs faits proviennent de la fiche officielle confirmée par le Client, sans mention « [à compléter] » et après réussite de tous les contrôles ; créés en brouillon non visible du public, ils sont mis en ligne ${CONTENT_REVIEW_HOURS} heures après l'envoi d'un e-mail d'information, sauf blocage par le Client (lien de l'e-mail ou espace client). Ils sont publiés au nom et sous la responsabilité éditoriale du Client, qui les a autorisés par le mandat et dispose de ce délai de relecture (article 6) ; ils sont signalés dans l'espace client comme rédigés avec l'aide d'une IA.`,
+      `Même avec un mandat, l'Éditeur ne fait jamais : ${NEVER_DONE.join(' ; ')}.`,
+      `Chaque modification est journalisée (valeurs avant et après, date) dans un journal infalsifiable et notifiée après coup ; chaque série peut être annulée en un clic, l'Éditeur rétablissant la valeur antérieure. Un récapitulatif est adressé chaque semaine et un rapport chaque mois. Si un score SEO ou GEO du site baisse de plus de ${SCORE_DROP_MARGIN} points après une série, le pilote s'interrompt automatiquement, le Client est alerté et le retour arrière lui est proposé ; il ne reprend qu'avec son accord.`,
+      'Le Client peut suspendre, modifier ou révoquer le mandat à tout moment, en un clic et sans frais ; la révocation prend effet immédiatement et ne remet pas en cause les modifications déjà faites, qui restent annulables. Le mandat prend fin avec l\'abonnement. Le Client reste responsable de l\'exactitude des faits de sa fiche officielle et garantit disposer des droits d\'accès qu\'il confie (connexion du site). Les plafonds mensuels de l\'offre s\'appliquent. L\'assistance est assurée par écrit (formulaire, e-mail) ; aucun échange téléphonique n\'est nécessaire. Obligation de moyens (article 3) : aucun résultat de position ou de citation n\'est garanti.',
+    ],
+  },
   { title: '6. Contenus générés par intelligence artificielle', paras: [
     'L\'Éditeur utilise des modèles d\'intelligence artificielle de tiers pour analyser les réponses des assistants, rédiger des brouillons (textes de fiches, réponses aux avis, pages, FAQ) et répondre aux questions du Client dans l\'assistant intégré (« Copilote »). Le Client en est informé : tout contenu ou toute réponse produit avec l\'aide d\'une IA est identifié comme tel dans le service, y compris les échanges avec le Copilote, qui est une IA et non une personne.',
     'Les contenus générés peuvent comporter des erreurs. Le Client les relit et les valide avant toute publication en son nom ; il demeure responsable de ce qu\'il publie, notamment de l\'exactitude des faits (adresse, horaires, prix, services, allégations commerciales, nutritionnelles ou de santé). L\'Éditeur s\'appuie sur la « fiche de vérité » renseignée par le Client et signale ce qui ne peut pas être vérifié.',

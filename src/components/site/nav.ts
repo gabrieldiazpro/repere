@@ -14,6 +14,7 @@ export type LandingSegment = "local" | "pme" | "ecommerce";
 export const PRODUCT: readonly NavItem[] = [
   { href: "/analyse", label: "Test de marque gratuit", text: "Votre marque est-elle citée par les IA ? Puis votre site analysé" },
   { href: "/inscription", label: "Créer un compte gratuit", text: "Gratuit, sans carte bancaire" },
+  { href: "/tout-fait-pour-vous", label: "Tout fait pour vous", text: "Pilote automatique : appliqué pour vous, sans rendez-vous, annulable en 1 clic" },
   { href: "/fonctionnalites", label: "Toutes les fonctionnalités", text: "SEO, GEO, agents, mesure de 10 IA" },
   { href: "/fonctionnalites/audit-seo", label: "Audit SEO", text: "Contrôles sourcés, 5 priorités" },
   { href: "/fonctionnalites/positions-et-search-console", label: "Positions et Search Console", text: "Ce que Google vous apporte" },
@@ -121,6 +122,7 @@ export const FOOTER_COLUMNS: readonly { title: string; links: readonly NavItem[]
       { href: "/fonctionnalites", label: "Fonctionnalités" },
       { href: "/demo", label: "Démo" },
       { href: "/tarifs", label: "Tarifs" },
+      { href: "/tout-fait-pour-vous", label: "Tout fait pour vous (sans rendez-vous)" },
       { href: "/integrations", label: "Intégrations" },
       { href: "/nouveautes", label: "Nouveautés" },
       { href: "/securite", label: "Sécurité" },

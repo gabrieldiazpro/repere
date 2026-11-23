@@ -107,6 +107,8 @@ export function ValidationNotice() {
 
 export interface LegalSection {
   title: string;
+  /** ancre stable (sinon déduite du titre) */
+  id?: string;
   paras?: string[];
   list?: string[];
   table?: { head: string[]; rows: string[][] };
