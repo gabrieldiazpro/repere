@@ -95,7 +95,7 @@ export default async function AgencePage() {
           <div className="ag-kpi">
             <dt>Clients suivis</dt>
             <dd className="ag-kpi-v rp-num">{clients.length}</dd>
-            <dd className="ag-kpi-s">sur {max} inclus</dd>
+            <dd className="ag-kpi-s">{AGENCY_INCLUDED_CLIENTS} inclus, {max} au plus</dd>
           </div>
           <div className="ag-kpi">
             <dt>Score IA moyen</dt>
